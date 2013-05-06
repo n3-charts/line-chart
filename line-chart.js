@@ -91,9 +91,12 @@ angular.module('n3-charts.linechart', [])
       return lineData;
     },
     
-    setScalesDomain: function(scales, data, series) {
+    setScalesDomain: function(scales, data, series, svg) {
       scales.xScale.domain(d3.extent(data, function(d) {return d.x;}));
       scales.yScale.domain(this.yExtent(series, data)).nice();
+      
+      svg.selectAll('.x.axis').call(scales.xAxis)
+      svg.selectAll('.y.axis').call(scales.yAxis)
     },
     
     yExtent: function(series, data) {
@@ -132,7 +135,7 @@ angular.module('n3-charts.linechart', [])
       
       if (lineData.length > 0) {
         
-        lineUtil.setScalesDomain(axes, data, options.series);
+        lineUtil.setScalesDomain(axes, data, options.series, svg);
         
         lineUtil.drawLines(svg, lineDrawer, lineData);
       }
