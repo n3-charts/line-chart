@@ -45,6 +45,29 @@ describe('n3-linechart', function() {
         });
     })
     
+    
+    it('should properly configure y axis', inject(function($compile, $rootScope) {
+      var yAxis = elm.find('svg').children()[0].childNodes[1];
+      
+      var ticks = yAxis.childNodes;
+      
+      expect(ticks.length).toBe(12);
+      
+      expect(ticks[0].textContent).toBe('0');
+      expect(ticks[10].textContent).toBe('50');
+    }));
+    
+    it('should properly configure x axis', inject(function($compile, $rootScope) {
+      var xAxis = elm.find('svg').children()[0].childNodes[0];
+      
+      var ticks = xAxis.childNodes;
+      
+      expect(ticks.length).toBe(12);
+      
+      expect(ticks[0].textContent).toBe('0.0');
+      expect(ticks[10].textContent).toBe('5.0');
+    }));
+    
     it('should create a group', inject(function($compile, $rootScope) {
       var svgGroup = elm.find('svg').children()[0];
       
