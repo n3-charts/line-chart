@@ -3,6 +3,7 @@ line-chart
 
 A line chart implementation
 
+![This is awesome](/img/screenshot.png)
 
 # How to install
  + Copy `line-chart.js` and `line-chart.css` wherever you want
