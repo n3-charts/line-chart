@@ -18,7 +18,7 @@ The line chart directives takes two attributes : `data` and `options`.
 ## Data
 Data must be an array, it should look like this :
 
-`̀``js
+```js
 $scope.data = [
   {x: 0, value: 4},
   {x: 1, value: 8},
@@ -34,17 +34,17 @@ Currently only `x` is supported as an abscissas key. See Options for the ordinat
 ## Options
 Options must be an object with a series array. It should look like this :
 
-`̀``js
+```js
 $scope.options = {
   series: [
     {y: 'value', color: 'steelblue'}
   ]
 }
-`̀``
+```
 
 ## Testing
 AngularJS is designed to be testable, and so is this project. Install karma and run this from a terminal (sorry for non-linux users) :
 
-`̀``sh
+```sh
 $ karma start karma-conf.js
-`̀``
+```
