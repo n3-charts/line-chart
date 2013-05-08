@@ -31,18 +31,18 @@ describe('n3-linechart', function() {
   
   describe('line drawing', function() {
     beforeEach(function() {
-        scope.$apply(function() {
-          scope.data = [
-            {x: 0, value: 4},
-            {x: 1, value: 8},
-            {x: 2, value: 15},
-            {x: 3, value: 16},
-            {x: 4, value: 23},
-            {x: 5, value: 42}
-          ];
-          
-          scope.options = {series: [{y: 'value', color: '#4682b4'} ]}
-        });
+      scope.$apply(function() {
+        scope.data = [
+          {x: 0, value: 4},
+          {x: 1, value: 8},
+          {x: 2, value: 15},
+          {x: 3, value: 16},
+          {x: 4, value: 23},
+          {x: 5, value: 42}
+        ];
+        
+        scope.options = {series: [{y: 'value', color: '#4682b4'} ]}
+      });
     })
     
     
@@ -72,12 +72,31 @@ describe('n3-linechart', function() {
       var svgGroup = elm.find('svg').children()[0];
       
       var content = svgGroup.childNodes[2];
-      expect(content.childNodes.length).toBe(1);
+      expect(content.childNodes.length).toBe(2);
       
       var lineGroup = content.childNodes[0];
       expect(lineGroup.getAttribute('class')).toBe('lineGroup');
       expect(lineGroup.getAttribute('style')).toBe('stroke: #4682b4;');
       
+      var dotsGroup = content.childNodes[1];
+      expect(dotsGroup.nodeName).toBe('g');
+      
+      var dots = dotsGroup.childNodes;
+      expect(dots.length).toBe(6);
+      
+      var expectedCoordinates = [
+        {x: '0', y: '414'},
+        {x: '160', y: '378'},
+        {x: '320', y: '315'},
+        {x: '480', y: '306'},
+        {x: '640', y: '243'},
+        {x: '800', y: '72'}
+      ];
+      for (var i = 0; i < dots.length; i++) {
+        expect(dots[i].nodeName).toBe('circle');
+        expect(dots[i].getAttribute('cx')).toBe(expectedCoordinates[i].x);
+        expect(dots[i].getAttribute('cy')).toBe(expectedCoordinates[i].y);
+      }
     }));
     
     it('should draw a line', inject(function($compile, $rootScope) {
@@ -87,7 +106,7 @@ describe('n3-linechart', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,414L160,378L320,315L480.00000000000006,306L640,243L800,72');
+        .toBe('M0,414L160,378L320,315L480,306L640,243L800,72');
     }));
   })
 })

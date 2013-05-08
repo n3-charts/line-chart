@@ -21,8 +21,8 @@ angular.module('n3-charts.linechart', [])
       width = width - margin.left - margin.right;
       height = height - margin.top - margin.bottom;
       
-      var x = d3.scale.linear().range([0, width]);
-      var y = d3.scale.linear().range([height, 0]);
+      var x = d3.scale.linear().rangeRound([0, width]);
+      var y = d3.scale.linear().rangeRound([height, 0]);
       
       var xAxis = d3.svg.axis().scale(x).orient('bottom');
       var yAxis = d3.svg.axis().scale(y).orient('left');
@@ -59,13 +59,27 @@ angular.module('n3-charts.linechart', [])
     
     drawLines: function(svg, drawer, data) {
       svg.select('.content').selectAll('.lineGroup')
-        .data(data)
-        .enter().append('g')
+        .data(data) .enter().append('g')
           .style('stroke', function(serie) {return serie.color;})
           .attr('class', 'lineGroup')
           .append('path')
             .attr('class', 'line')
             .attr('d', function(d) {return drawer(d.values);})
+    },
+    
+    drawDots: function(svg, data, scales) {
+      svg.select('.content').selectAll('.dotGroup')
+        .data(data).enter().append('g')
+          .attr('class', 'dotGroup')
+          .attr('fill', function(s) {return s.color;})
+            .selectAll('.dot').data(function(d) {return d.values;})
+              .enter().append('circle')
+              .attr({
+                'class': 'dot',
+                'r': 2,
+                'cx': function(d) {return scales.xScale(d.x)},
+                'cy': function(d) {return scales.yScale(d.value)}
+              })
         
     },
     
@@ -138,6 +152,7 @@ angular.module('n3-charts.linechart', [])
         lineUtil.setScalesDomain(axes, data, options.series, svg);
         
         lineUtil.drawLines(svg, lineDrawer, lineData);
+        lineUtil.drawDots(svg, lineData, axes);
       }
     }
     
