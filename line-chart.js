@@ -90,11 +90,10 @@ angular.module('n3-charts.linechart', [])
                 'cy': function(d) {return scales.yScale(d.value)}
               })
               .on('mouseover', function(d) {
-                console.log(d3.select('linechart'));
-                d3.select('line-chart #tooltip').classed('hidden', false);
+                d3.select('#tooltip').classed('hidden', false);
               })
               .on('mouseout', function(d) {
-                d3.select('line-chart #tooltip').classed('hidden', true);
+                d3.select('#tooltip').classed('hidden', true);
               })
         
     },
