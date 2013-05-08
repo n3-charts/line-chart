@@ -3,16 +3,25 @@ angular.module('n3-charts.linechart', [])
 .factory('lineUtil', function() {
   return {
     bootstrap: function(width, height, element) {
+      d3.select(element).classed('linechart', true);
+      
       var margin = {top: 20, right: 50, bottom: 30, left: 50};
       
       width = width - margin.left - margin.right;
       height = height - margin.top - margin.bottom;
       
-      return d3.select(element).append('svg')
+      var svg = d3.select(element).append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      
+      
+      var tooltip = d3.select(element).append('div')
+        .attr('class', 'hidden')
+        .attr('id', 'tooltip')
+      
+      return svg;
     },
     
     addAxes: function(svg, width, height) {
@@ -79,6 +88,13 @@ angular.module('n3-charts.linechart', [])
                 'r': 2,
                 'cx': function(d) {return scales.xScale(d.x)},
                 'cy': function(d) {return scales.yScale(d.value)}
+              })
+              .on('mouseover', function(d) {
+                console.log(d3.select('linechart'));
+                d3.select('line-chart #tooltip').classed('hidden', false);
+              })
+              .on('mouseout', function(d) {
+                d3.select('line-chart #tooltip').classed('hidden', true);
               })
         
     },
@@ -152,7 +168,12 @@ angular.module('n3-charts.linechart', [])
         lineUtil.setScalesDomain(axes, data, options.series, svg);
         
         lineUtil.drawLines(svg, lineDrawer, lineData);
-        lineUtil.drawDots(svg, lineData, axes);
+        lineUtil.drawDots(
+          svg,
+          lineData,
+          axes,
+          d3.select(element[0]).select('#tooltip')
+        );
       }
     }
     
