@@ -14,6 +14,12 @@ A line chart implementation
     ])
 
 # How to use
+A line chart is called using this syntax :
+
+```html
+<linechart data="data" options="options"></linechart>
+```
+
 The line chart directives takes two attributes : `data` and `options`.
 
 ## Data

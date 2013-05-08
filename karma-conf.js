@@ -17,15 +17,23 @@ files = [
   'line-chart.spec.js'
 ];
 
+preprocessors = {
+  'line-chart.js': 'coverage'
+};
 
 // list of files to exclude
 exclude = [
 ];
 
 
+coverageReporter = {
+  type : 'text-summary',
+  dir : 'coverage/'
+}
+
 // test results reporter to use
 // possible values: 'dots', 'progress', 'junit'
-reporters = ['progress'];
+reporters = ['progress', 'coverage'];
 
 
 // web server port
