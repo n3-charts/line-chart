@@ -1,9 +1,9 @@
 line-chart
 ==========
 
-A line chart implementation
+A line chart implementation for [AngularJS](http://angularjs.org/) applications. It makes an extensive use of the wonderful [D3.js](http://d3js.org/) library.
 
-![This is awesome](/img/screenshot.png)
+See a demo [here](http://angular-d3.github.io/line-chart/#/default).
 
 # How to install
  + Copy `line-chart.js` and `line-chart.css` wherever you want
