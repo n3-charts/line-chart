@@ -13,17 +13,19 @@ angular.module('myApp', [
 
 .controller('DemoCtrl', ['$scope', function($scope) {
   $scope.data = [
-    {x: 0, value: 4},
-    {x: 1, value: 8},
-    {x: 2, value: 15},
-    {x: 3, value: 16},
-    {x: 4, value: 23},
-    {x: 5, value: 42}
+    {x: 0, value: 4, otherValue: 32 },
+    {x: 1, value: 8, otherValue: 27 },
+    {x: 2, value: 15, otherValue: 12 },
+    {x: 3, value: 16, otherValue: 0 },
+    {x: 4, value: 23, otherValue: -3 },
+    {x: 5, value: 42, otherValue: -4 }
   ];
   
   $scope.options = {
     series: [
-      {y: 'value', color: 'steelblue'}
+      {y: 'value', color: 'steelblue'},
+      {y: 'otherValue', color: '#AEBC21'},
+      {y: 'x', color: '#8DC3E9'}
     ]
   }
 }])
