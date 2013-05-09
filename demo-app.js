@@ -33,30 +33,14 @@ angular.module('myApp', [
       });
       
       for (var j = 0; j < rowCount; j++) {
-        var row = $scope.data[j] || {x: Math.random() + j};
+        var row = $scope.data[j] || {x: j};
         
-        row['series_' + i] = Math.random()*500;
+        row['series_' + i] = (Math.random()).toFixed(5)*500;
         
         $scope.data[j] = row;
       }
     }
   }
   
-  
-  $scope.data = [
-    {x: 0, value: 4, otherValue: 32 },
-    {x: 1, value: 8, otherValue: 27 },
-    {x: 2, value: 15, otherValue: 12 },
-    {x: 3, value: 16, otherValue: 0 },
-    {x: 4, value: 230, otherValue: -3 },
-    {x: 5, value: 42, otherValue: -4 }
-  ];
-  
-  $scope.options = {
-    series: [
-      {y: 'value', color: 'steelblue'},
-      {y: 'otherValue', color: '#AEBC21'},
-      {y: 'x', color: '#8DC3E9'}
-    ]
-  }
+  $scope.generate(5, 50)
 }])
