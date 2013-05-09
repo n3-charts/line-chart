@@ -16,11 +16,6 @@ angular.module('n3-charts.linechart', [])
         .append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
       
-      
-      var tooltip = d3.select(element).append('div')
-        .attr('class', 'hidden')
-        .attr('id', 'tooltip')
-      
       return svg;
     },
     
@@ -44,6 +39,79 @@ angular.module('n3-charts.linechart', [])
       svg.append('g')
         .attr('class', 'y axis')
         .call(yAxis)
+      
+      
+      var w = 24;
+      var h = 18;
+      var p = 5;
+      
+      var xTooltip = svg.append('g')
+        .attr({
+          'id': 'xTooltip',
+          'opacity': 0
+        });
+      
+      xTooltip.append('path')
+        .attr({
+          'd': 'm-' + w/2 + ' ' + p + ' ' +
+            'l0 ' + h + ' ' +
+            'l' + w + ' 0 ' +
+            'l0 ' + '-' + h +
+            'l-' + (w/2 - p) + ' 0 ' +
+            'l-' + p + ' -' + w/4 + ' ' +
+            'l-' + p + ' ' + w/4 + ' ' +
+            'l-' + (w/2 - p) + ' 0z',
+          'fill': 'grey',
+          'transform': 'translate(0,' + (height + 1) + ')'
+        });
+      
+      xTooltip.append('text')
+        .style({
+          'text-anchor': 'middle'
+        })
+        .attr({
+          'width': w,
+          'height': h,
+          'font-family': 'sans-serif',
+          'font-size': 10,
+          'transform': 'translate(0,' + (height + 19) + ')',
+          'fill': 'white',
+          'text-rendering': 'geometric-precision'
+        });
+      
+      var yTooltip = svg.append('g')
+        .attr({
+          'id': 'yTooltip',
+          'opacity': 0
+        });
+      
+      yTooltip.append('path')
+        .attr({
+          'd': 'm0 0' +
+            'l-' + p + ' -' + p + ' ' +
+            'l0 -' + (h/2 - p) + ' ' +
+            'l-' + w + ' 0 ' +
+            'l0 ' + h + ' ' +
+            'l' + w + ' 0 ' +
+            'l0 -' + (h/2 - p) +
+            'l-' + p + ' ' + p + 'z',
+          'fill': 'grey'
+        });
+      
+      yTooltip.append('text')
+        .style({
+          'text-anchor': 'middle'
+        })
+        .attr({
+          'width': h,
+          'height': w,
+          'font-family': 'sans-serif',
+          'font-size': 10,
+          'fill': 'white',
+          'transform': 'translate(-' + (w-6) + ',3)',
+          'text-rendering': 'geometric-precision'
+        })
+        .text('28');
       
       return {
         xScale: x, yScale: y,
@@ -81,20 +149,53 @@ angular.module('n3-charts.linechart', [])
         .data(data).enter().append('g')
           .attr('class', 'dotGroup')
           .attr('fill', function(s) {return s.color;})
-            .selectAll('.dot').data(function(d) {return d.values;})
-              .enter().append('circle')
+          .on('mouseover', function(s) {
+            var target = d3.select(d3.event.target);
+            
+            target.attr('r', 4);
+            
+            var xTooltip = d3.select("#xTooltip")
+              .transition()
               .attr({
-                'class': 'dot',
-                'r': 2,
-                'cx': function(d) {return scales.xScale(d.x)},
-                'cy': function(d) {return scales.yScale(d.value)}
+                'opacity': 1.0,
+                'transform': 'translate(' + target.attr('cx') + ',0)'
               })
-              .on('mouseover', function(d) {
-                d3.select('#tooltip').classed('hidden', false);
+            xTooltip.select('text').text(target.datum().x)
+            xTooltip.select('path').attr('fill', s.color);
+            
+            var yTooltip = d3.select("#yTooltip")
+              .transition()
+              .attr({
+                'opacity': 1.0,
+                'transform': 'translate(0, ' + target.attr('cy') + ')'
               })
-              .on('mouseout', function(d) {
-                d3.select('#tooltip').classed('hidden', true);
+            
+            yTooltip.select('text').text(target.datum().value)
+            yTooltip.select('path').attr('fill', s.color);
+          })
+          .on('mouseout', function(d) {
+            d3.select(d3.event.target).attr('r', 2);
+            
+            d3.select("#xTooltip")
+              .transition()
+              .attr({
+                'opacity': .0
               })
+            
+            d3.select("#yTooltip")
+              .transition()
+              .attr({
+                'opacity': .0
+              })
+          })
+          .selectAll('.dot').data(function(d) {return d.values;})
+            .enter().append('circle')
+            .attr({
+              'class': 'dot',
+              'r': 2,
+              'cx': function(d) {return scales.xScale(d.x)},
+              'cy': function(d) {return scales.yScale(d.value)}
+            })
         
     },
     
