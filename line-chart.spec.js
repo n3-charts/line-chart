@@ -148,11 +148,11 @@ describe('n3-linechart', function() {
       
       var expectedCoordinates = [
         {x: '0', y: '414'},
-        {x: '160', y: '378'},
-        {x: '320', y: '315'},
-        {x: '480', y: '306'},
-        {x: '640', y: '243'},
-        {x: '800', y: '72'}
+        {x: '161', y: '378'},
+        {x: '322', y: '315'},
+        {x: '483', y: '306'},
+        {x: '644', y: '243'},
+        {x: '805', y: '72'}
       ];
       for (var i = 0; i < dots.length; i++) {
         expect(dots[i].nodeName).toBe('circle');
@@ -168,7 +168,7 @@ describe('n3-linechart', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,414L160,378L320,315L480,306L640,243L800,72');
+        .toBe('M0,414L161,378L322,315L483,306L644,243L805,72');
     });
   })
 })

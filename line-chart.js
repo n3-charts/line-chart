@@ -312,7 +312,7 @@ angular.module('n3-charts.linechart', [])
         data || [],
         options ? options.series : []
       );
-      console.log(widest);
+      
       dimensions.left = lineUtil.getTooltipTextWidth('' + widest) + 20;
       
       d3.select(element[0]).select('svg').remove();
