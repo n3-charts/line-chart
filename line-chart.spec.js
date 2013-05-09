@@ -16,7 +16,7 @@ describe('n3-linechart', function() {
   }));
   
   
-  it('should create one svg element and one tooltip div', function() {
+  it('should create one svg element', function() {
     expect(elm[0].getAttribute('id')).toBe('toto');
     
     var templateElmts = elm[0].children;
@@ -25,20 +25,19 @@ describe('n3-linechart', function() {
     expect(templateElmts[0].getAttribute('class')).toBe('linechart');
     
     var dynamicChildren = templateElmts[0].children;
-    expect(dynamicChildren.length).toBe(2);
+    expect(dynamicChildren.length).toBe(1);
     expect(dynamicChildren[0].nodeName).toBe('svg');
-    
-    
-    expect(dynamicChildren[1].nodeName).toBe('DIV');
-    expect(dynamicChildren[1].getAttribute('id')).toBe('tooltip');
   });
   
   
-  it('should create exactly two axes and one content group', function() {
+  it('should create exactly two axes, one content group, two tooltips groups', function() {
     var svgGroup = elm.find('svg').children()[0];
     
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(3);
+    expect(content.length).toBe(5);
+    
+    expect(content[2].getAttribute('id')).toBe('xTooltip')
+    expect(content[3].getAttribute('id')).toBe('yTooltip')
   });
   
   describe('tooltip', function() {
@@ -50,23 +49,26 @@ describe('n3-linechart', function() {
       });
     })
     
-    xit('should show/hide the tooltip when hovering/leaving a dot', function() {
+    it('should show/hide the tooltip when hovering/leaving a dot', function() {
+      // Could not manage this test to pass, despite the fact it does work...
       var svgGroup = elm.find('svg').children()[0];
-      var dots = svgGroup.childNodes[2].childNodes[1].childNodes;
+    
+      var content = svgGroup.childNodes;
       
-      var tooltip = elm[0].children[0].children[1];
-      expect(tooltip.getAttribute('id')).toBe('tooltip');
-      expect(tooltip.getAttribute('class')).toBe('hidden');
+      var dots = content[4].childNodes[1].childNodes;
+      
+      var xTooltip = content[2];
+      expect(xTooltip.getAttribute('id')).toBe('xTooltip');
+      expect(xTooltip.getAttribute('opacity')).toBe('0');
       
       var e = document.createEvent('UIEvents');
       e.initUIEvent('mouseover');
       dots[0].dispatchEvent(e);
-      console.log(tooltip.getAttribute('class'));
-      expect(tooltip.getAttribute('class')).toBe('');
+      expect(xTooltip.getAttribute('opacity')).toBe('1');
       
       e.initUIEvent('mouseout');
       dots[0].dispatchEvent(e);
-      expect(tooltip.getAttribute('class')).toBe('hidden');
+      expect(xTooltip.getAttribute('opacity')).toBe('0');
     })
   })
   
@@ -112,7 +114,7 @@ describe('n3-linechart', function() {
     it('should create a group', function() {
       var svgGroup = elm.find('svg').children()[0];
       
-      var content = svgGroup.childNodes[2];
+      var content = svgGroup.childNodes[4];
       expect(content.childNodes.length).toBe(2);
       
       var lineGroup = content.childNodes[0];
@@ -141,7 +143,7 @@ describe('n3-linechart', function() {
     });
     
     it('should draw a line', function() {
-      var content = elm.find('svg').children()[0].childNodes[2];
+      var content = elm.find('svg').children()[0].childNodes[4];
       var lineGroup = content.childNodes[0];
       
       var linePath = lineGroup.childNodes[0];
