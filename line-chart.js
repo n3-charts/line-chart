@@ -5,7 +5,7 @@ angular.module('n3-charts.linechart', [])
     bootstrap: function(width, height, element) {
       d3.select(element).classed('linechart', true);
       
-      var margin = {top: 20, right: 50, bottom: 30, left: 50};
+      var margin = {top: 20, right: 50, bottom: 30, left: 170};
       
       width = width - margin.left - margin.right;
       height = height - margin.top - margin.bottom;
@@ -19,8 +19,42 @@ angular.module('n3-charts.linechart', [])
       return svg;
     },
     
+    getTooltipTextWidth: function(text) {
+      return Math.max(25, text.length*6.5);
+    },
+    
+    getYTooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5;
+      
+      return 'm0 0' +
+        'l-' + p + ' -' + p + ' ' +
+        'l0 -' + (h/2 - p) + ' ' +
+        'l-' + w + ' 0 ' +
+        'l0 ' + h + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 -' + (h/2 - p) +
+        'l-' + p + ' ' + p + 'z';
+    },
+    
+    getXTooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5;
+      
+      return 'm-' + w/2 + ' ' + p + ' ' +
+        'l0 ' + h + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 ' + '-' + h +
+        'l-' + (w/2 - p) + ' 0 ' +
+        'l-' + p + ' -' + h/4 + ' ' +
+        'l-' + p + ' ' + h/4 + ' ' +
+        'l-' + (w/2 - p) + ' 0z';
+    },
+    
     addAxes: function(svg, width, height) {
-      var margin = {top: 20, right: 50, bottom: 30, left: 50};
+      var margin = {top: 20, right: 50, bottom: 30, left: 170};
       
       width = width - margin.left - margin.right;
       height = height - margin.top - margin.bottom;
@@ -53,14 +87,6 @@ angular.module('n3-charts.linechart', [])
       
       xTooltip.append('path')
         .attr({
-          'd': 'm-' + w/2 + ' ' + p + ' ' +
-            'l0 ' + h + ' ' +
-            'l' + w + ' 0 ' +
-            'l0 ' + '-' + h +
-            'l-' + (w/2 - p) + ' 0 ' +
-            'l-' + p + ' -' + w/4 + ' ' +
-            'l-' + p + ' ' + w/4 + ' ' +
-            'l-' + (w/2 - p) + ' 0z',
           'fill': 'grey',
           'transform': 'translate(0,' + (height + 1) + ')'
         });
@@ -72,7 +98,7 @@ angular.module('n3-charts.linechart', [])
         .attr({
           'width': w,
           'height': h,
-          'font-family': 'sans-serif',
+          'font-family': 'monospace',
           'font-size': 10,
           'transform': 'translate(0,' + (height + 19) + ')',
           'fill': 'white',
@@ -86,29 +112,18 @@ angular.module('n3-charts.linechart', [])
         });
       
       yTooltip.append('path')
-        .attr({
-          'd': 'm0 0' +
-            'l-' + p + ' -' + p + ' ' +
-            'l0 -' + (h/2 - p) + ' ' +
-            'l-' + w + ' 0 ' +
-            'l0 ' + h + ' ' +
-            'l' + w + ' 0 ' +
-            'l0 -' + (h/2 - p) +
-            'l-' + p + ' ' + p + 'z',
-          'fill': 'grey'
-        });
+        .attr('fill', 'grey');
       
       yTooltip.append('text')
         .style({
-          'text-anchor': 'middle'
+          // 'text-anchor': 'middle'
         })
         .attr({
           'width': h,
           'height': w,
-          'font-family': 'sans-serif',
+          'font-family': 'monospace',
           'font-size': 10,
           'fill': 'white',
-          'transform': 'translate(-' + (w-6) + ',3)',
           'text-rendering': 'geometric-precision'
         })
         .text('28');
@@ -145,6 +160,8 @@ angular.module('n3-charts.linechart', [])
     },
     
     drawDots: function(svg, data, scales) {
+      var that = this;
+      
       svg.select('.content').selectAll('.dotGroup')
         .data(data).enter().append('g')
           .attr('class', 'dotGroup')
@@ -154,14 +171,18 @@ angular.module('n3-charts.linechart', [])
             
             target.attr('r', 4);
             
+            var textX = '' + target.datum().x;
+            
             var xTooltip = d3.select("#xTooltip")
               .transition()
               .attr({
                 'opacity': 1.0,
                 'transform': 'translate(' + target.attr('cx') + ',0)'
               })
-            xTooltip.select('text').text(target.datum().x)
-            xTooltip.select('path').attr('fill', s.color);
+            xTooltip.select('text').text(textX)
+            xTooltip.select('path')
+              .attr('fill', s.color)
+              .attr('d', that.getXTooltipPath(textX));
             
             var yTooltip = d3.select("#yTooltip")
               .transition()
@@ -170,8 +191,19 @@ angular.module('n3-charts.linechart', [])
                 'transform': 'translate(0, ' + target.attr('cy') + ')'
               })
             
-            yTooltip.select('text').text(target.datum().value)
-            yTooltip.select('path').attr('fill', s.color);
+            var textY = '' + target.datum().value;
+            
+            var yTooltipText = yTooltip.select('text')
+              .text(textY);
+            
+            yTooltipText.attr(
+              'transform',
+              'translate(-' + (that.getTooltipTextWidth(textY) + 2) + ',3)'
+            );
+            
+            yTooltip.select('path')
+              .attr('fill', s.color)
+              .attr('d', that.getYTooltipPath(textY));
           })
           .on('mouseout', function(d) {
             d3.select(d3.event.target).attr('r', 2);
