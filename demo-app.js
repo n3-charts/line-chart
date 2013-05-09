@@ -12,6 +12,37 @@ angular.module('myApp', [
   }])
 
 .controller('DemoCtrl', ['$scope', function($scope) {
+  $scope.randomize = function() {
+    $scope.generate(
+      Math.random()*10,
+      Math.random()*100
+    );
+  }
+  
+  var colors = d3.scale.category10()
+  
+  $scope.generate = function(seriesCount, rowCount) {
+    
+    $scope.options = {series: []};
+    
+    $scope.data = [];
+    for (var i = 0; i < seriesCount; i++) {
+      $scope.options.series.push({
+        y: 'series_' + i,
+        color: colors(i)
+      });
+      
+      for (var j = 0; j < rowCount; j++) {
+        var row = $scope.data[j] || {x: Math.random() + j};
+        
+        row['series_' + i] = Math.random()*500;
+        
+        $scope.data[j] = row;
+      }
+    }
+  }
+  
+  
   $scope.data = [
     {x: 0, value: 4, otherValue: 32 },
     {x: 1, value: 8, otherValue: 27 },
