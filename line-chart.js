@@ -5,7 +5,7 @@ angular.module('n3-charts.linechart', [])
     bootstrap: function(width, height, element) {
       d3.select(element).classed('linechart', true);
       
-      var margin = {top: 20, right: 50, bottom: 30, left: 170};
+      var margin = {top: 20, right: 50, bottom: 30, left: 50};
       
       width = width - margin.left - margin.right;
       height = height - margin.top - margin.bottom;
@@ -54,7 +54,7 @@ angular.module('n3-charts.linechart', [])
     },
     
     addAxes: function(svg, width, height) {
-      var margin = {top: 20, right: 50, bottom: 30, left: 170};
+      var margin = {top: 20, right: 50, bottom: 30, left: 50};
       
       width = width - margin.left - margin.right;
       height = height - margin.top - margin.bottom;
