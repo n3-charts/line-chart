@@ -2,25 +2,44 @@ angular.module('n3-charts.linechart', [])
 
 .factory('lineUtil', function() {
   return {
-    bootstrap: function(width, height, element) {
+    getDefaultMargins: function() {
+      return {top: 20, right: 50, bottom: 30, left: 50};
+    },
+    
+    bootstrap: function(element, dimensions) {
       d3.select(element).classed('linechart', true);
       
-      var margin = {top: 20, right: 50, bottom: 30, left: 50};
+      var width = dimensions.width;
+      var height = dimensions.height;
       
-      width = width - margin.left - margin.right;
-      height = height - margin.top - margin.bottom;
+      width = width - dimensions.left - dimensions.right;
+      height = height - dimensions.top - dimensions.bottom;
       
       var svg = d3.select(element).append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
+        .attr('width', width + dimensions.left + dimensions.right)
+        .attr('height', height + dimensions.top + dimensions.bottom)
         .append('g')
-          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+          .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')');
       
       return svg;
     },
     
     getTooltipTextWidth: function(text) {
       return Math.max(25, text.length*6.5);
+    },
+    
+    getWidestOrdinate: function(data, series) {
+      var widest = '';
+      
+      data.forEach(function(row) {
+        series.forEach(function(series) {
+          if (('' + row[series.y]).length > ('' + widest).length) {
+            widest = row[series.y];
+          }
+        })
+      })
+      
+      return widest;
     },
     
     getYTooltipPath: function(text) {
@@ -53,11 +72,12 @@ angular.module('n3-charts.linechart', [])
         'l-' + (w/2 - p) + ' 0z';
     },
     
-    addAxes: function(svg, width, height) {
-      var margin = {top: 20, right: 50, bottom: 30, left: 50};
+    addAxes: function(svg, dimensions) {
+      var width = dimensions.width;
+      var height = dimensions.height;
       
-      width = width - margin.left - margin.right;
-      height = height - margin.top - margin.bottom;
+      width = width - dimensions.left - dimensions.right;
+      height = height - dimensions.top - dimensions.bottom;
       
       var x = d3.scale.linear().rangeRound([0, width]);
       var y = d3.scale.linear().rangeRound([height, 0]);
@@ -277,23 +297,32 @@ angular.module('n3-charts.linechart', [])
 
 .directive('linechart', ['lineUtil', function(lineUtil) {
   var link  = function(scope, element, attrs, ctrl) {
-    var height = 500;
-    var width = 900;
-    
-    var svg = lineUtil.bootstrap(width, height, element[0]);
-    var axes = lineUtil.addAxes(svg, width, height);
-    
-    
-    var lineDrawer = lineUtil.createLineDrawer(axes);
+    var dimensions = lineUtil.getDefaultMargins();
+    dimensions.width = 900;
+    dimensions.height = 500;
     
     scope.redraw = function() {
       var data = scope.data;
       var options = scope.options;
       
-      lineUtil.removeContent(svg);
+      
+      var lineData = lineUtil.getLineData(data, options);
+      
+      var widest = lineUtil.getWidestOrdinate(
+        lineData || [],
+        options ? options.series : []
+      );
+      
+      dimensions.left = lineUtil.getTooltipTextWidth('' + widest) + 20;
+      
+      d3.select(element[0]).select('svg').remove();
+      
+      var svg = lineUtil.bootstrap(element[0], dimensions);
+      var axes = lineUtil.addAxes(svg, dimensions);
+      
       lineUtil.createContent(svg);
       
-      var lineData = lineUtil.getLineData(data, options)
+      var lineDrawer = lineUtil.createLineDrawer(axes);
       
       if (lineData.length > 0) {
         
