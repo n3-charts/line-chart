@@ -45,9 +45,14 @@ Options must be an object with a series array. It should look like this :
 $scope.options = {
   series: [
     {y: 'value', color: 'steelblue'}
-  ]
+  ],
+  showArea:true/false,
+  lineMode:'linear'
 }
 ```
+
+### LineModes:
+['linear','step-before','step-after','basis','basis-open','basis-closed','bundle','cardinal','cardinal-open','cadinal-closed','monotone']
 
 ## Testing
 AngularJS is designed to be testable, and so is this project. Install karma and run this from a terminal (sorry for non-linux users) :
