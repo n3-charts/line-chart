@@ -1,22 +1,17 @@
 angular.module('n3-charts.linechart', [])
 
 .factory('lineUtil', function() {
-  var height,width,interMode = 'linear';
   return {
     getDefaultMargins: function() {
       return {top: 20, right: 50, bottom: 30, left: 50};
     },
     
-    bootstrap: function(element, dimensions, lineMode) {
+    bootstrap: function(element, dimensions) {
       d3.select(element).classed('linechart', true);
       
-      width = dimensions.width;
-      height = dimensions.height;
+      var width = dimensions.width;
+      var height = dimensions.height;
 
-      if(lineMode && typeof lineMode === 'string'){
-        interMode = lineMode;
-      }
-      
       width = width - dimensions.left - dimensions.right;
       height = height - dimensions.top - dimensions.bottom;
       
@@ -140,9 +135,6 @@ angular.module('n3-charts.linechart', [])
         .attr('fill', 'grey');
       
       yTooltip.append('text')
-        .style({
-          // 'text-anchor': 'middle'
-        })
         .attr({
           'width': h,
           'height': w,
@@ -168,21 +160,19 @@ angular.module('n3-charts.linechart', [])
         .attr('class', 'content');
     },
     
-    createLineDrawer: function(scales) {
-      interMode = interMode || 'linear';
+    createLineDrawer: function(scales, interpolateMode) {
       return d3.svg.line()
         .x(function(d) {return scales.xScale(d.x);})
         .y(function(d) {return scales.yScale(d.value);})
-        .interpolate(interMode);
+        .interpolate(interpolateMode);
     },
 
-    createAreaDrawer:function(scales){
-      interMode = interMode || 'linear';
+    createAreaDrawer:function(scales, interpolateMode, y0){
       return d3.svg.area()
-        .x(function(d) { return scales.xScale(d.x); })
-        .y0(height)
-        .y1(function(d) { return scales.yScale(d.value); })
-        .interpolate(interMode);
+        .x(function(d) {return scales.xScale(d.x);})
+        .y0(y0)
+        .y1(function(d) {return scales.yScale(d.value);})
+        .interpolate(interpolateMode);
     },
     
     drawLines: function(svg, drawer, data) {
@@ -195,18 +185,18 @@ angular.module('n3-charts.linechart', [])
             .attr('d', function(d) {return drawer(d.values);});
     },
 
-    drawArea: function(svg,drawer,data){
+    drawArea: function(svg, drawer, data){
       svg.select('.content').selectAll('.area')
         .data(data).enter().append('g')
         .attr('class','areaGroup')
-        .append("path")
+        .append('path')
           .datum(function(d){
             return d;
           })
         .style('fill', function(serie) {return serie.color;})
         .style('opacity', '0.1')
-          .attr("class", "area")
-          .attr("d",  function(d) {
+          .attr('class', 'area')
+          .attr('d',  function(d) {
             return drawer(d.values);
           });
     },
@@ -336,10 +326,6 @@ angular.module('n3-charts.linechart', [])
     scope.redraw = function() {
       var data = scope.data;
       var options = scope.options;
-      var lineMode = 'linear';
-      if(options){
-        lineMode = options.lineMode || 'linear';
-      }
       
       var lineData = lineUtil.getLineData(data, options);
       
@@ -352,12 +338,14 @@ angular.module('n3-charts.linechart', [])
       
       d3.select(element[0]).select('svg').remove();
       
+      var lineMode = options ? !!options.lineMode : 'linear';
+      
       var svg = lineUtil.bootstrap(element[0], dimensions, lineMode);
       var axes = lineUtil.addAxes(svg, dimensions);
       
       lineUtil.createContent(svg);
       
-      var lineDrawer = lineUtil.createLineDrawer(axes);
+      var lineDrawer = lineUtil.createLineDrawer(axes, dimensions.height);
       var areaDrawer = lineUtil.createAreaDrawer(axes);
       
       if (lineData.length > 0) {
@@ -366,7 +354,7 @@ angular.module('n3-charts.linechart', [])
         
         lineUtil.drawLines(svg, lineDrawer, lineData);
         
-        if(options.showArea){
+        if (options.showArea === true) {
           lineUtil.drawArea(svg, areaDrawer, lineData);
         }
         
