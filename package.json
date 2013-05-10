@@ -4,7 +4,6 @@
     "karma": "~0.8"
   },
   "scripts": {
-    "test": "ls -al"//,
-    //"test": "./node_modules/.bin/karma start --single-run karma-conf.js"
+    "test": "ls -al; pwd"
   }
 }
