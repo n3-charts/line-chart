@@ -138,7 +138,7 @@ describe('n3-linechart', function() {
       
       var lineGroup = content.childNodes[0];
       expect(lineGroup.getAttribute('class')).toBe('lineGroup');
-      expect(lineGroup.getAttribute('style')).toBe('stroke: #4682b4;');
+      expect(lineGroup.getAttribute('style').trim()).toBe('stroke: #4682b4;');
       
       var dotsGroup = content.childNodes[1];
       expect(dotsGroup.nodeName).toBe('g');

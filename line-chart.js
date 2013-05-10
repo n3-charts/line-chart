@@ -336,7 +336,10 @@ angular.module('n3-charts.linechart', [])
     scope.redraw = function() {
       var data = scope.data;
       var options = scope.options;
-      
+      var lineMode = 'linear';
+      if(options){
+        lineMode = options.lineMode || 'linear';
+      }
       
       var lineData = lineUtil.getLineData(data, options);
       
@@ -349,7 +352,7 @@ angular.module('n3-charts.linechart', [])
       
       d3.select(element[0]).select('svg').remove();
       
-      var svg = lineUtil.bootstrap(element[0], dimensions, options.lineMode);
+      var svg = lineUtil.bootstrap(element[0], dimensions, lineMode);
       var axes = lineUtil.addAxes(svg, dimensions);
       
       lineUtil.createContent(svg);
