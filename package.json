@@ -1,0 +1,9 @@
+{
+  "name": "line-chart",
+  "devDependencies": {
+    "karma": "~0.8"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/karma start --single-run ./karam-conf.js"
+  }
+}
