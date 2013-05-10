@@ -4,6 +4,6 @@
     "karma": "~0.8"
   },
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run ./karam-conf.js"
+    "test": "./node_modules/.bin/karma start --single-run ./karma-conf.js"
   }
 }
