@@ -1,15 +1,100 @@
-<!doctype html>
+<!doctype html style="height:100%">
 <html lang="en" ng-app="myApp">
 <head>
   <meta charset="utf-8">
   <title>Line chart demo</title>
   <link rel="stylesheet" href="line-chart.css"/>
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
 </head>
-<body>
-  <div ng-view></div>
+<body style="height:100%;margin: 0 0;" ng-controller="DemoCtrl">
+  
+  <div style='width:100%;height:60%'>
+    <linechart data='data' options='options'></linechart>
+  </div>
+  <div class="pull-right" style="padding:10px;">
+  <form class="form-inline">
+    <label class="checkbox">
+      <input type="checkbox" name="checkboxes" value="visible" ng-model='options.showArea'> Show area
+    </label>
+    <select class="input-medium" ng-model='options.lineMode'>
+      <option>linear</option>
+      <option>step-before</option>
+      <option>step-after</option>
+      <option>basis</option>
+      <option>basis-open</option>
+      <option>basis-closed</option>
+      <option>bundle</option>
+      <option>cardinal</option>
+      <option>cardinal-open</option>
+      <option>cadinal-closed</option>
+      <option>monotone</option>
+    </select>
+    <button ng-click='sinusodize()' class="btn btn-default">Sinuzodize !</button>
+    <button ng-click='randomize()' class="btn btn-default">Randomize !</button>
+  </form>
+  </div>
+  
+  
   <script src="lib/angular.js"></script>
-  <script src="demo-app.js"></script>
   <script src="lib/d3.v3.min.js"></script>
   <script src="line-chart.js"></script>
+  
+  <script>
+    angular.module('myApp', ['n3-charts.linechart'])
+
+    .controller('DemoCtrl', function($scope) {
+      var colors = d3.scale.category10()
+      
+      $scope.options = {
+        showArea: false,
+        lineMode: 'linear',
+        series: []
+      };
+      
+      $scope.reset = function() {
+        $scope.options.series = [];
+        $scope.data = [];
+      }
+      
+      $scope.sinusodize = function() {
+        $scope.reset();
+        
+        for (var i = 0; i < 5; i++) {
+          $scope.options.series.push({y: 'series_' + i, color: colors(i)});
+          
+          for (var j = 0; j < 50; j++) {
+            var row = $scope.data[j] || {x: j};
+            row['series_' + i] = (Math.sin(j/5))*(5*i);
+            $scope.data[j] = row;
+          }
+        }
+      }
+      
+      $scope.randomize = function() {
+        $scope.reset();
+        
+        seriesCount = Math.random()*10;
+        rowCount = Math.random()*100;
+    
+        for (var i = 0; i < seriesCount; i++) {
+          $scope.options.series.push({
+            y: 'series_' + i,
+            color: colors(i)
+          });
+          
+          for (var j = 0; j < rowCount; j++) {
+            var row = $scope.data[j] || {x: j};
+            
+            row['series_' + i] = (Math.random()).toFixed(5)*500;
+            
+            $scope.data[j] = row;
+          }
+        }
+      }
+      
+      $scope.sinusodize();
+      
+    });
+  </script>
 </body>
 </html>
