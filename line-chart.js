@@ -148,10 +148,6 @@ angular.module('n3-charts.linechart', [])
       }
     },
     
-    removeContent: function(svg) {
-      svg.selectAll('.content').remove();
-    },
-    
     createContent: function(svg) {
       svg.append('g')
         .attr('class', 'content');
