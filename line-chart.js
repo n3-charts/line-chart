@@ -6,6 +6,10 @@ angular.module('n3-charts.linechart', [])
       return {top: 20, right: 50, bottom: 30, left: 50};
     },
     
+    clean: function(element) {
+      d3.select(element).select('svg').remove();
+    },
+    
     bootstrap: function(element, dimensions) {
       d3.select(element).classed('linechart', true);
       
@@ -16,7 +20,9 @@ angular.module('n3-charts.linechart', [])
         .attr('width', width)
         .attr('height', height)
         .append('g')
-          .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')');
+          .attr('transform', 'translate(' + dimensions.left +
+            ',' + dimensions.top + ')'
+          );
       
       return svg;
     },
@@ -39,37 +45,7 @@ angular.module('n3-charts.linechart', [])
       return widest;
     },
     
-    getYTooltipPath: function(text) {
-      var w = this.getTooltipTextWidth(text);
-      var h = 18;
-      var p = 5;
-      
-      return 'm0 0' +
-        'l-' + p + ' -' + p + ' ' +
-        'l0 -' + (h/2 - p) + ' ' +
-        'l-' + w + ' 0 ' +
-        'l0 ' + h + ' ' +
-        'l' + w + ' 0 ' +
-        'l0 -' + (h/2 - p) +
-        'l-' + p + ' ' + p + 'z';
-    },
-    
-    getXTooltipPath: function(text) {
-      var w = this.getTooltipTextWidth(text);
-      var h = 18;
-      var p = 5;
-      
-      return 'm-' + w/2 + ' ' + p + ' ' +
-        'l0 ' + h + ' ' +
-        'l' + w + ' 0 ' +
-        'l0 ' + '-' + h +
-        'l-' + (w/2 - p) + ' 0 ' +
-        'l-' + p + ' -' + h/4 + ' ' +
-        'l-' + p + ' ' + h/4 + ' ' +
-        'l-' + (w/2 - p) + ' 0z';
-    },
-    
-    addAxes: function(svg, dimensions) {
+    addAxes: function(svg, dimensions, drawY2Axis) {
       var width = dimensions.width;
       var height = dimensions.height;
       
@@ -78,9 +54,11 @@ angular.module('n3-charts.linechart', [])
       
       var x = d3.scale.linear().rangeRound([0, width]);
       var y = d3.scale.linear().rangeRound([height, 0]);
+      var y2 = d3.scale.linear().rangeRound([height, 0]);
       
       var xAxis = d3.svg.axis().scale(x).orient('bottom');
       var yAxis = d3.svg.axis().scale(y).orient('left');
+      var y2Axis = d3.svg.axis().scale(y2).orient('right');
       
       svg.append('g')
         .attr('class', 'x axis')
@@ -89,9 +67,24 @@ angular.module('n3-charts.linechart', [])
       
       svg.append('g')
         .attr('class', 'y axis')
-        .call(yAxis)
+        .call(yAxis);
       
+      if (drawY2Axis) {
+        svg.append('g')
+          .attr('class', 'y2 axis')
+          .attr('transform', 'translate(' + width + ', 0)')
+          .call(y2Axis);
+      }
       
+      this.addTooltips(svg, width, height, drawY2Axis);
+      
+      return {
+        xScale: x, yScale: y, y2Scale: y2,
+        xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
+      }
+    },
+    
+    addTooltips: function (svg, width, height, drawY2Axis) {
       var w = 24;
       var h = 18;
       var p = 5;
@@ -104,7 +97,6 @@ angular.module('n3-charts.linechart', [])
       
       xTooltip.append('path')
         .attr({
-          'fill': 'grey',
           'transform': 'translate(0,' + (height + 1) + ')'
         });
       
@@ -128,9 +120,7 @@ angular.module('n3-charts.linechart', [])
           'opacity': 0
         });
       
-      yTooltip.append('path')
-        .attr('fill', 'grey');
-      
+      yTooltip.append('path');
       yTooltip.append('text')
         .attr({
           'width': h,
@@ -139,12 +129,27 @@ angular.module('n3-charts.linechart', [])
           'font-size': 10,
           'fill': 'white',
           'text-rendering': 'geometric-precision'
-        })
-        .text('28');
+        });
       
-      return {
-        xScale: x, yScale: y,
-        xAxis: xAxis, yAxis: yAxis
+      if (drawY2Axis) {
+        var y2Tooltip = svg.append('g')
+          .attr({
+            'id': 'y2Tooltip',
+            'opacity': 0,
+            'transform': 'translate(' + width + ',0)'
+          });
+        
+        y2Tooltip.append('path');
+        
+        y2Tooltip.append('text')
+          .attr({
+            'width': h,
+            'height': w,
+            'font-family': 'monospace',
+            'font-size': 10,
+            'fill': 'white',
+            'text-rendering': 'geometric-precision'
+          })
       }
     },
     
@@ -153,32 +158,42 @@ angular.module('n3-charts.linechart', [])
         .attr('class', 'content');
     },
     
-    createLineDrawer: function(scales, interpolateMode) {
+    drawLines: function(svg, scales, data, interpolateMode) {
+      var drawers = {
+        y: this.createLeftLineDrawer(scales, interpolateMode),
+        y2: this.createRightLineDrawer(scales, interpolateMode)
+      };
+      
+      svg.select('.content').selectAll('.lineGroup')
+        .data(data)
+        .enter().append('g')
+          .style('stroke', function(serie) {return serie.color;})
+          .attr('class', 'lineGroup')
+          .append('path')
+            .attr('class', 'line')
+            .attr('d', function(d) {return drawers[d.axis](d.values);});
+    },
+    
+    createLeftLineDrawer: function(scales, interpolateMode) {
       return d3.svg.line()
         .x(function(d) {return scales.xScale(d.x);})
         .y(function(d) {return scales.yScale(d.value);})
         .interpolate(interpolateMode);
     },
-
-    createAreaDrawer:function(scales, interpolateMode, y0){
-      return d3.svg.area()
+    
+    createRightLineDrawer: function(scales, interpolateMode) {
+      return d3.svg.line()
         .x(function(d) {return scales.xScale(d.x);})
-        .y0(function(d) {return scales.yScale(0);})
-        .y1(function(d) {return scales.yScale(d.value);})
+        .y(function(d) {return scales.y2Scale(d.value);})
         .interpolate(interpolateMode);
     },
     
-    drawLines: function(svg, drawer, data) {
-      svg.select('.content').selectAll('.lineGroup')
-        .data(data).enter().append('g')
-          .style('stroke', function(serie) {return serie.color;})
-          .attr('class', 'lineGroup')
-          .append('path')
-            .attr('class', 'line')
-            .attr('d', function(d) {return drawer(d.values);});
-    },
-
-    drawArea: function(svg, drawer, data){
+    drawArea: function(svg, scales, data, interpolateMode){
+      var drawers = {
+        y: this.createLeftAreaDrawer(scales, interpolateMode),
+        y2: this.createRightAreaDrawer(scales, interpolateMode)
+      };
+      
       svg.select('.content').selectAll('.areaGroup')
         .data(data).enter().append('g')
           .style('fill', function(serie) {return serie.color;})
@@ -186,10 +201,26 @@ angular.module('n3-charts.linechart', [])
           .append('path')
             .style('opacity', '0.1')
             .attr('class', 'area')
-            .attr('d',  function(d) {return drawer(d.values);});
+            .attr('d',  function(d) {return drawers[d.axis](d.values);});
     },
     
-    drawDots: function(svg, data, scales) {
+    createLeftAreaDrawer: function(scales, interpolateMode) {
+      return d3.svg.area()
+        .x(function(d) {return scales.xScale(d.x);})
+        .y0(function(d) {return scales.yScale(0);})
+        .y1(function(d) {return scales.yScale(d.value);})
+        .interpolate(interpolateMode);
+    },
+    
+    createRightAreaDrawer: function(scales, interpolateMode) {
+      return d3.svg.area()
+        .x(function(d) {return scales.xScale(d.x);})
+        .y0(function(d) {return scales.y2Scale(0);})
+        .y1(function(d) {return scales.y2Scale(d.value);})
+        .interpolate(interpolateMode);
+    },
+    
+    drawDots: function(svg, axes, data) {
       var that = this;
       
       svg.select('.content').selectAll('.dotGroup')
@@ -200,64 +231,147 @@ angular.module('n3-charts.linechart', [])
             var target = d3.select(d3.event.target);
             target.attr('r', 4);
             
-            var textX = '' + target.datum().x;
-            
-            var xTooltip = d3.select("#xTooltip")
-              .transition()
-              .attr({
-                'opacity': 1.0,
-                'transform': 'translate(' + target.attr('cx') + ',0)'
-              })
-            xTooltip.select('text').text(textX)
-            xTooltip.select('path')
-              .attr('fill', s.color)
-              .attr('d', that.getXTooltipPath(textX));
-            
-            var yTooltip = d3.select("#yTooltip")
-              .transition()
-              .attr({
-                'opacity': 1.0,
-                'transform': 'translate(0, ' + target.attr('cy') + ')'
-              })
-            
-            var textY = '' + target.datum().value;
-            
-            var yTooltipText = yTooltip.select('text')
-              .text(textY);
-            
-            yTooltipText.attr(
-              'transform',
-              'translate(-' + (that.getTooltipTextWidth(textY) + 2) + ',3)'
-            );
-            
-            yTooltip.select('path')
-              .attr('fill', s.color)
-              .attr('d', that.getYTooltipPath(textY));
+            that.updateXTooltip(target, s);
+            if (s.axis === 'y2') {
+              that.updateY2Tooltip(target, s);
+            } else {
+              that.updateYTooltip(target, s);
+            }
           })
           .on('mouseout', function(d) {
             d3.select(d3.event.target).attr('r', 2);
-            
-            d3.select("#xTooltip")
-              .transition()
-              .attr({
-                'opacity': .0
-              })
-            
-            d3.select("#yTooltip")
-              .transition()
-              .attr({
-                'opacity': .0
-              })
+            that.hideTooltips();
           })
           .selectAll('.dot').data(function(d) {return d.values;})
             .enter().append('circle')
             .attr({
               'class': 'dot',
               'r': 2,
-              'cx': function(d) {return scales.xScale(d.x)},
-              'cy': function(d) {return scales.yScale(d.value)}
+              'cx': function(d) {return axes.xScale(d.x)},
+              'cy': function(d) {return axes[d.axis + 'Scale'](d.value)}
             })
+    },
+    
+    updateXTooltip: function(dot, series) {
+      var xTooltip = d3.select("#xTooltip")
+        .transition()
+        .attr({
+          'opacity': 1.0,
+          'transform': 'translate(' + dot.attr('cx') + ',0)'
+        })
         
+      var textX = '' + dot.datum().x;
+      xTooltip.select('text').text(textX)
+      xTooltip.select('path')
+        .attr('fill', series.color)
+        .attr('d', this.getXTooltipPath(textX));
+    },
+    
+    getXTooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5; // Size of the 'arrow' that points towards the axis
+      
+      return 'm-' + w/2 + ' ' + p + ' ' +
+        'l0 ' + h + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 ' + '-' + h +
+        'l-' + (w/2 - p) + ' 0 ' +
+        'l-' + p + ' -' + h/4 + ' ' +
+        'l-' + p + ' ' + h/4 + ' ' +
+        'l-' + (w/2 - p) + ' 0z';
+    },
+    
+    updateYTooltip: function(dot, series) {
+      var yTooltip = d3.select("#yTooltip")
+        .transition()
+        .attr({
+          'opacity': 1.0,
+          'transform': 'translate(0, ' + dot.attr('cy') + ')'
+        })
+      
+      var textY = '' + dot.datum().value;
+      var yTooltipText = yTooltip.select('text').text(textY);
+      yTooltipText.attr(
+        'transform',
+        'translate(-' + (this.getTooltipTextWidth(textY) + 2) + ',3)'
+      );
+      yTooltip.select('path')
+        .attr('fill', series.color)
+        .attr('d', this.getYTooltipPath(textY));
+    },
+    
+    getYTooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5; // Size of the 'arrow' that points towards the axis
+      
+      return 'm0 0' +
+        'l-' + p + ' -' + p + ' ' +
+        'l0 -' + (h/2 - p) + ' ' +
+        'l-' + w + ' 0 ' +
+        'l0 ' + h + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 -' + (h/2 - p) +
+        'l-' + p + ' ' + p + 'z';
+    },
+    
+    updateY2Tooltip: function(dot, series) {
+      var y2Tooltip = d3.select("#y2Tooltip")
+        .transition()
+        .attr({
+          'opacity': 1.0
+        })
+      
+      var cy = parseFloat(dot.attr('cy'));
+      
+      var textY = '' + dot.datum().value;
+      var y2TooltipText = y2Tooltip.select('text').text(textY);
+      y2TooltipText.attr(
+        'transform',
+        'translate(7, ' + (cy + 3) + ')'
+      );
+      y2Tooltip.select('path')
+        .attr({
+          'fill': series.color,
+          'd': this.getY2TooltipPath(textY),
+          'transform': 'translate(0, ' + cy + ')'
+        })
+    },
+    
+    getY2TooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5; // Size of the 'arrow' that points towards the axis
+      
+      return 'm0 0' +
+        'l' + p + ' ' + p + ' ' +
+        'l0 ' + (h/2 - p) + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 -' + h + ' ' +
+        'l-' + w + ' 0 ' +
+        'l0 ' + (h/2 - p) + ' ' +
+        'l-' + p + ' ' + p + 'z'
+    },
+    
+    hideTooltips: function() {
+      d3.select("#xTooltip")
+        .transition()
+        .attr({
+          'opacity': .0
+        })
+      
+      d3.select("#yTooltip")
+        .transition()
+        .attr({
+          'opacity': .0
+        })
+      
+      d3.select("#y2Tooltip")
+        .transition()
+        .attr({
+          'opacity': .0
+        })
     },
     
     getLineData: function(data, options) {
@@ -270,10 +384,19 @@ angular.module('n3-charts.linechart', [])
       var lineData = [];
       
       series.forEach(function(s) {
-        var seriesData = {name: s.y, values: [], color: s.color};
+        var seriesData = {
+          name: s.y,
+          values: [],
+          color: s.color,
+          axis: s.axis || 'y'
+        };
         
         data.forEach(function(row) {
-          seriesData.values.push({x: row.x, value: row[s.y]})
+          seriesData.values.push({
+            x: row.x,
+            value: row[s.y],
+            axis: s.axis || 'y'
+          })
         });
         
         lineData.push(seriesData);
@@ -284,10 +407,16 @@ angular.module('n3-charts.linechart', [])
     
     setScalesDomain: function(scales, data, series, svg) {
       scales.xScale.domain(d3.extent(data, function(d) {return d.x;}));
-      scales.yScale.domain(this.yExtent(series, data)).nice();
+      
+      var ySeries = series.filter(function(s) {return s.axis !== 'y2'});
+      var y2Series = series.filter(function(s) {return s.axis === 'y2'});
+      
+      scales.yScale.domain(this.yExtent(ySeries, data)).nice();
+      scales.y2Scale.domain(this.yExtent(y2Series, data)).nice();
       
       svg.selectAll('.x.axis').call(scales.xAxis)
       svg.selectAll('.y.axis').call(scales.yAxis)
+      svg.selectAll('.y2.axis').call(scales.y2Axis)
     },
     
     yExtent: function(series, data) {
@@ -300,6 +429,35 @@ angular.module('n3-charts.linechart', [])
       });
       
       return [minY, maxY];
+    },
+    
+    haveSecondYAxis: function(series) {
+      var doesHave = false;
+      
+      angular.forEach(series, function(s) {
+        doesHave = doesHave || s.axis === 'y2';
+      });
+      
+      return doesHave;
+    },
+    
+    adjustMargins: function(dimensions, options, data) {
+      if (!data || data.length === 0) {
+        return;
+      }
+      
+      var series = (options && options.series) ? options.series : [];
+      
+      var leftSeries = series.filter(function(s) {return s.axis !== 'y2'});
+      var leftWidest = this.getWidestOrdinate(data, leftSeries);
+      dimensions.left = this.getTooltipTextWidth('' + leftWidest) + 20;
+      
+      var rightSeries = series.filter(function(s) {return s.axis === 'y2'});
+      if (rightSeries.length === 0) {
+        return;
+      }
+      var rightWidest = this.getWidestOrdinate(data, rightSeries);
+      dimensions.right = this.getTooltipTextWidth('' + rightWidest) + 20;
     }
   }
 })
@@ -321,53 +479,40 @@ angular.module('n3-charts.linechart', [])
     scope.redraw = function(dimensions) {
       var data = scope.data;
       var options = scope.options;
+      var series = options && options.series ? options.series : [];
       
       var lineData = lineUtil.getLineData(data, options);
       
-      var widest = lineUtil.getWidestOrdinate(
-        data || [],
-        options ? options.series : []
-      );
+      lineUtil.adjustMargins(dimensions, options, data);
       
-      dimensions.left = lineUtil.getTooltipTextWidth('' + widest) + 20;
+      lineUtil.clean(element[0]);
       
-      d3.select(element[0]).select('svg').remove();
-      
+      var haveSecondYAxis = lineUtil.haveSecondYAxis(series);
       
       var svg = lineUtil.bootstrap(element[0], dimensions);
-      var axes = lineUtil.addAxes(svg, dimensions);
-      
+      var axes = lineUtil.addAxes(svg, dimensions, haveSecondYAxis);
       
       lineUtil.createContent(svg);
       
       var lineMode = options ? options.lineMode : 'linear';
       
-      var lineDrawer = lineUtil.createLineDrawer(axes, lineMode);
-      var areaDrawer = lineUtil.createAreaDrawer(axes, lineMode, dimensions.height);
-      
-      
       if (lineData.length > 0) {
         lineUtil.setScalesDomain(axes, data, options.series, svg);
         
         if (options.showArea === true) {
-          lineUtil.drawArea(svg, areaDrawer, lineData);
+          // This has waaaay too many arguments
+          lineUtil.drawArea(svg, axes, lineData, lineMode);
         }
         
-        lineUtil.drawLines(svg, lineDrawer, lineData);
+        lineUtil.drawLines(svg, axes, lineData, lineMode);
         
-        lineUtil.drawDots(
-          svg,
-          lineData,
-          axes,
-          d3.select(element[0]).select('#tooltip')
-        );
+        lineUtil.drawDots(svg, axes, lineData);
       }
     }
     
     $window.onresize = function() {
       scope.update();
     }
-    
     
     scope.$watch('data', scope.update);
     scope.$watch('options', scope.update, true);
