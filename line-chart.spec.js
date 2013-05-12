@@ -235,43 +235,65 @@ describe('n3-linechart', function() {
   });
   
   
+  // Could not manage this test to pass, despite the fact it does work...
+  // At least it runs the code and check there's no exception...
+  // Maybe we could spy on the tooltip update methods.
+  // (lorem--ipsum)
   describe('tooltip', function() {
     beforeEach(function() {
       scope.$apply(function() {
         scope.data = [{x: 0, value: 4}, {x: 1, value: 8}];
         
-        scope.options = {series: [{y: 'value', color: '#4682b4'} ]}
+        scope.options = {series: [
+          {y: 'value', color: '#4682b4'},
+          {y: 'value', axis: 'y2', color: '#4682b4'}
+        ]}
       });
-    })
+    });
     
-    // Could not manage this test to pass, despite the fact it does work...
-    // At least it runs the code and check there's no exception...
-    it('should show/hide the tooltip when hovering/leaving a dot', function() {
+    it('should show/hide the tooltip when hovering/leaving a left axis dot', function() {
       var svgGroup = elm.find('svg').children()[0];
     
       var content = svgGroup.childNodes;
       
-      var dotGroup = content[4].childNodes[1];
-      var dots = dotGroup.childNodes;
+      var leftAxisDotGroup = content[6].childNodes[2];
       
-      var xTooltip = content[2];
+      expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup');
+      
+      var xTooltip = content[3];
       expect(xTooltip.getAttribute('id')).toBe('xTooltip');
-      // expect(xTooltip.getAttribute('opacity')).toBe('0');
       
-      // browserTrigger(dots[0], 'mouseover')
       var e = document.createEvent('UIEvents');
       e.initUIEvent('mouseover');
-      dotGroup.dispatchEvent(e);
-      // expect(xTooltip.getAttribute('opacity')).toBe('1');
+      leftAxisDotGroup.dispatchEvent(e);
       
       e.initUIEvent('mouseout');
-      dotGroup.dispatchEvent(e);
-      // expect(xTooltip.getAttribute('opacity')).toBe('0');
-    })
+      leftAxisDotGroup.dispatchEvent(e);
+    });
+    
+    it('should show/hide the tooltip when hovering/leaving a right axis dot', function() {
+      var svgGroup = elm.find('svg').children()[0];
+    
+      var content = svgGroup.childNodes;
+      
+      var rightAxisDotGroup = content[6].childNodes[3];
+      
+      expect(rightAxisDotGroup.getAttribute('class')).toBe('dotGroup');
+      
+      var xTooltip = content[3];
+      expect(xTooltip.getAttribute('id')).toBe('xTooltip');
+      
+      var e = document.createEvent('UIEvents');
+      e.initUIEvent('mouseover');
+      rightAxisDotGroup.dispatchEvent(e);
+      
+      e.initUIEvent('mouseout');
+      rightAxisDotGroup.dispatchEvent(e);
+    });
   })
   
   describe('lineUtil', function() {
-    it ('should compute the widest y value', inject(function(lineUtil) {
+    it('should compute the widest y value', inject(function(lineUtil) {
       var data = [
         {x: 0, foo: 4.154, value: 4},
         {x: 1, foo: 8.15485, value: 8},
@@ -288,7 +310,25 @@ describe('n3-linechart', function() {
       expect(lineUtil.getWidestOrdinate(data, series)).toBe(1.1548578);
     }));
     
-    it ('should adjust margins for one left series', inject(function(lineUtil) {
+    it('should return default margins for no series', inject(function(lineUtil) {
+      var data = [
+        {x: 0, foo: 4.154, value: 4},
+        {x: 1, foo: 8.15485, value: 8},
+        {x: 2, foo: 1.1548578, value: 15},
+        {x: 3, foo: 1.154, value: 16},
+        {x: 4, foo: 2.45, value: 23},
+        {x: 5, foo: 4, value: 42}
+      ];
+      
+      var dimensions = {left: 10, right: 10};
+      
+      var options = {};
+      lineUtil.adjustMargins(dimensions, options, data);
+      
+      expect(dimensions).toEqual({left: 45, right: 50, top: 20, bottom: 30});
+    }));
+    
+    it('should adjust margins for one left series', inject(function(lineUtil) {
       var data = [
         {x: 0, foo: 4.154, value: 4},
         {x: 1, foo: 8.15485, value: 8},
@@ -307,7 +347,7 @@ describe('n3-linechart', function() {
       );
     }));
     
-    it ('should adjust margins for two left series', inject(function(lineUtil) {
+    it('should adjust margins for two left series', inject(function(lineUtil) {
       var data = [
         {x: 0, foo: 4.154, value: 4},
         {x: 1, foo: 8.15485, value: 8},
@@ -326,7 +366,7 @@ describe('n3-linechart', function() {
       );
     }));
     
-    it ('should adjust margins for one left series and one right series', inject(function(lineUtil) {
+    it('should adjust margins for one left series and one right series', inject(function(lineUtil) {
       var data = [
         {x: 0, foo: 4.154, value: 4},
         {x: 1, foo: 8.15485, value: 8},
