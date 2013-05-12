@@ -148,12 +148,12 @@ describe('n3-linechart', function() {
       var leftLinePath = content.childNodes[2].childNodes[0];
       expect(leftLinePath.getAttribute('class')).toBe('line');
       expect(leftLinePath.getAttribute('d'))
-        .toBe('M0,414L161,378L322,315L483,306L644,243L805,72');
+        .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
       
       var rightLinePath = content.childNodes[3].childNodes[0];
       expect(rightLinePath.getAttribute('class')).toBe('line');
       expect(rightLinePath.getAttribute('d'))
-        .toBe('M0,415L161,0L322,398L483,381L644,433L805,450');
+        .toBe('M0,415L162,0L324,398L486,381L648,433L810,450');
     });
     
     it('should draw y area', function() {
@@ -166,8 +166,8 @@ describe('n3-linechart', function() {
       var areaPath = areaGroup.childNodes[0];
       expect(areaPath.getAttribute('class')).toBe('area');
       expect(areaPath.getAttribute('d'))
-        .toBe('M0,414L161,378L322,315L483,306L644,243L805,72L805,450L644,' +
-          '450L483,450L322,450L161,450L0,450Z');
+        .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,' +
+          '450L486,450L324,450L162,450L0,450Z');
     });
     
     it('should draw y2 area', function() {
@@ -180,8 +180,8 @@ describe('n3-linechart', function() {
       var areaPath = areaGroup.childNodes[0];
       expect(areaPath.getAttribute('class')).toBe('area');
       expect(areaPath.getAttribute('d'))
-        .toBe('M0,415L161,0L322,398L483,381L644,433L805,450L805,381L644,' +
-          '381L483,381L322,381L161,381L0,381Z');
+        .toBe('M0,415L162,0L324,398L486,381L648,433L810,450L810,381L648,' +
+          '381L486,381L324,381L162,381L0,381Z');
     });
     
     it('should draw y axis dots', function() {
@@ -195,11 +195,11 @@ describe('n3-linechart', function() {
       
       var expectedCoordinates = [
         {x: '0', y: '414'},
-        {x: '161', y: '378'},
-        {x: '322', y: '315'},
-        {x: '483', y: '306'},
-        {x: '644', y: '243'},
-        {x: '805', y: '72'}
+        {x: '162', y: '378'},
+        {x: '324', y: '315'},
+        {x: '486', y: '306'},
+        {x: '648', y: '243'},
+        {x: '810', y: '72'}
       ];
       
       for (var i = 0; i < dots.length; i++) {
@@ -220,11 +220,11 @@ describe('n3-linechart', function() {
       
       var expectedCoordinates = [
         {x: '0', y: '415'},
-        {x: '161', y: '0'},
-        {x: '322', y: '398'},
-        {x: '483', y: '381'},
-        {x: '644', y: '433'},
-        {x: '805', y: '450'}
+        {x: '162', y: '0'},
+        {x: '324', y: '398'},
+        {x: '486', y: '381'},
+        {x: '648', y: '433'},
+        {x: '810', y: '450'}
       ];
       
       for (var i = 0; i < dots.length; i++) {
@@ -287,7 +287,58 @@ describe('n3-linechart', function() {
       
       series = [{y: 'value'}, {y: 'foo'}];
       expect(lineUtil.getWidestOrdinate(data, series)).toBe(1.1548578);
-    }))
+    }));
+    
+    it ('should adjust margins for one left series', inject(function(lineUtil) {
+      var data = [
+        {x: 0, foo: 4.154, value: 4},
+        {x: 1, foo: 8.15485, value: 8},
+        {x: 2, foo: 1.1548578, value: 15},
+        {x: 3, foo: 1.154, value: 16},
+        {x: 4, foo: 2.45, value: 23},
+        {x: 5, foo: 4, value: 42}
+      ];
+      
+      var dimensions = {left: 10, right: 10};
+      
+      var options = {series: [{y: 'value'}]};
+      lineUtil.adjustMargins(dimensions, options, data);
+      expect(dimensions).toEqual({left: 45, right: 10});
+    }));
+    
+    it ('should adjust margins for two left series', inject(function(lineUtil) {
+      var data = [
+        {x: 0, foo: 4.154, value: 4},
+        {x: 1, foo: 8.15485, value: 8},
+        {x: 2, foo: 1.1548578, value: 15},
+        {x: 3, foo: 1.154, value: 16},
+        {x: 4, foo: 2.45, value: 23},
+        {x: 5, foo: 4, value: 42}
+      ];
+      
+      var dimensions = {left: 10, right: 10};
+      
+      var options = {series: [{y: 'value'}, {y: 'foo'}]};
+      lineUtil.adjustMargins(dimensions, options, data);
+      expect(dimensions).toEqual({left: 78.5, right: 10});
+    }));
+    
+    it ('should adjust margins for one left series and one right series', inject(function(lineUtil) {
+      var data = [
+        {x: 0, foo: 4.154, value: 4},
+        {x: 1, foo: 8.15485, value: 8},
+        {x: 2, foo: 1.1548578, value: 15},
+        {x: 3, foo: 1.154, value: 16},
+        {x: 4, foo: 2.45, value: 23},
+        {x: 5, foo: 4, value: 42}
+      ];
+      
+      var dimensions = {left: 10, right: 10};
+      
+      var options = {series: [{y: 'value'}, {axis: 'y2', y: 'foo'}]};
+      lineUtil.adjustMargins(dimensions, options, data);
+      expect(dimensions).toEqual({left: 45, right: 78.5});
+    }));
   });
   
   describe('lineMode set to cardinal', function() {

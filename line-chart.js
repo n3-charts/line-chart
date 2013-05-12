@@ -45,36 +45,6 @@ angular.module('n3-charts.linechart', [])
       return widest;
     },
     
-    getYTooltipPath: function(text) {
-      var w = this.getTooltipTextWidth(text);
-      var h = 18;
-      var p = 5;
-      
-      return 'm0 0' +
-        'l-' + p + ' -' + p + ' ' +
-        'l0 -' + (h/2 - p) + ' ' +
-        'l-' + w + ' 0 ' +
-        'l0 ' + h + ' ' +
-        'l' + w + ' 0 ' +
-        'l0 -' + (h/2 - p) +
-        'l-' + p + ' ' + p + 'z';
-    },
-    
-    getXTooltipPath: function(text) {
-      var w = this.getTooltipTextWidth(text);
-      var h = 18;
-      var p = 5;
-      
-      return 'm-' + w/2 + ' ' + p + ' ' +
-        'l0 ' + h + ' ' +
-        'l' + w + ' 0 ' +
-        'l0 ' + '-' + h +
-        'l-' + (w/2 - p) + ' 0 ' +
-        'l-' + p + ' -' + h/4 + ' ' +
-        'l-' + p + ' ' + h/4 + ' ' +
-        'l-' + (w/2 - p) + ' 0z';
-    },
-    
     addAxes: function(svg, dimensions, drawY2Axis) {
       var width = dimensions.width;
       var height = dimensions.height;
@@ -106,6 +76,15 @@ angular.module('n3-charts.linechart', [])
           .call(y2Axis);
       }
       
+      this.addTooltips(svg, width, height, drawY2Axis);
+      
+      return {
+        xScale: x, yScale: y, y2Scale: y2,
+        xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
+      }
+    },
+    
+    addTooltips: function (svg, width, height, drawY2Axis) {
       var w = 24;
       var h = 18;
       var p = 5;
@@ -118,7 +97,6 @@ angular.module('n3-charts.linechart', [])
       
       xTooltip.append('path')
         .attr({
-          'fill': 'grey',
           'transform': 'translate(0,' + (height + 1) + ')'
         });
       
@@ -142,9 +120,7 @@ angular.module('n3-charts.linechart', [])
           'opacity': 0
         });
       
-      yTooltip.append('path')
-        .attr('fill', 'grey');
-      
+      yTooltip.append('path');
       yTooltip.append('text')
         .attr({
           'width': h,
@@ -153,17 +129,17 @@ angular.module('n3-charts.linechart', [])
           'font-size': 10,
           'fill': 'white',
           'text-rendering': 'geometric-precision'
-        })
+        });
       
       if (drawY2Axis) {
         var y2Tooltip = svg.append('g')
           .attr({
             'id': 'y2Tooltip',
-            'opacity': 0
+            'opacity': 0,
+            'transform': 'translate(' + width + ',0)'
           });
         
-        y2Tooltip.append('path')
-          .attr('fill', 'grey');
+        y2Tooltip.append('path');
         
         y2Tooltip.append('text')
           .attr({
@@ -174,11 +150,6 @@ angular.module('n3-charts.linechart', [])
             'fill': 'white',
             'text-rendering': 'geometric-precision'
           })
-      }
-      
-      return {
-        xScale: x, yScale: y, y2Scale: y2,
-        xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
       }
     },
     
@@ -260,54 +231,16 @@ angular.module('n3-charts.linechart', [])
             var target = d3.select(d3.event.target);
             target.attr('r', 4);
             
-            var textX = '' + target.datum().x;
-            
-            var xTooltip = d3.select("#xTooltip")
-              .transition()
-              .attr({
-                'opacity': 1.0,
-                'transform': 'translate(' + target.attr('cx') + ',0)'
-              })
-            xTooltip.select('text').text(textX)
-            xTooltip.select('path')
-              .attr('fill', s.color)
-              .attr('d', that.getXTooltipPath(textX));
-            
-            var yTooltip = d3.select("#yTooltip")
-              .transition()
-              .attr({
-                'opacity': 1.0,
-                'transform': 'translate(0, ' + target.attr('cy') + ')'
-              })
-            
-            var textY = '' + target.datum().value;
-            
-            var yTooltipText = yTooltip.select('text')
-              .text(textY);
-            
-            yTooltipText.attr(
-              'transform',
-              'translate(-' + (that.getTooltipTextWidth(textY) + 2) + ',3)'
-            );
-            
-            yTooltip.select('path')
-              .attr('fill', s.color)
-              .attr('d', that.getYTooltipPath(textY));
+            that.updateXTooltip(target, s);
+            if (s.axis === 'y2') {
+              that.updateY2Tooltip(target, s);
+            } else {
+              that.updateYTooltip(target, s);
+            }
           })
           .on('mouseout', function(d) {
             d3.select(d3.event.target).attr('r', 2);
-            
-            d3.select("#xTooltip")
-              .transition()
-              .attr({
-                'opacity': .0
-              })
-            
-            d3.select("#yTooltip")
-              .transition()
-              .attr({
-                'opacity': .0
-              })
+            that.hideTooltips();
           })
           .selectAll('.dot').data(function(d) {return d.values;})
             .enter().append('circle')
@@ -317,7 +250,128 @@ angular.module('n3-charts.linechart', [])
               'cx': function(d) {return axes.xScale(d.x)},
               'cy': function(d) {return axes[d.axis + 'Scale'](d.value)}
             })
+    },
+    
+    updateXTooltip: function(dot, series) {
+      var xTooltip = d3.select("#xTooltip")
+        .transition()
+        .attr({
+          'opacity': 1.0,
+          'transform': 'translate(' + dot.attr('cx') + ',0)'
+        })
         
+      var textX = '' + dot.datum().x;
+      xTooltip.select('text').text(textX)
+      xTooltip.select('path')
+        .attr('fill', series.color)
+        .attr('d', this.getXTooltipPath(textX));
+    },
+    
+    getXTooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5; // Size of the 'arrow' that points towards the axis
+      
+      return 'm-' + w/2 + ' ' + p + ' ' +
+        'l0 ' + h + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 ' + '-' + h +
+        'l-' + (w/2 - p) + ' 0 ' +
+        'l-' + p + ' -' + h/4 + ' ' +
+        'l-' + p + ' ' + h/4 + ' ' +
+        'l-' + (w/2 - p) + ' 0z';
+    },
+    
+    updateYTooltip: function(dot, series) {
+      var yTooltip = d3.select("#yTooltip")
+        .transition()
+        .attr({
+          'opacity': 1.0,
+          'transform': 'translate(0, ' + dot.attr('cy') + ')'
+        })
+      
+      var textY = '' + dot.datum().value;
+      var yTooltipText = yTooltip.select('text').text(textY);
+      yTooltipText.attr(
+        'transform',
+        'translate(-' + (this.getTooltipTextWidth(textY) + 2) + ',3)'
+      );
+      yTooltip.select('path')
+        .attr('fill', series.color)
+        .attr('d', this.getYTooltipPath(textY));
+    },
+    
+    getYTooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5; // Size of the 'arrow' that points towards the axis
+      
+      return 'm0 0' +
+        'l-' + p + ' -' + p + ' ' +
+        'l0 -' + (h/2 - p) + ' ' +
+        'l-' + w + ' 0 ' +
+        'l0 ' + h + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 -' + (h/2 - p) +
+        'l-' + p + ' ' + p + 'z';
+    },
+    
+    updateY2Tooltip: function(dot, series) {
+      var y2Tooltip = d3.select("#y2Tooltip")
+        .transition()
+        .attr({
+          'opacity': 1.0
+        })
+      
+      var cy = parseFloat(dot.attr('cy'));
+      
+      var textY = '' + dot.datum().value;
+      var y2TooltipText = y2Tooltip.select('text').text(textY);
+      y2TooltipText.attr(
+        'transform',
+        'translate(7, ' + (cy + 3) + ')'
+      );
+      y2Tooltip.select('path')
+        .attr({
+          'fill': series.color,
+          'd': this.getY2TooltipPath(textY),
+          'transform': 'translate(0, ' + cy + ')'
+        })
+    },
+    
+    getY2TooltipPath: function(text) {
+      var w = this.getTooltipTextWidth(text);
+      var h = 18;
+      var p = 5; // Size of the 'arrow' that points towards the axis
+      
+      return 'm0 0' +
+        'l' + p + ' ' + p + ' ' +
+        'l0 ' + (h/2 - p) + ' ' +
+        'l' + w + ' 0 ' +
+        'l0 -' + h + ' ' +
+        'l-' + w + ' 0 ' +
+        'l0 ' + (h/2 - p) + ' ' +
+        'l-' + p + ' ' + p + 'z'
+    },
+    
+    hideTooltips: function() {
+      d3.select("#xTooltip")
+        .transition()
+        .attr({
+          'opacity': .0
+        })
+      
+      d3.select("#yTooltip")
+        .transition()
+        .attr({
+          'opacity': .0
+        })
+      
+      d3.select("#y2Tooltip")
+        .transition()
+        .attr({
+          'opacity': .0
+        })
     },
     
     getLineData: function(data, options) {
@@ -385,6 +439,25 @@ angular.module('n3-charts.linechart', [])
       });
       
       return doesHave;
+    },
+    
+    adjustMargins: function(dimensions, options, data) {
+      if (!data || data.length === 0) {
+        return;
+      }
+      
+      var series = (options && options.series) ? options.series : [];
+      
+      var leftSeries = series.filter(function(s) {return s.axis !== 'y2'});
+      var leftWidest = this.getWidestOrdinate(data, leftSeries);
+      dimensions.left = this.getTooltipTextWidth('' + leftWidest) + 20;
+      
+      var rightSeries = series.filter(function(s) {return s.axis === 'y2'});
+      if (rightSeries.length === 0) {
+        return;
+      }
+      var rightWidest = this.getWidestOrdinate(data, rightSeries);
+      dimensions.right = this.getTooltipTextWidth('' + rightWidest) + 20;
     }
   }
 })
@@ -410,12 +483,7 @@ angular.module('n3-charts.linechart', [])
       
       var lineData = lineUtil.getLineData(data, options);
       
-      var widest = lineUtil.getWidestOrdinate(
-        data || [],
-        options ? options.series : []
-      );
-      
-      dimensions.left = lineUtil.getTooltipTextWidth('' + widest) + 20;
+      lineUtil.adjustMargins(dimensions, options, data);
       
       lineUtil.clean(element[0]);
       
@@ -433,7 +501,7 @@ angular.module('n3-charts.linechart', [])
         
         if (options.showArea === true) {
           // This has waaaay too many arguments
-          lineUtil.drawArea(svg, axes, lineData, lineMode, dimensions.height);
+          lineUtil.drawArea(svg, axes, lineData, lineMode);
         }
         
         lineUtil.drawLines(svg, axes, lineData, lineMode);
