@@ -239,6 +239,9 @@ describe('n3-linechart', function() {
   // At least it runs the code and check there's no exception...
   // Maybe we could spy on the tooltip update methods.
   // (lorem--ipsum)
+  // 
+  // Now I've got it. The D3.js transitions make the tooltip update
+  // asynchronous. The problem is here.
   describe('tooltip', function() {
     beforeEach(function() {
       scope.$apply(function() {
