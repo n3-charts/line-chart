@@ -20,7 +20,6 @@ describe('n3-linechart', function() {
       elm = angular.element('<div id="toto">' +
         '<linechart></linechart>' +
         '</div>');
-
       
       scope = $rootScope;
       $compile(elm)(scope);
@@ -303,7 +302,9 @@ describe('n3-linechart', function() {
       
       var options = {series: [{y: 'value'}]};
       lineUtil.adjustMargins(dimensions, options, data);
-      expect(dimensions).toEqual({left: 45, right: 10});
+      expect(dimensions).toEqual(
+        {left: 45, right: 50, top: 20, bottom: 30} // 50 is default
+      );
     }));
     
     it ('should adjust margins for two left series', inject(function(lineUtil) {
@@ -320,7 +321,9 @@ describe('n3-linechart', function() {
       
       var options = {series: [{y: 'value'}, {y: 'foo'}]};
       lineUtil.adjustMargins(dimensions, options, data);
-      expect(dimensions).toEqual({left: 78.5, right: 10});
+      expect(dimensions).toEqual(
+        {left: 78.5, right: 50, top: 20, bottom: 30}
+      );
     }));
     
     it ('should adjust margins for one left series and one right series', inject(function(lineUtil) {
@@ -337,7 +340,9 @@ describe('n3-linechart', function() {
       
       var options = {series: [{y: 'value'}, {axis: 'y2', y: 'foo'}]};
       lineUtil.adjustMargins(dimensions, options, data);
-      expect(dimensions).toEqual({left: 45, right: 78.5});
+      expect(dimensions).toEqual(
+        {left: 45, right: 78.5, top: 20, bottom: 30}
+      );
     }));
   });
   
