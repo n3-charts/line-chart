@@ -14,7 +14,10 @@
   <div class="pull-right" style="padding:10px;">
   <form class="form-inline">
     <label class="checkbox">
-      <input type="checkbox" name="checkboxes" value="visible" ng-model='options.showArea'> Show area
+      <input type="checkbox" ng-model='options.showArea'> Show area
+    </label>
+    <label class="checkbox">
+      <input type="checkbox" ng-model='rightAxis'> Some series on right axis
     </label>
     <select class="input-medium" ng-model='options.lineMode'>
       <option>linear</option>
@@ -40,10 +43,27 @@
   <script src="line-chart.js"></script>
   
   <script>
+    // THIS CODE IS BAD, AND I SHOULD FEEL BAD
+    // Folks, do not try this at home. This code is not tested, and not clean.
+    // Its purpose is only to demonstrate what n3-charts.line-chart can do,
+    // certainly not to show how proper options and data should be prepared.
+    // 
+    // -> TL;DR
+    // -> Copy-paste of the code below is strongly discouraged.
+  
     angular.module('myApp', ['n3-charts.linechart'])
-
+    
     .controller('DemoCtrl', function($scope) {
       var colors = d3.scale.category10()
+      
+      var lastGeneration = $scope.sinusodize;
+      $scope.regenerate = function() {
+        console.log("regenerate");
+        lastGeneration();
+      }
+      
+      $scope.rightAxis = false;
+      $scope.$watch('rightAxis', $scope.regenerate);
       
       $scope.options = {
         showArea: false,
@@ -56,21 +76,37 @@
         $scope.data = [];
       }
       
+      $scope.getAxis = function(i) {
+        if (!$scope.rightAxis) {
+          return 'y';
+        }
+        
+        return !!(i%2) ? 'y2' : 'y';
+      }
+      
       $scope.sinusodize = function() {
+        lastGeneration = $scope.sinusodize;
+        
         $scope.reset();
         
         for (var i = 0; i < 5; i++) {
-          $scope.options.series.push({y: 'series_' + i, color: colors(i)});
+          $scope.options.series.push({
+            y: 'series_' + i,
+            color: colors(i),
+            axis: $scope.getAxis(i)
+          });
           
           for (var j = 0; j < 50; j++) {
             var row = $scope.data[j] || {x: j};
-            row['series_' + i] = (Math.sin(j/5))*(5*i);
+            row['series_' + i] = (Math.sin(j/5))*(5*(i+1));
             $scope.data[j] = row;
           }
         }
       }
       
       $scope.randomize = function() {
+        lastGeneration = $scope.randomize;
+        
         $scope.reset();
         
         seriesCount = Math.random()*10;
@@ -79,13 +115,14 @@
         for (var i = 0; i < seriesCount; i++) {
           $scope.options.series.push({
             y: 'series_' + i,
-            color: colors(i)
+            color: colors(i),
+            axis: $scope.getAxis(i)
           });
           
           for (var j = 0; j < rowCount; j++) {
             var row = $scope.data[j] || {x: j};
             
-            row['series_' + i] = (Math.random()).toFixed(5)*500;
+            row['series_' + i] = (Math.random()).toFixed(5)*(5*(i+1));
             
             $scope.data[j] = row;
           }
