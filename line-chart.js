@@ -441,7 +441,18 @@ angular.module('n3-charts.linechart', [])
       return doesHave;
     },
     
+    resetMargins: function(dimensions) {
+      var defaults = this.getDefaultMargins();
+      
+      dimensions.left = defaults.left;
+      dimensions.right = defaults.right;
+      dimensions.top = defaults.top;
+      dimensions.bottom = defaults.bottom;
+    },
+    
     adjustMargins: function(dimensions, options, data) {
+      this.resetMargins(dimensions);
+      
       if (!data || data.length === 0) {
         return;
       }
@@ -484,7 +495,6 @@ angular.module('n3-charts.linechart', [])
       var lineData = lineUtil.getLineData(data, options);
       
       lineUtil.adjustMargins(dimensions, options, data);
-      
       lineUtil.clean(element[0]);
       
       var haveSecondYAxis = lineUtil.haveSecondYAxis(series);
