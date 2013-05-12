@@ -54,7 +54,7 @@ describe('n3-linechart', function() {
   });
     
   
-  describe('svg first levels objects creation', function() {
+  describe('chart when initializing', function() {
     it('should create one svg element', function() {
       expect(elm[0].getAttribute('id')).toBe('toto');
       
@@ -68,17 +68,116 @@ describe('n3-linechart', function() {
       expect(dynamicChildren[0].nodeName).toBe('svg');
     });
     
-    it('should create exactly two axes, one content group, two tooltips groups',
-    function() {
+    it('should draw two axes by default', function() {
       var svgGroup = elm.find('svg').children()[0];
       
       var content = svgGroup.childNodes;
       expect(content.length).toBe(5);
       
+      expect(content[0].getAttribute('class')).toBe('x axis');
+      expect(content[1].getAttribute('class')).toBe('y axis');
       expect(content[2].getAttribute('id')).toBe('xTooltip')
       expect(content[3].getAttribute('id')).toBe('yTooltip')
     });
+    
+    it('should draw three axes whan said so', function() {
+      scope.$apply(function() {
+        scope.options = {series: [
+          {axis: 'y', y: 'value', color: '#4682b4'},
+          {axis: 'y2', y: 'value', color: '#4682b4'}
+        ]}
+      });
+      
+      var svgGroup = elm.find('svg').children()[0];
+      
+      var content = svgGroup.childNodes;
+      expect(content.length).toBe(7);
+      
+      expect(content[0].getAttribute('class')).toBe('x axis');
+      expect(content[1].getAttribute('class')).toBe('y axis');
+      expect(content[2].getAttribute('class')).toBe('y2 axis');
+      expect(content[3].getAttribute('id')).toBe('xTooltip')
+      expect(content[4].getAttribute('id')).toBe('yTooltip')
+      expect(content[5].getAttribute('id')).toBe('y2Tooltip')
+    });
   })
+  
+  describe('with a second axis', function() {
+    beforeEach(function() {
+      scope.$apply(function() {
+        scope.data = [
+          {x: 0, value: 4, foo: -2}, {x: 1, value: 8, foo: 22}, {x: 2, value: 15, foo: -1},
+          {x: 3, value: 16, foo: 0}, {x: 4, value: 23, foo: -3}, {x: 5, value: 42, foo: -4}
+        ];
+        
+        scope.options = {series: [
+          {axis: 'y', y: 'value', color: '#4682b4'},
+          {axis: 'y2', y: 'foo', color: 'whatever'}
+        ]}
+      });
+    })
+    
+    it('should configure y axis only with y series', function() {
+      var yAxis = elm.find('svg').children()[0].childNodes[1];
+      
+      var ticks = yAxis.childNodes;
+      
+      expect(ticks.length).toBe(12);
+      
+      expect(ticks[0].textContent).toBe('0');
+      expect(ticks[10].textContent).toBe('50');
+    });
+    
+    it('should properly configure y2 axis', function() {
+      var y2Axis = elm.find('svg').children()[0].childNodes[2];
+      
+      var ticks = y2Axis.childNodes;
+      
+      expect(ticks.length).toBe(15);
+      
+      expect(ticks[0].textContent).toBe('0');
+      expect(ticks[10].textContent).toBe('16');
+    });
+    
+    // it('should draw dots', function() {
+    //   var svgGroup = elm.find('svg').children()[0];
+    //   var content = svgGroup.childNodes[4];
+    //   var dotsGroup = content.childNodes[1];
+    //   expect(dotsGroup.nodeName).toBe('g');
+      
+    //   var dots = dotsGroup.childNodes;
+    //   expect(dots.length).toBe(6);
+      
+    //   var expectedCoordinates = [
+    //     {x: '0', y: '414'},
+    //     {x: '161', y: '378'},
+    //     {x: '322', y: '315'},
+    //     {x: '483', y: '306'},
+    //     {x: '644', y: '243'},
+    //     {x: '805', y: '72'}
+    //   ];
+      
+    //   for (var i = 0; i < dots.length; i++) {
+    //     expect(dots[i].nodeName).toBe('circle');
+    //     expect(dots[i].getAttribute('cx')).toBe(expectedCoordinates[i].x);
+    //     expect(dots[i].getAttribute('cy')).toBe(expectedCoordinates[i].y);
+    //   }
+    // });
+    
+    it('should draw a line', function() {
+      var content = elm.find('svg').children()[0].childNodes[6];
+      
+      var leftLinePath = content.childNodes[0].childNodes[0];
+      expect(leftLinePath.getAttribute('class')).toBe('line');
+      expect(leftLinePath.getAttribute('d'))
+        .toBe('M0,414L161,378L322,315L483,306L644,243L805,72');
+      
+      var rightLinePath = content.childNodes[1].childNodes[0];
+      expect(rightLinePath.getAttribute('class')).toBe('line');
+      expect(rightLinePath.getAttribute('d'))
+        .toBe('M0,415L161,0L322,398L483,381L644,433L805,450');
+    });
+  });
   
   describe('tooltip', function() {
     beforeEach(function() {
@@ -263,7 +362,8 @@ describe('n3-linechart', function() {
       var areaPath = areaGroup.childNodes[0];
       expect(areaPath.getAttribute('class')).toBe('area');
       expect(areaPath.getAttribute('d'))
-        .toBe('M0,414L161,378L322,315L483,306L644,243L805,72L805,450L644,450L483,450L322,450L161,450L0,450Z');
+        .toBe('M0,414L161,378L322,315L483,306L644,243L805,72L805,450L644,' +
+          '450L483,450L322,450L161,450L0,450Z');
     });
     
     it('should create a line group', function() {
@@ -345,7 +445,11 @@ describe('n3-linechart', function() {
       var lineGroup = content.childNodes[0];
       expect(lineGroup.getAttribute('class')).toBe('lineGroup');
       expect(lineGroup.getAttribute('style').trim()).toBe('stroke: #4682b4;');
-      
+    });
+    
+    it('should draw dots', function() {
+      var svgGroup = elm.find('svg').children()[0];
+      var content = svgGroup.childNodes[4];
       var dotsGroup = content.childNodes[1];
       expect(dotsGroup.nodeName).toBe('g');
       
