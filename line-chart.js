@@ -187,18 +187,10 @@ angular.module('n3-charts.linechart', [])
         .attr('class', 'content');
     },
     
-    createAreaDrawer:function(scales, interpolateMode, y0){
-      return d3.svg.area()
-        .x(function(d) {return scales.xScale(d.x);})
-        .y0(function(d) {return scales.yScale(0);})
-        .y1(function(d) {return scales.yScale(d.value);})
-        .interpolate(interpolateMode);
-    },
-    
-    drawLines: function(svg, axes, data, interpolateMode) {
+    drawLines: function(svg, scales, data, interpolateMode) {
       var drawers = {
-        y: this.createLeftLineDrawer(axes, interpolateMode),
-        y2: this.createRightLineDrawer(axes, interpolateMode)
+        y: this.createLeftLineDrawer(scales, interpolateMode),
+        y2: this.createRightLineDrawer(scales, interpolateMode)
       };
       
       svg.select('.content').selectAll('.lineGroup')
@@ -225,7 +217,12 @@ angular.module('n3-charts.linechart', [])
         .interpolate(interpolateMode);
     },
     
-    drawArea: function(svg, drawer, data){
+    drawArea: function(svg, scales, data, interpolateMode){
+      var drawers = {
+        y: this.createLeftAreaDrawer(scales, interpolateMode),
+        y2: this.createRightAreaDrawer(scales, interpolateMode)
+      };
+      
       svg.select('.content').selectAll('.areaGroup')
         .data(data).enter().append('g')
           .style('fill', function(serie) {return serie.color;})
@@ -233,7 +230,23 @@ angular.module('n3-charts.linechart', [])
           .append('path')
             .style('opacity', '0.1')
             .attr('class', 'area')
-            .attr('d',  function(d) {return drawer(d.values);});
+            .attr('d',  function(d) {return drawers[d.axis](d.values);});
+    },
+    
+    createLeftAreaDrawer: function(scales, interpolateMode) {
+      return d3.svg.area()
+        .x(function(d) {return scales.xScale(d.x);})
+        .y0(function(d) {return scales.yScale(0);})
+        .y1(function(d) {return scales.yScale(d.value);})
+        .interpolate(interpolateMode);
+    },
+    
+    createRightAreaDrawer: function(scales, interpolateMode) {
+      return d3.svg.area()
+        .x(function(d) {return scales.xScale(d.x);})
+        .y0(function(d) {return scales.y2Scale(0);})
+        .y1(function(d) {return scales.y2Scale(d.value);})
+        .interpolate(interpolateMode);
     },
     
     drawDots: function(svg, axes, data) {
@@ -415,13 +428,12 @@ angular.module('n3-charts.linechart', [])
       
       var lineMode = options ? options.lineMode : 'linear';
       
-      var areaDrawer = lineUtil.createAreaDrawer(axes, lineMode, dimensions.height);
-      
       if (lineData.length > 0) {
         lineUtil.setScalesDomain(axes, data, options.series, svg);
         
         if (options.showArea === true) {
-          lineUtil.drawArea(svg, areaDrawer, lineData);
+          // This has waaaay too many arguments
+          lineUtil.drawArea(svg, axes, lineData, lineMode, dimensions.height);
         }
         
         lineUtil.drawLines(svg, axes, lineData, lineMode);
@@ -433,7 +445,9 @@ angular.module('n3-charts.linechart', [])
     $window.onresize = function() {
       scope.update();
     }
-    scope.$watch('data + options', scope.update);
+    
+    scope.$watch('data', scope.update);
+    scope.$watch('options', scope.update, true);
   };
   
   return {
