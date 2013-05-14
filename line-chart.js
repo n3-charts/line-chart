@@ -230,14 +230,15 @@ angular.module('n3-charts.linechart', [])
         return 10;
       }
       
-      var rowCount = data[0].values.length;
-      var seriesCount = data.length;
+      var n = data[0].values.length + 2; // +2 because abscissas will be extended
+                                         // to one more row at each end
+      var s = data.length;
       
-      var innerPadding = 1;
-      var outerPadding = 3;
+      var oP = 3; // space between two rows
       
-      return Math.min(20, (dimensions.width - rowCount*innerPadding -
-          seriesCount*outerPadding)/(rowCount*seriesCount));
+      var avWidth = dimensions.width - dimensions.left - dimensions.right;
+      
+      return (avWidth - (n - 1)*oP) / (n*s);
     },
     
     drawColumns: function(svg, axes, data, columnWidth) {
@@ -495,7 +496,7 @@ angular.module('n3-charts.linechart', [])
     },
     
     setScalesDomain: function(scales, data, series, svg) {
-      scales.xScale.domain(d3.extent(data, function(d) {return d.x;}));
+      this.setXScale(scales.xScale, data, series);
       
       var ySeries = series.filter(function(s) {return s.axis !== 'y2'});
       var y2Series = series.filter(function(s) {return s.axis === 'y2'});
@@ -518,6 +519,32 @@ angular.module('n3-charts.linechart', [])
       });
       
       return [minY, maxY];
+    },
+    
+    setXScale: function(xScale, data, series) {
+      xScale.domain(d3.extent(data, function(d) {return d.x;}));
+      
+      if (series.filter(function(s) {return s.type === 'column'}).length) {
+        this.adjustXScaleForColumns(xScale, data);
+      }
+    },
+    
+    adjustXScaleForColumns: function(xScale, data) {
+      var step = this.getAverageStep(data, 'x');
+      var d = xScale.domain();
+      
+      xScale.domain([d[0] - step, d[1] + step]);
+    },
+    
+    getAverageStep: function(data, field) {
+      var sum = 0;
+      var n = data.length - 1;
+      
+      for (var i = 0; i<n; i++) {
+        sum += data[i + 1][field] - data[i][field];
+      }
+      
+      return sum/n;
     },
     
     haveSecondYAxis: function(series) {

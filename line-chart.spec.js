@@ -693,15 +693,15 @@ describe('n3-linechart', function() {
       expect(ticks[10].textContent).toBe('50');
     });
     
-    it('should properly configure x axis', function() {
+    it('should configure x axis with extra space', function() {
       var xAxis = elm.find('svg').children()[0].childNodes[0];
       
       var ticks = xAxis.childNodes;
       
-      expect(ticks.length).toBe(12);
+      expect(ticks.length).toBe(9);
       
-      expect(ticks[0].textContent).toBe('0.0');
-      expect(ticks[10].textContent).toBe('5.0');
+      expect(ticks[0].textContent).toBe('0');
+      expect(ticks[7].textContent).toBe('6');
     });
     
     it('should create a group', function() {
@@ -726,12 +726,12 @@ describe('n3-linechart', function() {
       expect(columns.length).toBe(6);
       
       var expectedCoordinates = [
-        {x: '0', y: '414'},
-        {x: '161', y: '378'},
-        {x: '322', y: '315'},
-        {x: '483', y: '306'},
-        {x: '644', y: '243'},
-        {x: '805', y: '72'}
+        {x: '115', y: '414'},
+        {x: '230', y: '378'},
+        {x: '345', y: '315'},
+        {x: '460', y: '306'},
+        {x: '575', y: '243'},
+        {x: '690', y: '72'}
       ];
       
       for (var i = 0; i < columns.length; i++) {
