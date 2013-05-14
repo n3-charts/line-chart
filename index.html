@@ -7,35 +7,15 @@
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
 </head>
 <body style="height:100%;margin: 0 0;" ng-controller="DemoCtrl">
-  
-  <div style='width:100%;height:60%'>
-    <linechart data='data' options='options'></linechart>
-  </div>
-  <div class="pull-right" style="padding:10px;">
-  <form class="form-inline">
-    <label class="checkbox">
-      <input type="checkbox" ng-model='options.showArea'> Show area
-    </label>
-    <label class="checkbox">
-      <input type="checkbox" ng-model='rightAxis'> Some series on right axis
-    </label>
-    <select class="input-medium" ng-model='options.lineMode'>
-      <option>linear</option>
-      <option>step-before</option>
-      <option>step-after</option>
-      <option>basis</option>
-      <option>basis-open</option>
-      <option>basis-closed</option>
-      <option>bundle</option>
-      <option>cardinal</option>
-      <option>cardinal-open</option>
-      <option>cadinal-closed</option>
-      <option>monotone</option>
-    </select>
-    <button ng-click='sinusodize()' class="btn btn-default">Sinuzodize !</button>
-    <button ng-click='randomize()' class="btn btn-default">Randomize !</button>
-  </form>
-  </div>
+  <ul class="thumbnails">
+    <li ng-repeat="example in examples" class="span4">
+      <div class="thumbnail">
+        <div style='width:320px;height:200px'>
+          <linechart data='example.data' options='example.options'></linechart>
+        </div>
+      </div>
+    </li>
+  </ul>
   
   
   <script src="lib/angular.js"></script>
@@ -53,83 +33,68 @@
   
     angular.module('myApp', ['n3-charts.linechart'])
     
-    .controller('DemoCtrl', function($scope) {
-      var colors = d3.scale.category10()
+    .controller('DemoCtrl', function($scope, utils) {
+      $scope.examples = [];
       
-      var lastGeneration = $scope.sinusodize;
-      $scope.regenerate = function() {
-        lastGeneration();
-      }
       
-      $scope.rightAxis = false;
-      $scope.$watch('rightAxis', $scope.regenerate);
+      $scope.examples.push({
+        label: 'Sinus example',
+        description: 'Another basic example',
+        data: utils.sinData(10, utils.sinSeries(3)),
+        options: {
+          series: utils.sinSeries(3)
+        }
+      })
+      $scope.examples.push({
+        label: 'Simple example',
+        description: 'A quite basic example',
+        data: [
+          {x: 0, value: 4, foo: -2}, {x: 1, value: 8, foo: 22}, {x: 2, value: 15, foo: -1},
+          {x: 3, value: 16, foo: 0}, {x: 4, value: 23, foo: -3}, {x: 5, value: 42, foo: -4}
+        ],
+        options: {
+          series: [
+            {axis: 'y', y: 'value', color: '#4682b4', type: 'area'},
+            {axis: 'y2', y: 'foo', color: 'steelblue', type: 'line'},
+            {axis: 'y2', y: 'foo', color: 'steelblue', type: 'column'}
+          ]
+        }
+      });
       
-      $scope.options = {
-        showArea: false,
-        lineMode: 'linear',
-        series: []
+    })
+
+    .factory('utils', function() {
+      return {
+        sinSeries: function(howMany) {
+          var colors = d3.scale.category10();
+          
+          var series = [];
+          
+          for (var i = 0; i < howMany; i++) {
+            series.push({
+              y: 'series_' + i,
+              color: colors(i),
+              type: 'column'
+            });
+          }
+          
+          return series;
+        },
+        
+        sinData: function(rows, series) {
+          var data = [];
+          
+          for (var i = 0; i < series.length; i++) {
+            for (var j = 0; j < 50; j++) {
+              var row = data[j] || {x: j};
+              row[series[i].y] = (Math.sin(j/5))*(5*(i+1));
+              data[j] = row;
+            }
+          }
+          
+          return data;
+        }
       };
-      
-      $scope.reset = function() {
-        $scope.options.series = [];
-        $scope.data = [];
-      }
-      
-      $scope.getAxis = function(i) {
-        if (!$scope.rightAxis) {
-          return 'y';
-        }
-        
-        return !!(i%2) ? 'y2' : 'y';
-      }
-      
-      $scope.sinusodize = function() {
-        lastGeneration = $scope.sinusodize;
-        
-        $scope.reset();
-        
-        for (var i = 0; i < 5; i++) {
-          $scope.options.series.push({
-            y: 'series_' + i,
-            color: colors(i),
-            axis: $scope.getAxis(i)
-          });
-          
-          for (var j = 0; j < 50; j++) {
-            var row = $scope.data[j] || {x: j};
-            row['series_' + i] = (Math.sin(j/5))*(5*(i+1));
-            $scope.data[j] = row;
-          }
-        }
-      }
-      
-      $scope.randomize = function() {
-        lastGeneration = $scope.randomize;
-        
-        $scope.reset();
-        
-        seriesCount = Math.random()*10;
-        rowCount = Math.random()*100;
-    
-        for (var i = 0; i < seriesCount; i++) {
-          $scope.options.series.push({
-            y: 'series_' + i,
-            color: colors(i),
-            axis: $scope.getAxis(i)
-          });
-          
-          for (var j = 0; j < rowCount; j++) {
-            var row = $scope.data[j] || {x: j};
-            
-            row['series_' + i] = (Math.random()).toFixed(5)*(5*(i+1));
-            
-            $scope.data[j] = row;
-          }
-        }
-      }
-      
-      $scope.sinusodize();
-      
     });
   </script>
 </body>
