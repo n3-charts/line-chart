@@ -11,7 +11,7 @@ angular.module('n3-charts.linechart', [])
     },
     
     bootstrap: function(element, dimensions) {
-      d3.select(element).classed('linechart', true);
+      d3.select(element).classed('chart', true);
       
       var width = dimensions.width;
       var height = dimensions.height;
@@ -28,7 +28,7 @@ angular.module('n3-charts.linechart', [])
     },
     
     getTooltipTextWidth: function(text) {
-      return Math.max(25, text.length*6.5);
+      return Math.max(25, text.length*6.7);
     },
     
     getWidestOrdinate: function(data, series) {
@@ -45,7 +45,7 @@ angular.module('n3-charts.linechart', [])
       return widest;
     },
     
-    addAxes: function(svg, dimensions, drawY2Axis) {
+    createAxes: function(svg, dimensions, drawY2Axis) {
       var width = dimensions.width;
       var height = dimensions.height;
       
@@ -60,27 +60,42 @@ angular.module('n3-charts.linechart', [])
       var yAxis = d3.svg.axis().scale(y).orient('left');
       var y2Axis = d3.svg.axis().scale(y2).orient('right');
       
-      svg.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + height + ')')
-        .call(xAxis);
-      
-      svg.append('g')
-        .attr('class', 'y axis')
-        .call(yAxis);
-      
-      if (drawY2Axis) {
-        svg.append('g')
-          .attr('class', 'y2 axis')
-          .attr('transform', 'translate(' + width + ', 0)')
-          .call(y2Axis);
-      }
-      
-      this.addTooltips(svg, width, height, drawY2Axis);
+      var that = this;
       
       return {
-        xScale: x, yScale: y, y2Scale: y2,
-        xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
+        xScale: x,
+        yScale: y,
+        y2Scale: y2,
+        xAxis: xAxis,
+        yAxis: yAxis,
+        y2Axis: y2Axis,
+        
+        andAddThemIf: function(expression) {
+          if (!!expression) {
+            svg.append('g')
+              .attr('class', 'x axis')
+              .attr('transform', 'translate(0,' + height + ')')
+              .call(xAxis);
+            
+            svg.append('g')
+              .attr('class', 'y axis')
+              .call(yAxis);
+            
+            if (drawY2Axis) {
+              svg.append('g')
+                .attr('class', 'y2 axis')
+                .attr('transform', 'translate(' + width + ', 0)')
+                .call(y2Axis);
+            }
+            
+            that.addTooltips(svg, width, height, drawY2Axis);
+          }
+          
+          return {
+            xScale: x, yScale: y, y2Scale: y2,
+            xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
+          }
+        }
       }
     },
     
@@ -171,7 +186,11 @@ angular.module('n3-charts.linechart', [])
           .attr('class', 'lineGroup')
           .append('path')
             .attr('class', 'line')
-            .attr('d', function(d) {return drawers[d.axis](d.values);});
+            .attr('d', function(d) {return drawers[d.axis](d.values);})
+            .style({
+              'fill': 'none',
+              'stroke-width': '1px'
+            });
       
       return this;
     },
@@ -233,9 +252,7 @@ angular.module('n3-charts.linechart', [])
       var n = data[0].values.length + 2; // +2 because abscissas will be extended
                                          // to one more row at each end
       var s = data.length;
-      
       var oP = 3; // space between two rows
-      
       var avWidth = dimensions.width - dimensions.left - dimensions.right;
       
       return (avWidth - (n - 1)*oP) / (n*s);
@@ -324,6 +341,10 @@ angular.module('n3-charts.linechart', [])
               'r': 2,
               'cx': function(d) {return axes.xScale(d.x)},
               'cy': function(d) {return axes[d.axis + 'Scale'](d.value)}
+            })
+            .style({
+              'stroke': 'white',
+              'stroke-width': '2px'
             });
       
       return this;
@@ -385,7 +406,7 @@ angular.module('n3-charts.linechart', [])
       var yTooltipText = yTooltip.select('text').text(textY);
       yTooltipText.attr(
         'transform',
-        'translate(-' + (this.getTooltipTextWidth(textY) + 2) + ',3)'
+        'translate(-' + (this.getTooltipTextWidth(textY) + 3) + ',3)'
       );
       yTooltip.select('path')
         .attr('fill', target.series.color)
@@ -418,7 +439,7 @@ angular.module('n3-charts.linechart', [])
       var y2TooltipText = y2Tooltip.select('text').text(textY);
       y2TooltipText.attr(
         'transform',
-        'translate(7, ' + (parseFloat(target.y) + 3) + ')'
+        'translate(5, ' + (parseFloat(target.y) + 3) + ')'
       );
       y2Tooltip.select('path')
         .attr({
@@ -585,6 +606,13 @@ angular.module('n3-charts.linechart', [])
       }
       var rightWidest = this.getWidestOrdinate(data, rightSeries);
       dimensions.right = this.getTooltipTextWidth('' + rightWidest) + 20;
+    },
+    
+    adjustMarginsForThumbnail: function(dimensions, options, data) {
+      dimensions.left = 0;
+      dimensions.right = 0;
+      dimensions.top = 0;
+      dimensions.bottom = 0;
     }
   }
 })
@@ -610,13 +638,21 @@ angular.module('n3-charts.linechart', [])
       
       var dataPerSeries = n3utils.getDataPerSeries(data, options);
       
-      n3utils.adjustMargins(dimensions, options, data);
+      
+      if (attrs.mode === 'thumbnail') {
+        n3utils.adjustMarginsForThumbnail(dimensions, options, data);
+      } else {
+        n3utils.adjustMargins(dimensions, options, data);
+      }
+      
       n3utils.clean(element[0]);
       
       var haveSecondYAxis = n3utils.haveSecondYAxis(series);
       
       var svg = n3utils.bootstrap(element[0], dimensions);
-      var axes = n3utils.addAxes(svg, dimensions, haveSecondYAxis);
+      var axes = n3utils
+        .createAxes(svg, dimensions, haveSecondYAxis)
+        .andAddThemIf(attrs.mode !== 'thumbnail');
       
       n3utils.createContent(svg);
       

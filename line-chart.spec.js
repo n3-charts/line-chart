@@ -52,6 +52,37 @@ describe('n3-linechart', function() {
     }));
   });
     
+  describe('thumbnail when initializing', function() {
+    beforeEach(inject(function($rootScope, $compile) {
+        elm = angular.element('<div id="toto">' +
+          '<linechart mode="thumbnail"></linechart>' +
+          '</div>');
+
+        scope = $rootScope;
+        $compile(elm)(scope);
+        scope.$digest();
+      }));
+    
+    it('should create one svg element', function() {
+      expect(elm[0].getAttribute('id')).toBe('toto');
+      
+      var templateElmts = elm[0].children;
+      expect(templateElmts.length).toBe(1);
+      expect(templateElmts[0].nodeName).toBe('DIV'); // this is the template's div
+      expect(templateElmts[0].getAttribute('class')).toBe('chart');
+      
+      var dynamicChildren = templateElmts[0].children;
+      expect(dynamicChildren.length).toBe(1);
+      expect(dynamicChildren[0].nodeName).toBe('svg');
+    });
+    
+    it('should draw zero axes', function() {
+      var svgGroup = elm.find('svg').children()[0];
+      
+      var content = svgGroup.childNodes;
+      expect(content.length).toBe(1);
+    });
+  })
   
   describe('chart when initializing', function() {
     it('should create one svg element', function() {
@@ -60,7 +91,7 @@ describe('n3-linechart', function() {
       var templateElmts = elm[0].children;
       expect(templateElmts.length).toBe(1);
       expect(templateElmts[0].nodeName).toBe('DIV'); // this is the template's div
-      expect(templateElmts[0].getAttribute('class')).toBe('linechart');
+      expect(templateElmts[0].getAttribute('class')).toBe('chart');
       
       var dynamicChildren = templateElmts[0].children;
       expect(dynamicChildren.length).toBe(1);
@@ -99,7 +130,7 @@ describe('n3-linechart', function() {
       expect(content[4].getAttribute('id')).toBe('yTooltip')
       expect(content[5].getAttribute('id')).toBe('y2Tooltip')
     });
-  })
+  });
   
   describe('with a second axis', function() {
     beforeEach(function() {
@@ -116,7 +147,7 @@ describe('n3-linechart', function() {
           ]
         }
       });
-    })
+    });
     
     it('should configure y axis only with y series', function() {
       var yAxis = elm.find('svg').children()[0].childNodes[1];
@@ -398,7 +429,7 @@ describe('n3-linechart', function() {
       var options = {series: [{y: 'value'}, {y: 'foo'}]};
       n3utils.adjustMargins(dimensions, options, data);
       expect(dimensions).toEqual(
-        {left: 78.5, right: 50, top: 20, bottom: 30}
+        {left: 80.30000000000001, right: 50, top: 20, bottom: 30}
       );
     }));
     
@@ -417,7 +448,7 @@ describe('n3-linechart', function() {
       var options = {series: [{y: 'value'}, {axis: 'y2', y: 'foo'}]};
       n3utils.adjustMargins(dimensions, options, data);
       expect(dimensions).toEqual(
-        {left: 45, right: 78.5, top: 20, bottom: 30}
+        {left: 45, right: 80.30000000000001, top: 20, bottom: 30}
       );
     }));
   });
