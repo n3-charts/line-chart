@@ -744,7 +744,7 @@ describe('n3-linechart', function() {
       
       var lineGroup = content.childNodes[0];
       expect(lineGroup.getAttribute('class')).toBe('columnGroup');
-      expect(lineGroup.getAttribute('style')).toBe('fill: #4682b4; fill-opacity: 0.8;');
+      expect(lineGroup.getAttribute('style').trim()).toBe('fill: #4682b4; fill-opacity: 0.8;');
     });
     
     it('should draw columns', function() {
