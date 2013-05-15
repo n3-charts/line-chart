@@ -11,7 +11,7 @@ angular.module('n3-charts.linechart', [])
     },
     
     bootstrap: function(element, dimensions) {
-      d3.select(element).classed('linechart', true);
+      d3.select(element).classed('chart', true);
       
       var width = dimensions.width;
       var height = dimensions.height;
@@ -28,7 +28,7 @@ angular.module('n3-charts.linechart', [])
     },
     
     getTooltipTextWidth: function(text) {
-      return Math.max(25, text.length*6.5);
+      return Math.max(25, text.length*6.7);
     },
     
     getWidestOrdinate: function(data, series) {
@@ -45,7 +45,7 @@ angular.module('n3-charts.linechart', [])
       return widest;
     },
     
-    addAxes: function(svg, dimensions, drawY2Axis) {
+    createAxes: function(svg, dimensions, drawY2Axis) {
       var width = dimensions.width;
       var height = dimensions.height;
       
@@ -60,27 +60,42 @@ angular.module('n3-charts.linechart', [])
       var yAxis = d3.svg.axis().scale(y).orient('left');
       var y2Axis = d3.svg.axis().scale(y2).orient('right');
       
-      svg.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + height + ')')
-        .call(xAxis);
-      
-      svg.append('g')
-        .attr('class', 'y axis')
-        .call(yAxis);
-      
-      if (drawY2Axis) {
-        svg.append('g')
-          .attr('class', 'y2 axis')
-          .attr('transform', 'translate(' + width + ', 0)')
-          .call(y2Axis);
-      }
-      
-      this.addTooltips(svg, width, height, drawY2Axis);
+      var that = this;
       
       return {
-        xScale: x, yScale: y, y2Scale: y2,
-        xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
+        xScale: x,
+        yScale: y,
+        y2Scale: y2,
+        xAxis: xAxis,
+        yAxis: yAxis,
+        y2Axis: y2Axis,
+        
+        andAddThemIf: function(expression) {
+          if (!!expression) {
+            svg.append('g')
+              .attr('class', 'x axis')
+              .attr('transform', 'translate(0,' + height + ')')
+              .call(xAxis);
+            
+            svg.append('g')
+              .attr('class', 'y axis')
+              .call(yAxis);
+            
+            if (drawY2Axis) {
+              svg.append('g')
+                .attr('class', 'y2 axis')
+                .attr('transform', 'translate(' + width + ', 0)')
+                .call(y2Axis);
+            }
+            
+            that.addTooltips(svg, width, height, drawY2Axis);
+          }
+          
+          return {
+            xScale: x, yScale: y, y2Scale: y2,
+            xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
+          }
+        }
       }
     },
     
@@ -171,7 +186,13 @@ angular.module('n3-charts.linechart', [])
           .attr('class', 'lineGroup')
           .append('path')
             .attr('class', 'line')
-            .attr('d', function(d) {return drawers[d.axis](d.values);});
+            .attr('d', function(d) {return drawers[d.axis](d.values);})
+            .style({
+              'fill': 'none',
+              'stroke-width': '1px'
+            });
+      
+      return this;
     },
     
     createLeftLineDrawer: function(scales, interpolateMode) {
@@ -203,6 +224,8 @@ angular.module('n3-charts.linechart', [])
             .style('opacity', '0.3')
             .attr('class', 'area')
             .attr('d',  function(d) {return drawers[d.axis](d.values);});
+      
+      return this;
     },
     
     createLeftAreaDrawer: function(scales, interpolateMode) {
@@ -226,17 +249,18 @@ angular.module('n3-charts.linechart', [])
         return 10;
       }
       
-      var rowCount = data[0].values.length;
-      var seriesCount = data.length;
+      var n = data[0].values.length + 2; // +2 because abscissas will be extended
+                                         // to one more row at each end
+      var s = data.length;
+      var oP = 3; // space between two rows
+      var avWidth = dimensions.width - dimensions.left - dimensions.right;
       
-      var innerPadding = 1;
-      var outerPadding = 3;
-      
-      return Math.min(20, (dimensions.width - rowCount*innerPadding -
-          seriesCount*outerPadding)/(rowCount*seriesCount));
+      return (avWidth - (n - 1)*oP) / (n*s);
     },
     
     drawColumns: function(svg, axes, data, columnWidth) {
+      data = data.filter(function(s) {return s.type === 'column';});
+      
       var x1 = d3.scale.ordinal()
         .domain(data.map(function(s) {return s.name;}))
         .rangeRoundBands([0, data.length * columnWidth], 0.05);
@@ -244,7 +268,7 @@ angular.module('n3-charts.linechart', [])
       var that = this;
       
       var colGroup = svg.select('.content').selectAll('.columnGroup')
-        .data(data.filter(function(s) {return s.type === 'column';}))
+        .data(data)
         .enter().append("g")
           .attr("class", "columnGroup")
           .style("fill", function(s) {return s.color;})
@@ -260,27 +284,31 @@ angular.module('n3-charts.linechart', [])
             that.onMouseOver(svg, {
               series: series,
               x: target.attr('x'),
-              y: target.attr('y'),
+              y: axes[series.axis + 'Scale'](target.datum().value),
               datum: target.datum()
             });
           })
           .on('mouseout', function(d) {
             d3.select(d3.event.target).attr('r', 2);
             that.onMouseOut(svg);
-          })
+          });
 
       colGroup.selectAll("rect")
         .data(function(d) {return d.values;})
         .enter().append("rect")
           .attr("width", columnWidth)
           .attr("x", function(d) {return axes.xScale(d.x);})
+          
           .attr("y", function(d) {
             return axes[d.axis + 'Scale'](Math.max(0, d.value));
           })
+          
           .attr("height", function(d) {
             return Math.abs(axes[d.axis + 'Scale'](d.value) -
               axes[d.axis + 'Scale'](0));
-          })
+          });
+      
+      return this;
     },
     
     drawDots: function(svg, axes, data) {
@@ -314,6 +342,12 @@ angular.module('n3-charts.linechart', [])
               'cx': function(d) {return axes.xScale(d.x)},
               'cy': function(d) {return axes[d.axis + 'Scale'](d.value)}
             })
+            .style({
+              'stroke': 'white',
+              'stroke-width': '2px'
+            });
+      
+      return this;
     },
     
     onMouseOver: function(svg, target) {
@@ -372,7 +406,7 @@ angular.module('n3-charts.linechart', [])
       var yTooltipText = yTooltip.select('text').text(textY);
       yTooltipText.attr(
         'transform',
-        'translate(-' + (this.getTooltipTextWidth(textY) + 2) + ',3)'
+        'translate(-' + (this.getTooltipTextWidth(textY) + 3) + ',3)'
       );
       yTooltip.select('path')
         .attr('fill', target.series.color)
@@ -405,7 +439,7 @@ angular.module('n3-charts.linechart', [])
       var y2TooltipText = y2Tooltip.select('text').text(textY);
       y2TooltipText.attr(
         'transform',
-        'translate(7, ' + (parseFloat(target.y) + 3) + ')'
+        'translate(5, ' + (parseFloat(target.y) + 3) + ')'
       );
       y2Tooltip.select('path')
         .attr({
@@ -483,7 +517,7 @@ angular.module('n3-charts.linechart', [])
     },
     
     setScalesDomain: function(scales, data, series, svg) {
-      scales.xScale.domain(d3.extent(data, function(d) {return d.x;}));
+      this.setXScale(scales.xScale, data, series);
       
       var ySeries = series.filter(function(s) {return s.axis !== 'y2'});
       var y2Series = series.filter(function(s) {return s.axis === 'y2'});
@@ -506,6 +540,32 @@ angular.module('n3-charts.linechart', [])
       });
       
       return [minY, maxY];
+    },
+    
+    setXScale: function(xScale, data, series) {
+      xScale.domain(d3.extent(data, function(d) {return d.x;}));
+      
+      if (series.filter(function(s) {return s.type === 'column'}).length) {
+        this.adjustXScaleForColumns(xScale, data);
+      }
+    },
+    
+    adjustXScaleForColumns: function(xScale, data) {
+      var step = this.getAverageStep(data, 'x');
+      var d = xScale.domain();
+      
+      xScale.domain([d[0] - step, d[1] + step]);
+    },
+    
+    getAverageStep: function(data, field) {
+      var sum = 0;
+      var n = data.length - 1;
+      
+      for (var i = 0; i<n; i++) {
+        sum += data[i + 1][field] - data[i][field];
+      }
+      
+      return sum/n;
     },
     
     haveSecondYAxis: function(series) {
@@ -546,6 +606,13 @@ angular.module('n3-charts.linechart', [])
       }
       var rightWidest = this.getWidestOrdinate(data, rightSeries);
       dimensions.right = this.getTooltipTextWidth('' + rightWidest) + 20;
+    },
+    
+    adjustMarginsForThumbnail: function(dimensions, options, data) {
+      dimensions.left = 0;
+      dimensions.right = 0;
+      dimensions.top = 0;
+      dimensions.bottom = 0;
     }
   }
 })
@@ -571,13 +638,21 @@ angular.module('n3-charts.linechart', [])
       
       var dataPerSeries = n3utils.getDataPerSeries(data, options);
       
-      n3utils.adjustMargins(dimensions, options, data);
+      
+      if (attrs.mode === 'thumbnail') {
+        n3utils.adjustMarginsForThumbnail(dimensions, options, data);
+      } else {
+        n3utils.adjustMargins(dimensions, options, data);
+      }
+      
       n3utils.clean(element[0]);
       
       var haveSecondYAxis = n3utils.haveSecondYAxis(series);
       
       var svg = n3utils.bootstrap(element[0], dimensions);
-      var axes = n3utils.addAxes(svg, dimensions, haveSecondYAxis);
+      var axes = n3utils
+        .createAxes(svg, dimensions, haveSecondYAxis)
+        .andAddThemIf(attrs.mode !== 'thumbnail');
       
       n3utils.createContent(svg);
       
@@ -587,13 +662,13 @@ angular.module('n3-charts.linechart', [])
         n3utils.setScalesDomain(axes, data, options.series, svg);
         
         var columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
-        n3utils.drawColumns(svg, axes, dataPerSeries, columnWidth);
         
-        n3utils.drawArea(svg, axes, dataPerSeries, lineMode);
-        
-        n3utils.drawLines(svg, axes, dataPerSeries, lineMode);
-        
-        n3utils.drawDots(svg, axes, dataPerSeries);
+        n3utils
+          .drawArea(svg, axes, dataPerSeries, lineMode)
+          .drawColumns(svg, axes, dataPerSeries, columnWidth)
+          .drawLines(svg, axes, dataPerSeries, lineMode)
+          .drawDots(svg, axes, dataPerSeries)
+        ;
       }
     }
     
