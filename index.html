@@ -6,96 +6,111 @@
   <link rel="stylesheet" href="line-chart.css"/>
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
 </head>
-<body style="height:100%;margin: 0 0;" ng-controller="DemoCtrl">
-  <ul class="thumbnails">
-    <li ng-repeat="example in examples" class="span4">
-      <div class="thumbnail">
-        <div style='width:320px;height:200px'>
-          <linechart data='example.data' options='example.options'></linechart>
+<body ng-controller="DemoCtrl">
+  <div class='container'>
+    
+    <div class="jumbotron">
+      <h1>n3-charts examples
+      <a
+        href="http://plnkr.co/edit/rU1AdH?p=preview" target="_blank"
+        class="btn btn-large btn-primary">Playground <i class="icon-share-alt icon-white"></i></a>
+    </div>
+    
+    
+    <div class='' ng-repeat="example in examples">
+      <h3>{{example.label}}</h3>
+      <div class='row guttered'>
+        <div class='span9'>
+          <div style="height: 500px">
+            <linechart data='example.data' options='example.options'></linechart>
+          </div>
+        </div>
+        <div class='span3'>
+          <pre class="prettyprint">{{example.json}}</pre>
         </div>
       </div>
-    </li>
-  </ul>
-  
+      <hr style="border: 1px solid rgba(14,46,66,0.2);">
+    </div>
+  </div>
   
   <script src="lib/angular.js"></script>
   <script src="lib/d3.v3.min.js"></script>
   <script src="line-chart.js"></script>
-  
   <script>
-    // THIS CODE IS BAD, AND I SHOULD FEEL BAD
-    // Folks, do not try this at home. This code is not tested, and not clean.
-    // Its purpose is only to demonstrate what n3-charts.line-chart can do,
-    // certainly not to show how proper options and data should be prepared.
-    // 
-    // -> TL;DR
-    // -> Copy-paste of the code below is strongly discouraged.
-  
     angular.module('myApp', ['n3-charts.linechart'])
     
-    .controller('DemoCtrl', function($scope, utils) {
+    .controller('DemoCtrl', function($scope) {
+      var sinData = function(rowCount, seriesCount) {
+        var data = [];
+        
+        for (var i = 0; i < seriesCount; i++) {
+          for (var j = 0; j < rowCount; j++) {
+            var row = data[j] || {x: j};
+            row['series_' + i] = Math.round(Math.sin((i+1)*j/5)*(5*(i+1))*1000)/1000;
+            data[j] = row;
+          }
+        }
+        
+        return data;
+      }
+      
       $scope.examples = [];
       
-      
-      $scope.examples.push({
-        label: 'Sinus example',
-        description: 'Another basic example',
-        data: utils.sinData(10, utils.sinSeries(3)),
-        options: {
-          series: utils.sinSeries(3)
-        }
-      })
-      $scope.examples.push({
-        label: 'Simple example',
-        description: 'A quite basic example',
-        data: [
-          {x: 0, value: 4, foo: -2}, {x: 1, value: 8, foo: 22}, {x: 2, value: 15, foo: -1},
-          {x: 3, value: 16, foo: 0}, {x: 4, value: 23, foo: -3}, {x: 5, value: 42, foo: -4}
-        ],
-        options: {
-          series: [
-            {axis: 'y', y: 'value', color: '#4682b4', type: 'area'},
-            {axis: 'y2', y: 'foo', color: 'steelblue', type: 'line'},
-            {axis: 'y2', y: 'foo', color: 'steelblue', type: 'column'}
-          ]
-        }
-      });
-      
-    })
-
-    .factory('utils', function() {
-      return {
-        sinSeries: function(howMany) {
-          var colors = d3.scale.category10();
-          
-          var series = [];
-          
-          for (var i = 0; i < howMany; i++) {
-            series.push({
-              y: 'series_' + i,
-              color: colors(i),
-              type: 'column'
-            });
-          }
-          
-          return series;
-        },
+      $scope.addExample = function(label, desc, data, options) {
+        $scope.examples.push({
+            label: label,
+            description: desc,
+            data: data,
+            options: options,
+            json: JSON.stringify(options, null, 2)
+        });
         
-        sinData: function(rows, series) {
-          var data = [];
-          
-          for (var i = 0; i < series.length; i++) {
-            for (var j = 0; j < 50; j++) {
-              var row = data[j] || {x: j};
-              row[series[i].y] = (Math.sin(j/5))*(5*(i+1));
-              data[j] = row;
-            }
-          }
-          
-          return data;
-        }
+        return $scope.addExample;
       };
-    });
+      
+      $scope.setCurrent = function(example) {
+        $scope.current = example;
+        $scope.json = JSON.stringify(example.options, null, 2);
+      }
+      
+      var colors = d3.scale.category10();
+      
+      $scope.addExample
+      
+        ('Line series', 'A basic example', sinData(50, 1),
+          {series: [{y: 'series_0', color: colors(0)}]})
+        
+        ('Area series', 'A basic example', sinData(50, 1),
+          {series: [{y: 'series_0', color: colors(1), type: 'area'}]})
+        
+        ('Column series', 'A basic example', sinData(50, 1),
+          {series: [{y: 'series_0', color: colors(2), type: 'column'}]})
+        
+        ('Two axes', 'A basic example', sinData(50, 2),
+          {series: [
+            {y: 'series_0', color: colors(3)},
+            {y: 'series_1', axis: 'y2', color: colors(4)}
+          ]}
+        )
+        
+        ('Interpolation', 'A basic example', sinData(50, 5),
+          {lineMode: 'bundle', series: [
+            {y: 'series_0', color: colors(5)},
+            {y: 'series_4', axis: 'y2', color: colors(6)}
+          ]}
+        )
+        
+        ('Several series', 'A basic example', sinData(50, 5),
+          {lineMode: 'cardinal', series: [
+            {y: 'series_0', type: 'area', color: colors(7)},
+            {y: 'series_4', type: 'column', color: colors(8)},
+            {y: 'series_4', color: colors(9)}
+          ]}
+        );
+      
+      $scope.setCurrent($scope.examples[0]);
+    })
   </script>
+  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 </body>
 </html>
