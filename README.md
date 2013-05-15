@@ -2,7 +2,7 @@
 
 A line chart implementation for [AngularJS](http://angularjs.org/) applications. It makes an extensive use of the wonderful [D3.js](http://d3js.org/) library.
 
-And here is a [demo](http://angular-d3.github.io/line-chart).
+And here is the [examples page](http://angular-d3.github.io/line-chart).
 
 ### How to install
  + Copy `line-chart.js` and `line-chart.css` wherever you want
@@ -42,10 +42,9 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   series: [
-    {y: 'value', color: 'steelblue'},
+    {y: 'value', color: 'steelblue', type: 'area'},
     {y: 'otherValue', axis: 'y2', color: 'lightsteelblue'}
   ],
-  showArea: true,
   lineMode: 'linear'
 }
 ```
@@ -55,9 +54,10 @@ The `series` key must be an array which contains objects with the following prop
 + `y` : mandatory, defines which property on each data row will be used as ordinate value.
 + `color` : mandatory, any valid HTML color.
 + `axis` : optional, can be either 'y' (default, for left) or 'y2' (for right). Defines which vertical axis should be used for this series. If no right axis is needed, none will be displayed.
++ `type` : optional, can be one value between 'line', 'area', 'column'. Default is 'line'.
 
 ##### Optional stuff
-Additionally, you can set `showArea` to `true` (default is false), and/or `lineMode` to a value between these :
+Additionally, you can set `lineMode` to a value between these :
 
 + linear *(default)*
 + step-before
