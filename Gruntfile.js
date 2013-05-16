@@ -5,6 +5,13 @@ module.exports = function(grunt) {
   // Load Deps
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
+  // Travis doesn't have chrome, so we need to overwrite some options
+  var testConfig = function(configFile, customOptions) {
+    var options = { configFile: configFile, keepalive: true };
+    var travisOptions = process.env.TRAVIS && { browsers: ['Firefox'], reporters: 'dots' };
+    return grunt.util._.extend(options, customOptions, travisOptions);
+  };
+
   // Project configuration.
   grunt.initConfig({
     // Metadata.
@@ -36,6 +43,7 @@ module.exports = function(grunt) {
         configFile: 'karma.conf.js'
       },
       unit: {
+        options: testConfig('test/test.conf.js'),
         background: true
       },
       continuous: {
