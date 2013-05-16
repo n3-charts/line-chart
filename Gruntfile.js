@@ -39,11 +39,8 @@ module.exports = function(grunt) {
       }
     },
     karma: {
-      options: {
-        configFile: 'karma.conf.js'
-      },
+      options: testConfig('karma.conf.js'),
       unit: {
-        options: testConfig('test/test.conf.js'),
         background: true
       },
       continuous: {
