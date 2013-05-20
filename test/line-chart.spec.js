@@ -15,6 +15,48 @@ describe('n3-linechart', function() {
     scope.$digest();
   }));
 
+  beforeEach(function() {
+    this.addMatchers({
+
+      toBeSameStyleAs: function(expected) {
+        var actual = this.actual;
+        var notText = this.isNot ? " not" : "";
+
+        this.message = function () {
+          return "Expected " + actual + notText + " to be same as " + expected;
+        };
+
+        var exp = expected.split(/\s*;\s*/g);
+        var comp = actual.split(/\s*;\s*/g);
+
+        var colors = ['fill', 'stroke'];
+
+        for (var key in exp) {
+          if (comp[key] === undefined) {
+            return false;
+          }
+
+          if (comp[key] !== exp[key]) {
+            var spl = comp[key].split(/\s*:\s*/);
+            var expSpl = exp[key].split(/\s*:\s*/);
+
+            if (colors.indexOf(spl[0]) !== -1) {
+              if (d3.rgb(spl[1]).toString() !== d3.rgb(expSpl[1]).toString()) {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          }
+
+        }
+
+        return true;
+      }
+
+    });
+  });
+
   describe('resize features', function() {
     beforeEach(inject(function($rootScope, $compile) {
       elm = angular.element('<div id="toto">' +
@@ -190,7 +232,7 @@ describe('n3-linechart', function() {
 
       var areaGroup = content.childNodes[0];
       expect(areaGroup.getAttribute('class')).toBe('areaGroup');
-      expect(areaGroup.getAttribute('style').trim()).toBe('fill: #4682b4;');
+      expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
       expect(areaPath.getAttribute('class')).toBe('area');
@@ -204,7 +246,7 @@ describe('n3-linechart', function() {
 
       var areaGroup = content.childNodes[1];
       expect(areaGroup.getAttribute('class')).toBe('areaGroup');
-      expect(areaGroup.getAttribute('style').trim()).toBe('fill: #4682b4;');
+      expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
       expect(areaPath.getAttribute('class')).toBe('area');
@@ -292,11 +334,12 @@ describe('n3-linechart', function() {
       var xTooltip = content[3];
       expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
-      var e = document.createEvent('UIEvents');
-      e.initUIEvent('mouseover');
+      var e = document.createEvent("MouseEvents");
+      e.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
       leftAxisDotGroup.dispatchEvent(e);
 
-      e.initUIEvent('mouseout');
+      e.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
       leftAxisDotGroup.dispatchEvent(e);
     });
 
@@ -312,11 +355,11 @@ describe('n3-linechart', function() {
       var xTooltip = content[3];
       expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
-      var e = document.createEvent('UIEvents');
-      e.initUIEvent('mouseover');
+      var e = document.createEvent("MouseEvents");
+      e.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
       rightAxisColumnGroup.dispatchEvent(e);
 
-      e.initUIEvent('mouseout');
+      e.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
       rightAxisColumnGroup.dispatchEvent(e);
     });
   });
@@ -471,7 +514,7 @@ describe('n3-linechart', function() {
 
       var areaGroup = content.childNodes[0];
       expect(areaGroup.getAttribute('class')).toBe('areaGroup');
-      expect(areaGroup.getAttribute('style').trim()).toBe('fill: #4682b4;');
+      expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
       expect(areaPath.getAttribute('class')).toBe('area');
@@ -572,7 +615,7 @@ describe('n3-linechart', function() {
 
       var areaGroup = content.childNodes[0];
       expect(areaGroup.getAttribute('class')).toBe('areaGroup');
-      expect(areaGroup.getAttribute('style').trim()).toBe('fill: #4682b4;');
+      expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
       expect(areaPath.getAttribute('class')).toBe('area');
@@ -587,7 +630,7 @@ describe('n3-linechart', function() {
 
       var lineGroup = content.childNodes[1];
       expect(lineGroup.getAttribute('class')).toBe('lineGroup');
-      expect(lineGroup.getAttribute('style').trim()).toBe('stroke: #4682b4;');
+      expect(lineGroup.getAttribute('style').trim()).toBeSameStyleAs('stroke: #4682b4;');
     });
 
     it('should create a dots group', function() {
@@ -659,7 +702,7 @@ describe('n3-linechart', function() {
 
       var lineGroup = content.childNodes[0];
       expect(lineGroup.getAttribute('class')).toBe('lineGroup');
-      expect(lineGroup.getAttribute('style').trim()).toBe('stroke: #4682b4;');
+      expect(lineGroup.getAttribute('style').trim()).toBeSameStyleAs('stroke: #4682b4;');
     });
 
     it('should draw dots', function() {
@@ -741,7 +784,7 @@ describe('n3-linechart', function() {
 
       var lineGroup = content.childNodes[0];
       expect(lineGroup.getAttribute('class')).toBe('columnGroup');
-      expect(lineGroup.getAttribute('style').trim()).toBe('fill: #4682b4; fill-opacity: 0.8;');
+      expect(lineGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4; fill-opacity: 0.8;');
     });
 
     it('should draw columns', function() {
