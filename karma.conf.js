@@ -54,7 +54,7 @@ logLevel = LOG_INFO;
 
 
 // enable / disable watching file and executing tests whenever any file changes
-autoWatch = true;
+autoWatch = false;
 
 
 // Start these browsers, currently available:

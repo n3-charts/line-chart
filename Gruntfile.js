@@ -53,17 +53,21 @@ module.exports = function(grunt) {
         banner: '<%= banner %>',
         stripBanners: true
       },
-      dist: {
+      js: {
         src: ['lib/<%= pkg.name %>.js'],
         dest: 'dist/<%= pkg.name %>.js'
+      },
+      css: {
+        src: ['lib/<%= pkg.name %>.css'],
+        dest: 'dist/<%= pkg.name %>.css'
       }
     },
     uglify: {
       options: {
         banner: '<%= banner %>'
       },
-      dist: {
-        src: '<%= concat.dist.dest %>',
+      js: {
+        src: '<%= concat.js.dest %>',
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
