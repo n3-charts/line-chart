@@ -10,15 +10,15 @@ basePath = '';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'lib/angular.js',
-  'lib/angular-mocks.js',
-  'lib/d3.v3.min.js',
-  'line-chart.js',
-  'line-chart.spec.js'
+  'components/angular/angular.js',
+  'components/angular-mocks/angular-mocks.js',
+  'components/d3/d3.js',
+  'lib/line-chart.js',
+  'test/line-chart.spec.js'
 ];
 
 preprocessors = {
-  'line-chart.js': 'coverage'
+  'lib/line-chart.js': 'coverage'
 };
 
 // list of files to exclude
@@ -66,10 +66,10 @@ autoWatch = true;
 // - PhantomJS
 // - IE (only Windows)
 // browsers = ['PhantomJS'];
-browsers = ['Chrome']
+browsers = ['Chrome', 'Firefox']
 
 // If browser does not capture in given timeout [ms], kill it
-captureTimeout = 60000;
+captureTimeout = 5000;
 
 
 // Continuous Integration mode
