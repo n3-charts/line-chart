@@ -1,5 +1,7 @@
 'use strict';
 
+/*global window */
+
 describe('n3-linechart', function() {
   var elm, scope, isolatedScope;
 
