@@ -1,6 +1,6 @@
-/*! line-chart - v0.0.1 - 2013-05-16
+/*! line-chart - v0.0.1 - 2013-05-20
 * https://github.com/angular-d3/line-chart
-* Copyright (c) 2013 ; Licensed ,  */
+* Copyright (c) 2013 Angular D3; Licensed ,  */
 angular.module('n3-charts.linechart', [])
 
 .factory('n3utils', function() {
