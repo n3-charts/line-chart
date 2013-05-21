@@ -685,7 +685,7 @@ angular.module('n3-charts.linechart', [])
   };
 })
 
-.directive('linechart', ['n3utils', '$window', function(n3utils, $window) {
+.directive('linechart', ['n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
   var link  = function(scope, element, attrs, ctrl) {
     var dim = n3utils.getDefaultMargins();
 
@@ -706,13 +706,13 @@ angular.module('n3-charts.linechart', [])
 
       var dataPerSeries = n3utils.getDataPerSeries(data, options);
 
+      var isThumbnail = (attrs.mode === 'thumbnail');
 
-      if (attrs.mode === 'thumbnail') {
+      if (isThumbnail) {
         n3utils.adjustMarginsForThumbnail(dimensions, options, data);
       } else {
         n3utils.adjustMargins(dimensions, options, data);
       }
-
       n3utils.clean(element[0]);
 
       var haveSecondYAxis = n3utils.haveSecondYAxis(series);
@@ -720,9 +720,13 @@ angular.module('n3-charts.linechart', [])
       var svg = n3utils.bootstrap(element[0], dimensions);
       var axes = n3utils
         .createAxes(svg, dimensions, haveSecondYAxis)
-        .andAddThemIf(attrs.mode !== 'thumbnail');
+        .andAddThemIf(!isThumbnail);
 
       n3utils.createContent(svg);
+
+      if (!isThumbnail) {
+        n3utils.drawLegend(svg, series, dimensions);
+      }
 
       var lineMode = options ? options.lineMode : 'linear';
 
@@ -736,14 +740,17 @@ angular.module('n3-charts.linechart', [])
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
           .drawLines(svg, axes, dataPerSeries, lineMode)
           .drawDots(svg, axes, dataPerSeries)
-          .drawLegend(svg, series, dimensions)
         ;
       }
     };
 
-    $window.onresize = function() {
-      scope.update();
+    var timeoutPromise;
+    var window_resize = function(e) {
+      $timeout.cancel(timeoutPromise);
+      timeoutPromise = $timeout(scope.update, 1);
     };
+
+    $window.addEventListener('resize', window_resize);
 
     scope.$watch('data', scope.update);
     scope.$watch('options', scope.update, true);
