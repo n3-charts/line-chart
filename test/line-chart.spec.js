@@ -233,7 +233,7 @@ describe('n3-linechart', function() {
       var content = elm.find('svg').children()[0].childNodes[6];
 
       var areaGroup = content.childNodes[0];
-      expect(areaGroup.getAttribute('class')).toBe('areaGroup');
+      expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
       expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
@@ -247,7 +247,7 @@ describe('n3-linechart', function() {
       var content = elm.find('svg').children()[0].childNodes[6];
 
       var areaGroup = content.childNodes[1];
-      expect(areaGroup.getAttribute('class')).toBe('areaGroup');
+      expect(areaGroup.getAttribute('class')).toBe('areaGroup series_1');
       expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
@@ -308,6 +308,45 @@ describe('n3-linechart', function() {
     });
   });
 
+
+  describe('legend', function() {
+    beforeEach(function() {
+      scope.$apply(function() {
+        scope.data = [{x: 0, value: 4}, {x: 1, value: 8}];
+
+        scope.options = {series: [
+          {y: 'value', color: '#4682b4', label: 'toto'},
+          {y: 'value', axis: 'y2', color: '#4682b4', type: 'column'}
+        ]};
+      });
+    });
+
+    it('create legend elements', function() {
+      var svgGroup = elm.find('svg').children()[0];
+
+      var content = svgGroup.childNodes;
+
+      var legendGroup = content[7];
+      expect(legendGroup.getAttribute('class')).toBe('legend');
+
+      expect(legendGroup.childNodes.length).toBe(2);
+
+      var l_0 = legendGroup.childNodes[0];
+      expect(l_0.getAttribute('class')).toBe('legendItem');
+
+      expect(l_0.childNodes[0].nodeName).toBe('circle');
+      expect(l_0.childNodes[0].getAttribute('fill')).toBe('#4682b4');
+
+      var e = document.createEvent("MouseEvents");
+      e.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+      l_0.childNodes[0].dispatchEvent(e);
+
+      l_0.childNodes[0].dispatchEvent(e);
+    });
+  });
+
+
   // Could not manage this test to pass, despite the fact it does work...
   // At least it runs the code and check there's no exception...
   // Maybe we could spy on the tooltip update methods.
@@ -331,7 +370,7 @@ describe('n3-linechart', function() {
 
       var leftAxisDotGroup = content[6].childNodes[2];
 
-      expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup');
+      expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup series_0');
 
       var xTooltip = content[3];
       expect(xTooltip.getAttribute('id')).toBe('xTooltip');
@@ -352,7 +391,7 @@ describe('n3-linechart', function() {
 
       var rightAxisColumnGroup = content[6].childNodes[0];
 
-      expect(rightAxisColumnGroup.getAttribute('class')).toBe('columnGroup');
+      expect(rightAxisColumnGroup.getAttribute('class')).toBe('columnGroup series_1');
 
       var xTooltip = content[3];
       expect(xTooltip.getAttribute('id')).toBe('xTooltip');
@@ -367,6 +406,7 @@ describe('n3-linechart', function() {
   });
 
   describe('n3utils', function() {
+
     describe('getBestColumnWidth', function() {
       it('handle no data', inject(function(n3utils) {
         expect(n3utils.getBestColumnWidth({}, [])).toBe(10);
@@ -387,12 +427,12 @@ describe('n3-linechart', function() {
       };
 
       var expected = [{
-        name: 'value', color: 'steelblue', axis: 'y2', type: 'line',
+        name: 'value', color: 'steelblue', axis: 'y2', type: 'line', index: 0,
         values: [
           {x: 0, value: 4, axis: 'y2'}, {x: 1, value: 8, axis: 'y2'}
         ]
       }, {
-        name: 'foo', color: 'red', axis: 'y', type: 'area',
+        name: 'foo', color: 'red', axis: 'y', type: 'area', index: 1,
         values: [
           {x: 0, value: 4.154, axis: 'y'}, {x: 1, value: 8.15485, axis: 'y'}
         ]
@@ -515,7 +555,7 @@ describe('n3-linechart', function() {
       var content = svgGroup.childNodes[4];
 
       var areaGroup = content.childNodes[0];
-      expect(areaGroup.getAttribute('class')).toBe('areaGroup');
+      expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
       expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
@@ -616,7 +656,7 @@ describe('n3-linechart', function() {
       var content = svgGroup.childNodes[4];
 
       var areaGroup = content.childNodes[0];
-      expect(areaGroup.getAttribute('class')).toBe('areaGroup');
+      expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
       expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
       var areaPath = areaGroup.childNodes[0];
@@ -631,7 +671,7 @@ describe('n3-linechart', function() {
       var content = svgGroup.childNodes[4];
 
       var lineGroup = content.childNodes[1];
-      expect(lineGroup.getAttribute('class')).toBe('lineGroup');
+      expect(lineGroup.getAttribute('class')).toBe('lineGroup series_0');
       expect(lineGroup.getAttribute('style').trim()).toBeSameStyleAs('stroke: #4682b4;');
     });
 
@@ -703,7 +743,7 @@ describe('n3-linechart', function() {
       expect(content.childNodes.length).toBe(2);
 
       var lineGroup = content.childNodes[0];
-      expect(lineGroup.getAttribute('class')).toBe('lineGroup');
+      expect(lineGroup.getAttribute('class')).toBe('lineGroup series_0');
       expect(lineGroup.getAttribute('style').trim()).toBeSameStyleAs('stroke: #4682b4;');
     });
 
@@ -785,7 +825,7 @@ describe('n3-linechart', function() {
       expect(content.childNodes.length).toBe(1);
 
       var lineGroup = content.childNodes[0];
-      expect(lineGroup.getAttribute('class')).toBe('columnGroup');
+      expect(lineGroup.getAttribute('class')).toBe('columnGroup series_0');
       expect(lineGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4; fill-opacity: 0.8;');
     });
 
@@ -812,18 +852,6 @@ describe('n3-linechart', function() {
         expect(columns[i].getAttribute('x')).toBe(expectedCoordinates[i].x);
         expect(columns[i].getAttribute('y')).toBe(expectedCoordinates[i].y);
       }
-    });
-
-    xit('should draw a line', function() {
-      var content = elm.find('svg').children()[0].childNodes[4];
-      var lineGroup = content.childNodes[0];
-
-      console.log(content, lineGroup);
-
-      var linePath = lineGroup.childNodes[0];
-      expect(linePath.getAttribute('class')).toBe('line');
-      expect(linePath.getAttribute('d'))
-        .toBe('M0,414L161,378L322,315L483,306L644,243L805,72');
     });
   });
 });
