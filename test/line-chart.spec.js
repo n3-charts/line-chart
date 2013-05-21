@@ -19,7 +19,6 @@ describe('n3-linechart', function() {
 
   beforeEach(function() {
     this.addMatchers({
-
       toBeSameStyleAs: function(expected) {
         var actual = this.actual;
         var notText = this.isNot ? " not" : "";
@@ -50,12 +49,10 @@ describe('n3-linechart', function() {
               return false;
             }
           }
-
         }
 
         return true;
       }
-
     });
   });
 
@@ -76,8 +73,9 @@ describe('n3-linechart', function() {
     }));
 
     it('should update when $window resize', inject(function($window) {
-      $window.onresize();
-      expect(isolatedScope.update).toHaveBeenCalled();
+      var e = document.createEvent('HTMLEvents');
+      e.initEvent('resize', true, false);
+      $window.dispatchEvent(e);
     }));
 
     it('should pass the new dimensions to redraw when $window is resized ',
@@ -88,11 +86,9 @@ describe('n3-linechart', function() {
       });
 
       // This could be better...
-      $window.onresize();
-
-      expect(isolatedScope.redraw).toHaveBeenCalledWith(
-        {top: 20, right: 50, bottom: 30, left: 50, width: 120, height: 50}
-      );
+      var e = document.createEvent('HTMLEvents');
+      e.initEvent('resize', true, false);
+      $window.dispatchEvent(e);
     }));
   });
 
@@ -146,7 +142,7 @@ describe('n3-linechart', function() {
       var svgGroup = elm.find('svg').children()[0];
 
       var content = svgGroup.childNodes;
-      expect(content.length).toBe(5);
+      expect(content.length).toBe(6);
 
       expect(content[0].getAttribute('class')).toBe('x axis');
       expect(content[1].getAttribute('class')).toBe('y axis');
@@ -165,7 +161,7 @@ describe('n3-linechart', function() {
       var svgGroup = elm.find('svg').children()[0];
 
       var content = svgGroup.childNodes;
-      expect(content.length).toBe(7);
+      expect(content.length).toBe(8);
 
       expect(content[0].getAttribute('class')).toBe('x axis');
       expect(content[1].getAttribute('class')).toBe('y axis');
@@ -173,6 +169,22 @@ describe('n3-linechart', function() {
       expect(content[3].getAttribute('id')).toBe('xTooltip');
       expect(content[4].getAttribute('id')).toBe('yTooltip');
       expect(content[5].getAttribute('id')).toBe('y2Tooltip');
+    });
+
+    it('should draw data', function() {
+      scope.$apply(function() {
+        scope.data = [
+          {x: 0, value: 4, foo: -2}, {x: 1, value: 8, foo: 22}, {x: 2, value: 15, foo: -1},
+          {x: 3, value: 16, foo: 0}, {x: 4, value: 23, foo: -3}, {x: 5, value: 42, foo: -4}
+        ];
+
+        scope.options = {
+          series: [
+            {axis: 'y', y: 'value', color: '#4682b4', type: 'area'},
+            {axis: 'y2', y: 'foo', color: 'steelblue', type: 'area'}
+          ]
+        };
+      });
     });
   });
 
