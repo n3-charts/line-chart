@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.1 - 2013-05-20
+/*! line-chart - v0.0.1 - 2013-05-21
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 angular.module('n3-charts.linechart', [])
@@ -614,7 +614,7 @@ angular.module('n3-charts.linechart', [])
   };
 })
 
-.directive('linechart', function(n3utils, $window) {
+.directive('linechart', ['n3utils', '$window', function(n3utils, $window) {
   var link  = function(scope, element, attrs, ctrl) {
     var dim = n3utils.getDefaultMargins();
 
@@ -684,4 +684,4 @@ angular.module('n3-charts.linechart', [])
     template: '<div></div>',
     link: link
   };
-});
+}]);

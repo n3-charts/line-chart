@@ -87,6 +87,8 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', ['jshint', 'karma:continuous', 'concat', 'uglify']);
 
+  grunt.registerTask('fast-build', ['concat', 'uglify']);
+
   grunt.registerTask('test', ['karma:unit', 'watch:test']);
 
 };
