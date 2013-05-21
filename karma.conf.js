@@ -13,12 +13,12 @@ files = [
   'components/angular/angular.js',
   'components/angular-mocks/angular-mocks.js',
   'components/d3/d3.js',
-  'lib/line-chart.js',
-  'test/line-chart.spec.js'
+  'dist/line-chart.js',
+  'dist/line-chart.spec.js'
 ];
 
 preprocessors = {
-  'lib/line-chart.js': 'coverage'
+  'dist/line-chart.js': 'coverage'
 };
 
 // list of files to exclude

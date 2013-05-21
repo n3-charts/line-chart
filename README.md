@@ -42,7 +42,7 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   series: [
-    {y: 'value', color: 'steelblue', type: 'area'},
+    {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'},
     {y: 'otherValue', axis: 'y2', color: 'lightsteelblue'}
   ],
   lineMode: 'linear'
@@ -53,6 +53,7 @@ The `series` key must be an array which contains objects with the following prop
  
 + `y` : mandatory, defines which property on each data row will be used as ordinate value.
 + `color` : mandatory, any valid HTML color.
++ `label` : optional, will be used in the legend (if not undefined, the `y` value will be used).
 + `axis` : optional, can be either 'y' (default, for left) or 'y2' (for right). Defines which vertical axis should be used for this series. If no right axis is needed, none will be displayed.
 + `type` : optional, can be one value between 'line', 'area', 'column'. Default is 'line'.
 
