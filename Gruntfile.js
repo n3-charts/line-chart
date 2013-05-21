@@ -21,30 +21,23 @@ module.exports = function(grunt) {
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
       '* Copyright (c) <%= grunt.template.today("yyyy") %> Angular D3;' +
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
-    // Task configuration.
+
     watch: {
-      options: {
-        livereload: true
-      },
-      gruntfile: {
-        files: '<%= jshint.gruntfile.src %>',
-        tasks: ['jshint:gruntfile']
-      },
-      test: {
-        files: ['<%= jshint.test.src %>'],
-        tasks: [ 'jshint:test', 'karma:unit:run' ],
-        options: {
-          livereload: false
-        }
-      }
+      files: ['lib/<%= pkg.name %>.js', 'test/<%= pkg.name %>.spec.js'],
+      tasks: ['jshint', 'karma:continuous', 'concat', 'uglify']
     },
+
     karma: {
       options: testConfig('karma.conf.js'),
-      unit: {
-        background: true
-      },
+
       continuous: {
-        singleRun: true
+        singleRun: true,
+        autoWatch: false,
+        browsers: ['PhantomJS']
+      },
+
+      unit: {
+        browsers: ['Chrome', 'Firefox']
       }
     },
 
@@ -62,6 +55,7 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.css'
       }
     },
+
     uglify: {
       options: {
         banner: '<%= banner %>'
@@ -71,6 +65,7 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
+
     jshint: {
       options: {
         jshintrc: '.jshintrc'
@@ -88,7 +83,4 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['jshint', 'karma:continuous', 'concat', 'uglify']);
 
   grunt.registerTask('fast-build', ['concat', 'uglify']);
-
-  grunt.registerTask('test', ['karma:unit', 'watch:test']);
-
 };

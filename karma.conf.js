@@ -33,7 +33,7 @@ coverageReporter = {
 
 // test results reporter to use
 // possible values: 'dots', 'progress', 'junit'
-reporters = ['progress', 'coverage'];
+reporters = ['dots', 'coverage'];
 
 
 // web server port
@@ -54,7 +54,7 @@ logLevel = LOG_INFO;
 
 
 // enable / disable watching file and executing tests whenever any file changes
-autoWatch = false;
+autoWatch = true;
 
 
 // Start these browsers, currently available:
@@ -66,12 +66,4 @@ autoWatch = false;
 // - PhantomJS
 // - IE (only Windows)
 // browsers = ['PhantomJS'];
-browsers = ['Chrome', 'Firefox']
-
-// If browser does not capture in given timeout [ms], kill it
-captureTimeout = 5000;
-
-
-// Continuous Integration mode
-// if true, it capture browsers, run tests and exit
-singleRun = false;
+browsers = ['PhantomJS']//, 'Firefox']
