@@ -87,18 +87,6 @@ Additionally, you can set `lineMode` to a value between these :
 
 ### Testing
 AngularJS is designed to be testable, and so is this project.
-
-This will install karma (and other stuff, I guess)
-
-```sh
-$ npm install
-```
-
-And this will run the awesome karma testrunner. In the also awesome PhantomJS headless browser. There is so much awesomeness in here.
-
-```sh
-$ karma start karma-conf.js
-```
-
+It is 100% covered, and we want to keep it this way.
 
   [1]: https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
