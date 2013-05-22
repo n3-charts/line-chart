@@ -37,7 +37,13 @@ module.exports = function(grunt) {
       },
 
       unit: {
-        browsers: ['Chrome', 'Firefox']
+        singleRun: true,
+        autoWatch: false,
+        coverageReporter: {
+          type : 'html',
+          dir : 'coverage/'
+        },
+        browsers: ['PhantomJS']
       }
     },
 
@@ -87,4 +93,5 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['jshint', 'karma:continuous', 'concat', 'uglify']);
 
   grunt.registerTask('fast-build', ['concat', 'uglify']);
+  grunt.registerTask('coverage', ['concat', 'karma:unit']);
 };

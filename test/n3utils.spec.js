@@ -1,8 +1,43 @@
 describe('n3utils', function() {
 
   describe('getBestColumnWidth', function() {
-    it('handle no data', inject(function(n3utils) {
+    it('should handle no data', inject(function(n3utils) {
       expect(n3utils.getBestColumnWidth({}, [])).toBe(10);
+    }));
+  });
+
+  describe('sanitizeOptions', function() {
+    it('should return default options when given null or undefined', inject(function(n3utils) {
+      expect(n3utils.sanitizeOptions()).toEqual(
+        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {}}, series: []}
+      );
+    }));
+
+    it('should set default axes and empty series', inject(function(n3utils) {
+      expect(n3utils.sanitizeOptions({})).toEqual(
+        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {}}, series: []}
+      );
+    }));
+
+    it('should set default x axis type to linear', inject(function(n3utils) {
+      expect(n3utils.sanitizeOptions(
+        {lineMode: 'linear', axes: {x: {}, y: {}}, series: []})).toEqual(
+        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {}}, series: []}
+      );
+    }));
+
+    it('should set default y axis', inject(function(n3utils) {
+      expect(n3utils.sanitizeOptions(
+        {lineMode: 'linear', axes: {x: {}}, series: []})).toEqual(
+        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {}}, series: []}
+      );
+    }));
+
+    it('should set default x axis', inject(function(n3utils) {
+      expect(n3utils.sanitizeOptions(
+        {lineMode: 'linear', axes: {}, series: []})).toEqual(
+        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {}}, series: []}
+      );
     }));
   });
 
@@ -12,7 +47,10 @@ describe('n3utils', function() {
       {x: 1, foo: 8.15485, value: 8}
     ];
 
+    var xFormatter = function(text) {return ''};
+
     var options = {
+      axes: {x: {tooltipFormatter: xFormatter}},
       series: [
         {y: 'value', axis: 'y2', color: 'steelblue'},
         {y: 'foo', color: 'red', type: 'area'}
@@ -20,18 +58,22 @@ describe('n3utils', function() {
     };
 
     var expected = [{
+      xFormatter: xFormatter,
       name: 'value', color: 'steelblue', axis: 'y2', type: 'line', index: 0,
       values: [
         {x: 0, value: 4, axis: 'y2'}, {x: 1, value: 8, axis: 'y2'}
       ]
     }, {
+      xFormatter: xFormatter,
       name: 'foo', color: 'red', axis: 'y', type: 'area', index: 1,
       values: [
         {x: 0, value: 4.154, axis: 'y'}, {x: 1, value: 8.15485, axis: 'y'}
       ]
     }];
 
-    expect(n3utils.getDataPerSeries(data, options)).toEqual(expected);
+    var computed = n3utils.getDataPerSeries(data, options);
+
+    expect(computed).toEqual(expected);
 
   }));
 
@@ -64,7 +106,7 @@ describe('n3utils', function() {
 
     var dimensions = {left: 10, right: 10};
 
-    var options = {};
+    var options = {series: []};
     n3utils.adjustMargins(dimensions, options, data);
 
     expect(dimensions).toEqual({left: 45, right: 50, top: 20, bottom: 30});
