@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.1 - 2013-05-21
+/*! line-chart - v0.0.1 - 2013-05-22
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 angular.module('n3-charts.linechart', [])
@@ -48,14 +48,19 @@ angular.module('n3-charts.linechart', [])
       return widest;
     },
 
-    createAxes: function(svg, dimensions, drawY2Axis) {
+    createAxes: function(svg, dimensions, axesOptions) {
+      var drawY2Axis = axesOptions.y2 !== undefined;
+
       var width = dimensions.width;
       var height = dimensions.height;
 
       width = width - dimensions.left - dimensions.right;
       height = height - dimensions.top - dimensions.bottom;
 
-      var x = d3.scale.linear().rangeRound([0, width]);
+      var x = axesOptions.x.type === 'date' ?
+        d3.time.scale().rangeRound([0, width]) :
+        d3.scale.linear().rangeRound([0, width]);
+
       var y = d3.scale.linear().rangeRound([height, 0]);
       var y2 = d3.scale.linear().rangeRound([height, 0]);
 
@@ -383,7 +388,13 @@ angular.module('n3-charts.linechart', [])
           'transform': 'translate(' + target.x + ',0)'
         });
 
-      var textX = '' + target.datum.x;
+      var textX;
+      if (target.series.xFormatter) {
+        textX = '' + target.series.xFormatter(target.datum.x);
+      } else {
+        textX = '' + target.datum.x;
+      }
+
       xTooltip.select('text').text(textX);
       xTooltip.select('path')
         .attr('fill', target.series.color)
@@ -490,7 +501,8 @@ angular.module('n3-charts.linechart', [])
     },
 
     getDataPerSeries: function(data, options) {
-      var series = options ? options.series : null;
+      var series = options.series;
+      var axes = options.axes;
 
       if (!series || !series.length || !data || !data.length) {
         return [];
@@ -500,6 +512,7 @@ angular.module('n3-charts.linechart', [])
 
       series.forEach(function(s) {
         var seriesData = {
+          xFormatter: axes.x.tooltipFormatter,
           index: lineData.length,
           name: s.y,
           values: [],
@@ -560,7 +573,11 @@ angular.module('n3-charts.linechart', [])
       var step = this.getAverageStep(data, 'x');
       var d = xScale.domain();
 
-      xScale.domain([d[0] - step, d[1] + step]);
+      if (angular.isDate(d[0])) {
+        xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)]);
+      } else {
+        xScale.domain([d[0] - step, d[1] + step]);
+      }
     },
 
     getAverageStep: function(data, field) {
@@ -600,7 +617,7 @@ angular.module('n3-charts.linechart', [])
         return;
       }
 
-      var series = (options && options.series) ? options.series : [];
+      var series = options.series;
 
       var leftSeries = series.filter(function(s) { return s.axis !== 'y2'; });
       var leftWidest = this.getWidestOrdinate(data, leftSeries);
@@ -681,6 +698,53 @@ angular.module('n3-charts.linechart', [])
         });
 
       return isVisible;
+    },
+
+    getDefaultOptions: function() {
+      return {
+        lineMode: 'linear',
+        axes: {
+          x: {type: 'linear'},
+          y: {}
+        },
+        series: []
+      };
+    },
+
+    sanitizeOptions: function(options) {
+      if (options === null || options === undefined) {
+        return this.getDefaultOptions();
+      }
+
+      if (!options.series) {
+        options.series = [];
+      }
+
+      if (!options.axes) {
+        options.axes = {x: {type: 'linear'}, y: {}};
+      }
+
+      if (!options.axes.y) {
+        options.axes.y = {};
+      }
+
+      if (!options.axes.x) {
+        options.axes.x = {type: 'linear'};
+      }
+
+      if (!options.axes.x.type) {
+        options.axes.x.type = 'linear';
+      }
+
+      if (!options.lineMode) {
+        options.lineMode = 'linear';
+      }
+
+      if (this.haveSecondYAxis(options.series)) {
+        options.axes.y2 = {};
+      }
+
+      return options;
     }
   };
 })
@@ -700,9 +764,11 @@ angular.module('n3-charts.linechart', [])
     };
 
     scope.redraw = function(dimensions) {
+      var options = n3utils.sanitizeOptions(scope.options);
+
       var data = scope.data;
-      var options = scope.options;
-      var series = options && options.series ? options.series : [];
+
+      var series = options.series;
 
       var dataPerSeries = n3utils.getDataPerSeries(data, options);
 
@@ -715,11 +781,9 @@ angular.module('n3-charts.linechart', [])
       }
       n3utils.clean(element[0]);
 
-      var haveSecondYAxis = n3utils.haveSecondYAxis(series);
-
       var svg = n3utils.bootstrap(element[0], dimensions);
       var axes = n3utils
-        .createAxes(svg, dimensions, haveSecondYAxis)
+        .createAxes(svg, dimensions, options.axes)
         .andAddThemIf(!isThumbnail);
 
       n3utils.createContent(svg);
@@ -728,7 +792,7 @@ angular.module('n3-charts.linechart', [])
         n3utils.drawLegend(svg, series, dimensions);
       }
 
-      var lineMode = options ? options.lineMode : 'linear';
+      var lineMode = options.lineMode;
 
       if (dataPerSeries.length > 0) {
         n3utils.setScalesDomain(axes, data, options.series, svg);

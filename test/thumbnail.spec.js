@@ -1,13 +1,13 @@
 describe('thumbnail when initializing', function() {
   beforeEach(inject(function($rootScope, $compile) {
-      elm = angular.element('<div id="toto">' +
-        '<linechart mode="thumbnail"></linechart>' +
-        '</div>');
+    elm = angular.element('<div id="toto">' +
+      '<linechart mode="thumbnail"></linechart>' +
+      '</div>');
 
-      scope = $rootScope;
-      $compile(elm)(scope);
-      scope.$digest();
-    }));
+    scope = $rootScope;
+    $compile(elm)(scope);
+    scope.$digest();
+  }));
 
   it('should create one svg element', function() {
     expect(elm[0].getAttribute('id')).toBe('toto');

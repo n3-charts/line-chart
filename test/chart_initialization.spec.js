@@ -45,7 +45,7 @@ describe('chart when initializing', function() {
     expect(content[5].getAttribute('id')).toBe('y2Tooltip');
   });
 
-  it('should draw data', function() {
+  xit('should draw data', function() {
     scope.$apply(function() {
       scope.data = [
         {x: 0, value: 4, foo: -2}, {x: 1, value: 8, foo: 22}, {x: 2, value: 15, foo: -1},

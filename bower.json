@@ -10,6 +10,7 @@
   "devDependencies": {
     "d3": "~3.1.7",
     "angular": "~1.0.6",
-    "angular-mocks": "~1.0.6"
+    "angular-mocks": "~1.0.6",
+    "moment": "~2.0.0"
   }
 }

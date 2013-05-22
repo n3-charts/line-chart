@@ -41,6 +41,9 @@ Options must be an object with a series array. It should look like this :
 
 ```js
 $scope.options = {
+  axes: {
+    x: {type: 'linear'}
+  },
   series: [
     {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'},
     {y: 'otherValue', axis: 'y2', color: 'lightsteelblue'}
@@ -48,7 +51,12 @@ $scope.options = {
   lineMode: 'linear'
 }
 ```
-##### Series definition
+##### Axes
+The `axes` keys can be undefined. Otherwise, it should contain an `x̀` key with the followinf properties :
+
+ + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
+
+##### Series
 The `series` key must be an array which contains objects with the following properties :
  
 + `y` : mandatory, defines which property on each data row will be used as ordinate value.
