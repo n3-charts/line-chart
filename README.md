@@ -42,7 +42,7 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {type: 'linear'}
+    x: {type: 'linear', tooltipFormatter: function(x) {return x;}}
   },
   series: [
     {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'},
@@ -52,9 +52,12 @@ $scope.options = {
 }
 ```
 ##### Axes
-The `axes` keys can be undefined. Otherwise, it should contain an `x̀` key with the followinf properties :
+The `axes` keys can be undefined. Otherwise, it should contain an `x̀` key with the following properties :
 
  + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
+ + `tooltipFormatter` : optional, allows to format the tooltip. Must be a function that accepts a single arguments, the x value. It should return something that will be converted into a string and put in the x tooltip.
+
+> **Note :** only the x axis can be configured (but the other axes should be available soon...).
 
 ##### Series
 The `series` key must be an array which contains objects with the following properties :
