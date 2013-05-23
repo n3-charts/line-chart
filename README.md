@@ -2,7 +2,7 @@
 
 A line chart implementation for [AngularJS](http://angularjs.org/) applications. It makes an extensive use of the wonderful [D3.js](http://d3js.org/) library.
 
-And here is the [examples page](http://angular-d3.github.io/line-chart).
+And here is the [demo page](http://angular-d3.github.io/line-chart).
 
 ### How to install
  + Copy `line-chart.js` and `line-chart.css` wherever you want
@@ -84,6 +84,30 @@ Additionally, you can set `lineMode` to a value between these :
 + monotone
 
 > For more information about interpolation, please consult the [D3.js documentation about that][1].
+
+### Building
+Fetch the repo :
+```sh
+$ git clone https://github.com/angular-d3/line-chart.git
+```
+
+Install stuff :
+```sh
+$ npm install
+```
+
+Install moar stuff :
+```sh
+$ bower install
+```
+
+Build :
+Install stuff :
+```sh
+$ grunt
+```
+
+Hack.
 
 ### Testing
 AngularJS is designed to be testable, and so is this project.
