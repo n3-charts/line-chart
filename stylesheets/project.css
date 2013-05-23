@@ -1,0 +1,17 @@
+#hero-container, #signup-form input, #signup-form button, #nav-bar.brand {
+  font-family: 'proxima-nova', 'Helvetica Neue', Helvetica, Arial;
+}
+#signup-form {
+  padding: 20px 15px;
+  position: relative;
+  min-height: 28px;
+}
+#signup-form input {
+  position: absolute;
+  left: 15px;
+  right: 100px;
+  width: auto;
+}
+#signup-form button {
+  float: right;
+}
