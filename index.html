@@ -1,116 +1,78 @@
-<!doctype html style="height:100%">
+<!DOCTYPE HTML>
 <html lang="en" ng-app="myApp">
-<head>
-  <meta charset="utf-8">
-  <title>Line chart demo</title>
-  <link rel="stylesheet" href="line-chart.css"/>
-  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
-</head>
-<body ng-controller="DemoCtrl">
-  <div class='container'>
-    
-    <div class="jumbotron">
-      <h1>n3-charts examples
-      <a
-        href="http://plnkr.co/edit/rU1AdH?p=preview" target="_blank"
-        class="btn btn-large btn-primary">Playground <i class="icon-share-alt icon-white"></i></a>
-    </div>
-    
-    
-    <div class='' ng-repeat="example in examples">
-      <h3>{{example.label}}</h3>
-      <div class='row guttered'>
-        <div class='span9'>
-          <div style="height: 500px">
-            <linechart data='example.data' options='example.options'></linechart>
-          </div>
-        </div>
-        <div class='span3'>
-          <pre class="prettyprint">{{example.json}}</pre>
-        </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Limelight|Flamenco|Federo|Yesteryear|Josefin Sans|Spinnaker|Sansita One|Handlee|Droid Sans|Oswald:400,300,700" media="screen" rel="stylesheet" type="text/css" />
+    <style>
+      body {
+        padding-top: 60px;
+      }
+    </style>
+    <link href="stylesheets/bootstrap.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/bootstrap-responsive.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/common.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/fontawesome.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/project.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="scripts/dist/line-chart.css" media="screen" rel="stylesheet" type="text/css" />
+    <title>n3-charts</title>
+  </head>
+
+  <body ng-controller='DemoCtrl'>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <a class="brand" href="#">n3-charts</a>
+        <ul class="nav pull-right">
+          <li>
+            <a href="#">Home</a>
+          </li>
+          <li>
+            <a href="https://github.com/angular-d3/line-chart">Download</a>
+          </li>
+          <li>
+            <a href="http://plnkr.co/edit/rU1AdH?p=preview">Playground</a>
+          </li>
+        </ul>
       </div>
-      <hr style="border: 1px solid rgba(14,46,66,0.2);">
     </div>
-  </div>
-  
-  <script src="lib/angular.js"></script>
-  <script src="lib/d3.v3.min.js"></script>
-  <script src="line-chart.js"></script>
-  <script>
-    angular.module('myApp', ['n3-charts.linechart'])
-    
-    .controller('DemoCtrl', function($scope) {
-      var sinData = function(rowCount, seriesCount) {
-        var data = [];
-        
-        for (var i = 0; i < seriesCount; i++) {
-          for (var j = 0; j < rowCount; j++) {
-            var row = data[j] || {x: j};
-            row['series_' + i] = Math.round(Math.sin((i+1)*j/5)*(5*(i+1))*1000)/1000;
-            data[j] = row;
-          }
-        }
-        
-        return data;
-      }
-      
-      $scope.examples = [];
-      
-      $scope.addExample = function(label, desc, data, options) {
-        $scope.examples.push({
-            label: label,
-            description: desc,
-            data: data,
-            options: options,
-            json: JSON.stringify(options, null, 2)
-        });
-        
-        return $scope.addExample;
-      };
-      
-      $scope.setCurrent = function(example) {
-        $scope.current = example;
-        $scope.json = JSON.stringify(example.options, null, 2);
-      }
-      
-      var colors = d3.scale.category10();
-      
-      $scope.addExample
-      
-        ('Line series', 'A basic example', sinData(50, 1),
-          {series: [{y: 'series_0', color: colors(0)}]})
-        
-        ('Area series', 'A basic example', sinData(50, 1),
-          {series: [{y: 'series_0', color: colors(1), type: 'area'}]})
-        
-        ('Column series', 'A basic example', sinData(50, 1),
-          {series: [{y: 'series_0', color: colors(2), type: 'column'}]})
-        
-        ('Two axes', 'A basic example', sinData(50, 2),
-          {series: [
-            {y: 'series_0', color: colors(3)},
-            {y: 'series_1', axis: 'y2', color: colors(4)}
-          ]}
-        )
-        
-        ('Interpolation', 'A basic example', sinData(50, 5),
-          {lineMode: 'bundle', series: [
-            {y: 'series_0', color: colors(5)},
-            {y: 'series_4', axis: 'y2', color: colors(6)}
-          ]}
-        )
-        
-        ('Several series', 'A basic example', sinData(50, 5),
-          {lineMode: 'cardinal', series: [
-            {y: 'series_0', type: 'area', color: colors(7)},
-            {y: 'series_4', type: 'column', color: colors(8)},
-            {y: 'series_4', color: colors(9)}
-          ]}
-        );
-      
-      $scope.setCurrent($scope.examples[0]);
-    })
-  </script>
-  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-</body>
+    <div class="container-fluid container-fluid-3">
+      <div class="container">
+        <div class="row-fluid">
+          <span class="span12">
+            <h1 class="heading">Charts. Better.</h1>
+            <p>Awesome charts for AngularJS, powered by D3.JS.</p>
+            <div class='carousel mainchart'>
+              <linechart data='current.data'options='current.options'></linechart>
+              <p class="carousel-control left"><i class="icon-chevron-sign-left"></i></p>
+              <p class="carousel-control right"><i class="icon-chevron-sign-right"></i></p>
+            </div>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container container-1">
+      <div class="row-fluid">
+        <span class="span4">
+          <h2 class="heading">Robust</h2>
+          <p>Powered by the awesome D3.JS library, n3-charts makes charts you can trust. What you see is what you told n3-charts to do. Nothing more, nothing less.</p>
+        </span>
+        <span class="span4">
+          <h2 class="heading">Ready</h2>
+          <p>Have a look at the examples : in a few simple steps, you can visualize your data. n3-charts handles the boring tasks.</p>
+        </span>
+        <span class="span4">
+          <h2 class="heading">Smart</h2>
+          <p>n3-charts adapts itself to your data. Tooltips are never cropped, data is never hidden. Don't worry about margins, sizes and other stuff. n3-chart handles it for you.</p>
+        </span>
+      </div>
+    </div>
+  </body>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
+  <script src="scripts/components/angular/angular.js"></script>
+  <script src="scripts/components/d3/d3.min.js"></script>
+  <script src="scripts/dist/line-chart.js"></script>
+  <script src="scripts/app.js"></script>
 </html>
