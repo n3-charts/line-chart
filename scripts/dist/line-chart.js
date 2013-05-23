@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.1 - 2013-05-22
+/*! line-chart - v0.0.1 - 2013-05-23
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 angular.module('n3-charts.linechart', [])
@@ -6,7 +6,7 @@ angular.module('n3-charts.linechart', [])
 .factory('n3utils', function() {
   return {
     getDefaultMargins: function() {
-      return {top: 20, right: 50, bottom: 30, left: 50};
+      return {top: 20, right: 50, bottom: 60, left: 50};
     },
 
     clean: function(element) {
@@ -655,7 +655,7 @@ angular.module('n3-charts.linechart', [])
           .attr({
             'class': 'legendItem',
             'transform': function(s, i) {
-              return 'translate(' + layout[i] + ',' + (dimensions.height - 25) + ')';
+              return 'translate(' + layout[i] + ',' + (dimensions.height - 35) + ')';
             }
           });
 
