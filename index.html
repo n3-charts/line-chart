@@ -12,7 +12,7 @@
     <link href="stylesheets/bootstrap.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="stylesheets/bootstrap-responsive.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="stylesheets/common.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="stylesheets/fontawesome.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="stylesheets/project.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="scripts/dist/line-chart.css" media="screen" rel="stylesheet" type="text/css" />
@@ -43,9 +43,9 @@
             <h1 class="heading">Charts. Better.</h1>
             <p>Awesome charts for AngularJS, powered by D3.JS.</p>
             <div class='carousel mainchart'>
-              <linechart data='current.data'options='current.options'></linechart>
-              <p class="carousel-control left"><i class="icon-chevron-sign-left"></i></p>
-              <p class="carousel-control right"><i class="icon-chevron-sign-right"></i></p>
+              <linechart data='examples[currentIndex].data'options='examples[currentIndex].options'></linechart>
+              <a class="left carousel-control" ng-click='previous()'>‹</a>
+              <a class="right carousel-control" ng-click='next()'>›</a>
             </div>
           </span>
         </div>
