@@ -1,4 +1,10 @@
 describe('lineMode set to cardinal', function() {
+  beforeEach(inject(function(n3utils) {
+    spyOn(n3utils, 'getDefaultMargins').andReturn(
+      {top: 20, right: 50, bottom: 30, left: 50}
+    );
+  }));
+
   beforeEach(function() {
     scope.$apply(function() {
       scope.data = [
