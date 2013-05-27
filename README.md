@@ -1,4 +1,4 @@
-# n3-charts.line-chart [![Build Status](https://travis-ci.org/angular-d3/line-chart.png?branch=master)](https://travis-ci.org/angular-d3/line-chart)
+# angular-d3.line-chart [![Build Status](https://travis-ci.org/angular-d3/line-chart.png?branch=master)](https://travis-ci.org/angular-d3/line-chart)
 
 A line chart implementation for [AngularJS](http://angularjs.org/) applications. It makes an extensive use of the wonderful [D3.js](http://d3js.org/) library.
 
