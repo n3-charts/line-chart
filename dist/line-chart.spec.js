@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.1 - 2013-05-23
+/*! line-chart - v0.0.3 - 2013-06-18
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 'use strict';
@@ -177,7 +177,7 @@ describe('chart when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(6);
+    expect(content.length).toBe(7);
 
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
@@ -196,7 +196,7 @@ describe('chart when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(8);
+    expect(content.length).toBe(9);
 
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
@@ -318,7 +318,7 @@ describe('legend', function() {
 
     var content = svgGroup.childNodes;
 
-    var legendGroup = content[7];
+    var legendGroup = content[8];
     expect(legendGroup.getAttribute('class')).toBe('legend');
 
     expect(legendGroup.childNodes.length).toBe(2);
@@ -888,7 +888,7 @@ describe('thumbnail when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(1);
+    expect(content.length).toBe(2);
   });
 });
 
