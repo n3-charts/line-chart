@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.1 - 2013-05-23
+/*! line-chart - v0.0.3 - 2013-06-18
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 angular.module('n3-charts.linechart', [])
@@ -10,7 +10,11 @@ angular.module('n3-charts.linechart', [])
     },
 
     clean: function(element) {
-      d3.select(element).select('svg').remove();
+      d3.select(element)
+        .on('keydown', null)
+        .on('keyup', null)
+        .select('svg')
+          .remove();
     },
 
     bootstrap: function(element, dimensions) {
@@ -178,8 +182,18 @@ angular.module('n3-charts.linechart', [])
 
     createContent: function(svg) {
       svg.append('g')
-        .attr('class', 'content');
+        .attr('class', 'content')
+        .attr('clip-path', 'url(#clip)')
+      ;
     },
+
+    createClippingPath: function(svg, dimensions) {
+      svg.append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+        .attr("width", dimensions.width - dimensions.left - dimensions.right)
+        .attr("height", dimensions.height - dimensions.top - dimensions.bottom);
+      },
 
     drawLines: function(svg, scales, data, interpolateMode) {
       var drawers = {
@@ -201,6 +215,18 @@ angular.module('n3-charts.linechart', [])
               'fill': 'none',
               'stroke-width': '1px'
             });
+
+      return this;
+    },
+
+    updateLines: function(svg, scales, interpolateMode) {
+      var drawers = {
+        y: this.createLeftLineDrawer(scales, interpolateMode),
+        y2: this.createRightLineDrawer(scales, interpolateMode)
+      };
+
+      svg.select('.content').selectAll('.lineGroup').selectAll('path')
+        .attr('d', function(d) {return drawers[d.axis](d.values);});
 
       return this;
     },
@@ -233,9 +259,21 @@ angular.module('n3-charts.linechart', [])
             return 'areaGroup ' + 'series_' + s.index;
           })
           .append('path')
-            .style('opacity', '0.3')
             .attr('class', 'area')
+            .style('opacity', '0.3')
             .attr('d',  function(d) { return drawers[d.axis](d.values); });
+
+      return this;
+    },
+
+    updateAreas: function(svg, scales, interpolateMode) {
+      var drawers = {
+        y: this.createLeftAreaDrawer(scales, interpolateMode),
+        y2: this.createRightAreaDrawer(scales, interpolateMode)
+      };
+
+      svg.select('.content').selectAll('.areaGroup').selectAll('path')
+        .attr('d', function(d) {return drawers[d.axis](d.values);});
 
       return this;
     },
@@ -325,6 +363,16 @@ angular.module('n3-charts.linechart', [])
       return this;
     },
 
+    updateColumns: function(svg, scales) {
+      svg.select('.content').selectAll('.columnGroup').selectAll('rect')
+        .attr("x", function(d) {return scales.xScale(d.x);})
+        .attr("y", function(d) {
+          return scales[d.axis + 'Scale'](Math.max(0, d.value));
+        });
+
+      return this;
+    },
+
     drawDots: function(svg, axes, data) {
       var that = this;
 
@@ -364,6 +412,16 @@ angular.module('n3-charts.linechart', [])
             });
 
       return this;
+    },
+
+    updateDots: function(svg, scales) {
+      svg.select('.content').selectAll('.dotGroup').selectAll('.dot')
+        .attr({
+          'cx': function(d) { return scales.xScale(d.x); },
+          'cy': function(d) { return scales[d.axis + 'Scale'](d.value); }
+        });
+
+        return this;
     },
 
     onMouseOver: function(svg, target) {
@@ -518,7 +576,7 @@ angular.module('n3-charts.linechart', [])
           values: [],
           color: s.color,
           axis: s.axis || 'y',
-          type: s.type || 'line'
+          type: s.type || 'line'
         };
 
         data.forEach(function(row) {
@@ -678,7 +736,7 @@ angular.module('n3-charts.linechart', [])
           'transform': 'translate(10, 3)',
           'text-rendering': 'geometric-precision'
         })
-        .text(function(s) {return s.label || s.y;});
+        .text(function(s) {return s.label || s.y;});
 
       return this;
     },
@@ -712,7 +770,7 @@ angular.module('n3-charts.linechart', [])
     },
 
     sanitizeOptions: function(options) {
-      if (options === null || options === undefined) {
+      if (options === null || options === undefined) {
         return this.getDefaultOptions();
       }
 
@@ -765,13 +823,9 @@ angular.module('n3-charts.linechart', [])
 
     scope.redraw = function(dimensions) {
       var options = n3utils.sanitizeOptions(scope.options);
-
       var data = scope.data;
-
       var series = options.series;
-
       var dataPerSeries = n3utils.getDataPerSeries(data, options);
-
       var isThumbnail = (attrs.mode === 'thumbnail');
 
       if (isThumbnail) {
@@ -787,6 +841,7 @@ angular.module('n3-charts.linechart', [])
         .andAddThemIf(!isThumbnail);
 
       n3utils.createContent(svg);
+      n3utils.createClippingPath(svg, dimensions);
 
       if (!isThumbnail) {
         n3utils.drawLegend(svg, series, dimensions);
@@ -805,6 +860,56 @@ angular.module('n3-charts.linechart', [])
           .drawLines(svg, axes, dataPerSeries, lineMode)
           .drawDots(svg, axes, dataPerSeries)
         ;
+
+        var zoom = function() {
+          var b = d3.event.target;
+
+          var y2Scale;
+          if (axes.y2Scale) {
+            y2Scale = axes.y2Scale.copy();
+            y2Scale.domain(y2Scale.range().map(function(y) { return (y - b.translate()[1]) / b.scale(); }).map(y2Scale.invert));
+            svg.select('.y2.axis').call(axes.y2Axis.scale(y2Scale));
+          }
+
+          svg.select('.x.axis').call(axes.xAxis);
+          svg.select('.y.axis').call(axes.yAxis);
+
+          n3utils
+            .updateAreas(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
+            .updateColumns(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
+            .updateLines(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
+            .updateDots(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
+          ;
+        };
+
+        d3.select(element[0])
+          .attr('tabindex', '0')
+          .style('outline', '0px solid transparent')
+          .on('mouseover', function() {
+            d3.event.currentTarget.focus();
+          })
+          .on('mouseout', function() {
+            d3.event.currentTarget.blur();
+          })
+          .on('keydown', function() {
+            if (d3.event.shiftKey) {
+              svg.append("svg:rect")
+                .attr({
+                  'id': 'zoomPane',
+                  "class": "pane",
+                  "width": dimensions.width,
+                  "height": dimensions.height,
+                })
+                .call(d3.behavior.zoom()
+                  .x(axes.xScale)
+                  .y(axes.yScale)
+                  .on("zoom", zoom)
+                );
+            }
+          })
+          .on('keyup', function() {
+            svg.selectAll('#zoomPane').remove();
+          });
       }
     };
 

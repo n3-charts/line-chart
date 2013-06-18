@@ -26,6 +26,6 @@ describe('thumbnail when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(1);
+    expect(content.length).toBe(2);
   });
 });

@@ -1,3 +1,6 @@
+/*! line-chart - v0.0.3 - 2013-06-18
+* https://github.com/angular-d3/line-chart
+* Copyright (c) 2013 Angular D3; Licensed ,  */
 /*! line-chart - v0.0.1 - 2013-05-23
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
@@ -10,4 +13,9 @@
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
+}
+
+rect.pane {
+  fill: none;
+  pointer-events: all;
 }

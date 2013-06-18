@@ -15,7 +15,7 @@ describe('legend', function() {
 
     var content = svgGroup.childNodes;
 
-    var legendGroup = content[7];
+    var legendGroup = content[8];
     expect(legendGroup.getAttribute('class')).toBe('legend');
 
     expect(legendGroup.childNodes.length).toBe(2);

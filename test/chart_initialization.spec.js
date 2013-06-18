@@ -16,7 +16,7 @@ describe('chart when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(6);
+    expect(content.length).toBe(7);
 
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
@@ -35,7 +35,7 @@ describe('chart when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(8);
+    expect(content.length).toBe(9);
 
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
