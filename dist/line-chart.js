@@ -363,11 +363,16 @@ angular.module('n3-charts.linechart', [])
       return this;
     },
 
-    updateColumns: function(svg, scales) {
+    updateColumns: function(svg, scales, columnWidth) {
       svg.select('.content').selectAll('.columnGroup').selectAll('rect')
+        .attr('width', columnWidth)
         .attr("x", function(d) {return scales.xScale(d.x);})
         .attr("y", function(d) {
           return scales[d.axis + 'Scale'](Math.max(0, d.value));
+        })
+        .attr("height", function(d) {
+          return Math.abs(scales[d.axis + 'Scale'](d.value) -
+            scales[d.axis + 'Scale'](0));
         });
 
       return this;
@@ -803,6 +808,61 @@ angular.module('n3-charts.linechart', [])
       }
 
       return options;
+    },
+
+    activateZoom: function(element, svg, axes, dimensions, columnWidth) {
+      var y2Scale_old = axes.y2Scale;
+      var y2Scale = y2Scale_old ? y2Scale_old.copy() : undefined;
+      var that = this;
+
+      var onZoom = function() {
+        var b = behavior;
+
+        if (y2Scale_old) {
+          y2Scale.domain(y2Scale_old.range().map(function(y) { return (y - b.translate()[1]) / b.scale(); }).map(y2Scale_old.invert));
+          svg.select('.y2.axis').call(axes.y2Axis.scale(y2Scale));
+        }
+
+        svg.select('.x.axis').call(axes.xAxis);
+        svg.select('.y.axis').call(axes.yAxis);
+
+        that
+          .updateAreas(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
+          .updateColumns(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale}, b.scale() * columnWidth)
+          .updateLines(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
+          .updateDots(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
+        ;
+      };
+
+      var behavior = d3.behavior.zoom()
+        .x(axes.xScale)
+        .y(axes.yScale)
+        .on("zoom", onZoom);
+
+      d3.select(element)
+        .attr('tabindex', '0')
+        .style('outline', '0px solid transparent')
+        .on('mouseover', function() {
+          d3.event.currentTarget.focus();
+        })
+        .on('mouseout', function() {
+          d3.event.currentTarget.blur();
+        })
+        .on('keydown', function() {
+          if (d3.event.shiftKey) {
+            svg.append("svg:rect")
+              .attr({
+                'id': 'zoomPane',
+                "class": "pane",
+                "width": dimensions.width,
+                "height": dimensions.height,
+              })
+              .call(behavior);
+          }
+        })
+        .on('keyup', function() {
+          svg.selectAll('#zoomPane').remove();
+        });
     }
   };
 })
@@ -833,6 +893,7 @@ angular.module('n3-charts.linechart', [])
       } else {
         n3utils.adjustMargins(dimensions, options, data);
       }
+
       n3utils.clean(element[0]);
 
       var svg = n3utils.bootstrap(element[0], dimensions);
@@ -861,55 +922,7 @@ angular.module('n3-charts.linechart', [])
           .drawDots(svg, axes, dataPerSeries)
         ;
 
-        var zoom = function() {
-          var b = d3.event.target;
-
-          var y2Scale;
-          if (axes.y2Scale) {
-            y2Scale = axes.y2Scale.copy();
-            y2Scale.domain(y2Scale.range().map(function(y) { return (y - b.translate()[1]) / b.scale(); }).map(y2Scale.invert));
-            svg.select('.y2.axis').call(axes.y2Axis.scale(y2Scale));
-          }
-
-          svg.select('.x.axis').call(axes.xAxis);
-          svg.select('.y.axis').call(axes.yAxis);
-
-          n3utils
-            .updateAreas(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
-            .updateColumns(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
-            .updateLines(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
-            .updateDots(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
-          ;
-        };
-
-        d3.select(element[0])
-          .attr('tabindex', '0')
-          .style('outline', '0px solid transparent')
-          .on('mouseover', function() {
-            d3.event.currentTarget.focus();
-          })
-          .on('mouseout', function() {
-            d3.event.currentTarget.blur();
-          })
-          .on('keydown', function() {
-            if (d3.event.shiftKey) {
-              svg.append("svg:rect")
-                .attr({
-                  'id': 'zoomPane',
-                  "class": "pane",
-                  "width": dimensions.width,
-                  "height": dimensions.height,
-                })
-                .call(d3.behavior.zoom()
-                  .x(axes.xScale)
-                  .y(axes.yScale)
-                  .on("zoom", zoom)
-                );
-            }
-          })
-          .on('keyup', function() {
-            svg.selectAll('#zoomPane').remove();
-          });
+        n3utils.activateZoom(element[0], svg, axes, dimensions, columnWidth);
       }
     };
 
