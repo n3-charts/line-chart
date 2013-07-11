@@ -101,8 +101,7 @@ Install moar stuff :
 $ bower install
 ```
 
-Build :
-Install stuff :
+Install teh uterz stuff :
 ```sh
 $ grunt
 ```
