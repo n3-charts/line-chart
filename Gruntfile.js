@@ -52,8 +52,17 @@ module.exports = function(grunt) {
         banner: '<%= banner %>',
         stripBanners: true
       },
+      utils: {
+        src: ['lib/utils/*.js'],
+        dest: '/tmp/utils.js',
+        options: {
+          banner: grunt.file.read('lib/utils/utils.js.prefix'),
+          footer: grunt.file.read('lib/utils/utils.js.suffix'),
+          separator: ','
+        }
+      },
       js: {
-        src: ['lib/<%= pkg.name %>.js'],
+        src: ['lib/<%= pkg.name %>.js', '/tmp/utils.js'],
         dest: 'dist/<%= pkg.name %>.js'
       },
       css: {
@@ -84,7 +93,7 @@ module.exports = function(grunt) {
         src: 'Gruntfile.js'
       },
       test: {
-        src: ['lib/**/*.js']
+        src: ['lib/*.js']
       }
     }
   });
