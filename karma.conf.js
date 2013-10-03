@@ -10,9 +10,9 @@ basePath = '';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'bower_components/angular/angular.js',
-  'bower_components/angular-mocks/angular-mocks.js',
-  'bower_components/d3/d3.js',
+  'components/angular/angular.js',
+  'components/angular-mocks/angular-mocks.js',
+  'components/d3/d3.js',
   'dist/line-chart.js',
   'dist/line-chart.spec.js'
 ];
