@@ -519,10 +519,8 @@ sanitizeOptions: function(options) {
   if (options === null || options === undefined) {
     return this.getDefaultOptions();
   }
-
-  if (!options.series) {
-    options.series = [];
-  }
+  
+  options.series = this.sanitizeSeriesOptions(options.series);
 
   if (!options.axes) {
     options.axes = {x: {type: 'linear'}, y: {type: 'linear'}};
@@ -539,6 +537,19 @@ sanitizeOptions: function(options) {
     options.lineMode = 'linear';
   }
 
+  return options;
+},
+
+sanitizeSeriesOptions: function(options) {
+  if (!options) {
+    return [];
+  }
+  
+  var colors = d3.scale.category10();
+  options.forEach(function(s, i) {
+    s.color = s.color ? s.color : colors(i)
+  });
+  
   return options;
 },
 

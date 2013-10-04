@@ -6,41 +6,6 @@ describe('n3utils', function() {
     }));
   });
 
-  describe('sanitizeOptions', function() {
-    it('should return default options when given null or undefined', inject(function(n3utils) {
-      expect(n3utils.sanitizeOptions()).toEqual(
-        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
-      );
-    }));
-
-    it('should set default axes and empty series', inject(function(n3utils) {
-      expect(n3utils.sanitizeOptions({})).toEqual(
-        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
-        );
-    }));
-
-    it('should set default x axis type to linear', inject(function(n3utils) {
-      expect(n3utils.sanitizeOptions(
-        {lineMode: 'linear', axes: {x: {}, y: {}}, series: []})).toEqual(
-          {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
-        );
-      }));
-
-    it('should set default y axis', inject(function(n3utils) {
-      expect(n3utils.sanitizeOptions(
-        {lineMode: 'linear', axes: {x: {}}, series: []})).toEqual(
-      {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
-      );
-      }));
-
-    it('should set default x axis', inject(function(n3utils) {
-      expect(n3utils.sanitizeOptions(
-        {lineMode: 'linear', axes: {}, series: []})).toEqual(
-      {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
-      );
-      }));
-  });
-
 it('should compute data per series', inject(function(n3utils) {
   var data = [
   {x: 0, foo: 4.154, value: 4},
