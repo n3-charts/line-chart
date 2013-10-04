@@ -23,7 +23,7 @@ module.exports = function(grunt) {
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
 
     watch: {
-      files: ['lib/<%= pkg.name %>.js', 'test/*.spec.js'],
+      files: ['lib/**/*.js', 'test/*.spec.js'],
       tasks: ['jshint', 'concat', 'karma:continuous', 'uglify']
     },
 

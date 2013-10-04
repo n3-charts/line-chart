@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.3 - 2013-10-03
+/*! line-chart - v0.0.3 - 2013-10-04
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -47,7 +47,7 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
       var lineMode = options.lineMode;
 
       if (dataPerSeries.length > 0) {
-        n3utils.setScalesDomain(axes, data, options.series, svg);
+        n3utils.setScalesDomain(axes, data, options.series, svg, options.axes);
 
         var columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
 
@@ -133,129 +133,6 @@ createRightAreaDrawer: function(scales, interpolateMode) {
     .y0(function(d) { return scales.y2Scale(0); })
     .y1(function(d) { return scales.y2Scale(d.value); })
     .interpolate(interpolateMode);
-},createAxes: function(svg, dimensions, axesOptions) {
-  var drawY2Axis = axesOptions.y2 !== undefined;
-
-  var width = dimensions.width;
-  var height = dimensions.height;
-
-  width = width - dimensions.left - dimensions.right;
-  height = height - dimensions.top - dimensions.bottom;
-
-  var x = axesOptions.x.type === 'date' ?
-    d3.time.scale().rangeRound([0, width]) :
-    d3.scale.linear().rangeRound([0, width]);
-
-  var y = d3.scale.linear().rangeRound([height, 0]);
-  var y2 = d3.scale.linear().rangeRound([height, 0]);
-
-  var xAxis = d3.svg.axis().scale(x).orient('bottom');
-  var yAxis = d3.svg.axis().scale(y).orient('left');
-  var y2Axis = d3.svg.axis().scale(y2).orient('right');
-
-  var that = this;
-
-  return {
-    xScale: x,
-    yScale: y,
-    y2Scale: y2,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    y2Axis: y2Axis,
-
-    andAddThemIf: function(expression) {
-      if (!!expression) {
-        svg.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(0,' + height + ')')
-          .call(xAxis);
-
-        svg.append('g')
-          .attr('class', 'y axis')
-          .call(yAxis);
-
-        if (drawY2Axis) {
-          svg.append('g')
-            .attr('class', 'y2 axis')
-            .attr('transform', 'translate(' + width + ', 0)')
-            .call(y2Axis);
-        }
-
-        that.addTooltips(svg, width, height, drawY2Axis);
-      }
-
-      return {
-        xScale: x, yScale: y, y2Scale: y2,
-        xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
-      };
-    }
-  };
-},
-
-setScalesDomain: function(scales, data, series, svg) {
-  this.setXScale(scales.xScale, data, series);
-
-  var ySeries = series.filter(function(s) { return s.axis !== 'y2'; });
-  var y2Series = series.filter(function(s) { return s.axis === 'y2'; });
-
-  scales.yScale.domain(this.yExtent(ySeries, data)).nice();
-  scales.y2Scale.domain(this.yExtent(y2Series, data)).nice();
-
-  svg.selectAll('.x.axis').call(scales.xAxis);
-  svg.selectAll('.y.axis').call(scales.yAxis);
-  svg.selectAll('.y2.axis').call(scales.y2Axis);
-},
-
-yExtent: function(series, data) {
-  var minY = Number.POSITIVE_INFINITY;
-  var maxY = Number.NEGATIVE_INFINITY;
-
-  series.forEach(function(s) {
-    minY = Math.min(minY, d3.min(data, function(d) { return d[s.y]; }));
-    maxY = Math.max(maxY, d3.max(data, function(d) { return d[s.y]; }));
-  });
-
-  return [minY, maxY];
-},
-
-setXScale: function(xScale, data, series) {
-  xScale.domain(d3.extent(data, function(d) { return d.x; }));
-
-  if (series.filter(function(s) { return s.type === 'column'; }).length) {
-    this.adjustXScaleForColumns(xScale, data);
-  }
-},
-
-adjustXScaleForColumns: function(xScale, data) {
-  var step = this.getAverageStep(data, 'x');
-  var d = xScale.domain();
-
-  if (angular.isDate(d[0])) {
-    xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)]);
-  } else {
-    xScale.domain([d[0] - step, d[1] + step]);
-  }
-},
-
-getAverageStep: function(data, field) {
-  var sum = 0;
-  var n = data.length - 1;
-
-  for (var i = 0; i<n; i++) {
-    sum += data[i + 1][field] - data[i][field];
-  }
-
-  return sum/n;
-},
-
-haveSecondYAxis: function(series) {
-  var doesHave = false;
-
-  angular.forEach(series, function(s) {
-    doesHave = doesHave || s.axis === 'y2';
-  });
-
-  return doesHave;
 },getBestColumnWidth: function(dimensions, data) {
   if (!data || data.length === 0) {
     return 10;
@@ -632,7 +509,7 @@ getWidestOrdinate: function(data, series) {
     lineMode: 'linear',
     axes: {
       x: {type: 'linear'},
-      y: {}
+      y: {type: 'linear'}
     },
     series: []
   };
@@ -648,30 +525,171 @@ sanitizeOptions: function(options) {
   }
 
   if (!options.axes) {
-    options.axes = {x: {type: 'linear'}, y: {}};
+    options.axes = {x: {type: 'linear'}, y: {type: 'linear'}};
   }
-
-  if (!options.axes.y) {
-    options.axes.y = {};
-  }
-
-  if (!options.axes.x) {
-    options.axes.x = {type: 'linear'};
-  }
-
-  if (!options.axes.x.type) {
-    options.axes.x.type = 'linear';
+  
+  options.axes.x = this.sanitizeAxisOptions(options.axes.x);
+  options.axes.y = this.sanitizeAxisOptions(options.axes.y);
+  
+  if (this.haveSecondYAxis(options.series)) {
+    options.axes.y2 = this.sanitizeAxisOptions(options.axes.y2);
   }
 
   if (!options.lineMode) {
     options.lineMode = 'linear';
   }
 
-  if (this.haveSecondYAxis(options.series)) {
-    options.axes.y2 = {};
+  return options;
+},
+
+sanitizeAxisOptions: function(options) {
+  if (!options) {
+    return {type: 'linear'};
+  }
+  
+  if (!options.type) {
+    options.type = 'linear';
+  }
+  
+  return options;
+},createAxes: function(svg, dimensions, axesOptions) {
+  var drawY2Axis = axesOptions.y2 !== undefined;
+
+  var width = dimensions.width;
+  var height = dimensions.height;
+
+  width = width - dimensions.left - dimensions.right;
+  height = height - dimensions.top - dimensions.bottom;
+
+  var x = axesOptions.x.type === 'date' ?
+    d3.time.scale().rangeRound([0, width]) :
+    d3.scale.linear().rangeRound([0, width]);
+
+  var y = axesOptions.y.type === 'log'
+    ? d3.scale.log().clamp(true).rangeRound([height, 0])
+    : d3.scale.linear().rangeRound([height, 0]);
+  
+  var y2 = (drawY2Axis && axesOptions.y2.type === 'log')
+    ? d3.scale.log().clamp(true).rangeRound([height, 0])
+    : d3.scale.linear().rangeRound([height, 0]);
+
+  var xAxis = d3.svg.axis().scale(x).orient('bottom');
+  var yAxis = d3.svg.axis().scale(y).orient('left');
+  var y2Axis = d3.svg.axis().scale(y2).orient('right');
+
+  var that = this;
+
+  return {
+    xScale: x,
+    yScale: y,
+    y2Scale: y2,
+    xAxis: xAxis,
+    yAxis: yAxis,
+    y2Axis: y2Axis,
+
+    andAddThemIf: function(expression) {
+      if (!!expression) {
+        svg.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call(xAxis);
+
+        svg.append('g')
+          .attr('class', 'y axis')
+          .call(yAxis);
+
+        if (drawY2Axis) {
+          svg.append('g')
+            .attr('class', 'y2 axis')
+            .attr('transform', 'translate(' + width + ', 0)')
+            .call(y2Axis);
+        }
+
+        that.addTooltips(svg, width, height, drawY2Axis);
+      }
+
+      return {
+        xScale: x, yScale: y, y2Scale: y2,
+        xAxis: xAxis, yAxis: yAxis, y2Axis: y2Axis
+      };
+    }
+  };
+},
+
+setScalesDomain: function(scales, data, series, svg, axesOptions) {
+  this.setXScale(scales.xScale, data, series);
+
+  var ySeries = series.filter(function(s) { return s.axis !== 'y2'; });
+  var y2Series = series.filter(function(s) { return s.axis === 'y2'; });
+  
+  var yDomain = this.yExtent(ySeries, data);
+  if (axesOptions.y.type === 'log') {
+    yDomain[0] = yDomain[0] === 0 ? 0.001 : yDomain[0];
+  }
+  
+  var y2Domain = this.yExtent(y2Series, data);
+  if (axesOptions.y2 && axesOptions.y2.type === 'log') {
+    y2Domain[0] = y2Domain[0] === 0 ? 0.001 : y2Domain[0];
+  }
+  
+  scales.yScale.domain(yDomain).nice();
+  scales.y2Scale.domain(y2Domain).nice();
+
+  svg.selectAll('.x.axis').call(scales.xAxis);
+  svg.selectAll('.y.axis').call(scales.yAxis);
+  svg.selectAll('.y2.axis').call(scales.y2Axis);
+},
+
+yExtent: function(series, data) {
+  var minY = Number.POSITIVE_INFINITY;
+  var maxY = Number.NEGATIVE_INFINITY;
+
+  series.forEach(function(s) {
+    minY = Math.min(minY, d3.min(data, function(d) { return d[s.y]; }));
+    maxY = Math.max(maxY, d3.max(data, function(d) { return d[s.y]; }));
+  });
+
+  return [minY, maxY];
+},
+
+setXScale: function(xScale, data, series) {
+  xScale.domain(d3.extent(data, function(d) { return d.x; }));
+
+  if (series.filter(function(s) { return s.type === 'column'; }).length) {
+    this.adjustXScaleForColumns(xScale, data);
+  }
+},
+
+adjustXScaleForColumns: function(xScale, data) {
+  var step = this.getAverageStep(data, 'x');
+  var d = xScale.domain();
+
+  if (angular.isDate(d[0])) {
+    xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)]);
+  } else {
+    xScale.domain([d[0] - step, d[1] + step]);
+  }
+},
+
+getAverageStep: function(data, field) {
+  var sum = 0;
+  var n = data.length - 1;
+
+  for (var i = 0; i<n; i++) {
+    sum += data[i + 1][field] - data[i][field];
   }
 
-  return options;
+  return sum/n;
+},
+
+haveSecondYAxis: function(series) {
+  var doesHave = false;
+
+  angular.forEach(series, function(s) {
+    doesHave = doesHave || s.axis === 'y2';
+  });
+
+  return doesHave;
 },addTooltips: function (svg, width, height, drawY2Axis) {
   var w = 24;
   var h = 18;
