@@ -104,14 +104,13 @@ describe('area series', function() {
 
   it('should create 3 elements', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     expect(content.childNodes.length).toBe(3);
   });
 
   it('should create an area group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
-
+    var content = svgGroup.childNodes[2];
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
     expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
@@ -125,7 +124,7 @@ describe('area series', function() {
 
   it('should create a line group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var lineGroup = content.childNodes[1];
     expect(lineGroup.getAttribute('class')).toBe('lineGroup series_0');
@@ -134,7 +133,7 @@ describe('area series', function() {
 
   it('should create a dots group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var dotsGroup = content.childNodes[2];
     expect(dotsGroup.nodeName).toBe('g');
@@ -159,7 +158,7 @@ describe('area series', function() {
   });
 });
 
-describe('chart when initializing', function() {
+describe('chart initialization', function() {
   it('should create one svg element', function() {
     expect(elm[0].getAttribute('id')).toBe('toto');
 
@@ -181,11 +180,11 @@ describe('chart when initializing', function() {
 
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
-    expect(content[2].getAttribute('id')).toBe('xTooltip');
-    expect(content[3].getAttribute('id')).toBe('yTooltip');
+    expect(content[5].getAttribute('id')).toBe('xTooltip');
+    expect(content[6].getAttribute('id')).toBe('yTooltip');
   });
 
-  it('should draw three axes whan said so', function() {
+  it('should generate properly the main elements', function() {
     scope.$apply(function() {
       scope.options = {series: [
         {axis: 'y', y: 'value', color: '#4682b4'},
@@ -201,25 +200,12 @@ describe('chart when initializing', function() {
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
     expect(content[2].getAttribute('class')).toBe('y2 axis');
-    expect(content[3].getAttribute('id')).toBe('xTooltip');
-    expect(content[4].getAttribute('id')).toBe('yTooltip');
-    expect(content[5].getAttribute('id')).toBe('y2Tooltip');
-  });
-
-  xit('should draw data', function() {
-    scope.$apply(function() {
-      scope.data = [
-        {x: 0, value: 4, foo: -2}, {x: 1, value: 8, foo: 22}, {x: 2, value: 15, foo: -1},
-        {x: 3, value: 16, foo: 0}, {x: 4, value: 23, foo: -3}, {x: 5, value: 42, foo: -4}
-      ];
-
-      scope.options = {
-        series: [
-          {axis: 'y', y: 'value', color: '#4682b4', type: 'area'},
-          {axis: 'y2', y: 'foo', color: 'steelblue', type: 'area'}
-        ]
-      };
-    });
+    expect(content[3].getAttribute('class')).toBe('content');
+    expect(content[4].getAttribute('id')).toBe('clip');
+    expect(content[5].getAttribute('class')).toBe('legend');
+    expect(content[6].getAttribute('id')).toBe('xTooltip');
+    expect(content[7].getAttribute('id')).toBe('yTooltip');
+    expect(content[8].getAttribute('id')).toBe('y2Tooltip');
   });
 });
 
@@ -266,7 +252,7 @@ describe('column series', function() {
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     expect(content.getAttribute('class')).toBe('content');
     expect(content.childNodes.length).toBe(1);
 
@@ -277,7 +263,7 @@ describe('column series', function() {
 
   it('should draw columns', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     var columnGroup = content.childNodes[0];
     expect(columnGroup.nodeName).toBe('g');
 
@@ -318,7 +304,7 @@ describe('legend', function() {
 
     var content = svgGroup.childNodes;
 
-    var legendGroup = content[8];
+    var legendGroup = content[5];
     expect(legendGroup.getAttribute('class')).toBe('legend');
 
     expect(legendGroup.childNodes.length).toBe(2);
@@ -361,7 +347,7 @@ describe('lineMode set to cardinal', function() {
 
   it('should draw an interpolated area', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
@@ -379,7 +365,7 @@ describe('lineMode set to cardinal', function() {
   });
 
   it('should draw an interpolated line', function() {
-    var content = elm.find('svg').children()[0].childNodes[4];
+    var content = elm.find('svg').children()[0].childNodes[2];
     var lineGroup = content.childNodes[1];
 
     var linePath = lineGroup.childNodes[0];
@@ -393,7 +379,7 @@ describe('lineMode set to cardinal', function() {
 
   it('should create a dots group with coordinates unchanged', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var dotsGroup = content.childNodes[2];
     expect(dotsGroup.nodeName).toBe('g');
@@ -461,7 +447,7 @@ describe('line series', function() {
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     expect(content.childNodes.length).toBe(2);
 
     var lineGroup = content.childNodes[0];
@@ -471,7 +457,7 @@ describe('line series', function() {
 
   it('should draw dots', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     var dotsGroup = content.childNodes[1];
     expect(dotsGroup.nodeName).toBe('g');
 
@@ -495,7 +481,7 @@ describe('line series', function() {
   });
 
   it('should draw a line', function() {
-    var content = elm.find('svg').children()[0].childNodes[4];
+    var content = elm.find('svg').children()[0].childNodes[2];
     var lineGroup = content.childNodes[0];
 
     var linePath = lineGroup.childNodes[0];
@@ -513,67 +499,43 @@ describe('n3utils', function() {
     }));
   });
 
-it('should compute data per series', inject(function(n3utils) {
-  var data = [
-  {x: 0, foo: 4.154, value: 4},
-  {x: 1, foo: 8.15485, value: 8}
-  ];
+  it('should compute data per series', inject(function(n3utils) {
+    var data = [
+      {x: 0, foo: 4.154, value: 4},
+      {x: 1, foo: 8.15485, value: 8}
+    ];
 
-  var xFormatter = function(text) {return ''};
+    var xFormatter = function(text) {return ''};
 
-  var options = {
-    axes: {x: {tooltipFormatter: xFormatter}},
-    series: [
-    {y: 'value', axis: 'y2', color: 'steelblue'},
-    {y: 'foo', color: 'red', type: 'area'}
-    ]
-  };
+    var options = {
+      axes: {x: {tooltipFormatter: xFormatter}},
+      series: [
+      {y: 'value', axis: 'y2', color: 'steelblue'},
+      {y: 'foo', color: 'red', type: 'area'}
+      ]
+    };
 
-  var expected = [{
-    xFormatter: xFormatter,
-    name: 'value', color: 'steelblue', axis: 'y2', type: 'line', index: 0,
-    values: [
-    {x: 0, value: 4, axis: 'y2'}, {x: 1, value: 8, axis: 'y2'}
-    ]
-  }, {
-    xFormatter: xFormatter,
-    name: 'foo', color: 'red', axis: 'y', type: 'area', index: 1,
-    values: [
-    {x: 0, value: 4.154, axis: 'y'}, {x: 1, value: 8.15485, axis: 'y'}
-    ]
-  }];
+    var expected = [{
+      xFormatter: xFormatter,
+      name: 'value', color: 'steelblue', axis: 'y2', type: 'line', index: 0,
+      values: [
+      {x: 0, value: 4, axis: 'y2'}, {x: 1, value: 8, axis: 'y2'}
+      ]
+    }, {
+      xFormatter: xFormatter,
+      name: 'foo', color: 'red', axis: 'y', type: 'area', index: 1,
+      values: [
+      {x: 0, value: 4.154, axis: 'y'}, {x: 1, value: 8.15485, axis: 'y'}
+      ]
+    }];
 
-  var computed = n3utils.getDataPerSeries(data, options);
+    var computed = n3utils.getDataPerSeries(data, options);
 
-  expect(computed).toEqual(expected);
+    expect(computed).toEqual(expected);
 
-}));
-
-it('should compute the widest y value', inject(function(n3utils) {
-  var data = [
-  {x: 0, foo: 4.154, value: 4},
-  {x: 1, foo: 8.15485, value: 8},
-  {x: 2, foo: 1.1548578, value: 15},
-  {x: 3, foo: 1.154, value: 16},
-  {x: 4, foo: 2.45, value: 23},
-  {x: 5, foo: 4, value: 42}
-  ];
-
-  var series = [{y: 'value'}];
-  expect(n3utils.getWidestOrdinate(data, series)).toBe(15);
-
-  series = [{y: 'value'}, {y: 'foo'}];
-  expect(n3utils.getWidestOrdinate(data, series)).toBe(1.1548578);
-}));
-
-describe('adjustMargins', function() {
-  beforeEach(inject(function(n3utils) {
-    spyOn(n3utils, 'getDefaultMargins').andReturn(
-      {top: 20, right: 50, bottom: 30, left: 50}
-      );
   }));
 
-  it('should return default margins for no series', inject(function(n3utils) {
+  it('should compute the widest y value', inject(function(n3utils) {
     var data = [
     {x: 0, foo: 4.154, value: 4},
     {x: 1, foo: 8.15485, value: 8},
@@ -583,72 +545,96 @@ describe('adjustMargins', function() {
     {x: 5, foo: 4, value: 42}
     ];
 
-    var dimensions = {left: 10, right: 10};
+    var series = [{y: 'value'}];
+    expect(n3utils.getWidestOrdinate(data, series)).toBe(15);
 
-    var options = {series: []};
-    n3utils.adjustMargins(dimensions, options, data);
-
-    expect(dimensions).toEqual({left: 45, right: 50, top: 20, bottom: 30});
+    series = [{y: 'value'}, {y: 'foo'}];
+    expect(n3utils.getWidestOrdinate(data, series)).toBe(1.1548578);
   }));
 
-  it('should adjust margins for one left series', inject(function(n3utils) {
-    var data = [
-    {x: 0, foo: 4.154, value: 4},
-    {x: 1, foo: 8.15485, value: 8},
-    {x: 2, foo: 1.1548578, value: 15},
-    {x: 3, foo: 1.154, value: 16},
-    {x: 4, foo: 2.45, value: 23},
-    {x: 5, foo: 4, value: 42}
-    ];
-
-    var dimensions = {left: 10, right: 10};
-
-    var options = {series: [{y: 'value'}]};
-    n3utils.adjustMargins(dimensions, options, data);
-    expect(dimensions).toEqual(
-        {left: 45, right: 50, top: 20, bottom: 30} // 50 is default
+  describe('adjustMargins', function() {
+    beforeEach(inject(function(n3utils) {
+      spyOn(n3utils, 'getDefaultMargins').andReturn(
+        {top: 20, right: 50, bottom: 30, left: 50}
         );
-  }));
+    }));
 
-  it('should adjust margins for two left series', inject(function(n3utils) {
-    var data = [
-    {x: 0, foo: 4.154, value: 4},
-    {x: 1, foo: 8.15485, value: 8},
-    {x: 2, foo: 1.1548578, value: 15},
-    {x: 3, foo: 1.154, value: 16},
-    {x: 4, foo: 2.45, value: 23},
-    {x: 5, foo: 4, value: 42}
-    ];
+    it('should return default margins for no series', inject(function(n3utils) {
+      var data = [
+      {x: 0, foo: 4.154, value: 4},
+      {x: 1, foo: 8.15485, value: 8},
+      {x: 2, foo: 1.1548578, value: 15},
+      {x: 3, foo: 1.154, value: 16},
+      {x: 4, foo: 2.45, value: 23},
+      {x: 5, foo: 4, value: 42}
+      ];
 
-    var dimensions = {left: 10, right: 10};
+      var dimensions = {left: 10, right: 10};
 
-    var options = {series: [{y: 'value'}, {y: 'foo'}]};
-    n3utils.adjustMargins(dimensions, options, data);
-    expect(dimensions).toEqual(
-      {left: 80.30000000000001, right: 50, top: 20, bottom: 30}
+      var options = {series: []};
+      n3utils.adjustMargins(dimensions, options, data);
+
+      expect(dimensions).toEqual({left: 45, right: 50, top: 20, bottom: 30});
+    }));
+    
+    it('should adjust margins for one left series', inject(function(n3utils) {
+      var data = [
+      {x: 0, foo: 4.154, value: 4},
+      {x: 1, foo: 8.15485, value: 8},
+      {x: 2, foo: 1.1548578, value: 15},
+      {x: 3, foo: 1.154, value: 16},
+      {x: 4, foo: 2.45, value: 23},
+      {x: 5, foo: 4, value: 42}
+      ];
+
+      var dimensions = {left: 10, right: 10};
+
+      var options = {series: [{y: 'value'}]};
+      n3utils.adjustMargins(dimensions, options, data);
+      expect(dimensions).toEqual(
+        {left: 45, right: 50, top: 20, bottom: 30}
       );
-  }));
+    }));
 
-  it('should adjust margins for one left series and one right series', inject(function(n3utils) {
-    var data = [
-    {x: 0, foo: 4.154, value: 4},
-    {x: 1, foo: 8.15485, value: 8},
-    {x: 2, foo: 1.1548578, value: 15},
-    {x: 3, foo: 1.154, value: 16},
-    {x: 4, foo: 2.45, value: 23},
-    {x: 5, foo: 4, value: 42}
-    ];
+    it('should adjust margins for two left series', inject(function(n3utils) {
+      var data = [
+      {x: 0, foo: 4.154, value: 4},
+      {x: 1, foo: 8.15485, value: 8},
+      {x: 2, foo: 1.1548578, value: 15},
+      {x: 3, foo: 1.154, value: 16},
+      {x: 4, foo: 2.45, value: 23},
+      {x: 5, foo: 4, value: 42}
+      ];
 
-    var dimensions = {left: 10, right: 10};
+      var dimensions = {left: 10, right: 10};
 
-    var options = {series: [{y: 'value'}, {axis: 'y2', y: 'foo'}]};
-    n3utils.adjustMargins(dimensions, options, data);
-    expect(dimensions).toEqual(
-      {left: 45, right: 80.30000000000001, top: 20, bottom: 30}
-      );
-  }));
+      var options = {series: [{y: 'value'}, {y: 'foo'}]};
+      n3utils.adjustMargins(dimensions, options, data);
+      expect(dimensions).toEqual(
+        {left: 80.30000000000001, right: 50, top: 20, bottom: 30}
+        );
+    }));
 
-});
+    it('should adjust margins for one left series and one right series', inject(function(n3utils) {
+      var data = [
+      {x: 0, foo: 4.154, value: 4},
+      {x: 1, foo: 8.15485, value: 8},
+      {x: 2, foo: 1.1548578, value: 15},
+      {x: 3, foo: 1.154, value: 16},
+      {x: 4, foo: 2.45, value: 23},
+      {x: 5, foo: 4, value: 42}
+      ];
+
+      var dimensions = {left: 10, right: 10};
+
+      var options = {series: [{y: 'value'}, {axis: 'y2', y: 'foo'}]};
+      n3utils.adjustMargins(dimensions, options, data);
+      expect(dimensions).toEqual(
+        {left: 45, right: 80.30000000000001, top: 20, bottom: 30}
+        );
+    }));
+
+  });
 });
 
 describe('options', function() {
@@ -656,34 +642,34 @@ describe('options', function() {
   describe('axes', function() {
     it('should return default options when given null or undefined', inject(function(n3utils) {
       expect(n3utils.sanitizeOptions()).toEqual(
-        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
+        {tooltipMode: 'default', lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
       );
     }));
 
     it('should set default axes and empty series', inject(function(n3utils) {
       expect(n3utils.sanitizeOptions({})).toEqual(
-        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
+        {tooltipMode: 'default', lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
       );
     }));
 
     it('should set default x axis type to linear', inject(function(n3utils) {
       expect(n3utils.sanitizeOptions(
-        {lineMode: 'linear', axes: {x: {}, y: {}}})).toEqual(
-          {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
+        {tooltipMode: 'on-dot', lineMode: 'linear', axes: {x: {}, y: {}}})).toEqual(
+          {tooltipMode: 'on-dot', lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
         );
     }));
 
     it('should set default y axis', inject(function(n3utils) {
       expect(n3utils.sanitizeOptions(
-        {lineMode: 'linear', axes: {x: {}}})).toEqual(
-          {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
+        {tooltipMode: 'default', lineMode: 'linear', axes: {x: {}}})).toEqual(
+          {tooltipMode: 'default', lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
         );
     }));
 
     it('should set default x axis', inject(function(n3utils) {
       expect(n3utils.sanitizeOptions(
-        {lineMode: 'linear', axes: {}})).toEqual(
-          {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
+        {tooltipMode: 'default', lineMode: 'linear', axes: {}})).toEqual(
+          {tooltipMode: 'default', lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}}, series: []}
         );
     }));
   });
@@ -696,14 +682,13 @@ describe('options', function() {
           {y: 'otherValue', axis: 'y2'}
         ]}
       )).toEqual(
-        {lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}, y2: {type: 'linear'}}, series: [
+        {tooltipMode: 'default', lineMode: 'linear', axes: {x: {type: 'linear'}, y: {type: 'linear'}, y2: {type: 'linear'}}, series: [
           {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'},
           {y: 'otherValue', axis: 'y2', color: '#1f77b4'}
         ]}
       );
     }));
   });
-
 });
 
 describe('resize features', function() {
@@ -905,7 +890,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw two lines', function() {
-    var content = elm.find('svg').children()[0].childNodes[6];
+    var content = elm.find('svg').children()[0].childNodes[3];
 
     var leftLinePath = content.childNodes[2].childNodes[0];
     expect(leftLinePath.getAttribute('class')).toBe('line');
@@ -919,7 +904,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y area', function() {
-    var content = elm.find('svg').children()[0].childNodes[6];
+    var content = elm.find('svg').children()[0].childNodes[3];
 
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
@@ -933,7 +918,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y2 area', function() {
-    var content = elm.find('svg').children()[0].childNodes[6];
+    var content = elm.find('svg').children()[0].childNodes[3];
 
     var areaGroup = content.childNodes[1];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_1');
@@ -947,7 +932,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y axis dots', function() {
-    var content = elm.find('svg').children()[0].childNodes[6];
+    var content = elm.find('svg').children()[0].childNodes[3];
 
     var leftDotsGroup = content.childNodes[4];
     expect(leftDotsGroup.nodeName).toBe('g');
@@ -972,7 +957,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y2 axis dots', function() {
-    var content = elm.find('svg').children()[0].childNodes[6];
+    var content = elm.find('svg').children()[0].childNodes[3];
 
     var leftDotsGroup = content.childNodes[5];
     expect(leftDotsGroup.nodeName).toBe('g');
@@ -1000,7 +985,7 @@ describe('with a second axis', function() {
 describe('thumbnail when initializing', function() {
   beforeEach(inject(function($rootScope, $compile) {
     elm = angular.element('<div id="toto">' +
-      '<linechart mode="thumbnail"></linechart>' +
+      '<linechart options="options" mode="thumbnail"></linechart>' +
       '</div>');
 
     scope = $rootScope;
@@ -1021,11 +1006,27 @@ describe('thumbnail when initializing', function() {
     expect(dynamicChildren[0].nodeName).toBe('svg');
   });
 
-  it('should draw zero axes', function() {
+  it('should create axes and tooltips, just as in normal mode - but no legend', function() {
+    scope.$apply(function() {
+      scope.options = {series: [
+        {axis: 'y', y: 'value', color: '#4682b4'},
+        {axis: 'y2', y: 'value', color: '#4682b4'}
+      ]};
+    });
+
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(2);
+    expect(content.length).toBe(8);
+
+    expect(content[0].getAttribute('class')).toBe('x axis');
+    expect(content[1].getAttribute('class')).toBe('y axis');
+    expect(content[2].getAttribute('class')).toBe('y2 axis');
+    expect(content[3].getAttribute('class')).toBe('content');
+    expect(content[4].getAttribute('id')).toBe('clip');
+    expect(content[5].getAttribute('id')).toBe('xTooltip');
+    expect(content[6].getAttribute('id')).toBe('yTooltip');
+    expect(content[7].getAttribute('id')).toBe('y2Tooltip');
   });
 });
 
@@ -1088,11 +1089,11 @@ describe('tooltip', function() {
 
     var content = svgGroup.childNodes;
 
-    var leftAxisDotGroup = content[6].childNodes[2];
+    var leftAxisDotGroup = content[3].childNodes[2];
 
     expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup series_0');
 
-    var xTooltip = content[3];
+    var xTooltip = content[6];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");
@@ -1119,11 +1120,11 @@ describe('tooltip', function() {
 
     var content = svgGroup.childNodes;
 
-    var leftAxisDotGroup = content[6].childNodes[2];
+    var leftAxisDotGroup = content[3].childNodes[2];
 
     expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup series_0');
 
-    var xTooltip = content[3];
+    var xTooltip = content[6];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");
@@ -1141,11 +1142,11 @@ describe('tooltip', function() {
 
     var content = svgGroup.childNodes;
 
-    var rightAxisColumnGroup = content[6].childNodes[0];
+    var rightAxisColumnGroup = content[3].childNodes[0];
 
     expect(rightAxisColumnGroup.getAttribute('class')).toBe('columnGroup series_1');
 
-    var xTooltip = content[3];
+    var xTooltip = content[6];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");

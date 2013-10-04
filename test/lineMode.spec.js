@@ -21,7 +21,7 @@ describe('lineMode set to cardinal', function() {
 
   it('should draw an interpolated area', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
@@ -39,7 +39,7 @@ describe('lineMode set to cardinal', function() {
   });
 
   it('should draw an interpolated line', function() {
-    var content = elm.find('svg').children()[0].childNodes[4];
+    var content = elm.find('svg').children()[0].childNodes[2];
     var lineGroup = content.childNodes[1];
 
     var linePath = lineGroup.childNodes[0];
@@ -53,7 +53,7 @@ describe('lineMode set to cardinal', function() {
 
   it('should create a dots group with coordinates unchanged', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var dotsGroup = content.childNodes[2];
     expect(dotsGroup.nodeName).toBe('g');
