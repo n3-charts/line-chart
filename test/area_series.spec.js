@@ -43,14 +43,13 @@ describe('area series', function() {
 
   it('should create 3 elements', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     expect(content.childNodes.length).toBe(3);
   });
 
   it('should create an area group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
-
+    var content = svgGroup.childNodes[2];
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
     expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
@@ -64,7 +63,7 @@ describe('area series', function() {
 
   it('should create a line group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var lineGroup = content.childNodes[1];
     expect(lineGroup.getAttribute('class')).toBe('lineGroup series_0');
@@ -73,7 +72,7 @@ describe('area series', function() {
 
   it('should create a dots group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var dotsGroup = content.childNodes[2];
     expect(dotsGroup.nodeName).toBe('g');

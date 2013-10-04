@@ -58,7 +58,7 @@ module.exports = function(grunt) {
         options: {
           banner: grunt.file.read('lib/utils/utils.js.prefix'),
           footer: grunt.file.read('lib/utils/utils.js.suffix'),
-          separator: ','
+          separator: ',\n\n'
         }
       },
       js: {

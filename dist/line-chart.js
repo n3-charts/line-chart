@@ -24,18 +24,22 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
       var dataPerSeries = n3utils.getDataPerSeries(data, options);
       var isThumbnail = (attrs.mode === 'thumbnail');
 
-      if (isThumbnail) {
-        n3utils.adjustMarginsForThumbnail(dimensions, options, data);
-      } else {
-        n3utils.adjustMargins(dimensions, options, data);
-      }
-
       n3utils.clean(element[0]);
 
       var svg = n3utils.bootstrap(element[0], dimensions);
       var axes = n3utils
         .createAxes(svg, dimensions, options.axes)
-        .andAddThemIf(!isThumbnail);
+        .andAddThem();
+
+      if (dataPerSeries.length > 0) {
+        n3utils.setScalesDomain(axes, data, options.series, svg, options.axes);
+      }
+
+      if (isThumbnail) {
+        n3utils.adjustMarginsForThumbnail(dimensions, axes);
+      } else {
+        n3utils.adjustMargins(dimensions, options, data);
+      }
 
       n3utils.createContent(svg);
       n3utils.createClippingPath(svg, dimensions);
@@ -47,7 +51,6 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
       var lineMode = options.lineMode;
 
       if (dataPerSeries.length > 0) {
-        n3utils.setScalesDomain(axes, data, options.series, svg, options.axes);
 
         var columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
 
@@ -60,6 +63,8 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
 
         n3utils.activateZoom(element[0], svg, axes, dimensions, columnWidth);
       }
+
+      n3utils.addTooltips(svg, dimensions, options.axes);
     };
 
     var timeoutPromise;
@@ -86,7 +91,9 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
 angular.module('n3charts.utils', [])
 
 .factory('n3utils', function() {
-  return {drawArea: function(svg, scales, data, interpolateMode){
+  return {
+
+drawArea: function(svg, scales, data, interpolateMode){
   var drawers = {
     y: this.createLeftAreaDrawer(scales, interpolateMode),
     y2: this.createRightAreaDrawer(scales, interpolateMode)
@@ -133,18 +140,20 @@ createRightAreaDrawer: function(scales, interpolateMode) {
     .y0(function(d) { return scales.y2Scale(0); })
     .y1(function(d) { return scales.y2Scale(d.value); })
     .interpolate(interpolateMode);
-},getBestColumnWidth: function(dimensions, data) {
+},
+
+getBestColumnWidth: function(dimensions, data) {
   if (!data || data.length === 0) {
     return 10;
   }
 
   var n = data[0].values.length + 2; // +2 because abscissas will be extended
                                      // to one more row at each end
-  var s = data.length;
-  var oP = 3; // space between two rows
+  var seriesCount = data.length;
+  var gap = 0; // space between two rows
   var avWidth = dimensions.width - dimensions.left - dimensions.right;
 
-  return (avWidth - (n - 1)*oP) / (n*s);
+  return parseInt(Math.max((avWidth - (n - 1)*gap) / (n*seriesCount), 5));
 },
 
 drawColumns: function(svg, axes, data, columnWidth) {
@@ -215,7 +224,9 @@ updateColumns: function(svg, scales, columnWidth) {
     });
 
   return this;
-},drawDots: function(svg, axes, data) {
+},
+
+drawDots: function(svg, axes, data) {
   var that = this;
 
   svg.select('.content').selectAll('.dotGroup')
@@ -264,7 +275,9 @@ updateDots: function(svg, scales) {
     });
 
     return this;
-},drawLegend: function(svg, series, dimensions) {
+},
+
+drawLegend: function(svg, series, dimensions) {
   var layout = [0];
 
   for (var i = 1; i < series.length; i++) {
@@ -324,7 +337,9 @@ toggleSeries: function(svg, index) {
     });
 
   return isVisible;
-},drawLines: function(svg, scales, data, interpolateMode) {
+},
+
+drawLines: function(svg, scales, data, interpolateMode) {
   var drawers = {
     y: this.createLeftLineDrawer(scales, interpolateMode),
     y2: this.createRightLineDrawer(scales, interpolateMode)
@@ -372,7 +387,9 @@ createRightLineDrawer: function(scales, interpolateMode) {
     .x(function(d) {return scales.xScale(d.x);})
     .y(function(d) {return scales.y2Scale(d.value);})
     .interpolate(interpolateMode);
-},getDefaultMargins: function() {
+},
+
+getDefaultMargins: function() {
   return {top: 20, right: 50, bottom: 60, left: 50};
 },
 
@@ -481,11 +498,9 @@ adjustMargins: function(dimensions, options, data) {
   dimensions.right = this.getTextWidth('' + rightWidest) + 20;
 },
 
-adjustMarginsForThumbnail: function(dimensions, options, data) {
-  dimensions.left = 0;
-  dimensions.right = 0;
-  dimensions.top = 0;
-  dimensions.bottom = 0;
+adjustMarginsForThumbnail: function(dimensions, axes) {
+  dimensions.top = 10;
+  dimensions.bottom = 30;
 },
 
 getTextWidth: function(text) {
@@ -504,8 +519,11 @@ getWidestOrdinate: function(data, series) {
   });
 
   return widest;
-},getDefaultOptions: function() {
+},
+
+getDefaultOptions: function() {
   return {
+    tooltipMode: 'default',
     lineMode: 'linear',
     axes: {
       x: {type: 'linear'},
@@ -522,20 +540,15 @@ sanitizeOptions: function(options) {
   
   options.series = this.sanitizeSeriesOptions(options.series);
 
-  if (!options.axes) {
-    options.axes = {x: {type: 'linear'}, y: {type: 'linear'}};
-  }
-  
+  options.axes = options.axes ? options.axes : {};
   options.axes.x = this.sanitizeAxisOptions(options.axes.x);
   options.axes.y = this.sanitizeAxisOptions(options.axes.y);
-  
   if (this.haveSecondYAxis(options.series)) {
     options.axes.y2 = this.sanitizeAxisOptions(options.axes.y2);
   }
-
-  if (!options.lineMode) {
-    options.lineMode = 'linear';
-  }
+  
+  options.lineMode = options.lineMode ? options.lineMode : 'linear';
+  options.tooltipMode = options.tooltipMode ? options.tooltipMode : 'default';
 
   return options;
 },
@@ -563,7 +576,9 @@ sanitizeAxisOptions: function(options) {
   }
   
   return options;
-},createAxes: function(svg, dimensions, axesOptions) {
+},
+
+createAxes: function(svg, dimensions, axesOptions) {
   var drawY2Axis = axesOptions.y2 !== undefined;
 
   var width = dimensions.width;
@@ -598,25 +613,21 @@ sanitizeAxisOptions: function(options) {
     yAxis: yAxis,
     y2Axis: y2Axis,
 
-    andAddThemIf: function(expression) {
-      if (!!expression) {
+    andAddThem: function() {
+      svg.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(xAxis);
+
+      svg.append('g')
+        .attr('class', 'y axis')
+        .call(yAxis);
+
+      if (drawY2Axis) {
         svg.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(0,' + height + ')')
-          .call(xAxis);
-
-        svg.append('g')
-          .attr('class', 'y axis')
-          .call(yAxis);
-
-        if (drawY2Axis) {
-          svg.append('g')
-            .attr('class', 'y2 axis')
-            .attr('transform', 'translate(' + width + ', 0)')
-            .call(y2Axis);
-        }
-
-        that.addTooltips(svg, width, height, drawY2Axis);
+          .attr('class', 'y2 axis')
+          .attr('transform', 'translate(' + width + ', 0)')
+          .call(y2Axis);
       }
 
       return {
@@ -701,7 +712,15 @@ haveSecondYAxis: function(series) {
   });
 
   return doesHave;
-},addTooltips: function (svg, width, height, drawY2Axis) {
+},
+
+addTooltips: function (svg, dimensions, axesOptions) {
+  var width = dimensions.width;
+  var height = dimensions.height;
+
+  width = width - dimensions.left - dimensions.right;
+  height = height - dimensions.top - dimensions.bottom;
+  
   var w = 24;
   var h = 18;
   var p = 5;
@@ -748,7 +767,7 @@ haveSecondYAxis: function(series) {
       'text-rendering': 'geometric-precision'
     });
 
-  if (drawY2Axis) {
+  if (axesOptions.y2 !== undefined) {
     var y2Tooltip = svg.append('g')
       .attr({
         'id': 'y2Tooltip',
@@ -902,7 +921,9 @@ hideTooltips: function(svg) {
   svg.select("#y2Tooltip")
     .transition()
     .attr({'opacity': 0 });
-},activateZoom: function(element, svg, axes, dimensions, columnWidth) {
+},
+
+activateZoom: function(element, svg, axes, dimensions, columnWidth) {
   var y2Scale_old = axes.y2Scale;
   var y2Scale = y2Scale_old ? y2Scale_old.copy() : undefined;
   var that = this;
@@ -955,5 +976,7 @@ hideTooltips: function(svg) {
     .on('keyup', function() {
       svg.selectAll('#zoomPane').remove();
     });
-}  };
+}
+
+  };
 })

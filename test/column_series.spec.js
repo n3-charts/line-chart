@@ -41,7 +41,7 @@ describe('column series', function() {
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     expect(content.getAttribute('class')).toBe('content');
     expect(content.childNodes.length).toBe(1);
 
@@ -52,7 +52,7 @@ describe('column series', function() {
 
   it('should draw columns', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     var columnGroup = content.childNodes[0];
     expect(columnGroup.nodeName).toBe('g');
 

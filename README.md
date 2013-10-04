@@ -69,7 +69,7 @@ The `series` key must be an array which contains objects with the following prop
  
 + `y` : mandatory, defines which property on each data row will be used as ordinate value.
 + `color` : optional, any valid HTML color (if none given, the chart will set it for you).
-+ `label` : optional, will be used in the legend (if not undefined, the `y` value will be used).
++ `label` : optional, will be used in the legend (if undefined, the `y` value will be used).
 + `axis` : optional, can be either 'y' (default, for left) or 'y2' (for right). Defines which vertical axis should be used for this series. If no right axis is needed, none will be displayed.
 + `type` : optional, can be one value between 'line', 'area', 'column'. Default is 'line'.
 
@@ -115,6 +115,6 @@ Hack.
 
 ### Testing
 AngularJS is designed to be testable, and so is this project.
-It is 100% covered, and we want to keep it this way.
+It has a good coverage rate (between 85% and 95%), and we want to keep it this way.
 
   [1]: https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
