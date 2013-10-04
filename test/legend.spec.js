@@ -10,7 +10,7 @@ describe('legend', function() {
     });
   });
 
-  it('create legend elements', function() {
+  it('should create legend elements', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
