@@ -963,12 +963,12 @@ activateZoom: function(element, svg, axes, dimensions, columnWidth) {
   d3.select(element)
     .attr('tabindex', '0')
     .style('outline', '0px solid transparent')
-    .on('mouseover', function() {
-      d3.event.currentTarget.focus();
-    })
-    .on('mouseout', function() {
-      d3.event.currentTarget.blur();
-    })
+    // .on('mouseover', function() {
+    //   d3.event.currentTarget.focus();
+    // })
+    // .on('mouseout', function() {
+    //   d3.event.currentTarget.blur();
+    // })
     .on('keydown', function() {
       if (d3.event.shiftKey) {
         svg.append("svg:rect")
