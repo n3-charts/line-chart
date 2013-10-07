@@ -8,8 +8,12 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
     var dim = n3utils.getDefaultMargins();
 
     scope.updateDimensions = function(dimensions) {
-      dimensions.width = element[0].parentElement.offsetWidth || 900;
-      dimensions.height = element[0].parentElement.offsetHeight || 500;
+      var top = n3utils.getPixelCssProp(element[0].parentElement, 'padding-top');
+      var bottom = n3utils.getPixelCssProp(element[0].parentElement, 'padding-bottom');
+      var left = n3utils.getPixelCssProp(element[0].parentElement, 'padding-left');
+      var right = n3utils.getPixelCssProp(element[0].parentElement, 'padding-right');
+      dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right;
+      dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom;
     };
 
     scope.update = function() {
@@ -90,7 +94,7 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
 
 angular.module('n3charts.utils', [])
 
-.factory('n3utils', function() {
+.factory('n3utils', function($window) {
   return {
 
 drawArea: function(svg, scales, data, interpolateMode){
@@ -386,6 +390,11 @@ createRightLineDrawer: function(scales, interpolateMode) {
     .x(function(d) {return scales.xScale(d.x);})
     .y(function(d) {return scales.y2Scale(d.value);})
     .interpolate(interpolateMode);
+},
+
+getPixelCssProp: function(element, propertyName) {
+  var string = $window.getComputedStyle(element, null).getPropertyValue(propertyName);
+  return +string.replace(/px$/, '');
 },
 
 getDefaultMargins: function() {
