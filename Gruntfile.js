@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 
     watch: {
       files: ['lib/**/*.js', 'test/*.spec.js'],
-      tasks: ['jshint', 'concat', 'karma:continuous', 'uglify']
+      tasks: ['jshint', 'concat', 'uglify', 'karma:continuous']
     },
 
     karma: {
