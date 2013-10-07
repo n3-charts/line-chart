@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.3 - 2013-10-04
+/*! line-chart - v0.0.3 - 2013-10-07
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 'use strict';

@@ -1,4 +1,4 @@
-/*! line-chart - v0.0.3 - 2013-10-04
+/*! line-chart - v0.0.3 - 2013-10-07
 * https://github.com/angular-d3/line-chart
 * Copyright (c) 2013 Angular D3; Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -196,18 +196,17 @@ drawColumns: function(svg, axes, data, columnWidth) {
   colGroup.selectAll("rect")
     .data(function(d) {return d.values;})
     .enter().append("rect")
-      .attr("width", columnWidth)
-      .attr("x", function(d) {return axes.xScale(d.x);})
-
-      .attr("y", function(d) {
-        return axes[d.axis + 'Scale'](Math.max(0, d.value));
-      })
-
-      .attr("height", function(d) {
-        return Math.abs(axes[d.axis + 'Scale'](d.value) -
-          axes[d.axis + 'Scale'](0));
+      .style("fill-opacity", function(d) {return d.value > 0 ? 1 : 0;})
+      
+      .attr({
+        width: columnWidth,
+        x: function(d) {return axes.xScale(d.x);},
+        height: function(d) {return axes[d.axis + 'Scale'](-d.value);},
+        y: function(d) {
+          return d.value > 0 ? axes[d.axis + 'Scale'](Math.max(0, d.value)) : 0;
+        }
       });
-
+  
   return this;
 },
 
