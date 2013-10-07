@@ -13,8 +13,8 @@ files = [
   'bower_components/angular/angular.js',
   'bower_components/angular-mocks/angular-mocks.js',
   'bower_components/d3/d3.js',
-  'dist/line-chart.js',
-  'dist/line-chart.spec.js'
+  '/tmp/line-chart.js',
+  '/tmp/line-chart.spec.js'
 ];
 
 preprocessors = {
