@@ -60,12 +60,12 @@ describe('column series', function() {
     expect(columns.length).toBe(6);
 
     var expectedCoordinates = [
-      {x: '115', y: '414', height: '36', opacity: '1'},
-      {x: '230', y: '378', height: '72', opacity: '1'},
-      {x: '345', y: '315', height: '135', opacity: '1'},
-      {x: '460', y: '306', height: '144', opacity: '1'},
-      {x: '575', y: '243', height: '207', opacity: '1'},
-      {x: '690', y: '72', height: '378', opacity: '1'}
+      {x: '116', y: '414', height: '36', opacity: '1'},
+      {x: '231', y: '378', height: '72', opacity: '1'},
+      {x: '347', y: '315', height: '135', opacity: '1'},
+      {x: '463', y: '306', height: '144', opacity: '1'},
+      {x: '579', y: '243', height: '207', opacity: '1'},
+      {x: '694', y: '72', height: '378', opacity: '1'}
     ];
 
     for (var i = 0; i < columns.length; i++) {
@@ -96,12 +96,12 @@ describe('column series', function() {
     expect(columns.length).toBe(6);
 
     var expectedCoordinates = [
-      {x: '115', y: '0', height: '450', opacity: '0'},
-      {x: '230', y: '378', height: '72', opacity: '1'},
-      {x: '345', y: '315', height: '135', opacity: '1'},
-      {x: '460', y: '306', height: '144', opacity: '1'},
-      {x: '575', y: '243', height: '207', opacity: '1'},
-      {x: '690', y: '72', height: '378', opacity: '1'}
+      {x: '116', y: '0', height: '450', opacity: '0'},
+      {x: '231', y: '378', height: '72', opacity: '1'},
+      {x: '347', y: '315', height: '135', opacity: '1'},
+      {x: '463', y: '306', height: '144', opacity: '1'},
+      {x: '579', y: '243', height: '207', opacity: '1'},
+      {x: '694', y: '72', height: '378', opacity: '1'}
     ];
 
     for (var i = 0; i < columns.length; i++) {

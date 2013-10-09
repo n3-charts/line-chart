@@ -60,11 +60,11 @@ describe('line series', function() {
 
     var expectedCoordinates = [
       {x: '0', y: '414'},
-      {x: '161', y: '378'},
-      {x: '322', y: '315'},
-      {x: '483', y: '306'},
-      {x: '644', y: '243'},
-      {x: '805', y: '72'}
+      {x: '162', y: '378'},
+      {x: '324', y: '315'},
+      {x: '486', y: '306'},
+      {x: '648', y: '243'},
+      {x: '810', y: '72'}
     ];
 
     for (var i = 0; i < dots.length; i++) {
@@ -81,6 +81,6 @@ describe('line series', function() {
     var linePath = lineGroup.childNodes[0];
     expect(linePath.getAttribute('class')).toBe('line');
     expect(linePath.getAttribute('d'))
-      .toBe('M0,414L161,378L322,315L483,306L644,243L805,72');
+      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
   });
 });

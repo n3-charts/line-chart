@@ -81,7 +81,7 @@ describe('n3utils', function() {
       var options = {series: []};
       n3utils.adjustMargins(dimensions, options, data);
 
-      expect(dimensions).toEqual({left: 45, right: 50, top: 20, bottom: 30});
+      expect(dimensions).toEqual({left: 30, right: 50, top: 20, bottom: 30});
     }));
     
     it('should adjust margins for one left series', inject(function(n3utils) {
@@ -99,7 +99,7 @@ describe('n3utils', function() {
       var options = {series: [{y: 'value'}]};
       n3utils.adjustMargins(dimensions, options, data);
       expect(dimensions).toEqual(
-        {left: 45, right: 50, top: 20, bottom: 30}
+        {left: 40, right: 50, top: 20, bottom: 30}
       );
     }));
 
@@ -117,9 +117,7 @@ describe('n3utils', function() {
 
       var options = {series: [{y: 'value'}, {y: 'foo'}]};
       n3utils.adjustMargins(dimensions, options, data);
-      expect(dimensions).toEqual(
-        {left: 80.30000000000001, right: 50, top: 20, bottom: 30}
-        );
+      expect(dimensions).toEqual({left: 75, right: 50, top: 20, bottom: 30});
     }));
 
     it('should adjust margins for one left series and one right series', inject(function(n3utils) {
@@ -137,7 +135,7 @@ describe('n3utils', function() {
       var options = {series: [{y: 'value'}, {axis: 'y2', y: 'foo'}]};
       n3utils.adjustMargins(dimensions, options, data);
       expect(dimensions).toEqual(
-        {left: 45, right: 80.30000000000001, top: 20, bottom: 30}
+        {left: 40, right: 75, top: 20, bottom: 30}
         );
     }));
 

@@ -57,8 +57,7 @@ describe('area series', function() {
     var areaPath = areaGroup.childNodes[0];
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
-      .toBe('M0,414L161,378L322,315L483,306L644,243L805,72L805,450L644,' +
-        '450L483,450L322,450L161,450L0,450Z');
+      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,450L486,450L324,450L162,450L0,450Z');
   });
 
   it('should create a line group', function() {
@@ -82,11 +81,11 @@ describe('area series', function() {
 
     var expectedCoordinates = [
       {x: '0', y: '414'},
-      {x: '161', y: '378'},
-      {x: '322', y: '315'},
-      {x: '483', y: '306'},
-      {x: '644', y: '243'},
-      {x: '805', y: '72'}
+      {x: '162', y: '378'},
+      {x: '324', y: '315'},
+      {x: '486', y: '306'},
+      {x: '648', y: '243'},
+      {x: '810', y: '72'}
     ];
 
     for (var i = 0; i < dots.length; i++) {

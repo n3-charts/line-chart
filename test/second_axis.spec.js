@@ -49,12 +49,12 @@ describe('with a second axis', function() {
     var leftLinePath = content.childNodes[2].childNodes[0];
     expect(leftLinePath.getAttribute('class')).toBe('line');
     expect(leftLinePath.getAttribute('d'))
-      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
+      .toBe('M0,414L164,378L328,315L492,306L656,243L820,72');
 
     var rightLinePath = content.childNodes[3].childNodes[0];
     expect(rightLinePath.getAttribute('class')).toBe('line');
     expect(rightLinePath.getAttribute('d'))
-      .toBe('M0,415L162,0L324,398L486,381L648,433L810,450');
+      .toBe('M0,415L164,0L328,398L492,381L656,433L820,450');
   });
 
   it('should draw y area', function() {
@@ -67,8 +67,8 @@ describe('with a second axis', function() {
     var areaPath = areaGroup.childNodes[0];
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
-      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,' +
-        '450L486,450L324,450L162,450L0,450Z');
+      .toBe('M0,414L164,378L328,315L492,306L656,243L820,72L820,450L656,450L' +
+        '492,450L328,450L164,450L0,450Z');
   });
 
   it('should draw y2 area', function() {
@@ -81,8 +81,8 @@ describe('with a second axis', function() {
     var areaPath = areaGroup.childNodes[0];
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
-      .toBe('M0,415L162,0L324,398L486,381L648,433L810,450L810,381L648,' +
-        '381L486,381L324,381L162,381L0,381Z');
+      .toBe('M0,415L164,0L328,398L492,381L656,433L820,450L820,381L656,' +
+        '381L492,381L328,381L164,381L0,381Z');
   });
 
   it('should draw y axis dots', function() {
@@ -96,11 +96,11 @@ describe('with a second axis', function() {
 
     var expectedCoordinates = [
       {x: '0', y: '414'},
-      {x: '162', y: '378'},
-      {x: '324', y: '315'},
-      {x: '486', y: '306'},
-      {x: '648', y: '243'},
-      {x: '810', y: '72'}
+      {x: '164', y: '378'},
+      {x: '328', y: '315'},
+      {x: '492', y: '306'},
+      {x: '656', y: '243'},
+      {x: '820', y: '72'}
     ];
 
     for (var i = 0; i < dots.length; i++) {
@@ -121,11 +121,11 @@ describe('with a second axis', function() {
 
     var expectedCoordinates = [
       {x: '0', y: '415'},
-      {x: '162', y: '0'},
-      {x: '324', y: '398'},
-      {x: '486', y: '381'},
-      {x: '648', y: '433'},
-      {x: '810', y: '450'}
+      {x: '164', y: '0'},
+      {x: '328', y: '398'},
+      {x: '492', y: '381'},
+      {x: '656', y: '433'},
+      {x: '820', y: '450'}
     ];
 
     for (var i = 0; i < dots.length; i++) {
