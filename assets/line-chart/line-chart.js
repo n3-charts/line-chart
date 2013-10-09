@@ -978,21 +978,21 @@ activateZoom: function(element, svg, axes, dimensions, columnWidth) {
     // .on('mouseout', function() {
     //   d3.event.currentTarget.blur();
     // })
-    .on('keydown', function() {
-      if (d3.event.shiftKey) {
-        svg.append("svg:rect")
-          .attr({
-            'id': 'zoomPane',
-            "class": "pane",
-            "width": dimensions.width,
-            "height": dimensions.height,
-          })
-          .call(behavior);
-      }
-    })
-    .on('keyup', function() {
-      svg.selectAll('#zoomPane').remove();
-    });
+    // .on('keydown', function() {
+    //   if (d3.event.shiftKey) {
+    //     svg.append("svg:rect")
+    //       .attr({
+    //         'id': 'zoomPane',
+    //         "class": "pane",
+    //         "width": dimensions.width,
+    //         "height": dimensions.height,
+    //       })
+    //       .call(behavior);
+    //   }
+    // })
+    // .on('keyup', function() {
+    //   svg.selectAll('#zoomPane').remove();
+    // });
 }
 
   };

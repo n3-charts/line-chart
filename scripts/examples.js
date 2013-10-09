@@ -1,4 +1,6 @@
-angular.module('myApp', ['n3-charts.linechart'])
+angular.module('demo.examples', ['pretty'])
+
+
 
 .factory('appUtils', function() {
   return {
@@ -9,6 +11,21 @@ angular.module('myApp', ['n3-charts.linechart'])
         for (var j = 0; j < rowCount; j++) {
           var row = data[j] || {x: j};
           row['series_' + i] = Math.round(Math.sin((i+1)*j/5)*(5*(i+1))*1000)/1000;
+          data[j] = row;
+        
+        }
+      }
+      
+      return data;
+    },
+    
+    logData: function(rowCount, seriesCount) {
+      var data = [];
+
+      for (var i = 0; i < seriesCount; i++) {
+        for (var j = 0; j < rowCount; j++) {
+          var row = data[j] || {x: j};
+          row['series_' + i] = (j+1)*100000
           data[j] = row;
         
         }
@@ -37,16 +54,14 @@ angular.module('myApp', ['n3-charts.linechart'])
   };
 })
 
-.controller('DemoCtrl', function($scope, appUtils) {
+.controller('ExamplesCtrl', function($scope, appUtils) {
   $scope.addExample = function(label, desc, data, options) {
     $scope.examples.push({
       label: label,
       data: data,
       description: desc || '',
-      options: options,
-      json: JSON.stringify(options, null, 2)
+      options: options
     });
-
     return $scope.addExample;
   };
   
@@ -64,8 +79,16 @@ angular.module('myApp', ['n3-charts.linechart'])
   
   $scope.addExample
 
-      ('Linear series', 'Standard linear data is fully supported and can be displayed as lines, columns and areas.', appUtils.linearData(50, 1),
+      ('Linear series', 'Standard linear data is fully supported and can be displayed as lines, columns and areas.',
+        appUtils.linearData(50, 1),
         {series: [{y: 'series_0', label: 'A simple sinusoid', color: colors(0)}]})
+      
+      ('Log series', 'Vertical axes can be configured as logarithmic axes. This is convenient to display wide-range data.',
+        appUtils.logData(50, 1),
+        {axes: {y: {type: 'log'}},
+          series: [{y: 'series_0', label: 'A linear function', color: colors(4)}]
+        }
+      )
 
       ('Time series', 'Date objects are also accepted as abscissas values.', appUtils.timedData(100, 1),
         {axes: {
@@ -77,7 +100,8 @@ angular.module('myApp', ['n3-charts.linechart'])
       ('Area series', 'Area series are fully supported.', appUtils.linearData(50, 1),
         {series: [{y: 'series_0', label: 'A colorful area series', color: colors(1), type: 'area'}]})
 
-      ('Column series', 'Column series are fully suported too. The chart adjusts its x-axis so that columns are never cropped.', appUtils.linearData(50, 1),
+      ('Column series', 'Column series are fully supported too. The chart adjusts its x-axis so that columns are never cropped.',
+        appUtils.linearData(50, 1),
         {series: [{y: 'series_0', label: 'The best column series ever', color: colors(2), type: 'column'}]})
 
       ('Two axes', 'Series can be represented on another axis, just say it in the options !', appUtils.linearData(50, 2),
@@ -87,14 +111,14 @@ angular.module('myApp', ['n3-charts.linechart'])
           ]}
           )
 
-      ('Interpolation', 'D3.js adds some eye-candy when asked, and it is awesome', appUtils.linearData(50, 5),
+      ('Interpolation', 'D3.js adds some eye-candy when asked, and it is awesome.', appUtils.linearData(50, 5),
         {lineMode: 'bundle', series: [
         {y: 'series_0', label: 'Ping', color: colors(5)},
         {y: 'series_4', label: 'Pong', axis: 'y2', color: colors(6)}
         ]}
         )
 
-      ('Several series', 'You can even mix series types !', appUtils.linearData(50, 5),
+      ('Several series', 'You can mix series types, n3-charts handles the rest.', appUtils.linearData(50, 5),
         {lineMode: 'cardinal', series: [
         {y: 'series_0', label: 'This', type: 'area', color: colors(7)},
         {y: 'series_4', label: 'Is', type: 'column', color: colors(8)},
