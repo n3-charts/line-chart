@@ -10,9 +10,10 @@ angular.module('myApp', ['n3-charts.linechart'])
           var row = data[j] || {x: j};
           row['series_' + i] = Math.round(Math.sin((i+1)*j/5)*(5*(i+1))*1000)/1000;
           data[j] = row;
+        
         }
       }
-
+      
       return data;
     },
     
@@ -51,15 +52,16 @@ angular.module('myApp', ['n3-charts.linechart'])
   
   $scope.previous = function() {
     $scope.currentIndex = $scope.currentIndex === 0 ? $scope.examples.length - 1 : $scope.currentIndex - 1;
-  };
+  }
   
   $scope.next = function() {
     $scope.currentIndex = ($scope.currentIndex + 1)%$scope.examples.length;
   };
   
-  $scope.examples = [];
+  $scope.examples = []
+  
   var colors = d3.scale.category10();
-
+  
   $scope.addExample
 
       ('Linear series', 'Standard linear data is fully supported and can be displayed as lines, columns and areas.', appUtils.linearData(50, 1),

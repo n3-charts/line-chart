@@ -221,6 +221,7 @@
 .mainchart {
   border: 1px solid rgb(89, 89, 89);
   background-color:#FFF;
-  height: 300px;
-  padding-bottom: 100px;
+  height: 400px;
+  padding-left: 30px;
+  padding-bottom: 10px;
 }
