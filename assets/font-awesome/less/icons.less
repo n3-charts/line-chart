@@ -1,90 +1,5 @@
-/*  Font Awesome
-    the iconic font designed for use with Twitter Bootstrap
-    -------------------------------------------------------
-    The full suite of pictographic icons, examples, and documentation
-    can be found at: http://fortawesome.github.com/Font-Awesome/
-
-    License
-    -------------------------------------------------------
-    The Font Awesome webfont, CSS, and LESS files are licensed under CC BY 3.0:
-    http://creativecommons.org/licenses/by/3.0/ A mention of
-    'Font Awesome - http://fortawesome.github.com/Font-Awesome' in human-readable
-    source code is considered acceptable attribution (most common on the web).
-    If human readable source code is not available to the end user, a mention in
-    an 'About' or 'Credits' screen is considered acceptable (most common in desktop
-    or mobile software).
-
-    Contact
-    -------------------------------------------------------
-    Email: dave@davegandy.com
-    Twitter: http://twitter.com/fortaweso_me
-    Work: http://lemonwi.se co-founder
-
-    */
-@font-face {
-  font-family: "FontAwesome";
-  src: url('../fonts/fontawesome-webfont.eot');
-  src: url('../fonts/fontawesome-webfont.eot') format('eot'), url('../fonts/fontawesome-webfont.woff') format('woff'), url('../fonts/fontawesome-webfont.ttf') format('truetype'), url('../fonts/fontawesome-webfont.svg') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-
-/*  Font Awesome styles
-    ------------------------------------------------------- */
-
-[class^="icon-"], [class*=" icon-"]{
-  line-height: 1.1em;
-}
-[class^="icon-"]:before, [class*=" icon-"]:before {
-  font-family: FontAwesome;
-  font-weight: normal;
-  font-style: normal;
-  display: inline-block;
-  text-decoration: none;
-  font-size: 1.1em;
-  vertical-align: middle;
-}
-[class^="icon-white"]:before, [class*=" icon-white"]:before {
-  color: white;
-}
-a [class^="icon-"], a [class*=" icon-"] {
-  display: inline-block;
-  text-decoration: none;
-  width: 1.25em;
-}
-/* makes the font 33% larger relative to the icon container */
-.icon-large:before {
-  vertical-align: top;
-  font-size: 1.3333333333333333em;
-}
-.btn [class^="icon-"], .btn [class*=" icon-"] {
-  /* keeps button heights with and without icons the same */
-  vertical-align: middle;
-  line-height: .9em;
-}
-li [class^="icon-"], li [class*=" icon-"] {
-  display: inline-block;
-  width: 1.25em;
-  text-align: center;
-}
-li .icon-large[class^="icon-"], li .icon-large[class*=" icon-"] {
-  /* 1.5 increased font size for icon-large * 1.25 width */
-
-  width: 1.875em;
-}
-li[class^="icon-"], li[class*=" icon-"] {
-  margin-left: 0;
-  list-style-type: none;
-}
-li[class^="icon-"]:before, li[class*=" icon-"]:before {
-  text-indent: -1em;
-  text-align: center;
-}
-li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
-  text-indent: -1.3333333333333333em;
-}
-/*  Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
-    readers do not read off random characters that represent icons */
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
 .icon-glass:before                { content: "\f000"; }
 .icon-music:before                { content: "\f001"; }
 .icon-search:before               { content: "\f002"; }
@@ -115,9 +30,10 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 .icon-upload:before               { content: "\f01b"; }
 .icon-inbox:before                { content: "\f01c"; }
 .icon-play-circle:before          { content: "\f01d"; }
-.icon-repeat:before               { content: "\f01e"; }
+.icon-repeat:before,
+.icon-rotate-right:before         { content: "\f01e"; }
 
-/* \f020 doesn't work in Safari. all shifted one down */
+/* F020 doesn't work in Safari. all shifted one down */
 .icon-refresh:before              { content: "\f021"; }
 .icon-list-alt:before             { content: "\f022"; }
 .icon-lock:before                 { content: "\f023"; }
@@ -186,7 +102,8 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 .icon-arrow-right:before          { content: "\f061"; }
 .icon-arrow-up:before             { content: "\f062"; }
 .icon-arrow-down:before           { content: "\f063"; }
-.icon-share-alt:before            { content: "\f064"; }
+.icon-share-alt:before,
+.icon-mail-forward:before         { content: "\f064"; }
 .icon-resize-full:before          { content: "\f065"; }
 .icon-resize-small:before         { content: "\f066"; }
 .icon-plus:before                 { content: "\f067"; }
@@ -300,7 +217,8 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 
 .icon-envelope-alt:before         { content: "\f0e0"; }
 .icon-linkedin:before             { content: "\f0e1"; }
-.icon-undo:before                 { content: "\f0e2"; }
+.icon-undo:before,
+.icon-rotate-left:before          { content: "\f0e2"; }
 .icon-legal:before                { content: "\f0e3"; }
 .icon-dashboard:before            { content: "\f0e4"; }
 .icon-comment-alt:before          { content: "\f0e5"; }
@@ -309,5 +227,104 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 .icon-sitemap:before              { content: "\f0e8"; }
 .icon-umbrella:before             { content: "\f0e9"; }
 .icon-paste:before                { content: "\f0ea"; }
+.icon-lightbulb:before            { content: "\f0eb"; }
+.icon-exchange:before             { content: "\f0ec"; }
+.icon-cloud-download:before       { content: "\f0ed"; }
+.icon-cloud-upload:before         { content: "\f0ee"; }
 
-.icon-user-md:before              { content: "\f200"; }
+.icon-user-md:before              { content: "\f0f0"; }
+.icon-stethoscope:before          { content: "\f0f1"; }
+.icon-suitcase:before             { content: "\f0f2"; }
+.icon-bell-alt:before             { content: "\f0f3"; }
+.icon-coffee:before               { content: "\f0f4"; }
+.icon-food:before                 { content: "\f0f5"; }
+.icon-file-alt:before             { content: "\f0f6"; }
+.icon-building:before             { content: "\f0f7"; }
+.icon-hospital:before             { content: "\f0f8"; }
+.icon-ambulance:before            { content: "\f0f9"; }
+.icon-medkit:before               { content: "\f0fa"; }
+.icon-fighter-jet:before          { content: "\f0fb"; }
+.icon-beer:before                 { content: "\f0fc"; }
+.icon-h-sign:before               { content: "\f0fd"; }
+.icon-plus-sign-alt:before        { content: "\f0fe"; }
+
+.icon-double-angle-left:before    { content: "\f100"; }
+.icon-double-angle-right:before   { content: "\f101"; }
+.icon-double-angle-up:before      { content: "\f102"; }
+.icon-double-angle-down:before    { content: "\f103"; }
+.icon-angle-left:before           { content: "\f104"; }
+.icon-angle-right:before          { content: "\f105"; }
+.icon-angle-up:before             { content: "\f106"; }
+.icon-angle-down:before           { content: "\f107"; }
+.icon-desktop:before              { content: "\f108"; }
+.icon-laptop:before               { content: "\f109"; }
+.icon-tablet:before               { content: "\f10a"; }
+.icon-mobile-phone:before         { content: "\f10b"; }
+.icon-circle-blank:before         { content: "\f10c"; }
+.icon-quote-left:before           { content: "\f10d"; }
+.icon-quote-right:before          { content: "\f10e"; }
+
+.icon-spinner:before              { content: "\f110"; }
+.icon-circle:before               { content: "\f111"; }
+.icon-reply:before,
+.icon-mail-reply:before           { content: "\f112"; }
+.icon-folder-close-alt:before     { content: "\f114"; }
+.icon-folder-open-alt:before      { content: "\f115"; }
+.icon-expand-alt:before           { content: "\f116"; }
+.icon-collapse-alt:before         { content: "\f117"; }
+.icon-smile:before                { content: "\f118"; }
+.icon-frown:before                { content: "\f119"; }
+.icon-meh:before                  { content: "\f11a"; }
+.icon-gamepad:before              { content: "\f11b"; }
+.icon-keyboard:before             { content: "\f11c"; }
+.icon-flag-alt:before             { content: "\f11d"; }
+.icon-flag-checkered:before       { content: "\f11e"; }
+
+.icon-terminal:before             { content: "\f120"; }
+.icon-code:before                 { content: "\f121"; }
+.icon-reply-all:before,           { content: "\f122"; }
+.icon-mail-reply-all:before       { content: "\f122"; }
+.icon-star-half-full:before,
+.icon-star-half-empty:before      { content: "\f123"; }
+.icon-location-arrow:before       { content: "\f124"; }
+.icon-crop:before                 { content: "\f125"; }
+.icon-code-fork:before            { content: "\f126"; }
+.icon-unlink:before               { content: "\f127"; }
+.icon-question:before             { content: "\f128"; }
+.icon-info:before                 { content: "\f129"; }
+.icon-exclamation:before          { content: "\f12a"; }
+.icon-superscript:before          { content: "\f12b"; }
+.icon-subscript:before            { content: "\f12c"; }
+.icon-eraser:before               { content: "\f12d"; }
+.icon-puzzle-piece:before         { content: "\f12e"; }
+
+.icon-microphone:before           { content: "\f130"; }
+.icon-microphone-off:before       { content: "\f131"; }
+.icon-shield:before               { content: "\f132"; }
+.icon-calendar-empty:before       { content: "\f133"; }
+.icon-fire-extinguisher:before    { content: "\f134"; }
+.icon-rocket:before               { content: "\f135"; }
+.icon-maxcdn:before               { content: "\f136"; }
+.icon-chevron-sign-left:before    { content: "\f137"; }
+.icon-chevron-sign-right:before   { content: "\f138"; }
+.icon-chevron-sign-up:before      { content: "\f139"; }
+.icon-chevron-sign-down:before    { content: "\f13a"; }
+.icon-html5:before                { content: "\f13b"; }
+.icon-css3:before                 { content: "\f13c"; }
+.icon-anchor:before               { content: "\f13d"; }
+.icon-unlock-alt:before           { content: "\f13e"; }
+
+.icon-bullseye:before             { content: "\f140"; }
+.icon-ellipsis-horizontal:before  { content: "\f141"; }
+.icon-ellipsis-vertical:before    { content: "\f142"; }
+.icon-rss-sign:before             { content: "\f143"; }
+.icon-play-sign:before            { content: "\f144"; }
+.icon-ticket:before               { content: "\f145"; }
+.icon-minus-sign-alt:before       { content: "\f146"; }
+.icon-check-minus:before          { content: "\f147"; }
+.icon-level-up:before             { content: "\f148"; }
+.icon-level-down:before           { content: "\f149"; }
+.icon-check-sign:before           { content: "\f14a"; }
+.icon-edit-sign:before            { content: "\f14b"; }
+.icon-external-link-sign:before   { content: "\f14c"; }
+.icon-share-sign:before           { content: "\f14d"; }
