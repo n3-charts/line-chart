@@ -15,7 +15,7 @@ describe('n3utils', function() {
     var xFormatter = function(text) {return ''};
 
     var options = {
-      axes: {x: {tooltipFormatter: xFormatter}},
+      axes: {x: {key: 'x', tooltipFormatter: xFormatter}},
       series: [
       {y: 'value', axis: 'y2', color: 'steelblue'},
       {y: 'foo', color: 'red', type: 'area'}

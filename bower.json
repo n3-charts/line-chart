@@ -1,5 +1,5 @@
 {
-  "name": "angular-d3-line-chart",
+  "name": "n3-charts-line-chart",
   "version": "0.2",
   "main": "lib/line-chart.js",
   "ignore": [
