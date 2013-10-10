@@ -3,6 +3,7 @@ body {
   margin: 0 auto;
 }
 
+/* HEADER */
 #header {
   padding-top: 15px;
   margin-bottom: .6em;
@@ -18,7 +19,6 @@ body {
   margin-top: 1.2em;
   margin-bottom: 0;
   float: right;
-  /*text-transform: uppercase;*/
 }
 
 #header>h1>a {
@@ -30,6 +30,16 @@ body {
   vertical-align: middle;
 }
 
+/* HOME */
+
+.preview-chart {
+  height: 500px;
+  border: 1px solid #CECECE;
+  box-shadow: 6px 6px 10px #DDD;
+  margin-bottom: 30px;
+}
+
+/* THUMBNAIL */
 .thumbnail {
   box-shadow: 6px 6px 10px #DDD;
   height: 500px;
