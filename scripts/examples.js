@@ -23,8 +23,8 @@ angular.module('demo.examples', ['pretty'])
 
       for (var i = 0; i < seriesCount; i++) {
         for (var j = 0; j < rowCount; j++) {
-          var row = data[j] || {x: j};
-          row['series_' + i] = (j+1)*100000 + Math.cos(j)*200000;
+          var row = data[j] || {foo: j};
+          row['series_' + i] = (j+1)*100000 + parseInt(Math.cos(j)*200000);
           data[j] = row;
         
         }
@@ -85,7 +85,7 @@ angular.module('demo.examples', ['pretty'])
       originData: logData,
       visibleRows: 100,
       data: logData.slice(0, 100),
-      options: {axes: {y: {type: 'log'}},
+      options: {axes: {x: {key: 'foo'}, y: {type: 'log'}},
         series: [{y: 'series_0', label: 'A linear function', color: colors(4)}]
       }
     },

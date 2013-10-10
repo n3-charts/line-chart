@@ -3,7 +3,7 @@ angular.module('pretty', [])
 .factory('prettyfier', function() {
   return {
     formatKey: function(value) {
-      return '<span style="color: #B919A8;">' + value + '</span> : ';
+      return '<span style="color: #B919A8;">' + value + '</span>: ';
     },
     
     isNative: function(value) {
