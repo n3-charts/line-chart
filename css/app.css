@@ -48,8 +48,6 @@ body {
   height: 100%;
 }
 
-/*.thumbnail .options > pre {
-  box-shadow:inset 2px 2px 20px #DDD;
-  background-color: #EEE;
-  font-size: 10px;
-}*/
+.thumbnail .options > pre {
+  font-size: 11px;
+}
