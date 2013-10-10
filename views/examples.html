@@ -8,6 +8,11 @@
       <linechart data='example.data' options='example.options'></linechart>
     </div>
     <div class='unit-50 options'>
+      <p class="label label-data">Data amount : {{example.visibleRows}}</p>
+      <br>
+      <input type="range" ng-change='crop(example, example.visibleRows)' ng-model='example.visibleRows' min='2' max='{{max}}'>
+      <br>
+      <br>
       <p class="label label-data">Options :</p>
       <pre ng-bind-html-unsafe='example.options | pretty'></pre>
     </div>
