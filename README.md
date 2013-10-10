@@ -34,7 +34,6 @@ $scope.data = [
   {x: 5, value: 42, otherValue: 45}
 ];
 ```
-> **Note :** only `x` is supported as an abscissas key.
 
 #### Options
 Options must be an object with a series array. It should look like this :
@@ -42,7 +41,7 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {type: 'linear', tooltipFormatter: function(x) {return x;}},
+    x: {key: 'foo', labelFunction: function(value) {return value;}, type: 'linear', tooltipFormatter: function(x) {return x;}},
     y: {type: 'linear'},
     y2: {type: 'linear'}
   },
@@ -56,8 +55,10 @@ $scope.options = {
 ##### Axes
 The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with the following properties :
 
+ + `key` : optional, defines where the chart will look for abscissas values in the data (default is 'x').
+ + `tooltipFormatter` : optional, allows to format the tooltip. Must be a function that accepts a single argument, the x value. It should return something that will be converted into a string and put in the x tooltip.
  + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
- + `tooltipFormatter` : optional, allows to format the tooltip. Must be a function that accepts a single arguments, the x value. It should return something that will be converted into a string and put in the x tooltip.
+ + `labelFunction` : optional, allows to format the axis' ticklabels. Must be a function that accepts a single argument and returns a string.
  
 It can also contain, according to your series configuration, a `y` and a `y2` key with the following properties :
 
