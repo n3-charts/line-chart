@@ -85,8 +85,8 @@ angular.module('demo.examples', ['pretty'])
       originData: logData,
       visibleRows: 100,
       data: logData.slice(0, 100),
-      options: {axes: {x: {key: 'foo'}, y: {type: 'log'}},
-        series: [{y: 'series_0', label: 'A linear function', color: colors(4)}]
+      options: {axes: {x: {key: 'foo', labelFunction: function(v) {return 'Na';}}, y: {type: 'log'}},
+        series: [{y: 'series_0', label: 'Batmaaan', color: colors(4)}]
       }
     },
 
@@ -97,7 +97,7 @@ angular.module('demo.examples', ['pretty'])
       visibleRows: 100,
       data: timData.slice(0, 100),
       options: {axes: {
-        x: {type: 'date', tooltipFormatter: function(d) {return moment(d).fromNow()}}
+        x: {type: 'date', tooltipFormatter: function(d) {return moment(d).fromNow();}}
       },
       series: [{y: 'series_0', label: 'A time series', color: colors(9)}]}
     },
