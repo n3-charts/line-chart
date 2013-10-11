@@ -55,7 +55,7 @@ angular.module('demo.examples', ['pretty'])
 
 .controller('ExamplesCtrl', function($scope, appUtils) {
   var colors = d3.scale.category10();
-  $scope.max = 500;
+  $scope.max = 5;
   
   var linData = appUtils.linearData($scope.max, 4);
   var timData = appUtils.timedData($scope.max, 4);
