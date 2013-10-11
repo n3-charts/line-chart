@@ -5,8 +5,8 @@ A line chart implementation for [AngularJS](http://angularjs.org/) applications.
 And here is the [demo page](http://n3-charts.github.io/line-chart/).
 
 ### How to install
- + Copy `line-chart.js` and `line-chart.css` wherever you want
- + Reference them in your index.html file
+ + Copy `line-chart.min.js` wherever you want
+ + Reference it in your index.html file
  + Reference the module in your app file :
      angular.module('myApp', [
       'n3-charts.linechart'
