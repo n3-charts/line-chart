@@ -55,14 +55,14 @@ angular.module('demo.examples', ['pretty'])
 
 .controller('ExamplesCtrl', function($scope, appUtils) {
   var colors = d3.scale.category10();
-  $scope.max = 5;
+  $scope.max = 100;
   
   var linData = appUtils.linearData($scope.max, 4);
   var timData = appUtils.timedData($scope.max, 4);
   var logData = appUtils.logData($scope.max, 4);
   
-  $scope.crop = function(example, value) {
-    example.data = example.originData.slice(0, value);
+  $scope.crop = function(example) {
+    example.data = example.originData.slice(0, example.visibleRows);
   };
   
   $scope.examples = [
