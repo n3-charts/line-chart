@@ -3,18 +3,13 @@
     <h3>{{example.label}}</h3>
     <h3 class='subheader'>{{example.description}}</h3>
   </div>
-  <div class='units-row thumbnail'>
-    <div class='unit-50 chart'>
+  <div class='units-row units-split thumbnail'>
+    <div class='unit-60 chart'>
       <linechart data='example.data' options='example.options'></linechart>
     </div>
-    <div class='unit-50 options'>
-      <!-- <p class="label label-data">Data amount : {{example.visibleRows}}</p> -->
-      <!-- <br> -->
-      <!-- <input type="range" ng-change='crop(example, example.visibleRows)' ng-model='example.visibleRows' min='2' max='{{max}}'> -->
-      <p class="label label-data">Data :</p>
-      <pre ng-bind-html-unsafe='example.data | pretty:1'></pre>
-      <p class="label label-data">Options :</p>
-      <pre ng-bind-html-unsafe='example.options | pretty'></pre>
+    <div class='unit-40 options'>
+      <pre ng-bind-html-unsafe='"$scope.data = " + (example.data | pretty:1) + ";"'></pre>
+      <pre ng-bind-html-unsafe='"$scope.options = " + (example.options | pretty) + ";"'></pre>
     </div>
   </div>
 </div>

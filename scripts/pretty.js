@@ -16,7 +16,7 @@ angular.module('pretty', [])
       }
       
       if (typeof value == 'number') {
-        return '<span style="color: blue">"' + value + '"</span>';
+        return '<span style="color: blue">' + value + '</span>';
       }
       
       if (typeof value == 'function') {
@@ -30,7 +30,15 @@ angular.module('pretty', [])
       return value.toString();
     },
     
+    prettifyDate: function(date) {
+      return '<span style="color: green">new</span> Date(' + this.prettifyNative(date.getTime()) + ')';
+    },
+    
     prettify: function(object, depth, padding) {
+      if (angular.isDate(object)) {
+        return this.prettifyDate(object);
+      }
+      
       if (this.isNative(object)) {
         return this.prettifyNative(object);
       }
@@ -58,6 +66,10 @@ angular.module('pretty', [])
     },
     
     prettyFlat: function(object) {
+      if (angular.isDate(object)) {
+        return this.prettifyDate(object);
+      }
+      
       if (this.isNative(object)) {
         return this.prettifyNative(object);
       }
