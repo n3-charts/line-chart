@@ -65,10 +65,6 @@ module.exports = function(grunt) {
         src: ['lib/<%= pkg.name %>.js', '/tmp/utils.js'],
         dest: '/tmp/<%= pkg.name %>.js'
       },
-      css: {
-        src: ['lib/<%= pkg.name %>.css'],
-        dest: 'dist/<%= pkg.name %>.css'
-      },
       test: {
         src: ['test/spec.prefix', 'test/*.spec.js' ,'test/spec.suffix'],
         dest: '/tmp/<%= pkg.name %>.spec.js'
