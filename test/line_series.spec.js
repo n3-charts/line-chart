@@ -27,21 +27,10 @@ describe('line series', function() {
     expect(ticks[10].textContent).toBe('50');
   });
 
-  it('should properly configure x axis', function() {
-    var xAxis = elm.find('svg').children()[0].childNodes[0];
-
-    var ticks = xAxis.childNodes;
-
-    expect(ticks.length).toBe(12);
-
-    expect(ticks[0].textContent).toBe('0.0');
-    expect(ticks[10].textContent).toBe('5.0');
-  });
-
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     expect(content.childNodes.length).toBe(2);
 
     var lineGroup = content.childNodes[0];
@@ -51,7 +40,7 @@ describe('line series', function() {
 
   it('should draw dots', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     var dotsGroup = content.childNodes[1];
     expect(dotsGroup.nodeName).toBe('g');
 
@@ -60,11 +49,11 @@ describe('line series', function() {
 
     var expectedCoordinates = [
       {x: '0', y: '414'},
-      {x: '161', y: '378'},
-      {x: '322', y: '315'},
-      {x: '483', y: '306'},
-      {x: '644', y: '243'},
-      {x: '805', y: '72'}
+      {x: '162', y: '378'},
+      {x: '324', y: '315'},
+      {x: '486', y: '306'},
+      {x: '648', y: '243'},
+      {x: '810', y: '72'}
     ];
 
     for (var i = 0; i < dots.length; i++) {
@@ -75,12 +64,12 @@ describe('line series', function() {
   });
 
   it('should draw a line', function() {
-    var content = elm.find('svg').children()[0].childNodes[4];
+    var content = elm.find('svg').children()[0].childNodes[2];
     var lineGroup = content.childNodes[0];
 
     var linePath = lineGroup.childNodes[0];
     expect(linePath.getAttribute('class')).toBe('line');
     expect(linePath.getAttribute('d'))
-      .toBe('M0,414L161,378L322,315L483,306L644,243L805,72');
+      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
   });
 });

@@ -1,4 +1,4 @@
-describe('chart when initializing', function() {
+describe('chart initialization', function() {
   it('should create one svg element', function() {
     expect(elm[0].getAttribute('id')).toBe('toto');
 
@@ -16,15 +16,15 @@ describe('chart when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(6);
+    expect(content.length).toBe(7);
 
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
-    expect(content[2].getAttribute('id')).toBe('xTooltip');
-    expect(content[3].getAttribute('id')).toBe('yTooltip');
+    expect(content[5].getAttribute('id')).toBe('xTooltip');
+    expect(content[6].getAttribute('id')).toBe('yTooltip');
   });
 
-  it('should draw three axes whan said so', function() {
+  it('should generate properly the main elements', function() {
     scope.$apply(function() {
       scope.options = {series: [
         {axis: 'y', y: 'value', color: '#4682b4'},
@@ -35,29 +35,16 @@ describe('chart when initializing', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(8);
+    expect(content.length).toBe(9);
 
     expect(content[0].getAttribute('class')).toBe('x axis');
     expect(content[1].getAttribute('class')).toBe('y axis');
     expect(content[2].getAttribute('class')).toBe('y2 axis');
-    expect(content[3].getAttribute('id')).toBe('xTooltip');
-    expect(content[4].getAttribute('id')).toBe('yTooltip');
-    expect(content[5].getAttribute('id')).toBe('y2Tooltip');
-  });
-
-  xit('should draw data', function() {
-    scope.$apply(function() {
-      scope.data = [
-        {x: 0, value: 4, foo: -2}, {x: 1, value: 8, foo: 22}, {x: 2, value: 15, foo: -1},
-        {x: 3, value: 16, foo: 0}, {x: 4, value: 23, foo: -3}, {x: 5, value: 42, foo: -4}
-      ];
-
-      scope.options = {
-        series: [
-          {axis: 'y', y: 'value', color: '#4682b4', type: 'area'},
-          {axis: 'y2', y: 'foo', color: 'steelblue', type: 'area'}
-        ]
-      };
-    });
+    expect(content[3].getAttribute('class')).toBe('content');
+    expect(content[4].getAttribute('id')).toBe('clip');
+    expect(content[5].getAttribute('class')).toBe('legend');
+    expect(content[6].getAttribute('id')).toBe('xTooltip');
+    expect(content[7].getAttribute('id')).toBe('yTooltip');
+    expect(content[8].getAttribute('id')).toBe('y2Tooltip');
   });
 });

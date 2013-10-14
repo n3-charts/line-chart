@@ -43,14 +43,13 @@ describe('area series', function() {
 
   it('should create 3 elements', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
     expect(content.childNodes.length).toBe(3);
   });
 
   it('should create an area group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
-
+    var content = svgGroup.childNodes[2];
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
     expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
@@ -58,13 +57,12 @@ describe('area series', function() {
     var areaPath = areaGroup.childNodes[0];
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
-      .toBe('M0,414L161,378L322,315L483,306L644,243L805,72L805,450L644,' +
-        '450L483,450L322,450L161,450L0,450Z');
+      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,450L486,450L324,450L162,450L0,450Z');
   });
 
   it('should create a line group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var lineGroup = content.childNodes[1];
     expect(lineGroup.getAttribute('class')).toBe('lineGroup series_0');
@@ -73,7 +71,7 @@ describe('area series', function() {
 
   it('should create a dots group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[4];
+    var content = svgGroup.childNodes[2];
 
     var dotsGroup = content.childNodes[2];
     expect(dotsGroup.nodeName).toBe('g');
@@ -83,11 +81,11 @@ describe('area series', function() {
 
     var expectedCoordinates = [
       {x: '0', y: '414'},
-      {x: '161', y: '378'},
-      {x: '322', y: '315'},
-      {x: '483', y: '306'},
-      {x: '644', y: '243'},
-      {x: '805', y: '72'}
+      {x: '162', y: '378'},
+      {x: '324', y: '315'},
+      {x: '486', y: '306'},
+      {x: '648', y: '243'},
+      {x: '810', y: '72'}
     ];
 
     for (var i = 0; i < dots.length; i++) {
