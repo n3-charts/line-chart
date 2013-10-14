@@ -19,12 +19,12 @@ module.exports = function(grunt) {
     banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-      '* Copyright (c) <%= grunt.template.today("yyyy") %> Angular D3;' +
+      '* Copyright (c) <%= grunt.template.today("yyyy") %> n3-charts ' +
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
 
     watch: {
-      files: ['lib/<%= pkg.name %>.js', 'test/*.spec.js'],
-      tasks: ['jshint', 'concat', 'karma:continuous', 'uglify']
+      files: ['lib/**/*.js', 'test/*.spec.js'],
+      tasks: ['jshint', 'concat', 'uglify', 'karma:continuous']
     },
 
     karma: {
@@ -52,17 +52,22 @@ module.exports = function(grunt) {
         banner: '<%= banner %>',
         stripBanners: true
       },
-      js: {
-        src: ['lib/<%= pkg.name %>.js'],
-        dest: 'dist/<%= pkg.name %>.js'
+      utils: {
+        src: ['lib/utils/*.js'],
+        dest: '/tmp/utils.js',
+        options: {
+          banner: grunt.file.read('lib/utils/utils.js.prefix'),
+          footer: grunt.file.read('lib/utils/utils.js.suffix'),
+          separator: ',\n\n'
+        }
       },
-      css: {
-        src: ['lib/<%= pkg.name %>.css'],
-        dest: 'dist/<%= pkg.name %>.css'
+      js: {
+        src: ['lib/<%= pkg.name %>.js', '/tmp/utils.js'],
+        dest: '/tmp/<%= pkg.name %>.js'
       },
       test: {
         src: ['test/spec.prefix', 'test/*.spec.js' ,'test/spec.suffix'],
-        dest: 'dist/<%= pkg.name %>.spec.js'
+        dest: '/tmp/<%= pkg.name %>.spec.js'
       }
     },
 
@@ -84,13 +89,13 @@ module.exports = function(grunt) {
         src: 'Gruntfile.js'
       },
       test: {
-        src: ['lib/**/*.js']
+        src: ['lib/*.js']
       }
     }
   });
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'karma:continuous', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'karma:continuous']);
 
   grunt.registerTask('fast-build', ['concat', 'uglify']);
   grunt.registerTask('coverage', ['concat', 'karma:unit']);

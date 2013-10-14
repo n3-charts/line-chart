@@ -10,15 +10,15 @@ basePath = '';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'components/angular/angular.js',
-  'components/angular-mocks/angular-mocks.js',
-  'components/d3/d3.js',
-  'dist/line-chart.js',
-  'dist/line-chart.spec.js'
+  'bower_components/angular/angular.js',
+  'bower_components/angular-mocks/angular-mocks.js',
+  'bower_components/d3/d3.js',
+  'dist/line-chart.min.js',
+  '/tmp/line-chart.spec.js'
 ];
 
 preprocessors = {
-  'dist/line-chart.js': 'coverage'
+  'dist/line-chart.min.js': 'coverage'
 };
 
 // list of files to exclude

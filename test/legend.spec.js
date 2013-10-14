@@ -10,12 +10,12 @@ describe('legend', function() {
     });
   });
 
-  it('create legend elements', function() {
+  it('should create legend elements', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
 
-    var legendGroup = content[7];
+    var legendGroup = content[5];
     expect(legendGroup.getAttribute('class')).toBe('legend');
 
     expect(legendGroup.childNodes.length).toBe(2);
