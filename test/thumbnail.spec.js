@@ -1,12 +1,23 @@
 describe('thumbnail when initializing', function() {
   beforeEach(inject(function($rootScope, $compile) {
     elm = angular.element('<div id="toto">' +
-      '<linechart options="options" mode="thumbnail"></linechart>' +
+      '<linechart data="data" options="options" mode="thumbnail"></linechart>' +
       '</div>');
 
     scope = $rootScope;
     $compile(elm)(scope);
     scope.$digest();
+
+    scope.$apply(function() {
+      scope.data = [
+        {x: 0, value: 4}, {x: 1, value: 8}, {x: 2, value: 15},
+        {x: 3, value: 16}, {x: 4, value: 23}, {x: 5, value: 42}
+      ];
+
+      scope.options = {
+        series: [{y: 'value', color: '#4682b4'} ]
+      };
+    });
   }));
 
   it('should create one svg element', function() {
