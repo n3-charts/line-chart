@@ -97,8 +97,7 @@ describe('area series', function() {
     expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
     var areaPath = areaGroup.childNodes[0];
-    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: url(#areaPattern_0)')
-    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: url(#areaPattern_0)')
+    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: url(#areaPattern_0); opacity: 1;')
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
       .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,450L486,450L324,450L162,450L0,450Z');
