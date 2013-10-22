@@ -40,13 +40,13 @@ describe('scales', function() {
         '', '', '', '', '', '', '', '', '1e+5', ''
       ];
       
-      var yAxis = elm.find('svg').children()[0].childNodes[1];
+      var yAxis = elm.find('svg').children()[0].childNodes[2];
       var computedYTicks = [];
       for (var i = 0; i < yAxis.childNodes.length; i++) {
         computedYTicks.push(yAxis.childNodes[i].textContent);
       }
       
-      var y2Axis = elm.find('svg').children()[0].childNodes[2];
+      var y2Axis = elm.find('svg').children()[0].childNodes[3];
       var computedY2Ticks = [];
       for (var i = 0; i < y2Axis.childNodes.length; i++) {
         computedY2Ticks.push(y2Axis.childNodes[i].textContent);
@@ -57,7 +57,7 @@ describe('scales', function() {
     });
     
     it('should configure y axis with logarithmic values', function() {
-      var yAxis = elm.find('svg').children()[0].childNodes[1];
+      var yAxis = elm.find('svg').children()[0].childNodes[2];
 
       var ticks = yAxis.childNodes;
 
@@ -83,7 +83,7 @@ describe('scales', function() {
         ]};
       });
       
-      var y2Axis = elm.find('svg').children()[0].childNodes[2];
+      var y2Axis = elm.find('svg').children()[0].childNodes[3];
 
       var ticks = y2Axis.childNodes;
 
@@ -98,7 +98,7 @@ describe('scales', function() {
     });
 
     it('should let y2 axis in linear mode if told so', function() {
-      var y2Axis = elm.find('svg').children()[0].childNodes[2];
+      var y2Axis = elm.find('svg').children()[0].childNodes[3];
 
       var ticks = y2Axis.childNodes;
       

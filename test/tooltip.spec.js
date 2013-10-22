@@ -20,11 +20,11 @@ describe('tooltip', function() {
 
     var content = svgGroup.childNodes;
 
-    var leftAxisDotGroup = content[3].childNodes[2];
+    var leftAxisDotGroup = content[4].childNodes[2];
 
     expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup series_0');
 
-    var xTooltip = content[6];
+    var xTooltip = content[7];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");
@@ -51,11 +51,11 @@ describe('tooltip', function() {
 
     var content = svgGroup.childNodes;
 
-    var leftAxisDotGroup = content[3].childNodes[2];
+    var leftAxisDotGroup = content[4].childNodes[2];
 
     expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup series_0');
 
-    var xTooltip = content[6];
+    var xTooltip = content[7];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");
@@ -73,11 +73,11 @@ describe('tooltip', function() {
 
     var content = svgGroup.childNodes;
 
-    var rightAxisColumnGroup = content[3].childNodes[0];
+    var rightAxisColumnGroup = content[4].childNodes[0];
 
     expect(rightAxisColumnGroup.getAttribute('class')).toBe('columnGroup series_1');
 
-    var xTooltip = content[6];
+    var xTooltip = content[7];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");

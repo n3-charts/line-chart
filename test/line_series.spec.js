@@ -17,7 +17,7 @@ describe('line series', function() {
   });
 
   it('should properly configure y axis', function() {
-    var yAxis = elm.find('svg').children()[0].childNodes[1];
+    var yAxis = elm.find('svg').children()[0].childNodes[2];
 
     var ticks = yAxis.childNodes;
 
@@ -30,7 +30,7 @@ describe('line series', function() {
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     expect(content.childNodes.length).toBe(2);
 
     var lineGroup = content.childNodes[0];
@@ -40,7 +40,7 @@ describe('line series', function() {
 
   it('should draw dots', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     var dotsGroup = content.childNodes[1];
     expect(dotsGroup.nodeName).toBe('g');
 
@@ -64,7 +64,7 @@ describe('line series', function() {
   });
 
   it('should draw a line', function() {
-    var content = elm.find('svg').children()[0].childNodes[2];
+    var content = elm.find('svg').children()[0].childNodes[3];
     var lineGroup = content.childNodes[0];
 
     var linePath = lineGroup.childNodes[0];
