@@ -24,7 +24,7 @@ describe('time series', function() {
   });
   
   it('should properly configure x axis', function() {
-    var xAxis = elm.find('svg').children()[0].childNodes[0];
+    var xAxis = elm.find('svg').children()[0].childNodes[1];
 
     var ticks = xAxis.childNodes;
     

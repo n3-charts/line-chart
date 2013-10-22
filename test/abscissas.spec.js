@@ -23,7 +23,7 @@ describe('abscissas', function() {
     });
     
     it('should configure x axis', function() {
-      var xAxis = elm.find('svg').children()[0].childNodes[0];
+      var xAxis = elm.find('svg').children()[0].childNodes[1];
 
       var ticks = xAxis.childNodes;
 
@@ -34,7 +34,7 @@ describe('abscissas', function() {
     });
     
     it('should draw a line', function() {
-      var content = elm.find('svg').children()[0].childNodes[2];
+      var content = elm.find('svg').children()[0].childNodes[3];
       var lineGroup = content.childNodes[0];
 
       var linePath = lineGroup.childNodes[0];
@@ -57,7 +57,7 @@ describe('abscissas', function() {
     });
     
     it('should configure x axis', function() {
-      var xAxis = elm.find('svg').children()[0].childNodes[0];
+      var xAxis = elm.find('svg').children()[0].childNodes[1];
 
       var ticks = xAxis.childNodes;
 
@@ -68,7 +68,7 @@ describe('abscissas', function() {
     });
     
     it('should draw a line', function() {
-      var content = elm.find('svg').children()[0].childNodes[2];
+      var content = elm.find('svg').children()[0].childNodes[3];
       var lineGroup = content.childNodes[0];
 
       var linePath = lineGroup.childNodes[0];
@@ -91,7 +91,7 @@ describe('abscissas', function() {
     });
     
     it('should properly configure x axis from custom key', function() {
-      var xAxis = elm.find('svg').children()[0].childNodes[0];
+      var xAxis = elm.find('svg').children()[0].childNodes[1];
 
       var ticks = xAxis.childNodes;
 
@@ -102,7 +102,7 @@ describe('abscissas', function() {
     });
     
     it('should draw a line', function() {
-      var content = elm.find('svg').children()[0].childNodes[2];
+      var content = elm.find('svg').children()[0].childNodes[3];
       var lineGroup = content.childNodes[0];
 
       var linePath = lineGroup.childNodes[0];

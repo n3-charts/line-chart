@@ -22,7 +22,7 @@ describe('with a second axis', function() {
   });
 
   it('should configure y axis only with y series', function() {
-    var yAxis = elm.find('svg').children()[0].childNodes[1];
+    var yAxis = elm.find('svg').children()[0].childNodes[2];
 
     var ticks = yAxis.childNodes;
 
@@ -33,7 +33,7 @@ describe('with a second axis', function() {
   });
 
   it('should properly configure y2 axis', function() {
-    var y2Axis = elm.find('svg').children()[0].childNodes[2];
+    var y2Axis = elm.find('svg').children()[0].childNodes[3];
 
     var ticks = y2Axis.childNodes;
 
@@ -44,7 +44,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw two lines', function() {
-    var content = elm.find('svg').children()[0].childNodes[3];
+    var content = elm.find('svg').children()[0].childNodes[4];
 
     var leftLinePath = content.childNodes[2].childNodes[0];
     expect(leftLinePath.getAttribute('class')).toBe('line');
@@ -58,7 +58,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y area', function() {
-    var content = elm.find('svg').children()[0].childNodes[3];
+    var content = elm.find('svg').children()[0].childNodes[4];
 
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
@@ -72,7 +72,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y2 area', function() {
-    var content = elm.find('svg').children()[0].childNodes[3];
+    var content = elm.find('svg').children()[0].childNodes[4];
 
     var areaGroup = content.childNodes[1];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_1');
@@ -86,7 +86,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y axis dots', function() {
-    var content = elm.find('svg').children()[0].childNodes[3];
+    var content = elm.find('svg').children()[0].childNodes[4];
 
     var leftDotsGroup = content.childNodes[4];
     expect(leftDotsGroup.nodeName).toBe('g');
@@ -111,7 +111,7 @@ describe('with a second axis', function() {
   });
 
   it('should draw y2 axis dots', function() {
-    var content = elm.find('svg').children()[0].childNodes[3];
+    var content = elm.find('svg').children()[0].childNodes[4];
 
     var leftDotsGroup = content.childNodes[5];
     expect(leftDotsGroup.nodeName).toBe('g');

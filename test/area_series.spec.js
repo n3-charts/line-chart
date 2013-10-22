@@ -20,7 +20,7 @@ describe('area series', function() {
   });
 
   it('should properly configure y axis', function() {
-    var yAxis = elm.find('svg').children()[0].childNodes[1];
+    var yAxis = elm.find('svg').children()[0].childNodes[2];
 
     var ticks = yAxis.childNodes;
 
@@ -31,7 +31,7 @@ describe('area series', function() {
   });
 
   it('should properly configure x axis', function() {
-    var xAxis = elm.find('svg').children()[0].childNodes[0];
+    var xAxis = elm.find('svg').children()[0].childNodes[1];
 
     var ticks = xAxis.childNodes;
 
@@ -43,18 +43,62 @@ describe('area series', function() {
 
   it('should create 3 elements', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     expect(content.childNodes.length).toBe(3);
   });
 
   it('should create an area group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
     expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
 
     var areaPath = areaGroup.childNodes[0];
+    expect(areaPath.getAttribute('style').trim()).toBe('fill: none; opacity: 0.3;');
+    expect(areaPath.getAttribute('class')).toBe('area');
+    expect(areaPath.getAttribute('d'))
+      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,450L486,450L324,450L162,450L0,450Z');
+  });
+
+  it('should create stripes pattern when told so', function() {
+    scope.$apply(function() {
+      scope.options = {
+        series: [{y: 'value', color: '#4682b4', type: 'area', striped: true} ]
+      };
+    });
+
+    var svgChildren = elm.find('svg').children();
+
+
+    var patterns = svgChildren[0].childNodes[0];
+
+    expect(patterns.getAttribute('class')).toBe('patterns');
+    expect(patterns.childNodes.length).toBe(1);
+
+    var pattern = patterns.childNodes[0];
+    expect(pattern.getAttribute('id')).toBe('areaPattern_0');
+  });
+
+  it('should link pattern to fill style', function() {
+    scope.$apply(function() {
+      scope.options = {
+        series: [{y: 'value', color: '#4682b4', type: 'area', striped: true} ]
+      };
+    });
+
+    var svgChildren = elm.find('svg').children();
+
+    var svgGroup = svgChildren[0];
+
+    var content = svgGroup.childNodes[3];
+    var areaGroup = content.childNodes[0];
+    expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
+    expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
+
+    var areaPath = areaGroup.childNodes[0];
+    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: url(#areaPattern_0)')
+    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: url(#areaPattern_0)')
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
       .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,450L486,450L324,450L162,450L0,450Z');
@@ -62,7 +106,7 @@ describe('area series', function() {
 
   it('should create a line group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
 
     var lineGroup = content.childNodes[1];
     expect(lineGroup.getAttribute('class')).toBe('lineGroup series_0');
@@ -71,7 +115,7 @@ describe('area series', function() {
 
   it('should create a dots group', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
 
     var dotsGroup = content.childNodes[2];
     expect(dotsGroup.nodeName).toBe('g');

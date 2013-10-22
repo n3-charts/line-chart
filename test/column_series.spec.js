@@ -17,7 +17,7 @@ describe('column series', function() {
   });
 
   it('should properly configure y axis', function() {
-    var yAxis = elm.find('svg').children()[0].childNodes[1];
+    var yAxis = elm.find('svg').children()[0].childNodes[2];
 
     var ticks = yAxis.childNodes;
 
@@ -28,7 +28,7 @@ describe('column series', function() {
   });
 
   it('should configure x axis with extra space', function() {
-    var xAxis = elm.find('svg').children()[0].childNodes[0];
+    var xAxis = elm.find('svg').children()[0].childNodes[1];
 
     var ticks = xAxis.childNodes;
 
@@ -41,7 +41,7 @@ describe('column series', function() {
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     expect(content.getAttribute('class')).toBe('content');
     expect(content.childNodes.length).toBe(1);
 
@@ -52,7 +52,7 @@ describe('column series', function() {
 
   it('should draw columns', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     var columnGroup = content.childNodes[0];
     expect(columnGroup.nodeName).toBe('g');
 
@@ -88,7 +88,7 @@ describe('column series', function() {
     });
     
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     var columnGroup = content.childNodes[0];
     expect(columnGroup.nodeName).toBe('g');
 
