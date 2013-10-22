@@ -152,7 +152,7 @@ drawArea: function(svg, scales, data, interpolateMode){
           }
           return "url(#areaPattern_" + s.index + ")";
         })
-        .style('opacity', '0.3')
+        .style('opacity', function(s) {return s.striped ? '1' : '0.3';})
         .attr('d',  function(d) { return drawers[d.axis](d.values); });
 
   return this;
@@ -507,6 +507,7 @@ getDataPerSeries: function(data, options) {
       index: straightenedData.length,
       name: s.y,
       values: [],
+      striped: s.striped === true ? true: undefined,
       color: s.color,
       axis: s.axis || 'y',
       type: s.type || 'line'
