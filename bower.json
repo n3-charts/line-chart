@@ -1,11 +1,14 @@
 {
   "name": "n3-charts-line-chart",
-  "version": "0.2",
-  "main": "lib/line-chart.js",
+  "version": "1.0.1-beta",
+  "main": "dist/line-chart.min.js",
   "ignore": [
     "**/.*",
+    "bower_components",
+    "coverage",
+    "lib",
     "node_modules",
-    "components"
+    "test"
   ],
   "devDependencies": {
     "d3": "~3.1.7",
