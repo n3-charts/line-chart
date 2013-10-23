@@ -52,10 +52,10 @@ describe('area series', function() {
     var content = svgGroup.childNodes[3];
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
-    expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
+    expect(areaGroup.getAttribute('style')).toBe(null);
 
     var areaPath = areaGroup.childNodes[0];
-    expect(areaPath.getAttribute('style').trim()).toBe('fill: none; opacity: 0.3;');
+    expect(areaPath.getAttribute('style').trim()).toBe('fill: #4682b4; opacity: 0.3;');
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
       .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,450L486,450L324,450L162,450L0,450Z');
@@ -94,10 +94,10 @@ describe('area series', function() {
     var content = svgGroup.childNodes[3];
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
-    expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
+    expect(areaGroup.getAttribute('style')).toBe(null);
 
     var areaPath = areaGroup.childNodes[0];
-    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: url(#areaPattern_0); opacity: 1;')
+    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: url(#areaPattern_0); opacity: 1;');
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
       .toBe('M0,414L162,378L324,315L486,306L648,243L810,72L810,450L648,450L486,450L324,450L162,450L0,450Z');

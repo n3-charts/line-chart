@@ -62,9 +62,10 @@ describe('with a second axis', function() {
 
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
-    expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
+    expect(areaGroup.getAttribute('style')).toBe(null);
 
     var areaPath = areaGroup.childNodes[0];
+    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;opacity: 0.3;');
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
       .toBe('M0,414L164,378L328,315L492,306L656,243L820,72L820,450L656,450L' +
@@ -76,9 +77,10 @@ describe('with a second axis', function() {
 
     var areaGroup = content.childNodes[1];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_1');
-    expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
+    expect(areaGroup.getAttribute('style')).toBe(null);
 
     var areaPath = areaGroup.childNodes[0];
+    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;opacity: 0.3;');
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
       .toBe('M0,415L164,0L328,398L492,381L656,433L820,450L820,381L656,' +
