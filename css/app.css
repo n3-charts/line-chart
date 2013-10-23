@@ -40,6 +40,11 @@ body {
 }
 
 /* THUMBNAIL */
+.mini-chart {
+  height: 100px;
+  border: 1px solid #CECECE;
+}
+
 .thumbnail {
   box-shadow: 6px 6px 10px #DDD;
   height: 600px;
