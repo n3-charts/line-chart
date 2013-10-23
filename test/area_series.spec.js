@@ -64,7 +64,7 @@ describe('area series', function() {
   it('should create stripes pattern when told so', function() {
     scope.$apply(function() {
       scope.options = {
-        series: [{y: 'value', color: '#4682b4', type: 'area', striped: true} ]
+        series: [{y: 'value', color: '#4582b4', type: 'area', striped: true} ]
       };
     });
 
@@ -78,12 +78,15 @@ describe('area series', function() {
 
     var pattern = patterns.childNodes[0];
     expect(pattern.getAttribute('id')).toBe('areaPattern_0');
+
+    var patternGroup = pattern.childNodes[0];
+    expect(patternGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4582b4; fill-opacity: 0.3;');
   });
 
   it('should link pattern to fill style', function() {
     scope.$apply(function() {
       scope.options = {
-        series: [{y: 'value', color: '#4682b4', type: 'area', striped: true} ]
+        series: [{y: 'value', color: '#4582b4', type: 'area', striped: true} ]
       };
     });
 

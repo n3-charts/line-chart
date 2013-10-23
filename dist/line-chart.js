@@ -104,9 +104,9 @@ addPattern: function(svg, series) {
     x: 0, y: 0,
     width: 60, height: 60
   }).append('g')
-    .style('fill-opacity', 0.3)
     .style({
-      fill: '#48AB4D'
+      'fill': series.color,
+      'fill-opacity': 0.3
     });
 
   group.append('rect')
