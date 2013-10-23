@@ -70,7 +70,7 @@ describe('thumbnail mode', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,423L178,386L356,322L534,313L712,248L890,74');
+        .toBe('M0,457L180,417L360,348L539,338L719,268L899,80');
     });
   });
 
@@ -97,7 +97,7 @@ describe('thumbnail mode', function() {
       expect(areaPath.getAttribute('style').trim()).toBe('fill: #0000ff; opacity: 0.3;');
       expect(areaPath.getAttribute('class')).toBe('area');
       expect(areaPath.getAttribute('d'))
-        .toBe('M0,423L178,386L356,322L534,313L712,248L890,74L890,460L712,460L534,460L356,460L178,460L0,460Z');
+        .toBe('M0,457L180,417L360,348L539,338L719,268L899,80L899,497L719,497L539,497L360,497L180,497L0,497Z');
     });
 
     it('should draw a line', function() {
@@ -110,7 +110,7 @@ describe('thumbnail mode', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,423L178,386L356,322L534,313L712,248L890,74');
+        .toBe('M0,457L180,417L360,348L539,338L719,268L899,80');
     });
   });
 });
