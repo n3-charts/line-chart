@@ -16,7 +16,7 @@ And here is the [demo page](http://n3-charts.github.io/line-chart/).
 A line chart is called using this syntax :
 
 ```html
-<linechart data="data" options="options"></linechart>
+<linechart data="data" options="options" mode=""></linechart>
 ```
 
 The line chart directives needs two attributes : `data` and `options`. If one is missing, nothing happens.
@@ -41,12 +41,12 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {key: 'foo', labelFunction: function(value) {return value;}, type: 'linear', tooltipFormatter: function(x) {return x;}},
+    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear', tooltipFormatter: function(x) {return x;}},
     y: {type: 'linear'},
     y2: {type: 'linear'}
   },
   series: [
-    {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'},
+    {y: 'value', color: 'steelblue', type: 'area', striped: true, label: 'Pouet'},
     {y: 'otherValue', axis: 'y2', color: 'lightsteelblue'}
   ],
   lineMode: 'linear'
@@ -73,6 +73,7 @@ The `series` key must be an array which contains objects with the following prop
 + `label` : optional, will be used in the legend (if undefined, the `y` value will be used).
 + `axis` : optional, can be either 'y' (default, for left) or 'y2' (for right). Defines which vertical axis should be used for this series. If no right axis is needed, none will be displayed.
 + `type` : optional, can be one value between 'line', 'area', 'column'. Default is 'line'.
++ `striped` : optional, can be either `true` or `false`. Default is `false`. Will be ignored if the series type is not 'area'.
 
 ##### Optional stuff
 Additionally, you can set `lineMode` to a value between these :
@@ -91,6 +92,9 @@ Additionally, you can set `lineMode` to a value between these :
 
 > For more information about interpolation, please consult the [D3.js documentation about that][1].
 
+#### Mode
+The mode can be set to 'thumbnail' (default is empty string). If so, the chart will take as much space as it can, and it will only display the series. No axes, no legend, no tooltips. Furthermore, the lines or areas will be drawn without dots. This is convenient for sparklines, for instance.
+
 ### Building
 Fetch the repo :
 ```sh
@@ -107,15 +111,15 @@ Install moar stuff :
 $ bower install
 ```
 
-Install teh uterz stuff :
+Watch :
 ```sh
-$ grunt
+$ grunt watch
 ```
 
 Hack.
 
 ### Testing
 AngularJS is designed to be testable, and so is this project.
-It has a good coverage rate (between 85% and 95%), and we want to keep it this way.
+It has a good coverage rate (above 90%), and we want to keep it this way.
 
   [1]: https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
