@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.2 - 2013-10-22
+/*! line-chart - v1.0.2 - 2013-10-23
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2013 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -140,7 +140,7 @@ drawArea: function(svg, scales, data, interpolateMode){
   svg.select('.content').selectAll('.areaGroup')
     .data(areaSeries)
     .enter().append('g')
-      .style('fill', function(serie) { return serie.color; })
+      // .style('fill', function(serie) { return serie.color; })
       .attr('class', function(s) {
         return 'areaGroup ' + 'series_' + s.index;
       })
@@ -148,7 +148,7 @@ drawArea: function(svg, scales, data, interpolateMode){
         .attr('class', 'area')
         .style('fill', function(s) {
           if (s.striped !== true) {
-            return "none";
+            return s.color;
           }
           return "url(#areaPattern_" + s.index + ")";
         })

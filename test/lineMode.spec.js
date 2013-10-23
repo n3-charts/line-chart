@@ -25,9 +25,10 @@ describe('lineMode set to cardinal', function() {
 
     var areaGroup = content.childNodes[0];
     expect(areaGroup.getAttribute('class')).toBe('areaGroup series_0');
-    expect(areaGroup.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;');
+    expect(areaGroup.getAttribute('style')).toBe(null);
 
     var areaPath = areaGroup.childNodes[0];
+    expect(areaPath.getAttribute('style').trim()).toBeSameStyleAs('fill: #4682b4;opacity: 0.3;');
     expect(areaPath.getAttribute('class')).toBe('area');
     expect(areaPath.getAttribute('d'))
       .toBe(
