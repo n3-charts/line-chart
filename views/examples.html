@@ -1,3 +1,21 @@
+
+  <div class='unit-100'>
+    <h3>Thumbnail mode</h3>
+    <h3 class='subheader'>The chart can be configured to display only data (this is called the thumbnail mode). This is convenient for dashboards, sparklines...</h3>
+  </div>
+<div class='units-row'>
+  <div class='unit-50'>
+    <div class="unit-20 mini-chart" ng-repeat='example in miniExamples.slice(0, 5)'>
+      <linechart data='example.data' options='example.options' mode='thumbnail'></linechart>
+    </div>
+  </div>
+  <div class='unit-50'>
+    <div class="unit-20 mini-chart" ng-repeat='example in miniExamples.slice(5)'>
+      <linechart data='example.data' options='example.options' mode='thumbnail'></linechart>
+    </div>
+  </div>
+</div>
+</div>
 <div class='units-row' ng-repeat='example in examples'>
   <div class='unit-100'>
     <h3>{{example.label}}</h3>

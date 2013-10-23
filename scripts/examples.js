@@ -168,6 +168,25 @@ angular.module('demo.examples', ['pretty'])
       {y: 'val_1', label: 'Are', type: 'area', striped: true, color: colors(14)},
       {y: 'val_2', label: 'Sweet', type: 'area', striped: true, color: colors(18)}
       ]}
+    },
+
+    {
+      label: 'A last one',
+      originData: linData,
+      visibleRows: 10,
+      data: linData.slice(0, 10),
+      description: 'This one has no particular purpose.',
+      options: {lineMode: 'cardinal', series: [
+      {y: 'val_0', label: 'Rowdy', type: 'area', striped: true, color: colors(10)},
+      {y: 'val_1', label: 'Eagle', type: 'area', striped: true, color: colors(14)},
+      ]}
     }
   ];
-})
+
+  $scope.miniExamples = $scope.examples.map(function(e) {
+    return {
+      options: e.options,
+      data: e.data.slice(0, 10)
+    };
+  });
+});
