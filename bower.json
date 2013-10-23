@@ -1,6 +1,6 @@
 {
   "name": "n3-charts-line-chart",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/line-chart.min.js",
   "ignore": [
     "**/.*",
