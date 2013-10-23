@@ -155,6 +155,19 @@ angular.module('demo.examples', ['pretty'])
       {y: 'val_1', label: 'Is', type: 'column', color: colors(8)},
       {y: 'val_2', label: 'Awesome', color: colors(9)}
       ]}
+    },
+
+    {
+      label: 'Striped areas',
+      originData: linData,
+      visibleRows: 10,
+      data: linData.slice(0, 10),
+      description: 'Stripes are useless. But they\'re also awesome. Because, you know... stripes.',
+      options: {lineMode: 'cardinal', series: [
+      {y: 'val_0', label: 'Stripes', type: 'area', striped: true, color: colors(10)},
+      {y: 'val_1', label: 'Are', type: 'area', striped: true, color: colors(14)},
+      {y: 'val_2', label: 'Sweet', type: 'area', striped: true, color: colors(18)}
+      ]}
     }
   ];
 })

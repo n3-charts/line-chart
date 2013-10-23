@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.2 - 2013-10-22
+/*! line-chart - v1.0.2 - 2013-10-23
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2013 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -97,22 +97,62 @@ angular.module('n3charts.utils', [])
 .factory('n3utils', ['$window', function($window) {
   return {
 
+addPattern: function(svg, series) {
+  var group = svg.select('defs').append('pattern').attr({
+    id: series.type + 'Pattern_' + series.index,
+    patternUnits: "userSpaceOnUse",
+    x: 0, y: 0,
+    width: 60, height: 60
+  }).append('g')
+    .style({
+      'fill': series.color,
+      'fill-opacity': 0.3
+    });
+
+  group.append('rect')
+    .style('fill-opacity', 0.3)
+    .attr('width', 60)
+    .attr('height', 60)
+
+  group.append('path')
+    .attr('d', "M 10 0 l10 0 l -20 20 l 0 -10 z");
+
+  group.append('path')
+    .attr('d', "M40 0 l10 0 l-50 50 l0 -10 z");
+
+  group.append('path')
+    .attr('d', "M60 10 l0 10 l-40 40 l-10 0 z");
+
+  group.append('path')
+    .attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
+},
+
 drawArea: function(svg, scales, data, interpolateMode){
+  var areaSeries = data.filter(function(series) { return series.type === 'area'; });
+
+  areaSeries.forEach(function(series) {this.addPattern(svg, series);}, this);
+
   var drawers = {
     y: this.createLeftAreaDrawer(scales, interpolateMode),
     y2: this.createRightAreaDrawer(scales, interpolateMode)
   };
 
   svg.select('.content').selectAll('.areaGroup')
-    .data(data.filter(function(series) { return series.type === 'area'; }))
+    .data(areaSeries)
     .enter().append('g')
-      .style('fill', function(serie) { return serie.color; })
+      // .style('fill', function(serie) { return serie.color; })
       .attr('class', function(s) {
         return 'areaGroup ' + 'series_' + s.index;
       })
       .append('path')
         .attr('class', 'area')
-        .style('opacity', '0.3')
+        .style('fill', function(s) {
+          if (s.striped !== true) {
+            return s.color;
+          }
+          return "url(#areaPattern_" + s.index + ")";
+        })
+        .style('opacity', function(s) {return s.striped ? '1' : '0.3';})
         .attr('d',  function(d) { return drawers[d.axis](d.values); });
 
   return this;
@@ -429,6 +469,9 @@ bootstrap: function(element, dimensions) {
         ',' + dimensions.top + ')'
       );
 
+  svg.append('defs')
+    .attr('class', 'patterns');
+
   return svg;
 },
 
@@ -437,6 +480,7 @@ createContent: function(svg) {
     .attr('class', 'content')
     .attr('clip-path', 'url(#clip)')
   ;
+  
 },
 
 createClippingPath: function(svg, dimensions) {
@@ -463,6 +507,7 @@ getDataPerSeries: function(data, options) {
       index: straightenedData.length,
       name: s.y,
       values: [],
+      striped: s.striped === true ? true: undefined,
       color: s.color,
       axis: s.axis || 'y',
       type: s.type || 'line'
