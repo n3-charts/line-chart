@@ -61,6 +61,7 @@ angular.module('demo.examples', ['pretty'])
   var logData = appUtils.logData($scope.max, 4);
   
   $scope.crop = function(example) {
+    mixpanel.track("Cropping data", {example: example.label, rows: example.visibleRows});
     example.data = example.originData.slice(0, example.visibleRows);
   };
   
