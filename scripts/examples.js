@@ -1,7 +1,5 @@
 angular.module('demo.examples', ['pretty'])
 
-
-
 .factory('appUtils', function() {
   return {
     linearData: function(rowCount, seriesCount) {
@@ -54,6 +52,7 @@ angular.module('demo.examples', ['pretty'])
 })
 
 .controller('ExamplesCtrl', function($scope, appUtils) {
+  mixpanel.track("Examples");
   var colors = d3.scale.category10();
   $scope.max = 100;
   
