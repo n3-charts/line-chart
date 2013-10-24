@@ -8,6 +8,7 @@ angular.module('demo.main', ['n3-charts.linechart', 'demo.examples'])
 }])
 
 .controller('HomeCtrl', function($scope) {
+  mixpanel.track("Home");
   $scope.data = [
     {x: 0, y: 0, other_y: 0, val_2: 0, val_3: 0},
     {x: 1, y: 0.993, other_y: 3.894, val_2: 8.47, val_3: 14.347},
