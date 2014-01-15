@@ -19,7 +19,6 @@
         "runs": false
 	},
 	"node": true,
-	"es5": true,
 	"esnext": true,
 	"eqeqeq": true,
 	"bitwise": false,

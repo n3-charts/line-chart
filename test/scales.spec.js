@@ -31,14 +31,8 @@ describe('scales', function() {
         ]};
       });
       
-      var expectedTicks = [ '1e+0', '', '', '', '', '', '', '', '', '1e+1',
-        '', '', '', '', '', '', '', '', '1e-2',
-        '', '', '', '', '', '', '', '', '1e-1',
-        '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '1e+2',
-        '', '', '', '', '', '', '', '', '1e+3',
-        '', '', '', '', '', '', '', '', '1e+4',
-        '', '', '', '', '', '', '', '', '1e+5', ''
-      ];
+      var expectedTicks = '1e+0         1e+1 1e-3         1e-2         1e-1  ' +
+      '               1e+2         1e+3         1e+4         1e+5 ';
       
       var yAxis = elm.find('svg').children()[0].childNodes[2];
       var computedYTicks = [];
@@ -52,8 +46,8 @@ describe('scales', function() {
         computedY2Ticks.push(y2Axis.childNodes[i].textContent);
       }
       
-      expect(computedYTicks).toEqual(expectedTicks);
-      expect(computedY2Ticks).toEqual(expectedTicks);
+      expect(computedYTicks.join(' ')).toEqual(expectedTicks);
+      expect(computedY2Ticks.join(' ')).toEqual(expectedTicks);
     });
     
     it('should configure y axis with logarithmic values', function() {

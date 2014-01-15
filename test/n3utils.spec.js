@@ -17,8 +17,8 @@ describe('n3utils', function() {
     var options = {
       axes: {x: {key: 'x', tooltipFormatter: xFormatter}},
       series: [
-      {y: 'value', axis: 'y2', color: 'steelblue'},
-      {y: 'foo', color: 'red', type: 'area'}
+        {y: 'value', axis: 'y2', color: 'steelblue'},
+        {y: 'foo', color: 'red', type: 'area'}
       ]
     };
 
@@ -26,13 +26,13 @@ describe('n3utils', function() {
       xFormatter: xFormatter,
       name: 'value', color: 'steelblue', axis: 'y2', type: 'line', index: 0,
       values: [
-      {x: 0, value: 4, axis: 'y2'}, {x: 1, value: 8, axis: 'y2'}
+        {x: 0, value: 4, axis: 'y2'}, {x: 1, value: 8, axis: 'y2'}
       ]
     }, {
       xFormatter: xFormatter,
       name: 'foo', color: 'red', axis: 'y', type: 'area', index: 1,
       values: [
-      {x: 0, value: 4.154, axis: 'y'}, {x: 1, value: 8.15485, axis: 'y'}
+        {x: 0, value: 4.154, axis: 'y'}, {x: 1, value: 8.15485, axis: 'y'}
       ]
     }];
 

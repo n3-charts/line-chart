@@ -5,7 +5,7 @@ describe('chart initialization', function() {
     var templateElmts = elm[0].children;
     expect(templateElmts.length).toBe(1);
     expect(templateElmts[0].nodeName).toBe('DIV'); // this is the template's div
-    expect(templateElmts[0].getAttribute('class')).toBe('chart');
+    expect(templateElmts[0].getAttribute('class')).toBe('ng-isolate-scope chart');
 
     var dynamicChildren = templateElmts[0].children;
     expect(dynamicChildren.length).toBe(1);

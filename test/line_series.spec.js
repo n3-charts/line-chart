@@ -21,10 +21,10 @@ describe('line series', function() {
 
     var ticks = yAxis.childNodes;
 
-    expect(ticks.length).toBe(12);
+    expect(ticks.length).toBe(11);
 
     expect(ticks[0].textContent).toBe('0');
-    expect(ticks[10].textContent).toBe('50');
+    expect(ticks[9].textContent).toBe('45');
   });
 
   it('should create a group', function() {
@@ -47,19 +47,15 @@ describe('line series', function() {
     var dots = dotsGroup.childNodes;
     expect(dots.length).toBe(6);
 
-    var expectedCoordinates = [
-      {x: '0', y: '414'},
-      {x: '162', y: '378'},
-      {x: '324', y: '315'},
-      {x: '486', y: '306'},
-      {x: '648', y: '243'},
-      {x: '810', y: '72'}
-    ];
+    var fn = function(att) {return function(a, b) {return a + ' ' + b.getAttribute(att);}};
+    var computedX = Array.prototype.reduce.call(dots, fn('cx'), 'X');
+    var computedY = Array.prototype.reduce.call(dots, fn('cy'), 'Y');
+    
+    expect(computedX).toEqual("X 0 162 324 486 648 810");
+    expect(computedY).toEqual("Y 410 370 300 290 220 30");
 
     for (var i = 0; i < dots.length; i++) {
       expect(dots[i].nodeName).toBe('circle');
-      expect(dots[i].getAttribute('cx')).toBe(expectedCoordinates[i].x);
-      expect(dots[i].getAttribute('cy')).toBe(expectedCoordinates[i].y);
     }
   });
 
@@ -70,6 +66,6 @@ describe('line series', function() {
     var linePath = lineGroup.childNodes[0];
     expect(linePath.getAttribute('class')).toBe('line');
     expect(linePath.getAttribute('d'))
-      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
+      .toBe('M0,410L162,370L324,300L486,290L648,220L810,30');
   });
 });

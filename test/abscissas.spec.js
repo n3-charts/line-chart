@@ -40,7 +40,7 @@ describe('abscissas', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
+        .toBe('M0,410L162,370L324,300L486,290L648,220L810,30');
     });
   });
   
@@ -74,7 +74,7 @@ describe('abscissas', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
+        .toBe('M0,410L162,370L324,300L486,290L648,220L810,30');
     });
   });
   
@@ -108,7 +108,7 @@ describe('abscissas', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
+        .toBe('M0,410L162,370L324,300L486,290L648,220L810,30');
     });
   
   })

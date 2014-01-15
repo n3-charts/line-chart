@@ -33,17 +33,7 @@ module.exports = function(grunt) {
       continuous: {
         singleRun: true,
         autoWatch: false,
-        browsers: ['PhantomJS']
-      },
-
-      unit: {
-        singleRun: true,
-        autoWatch: false,
-        coverageReporter: {
-          type : 'html',
-          dir : 'coverage/'
-        },
-        browsers: ['PhantomJS']
+        browsers: ['Chrome']
       }
     },
 
@@ -96,7 +86,5 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'karma:continuous']);
-
-  grunt.registerTask('fast-build', ['concat', 'uglify']);
   grunt.registerTask('coverage', ['concat', 'karma:unit']);
 };

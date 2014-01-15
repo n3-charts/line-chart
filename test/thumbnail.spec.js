@@ -26,7 +26,7 @@ describe('thumbnail mode', function() {
     var templateElmts = elm[0].children;
     expect(templateElmts.length).toBe(1);
     expect(templateElmts[0].nodeName).toBe('DIV'); // this is the template's div
-    expect(templateElmts[0].getAttribute('class')).toBe('chart');
+    expect(templateElmts[0].getAttribute('class')).toBe('ng-isolate-scope chart');
 
     var dynamicChildren = templateElmts[0].children;
     expect(dynamicChildren.length).toBe(1);
@@ -70,7 +70,7 @@ describe('thumbnail mode', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,457L180,417L360,348L539,338L719,268L899,80');
+        .toBe('M0,453L180,409L360,331L539,320L719,243L899,33');
     });
   });
 
@@ -97,7 +97,7 @@ describe('thumbnail mode', function() {
       expect(areaPath.getAttribute('style').trim()).toBe('fill: #0000ff; opacity: 0.3;');
       expect(areaPath.getAttribute('class')).toBe('area');
       expect(areaPath.getAttribute('d'))
-        .toBe('M0,457L180,417L360,348L539,338L719,268L899,80L899,497L719,497L539,497L360,497L180,497L0,497Z');
+        .toBe('M0,453L180,409L360,331L539,320L719,243L899,33L899,497L719,497L539,497L360,497L180,497L0,497Z');
     });
 
     it('should draw a line', function() {
@@ -110,7 +110,7 @@ describe('thumbnail mode', function() {
       var linePath = lineGroup.childNodes[0];
       expect(linePath.getAttribute('class')).toBe('line');
       expect(linePath.getAttribute('d'))
-        .toBe('M0,457L180,417L360,348L539,338L719,268L899,80');
+        .toBe('M0,453L180,409L360,331L539,320L719,243L899,33');
     });
   });
 });
