@@ -17,18 +17,18 @@ describe('column series', function() {
   });
 
   it('should properly configure y axis', function() {
-    var yAxis = elm.find('svg').children()[0].childNodes[1];
+    var yAxis = elm.find('svg').children()[0].childNodes[2];
 
     var ticks = yAxis.childNodes;
 
-    expect(ticks.length).toBe(12);
+    expect(ticks.length).toBe(11);
 
     expect(ticks[0].textContent).toBe('0');
-    expect(ticks[10].textContent).toBe('50');
+    expect(ticks[9].textContent).toBe('45');
   });
 
   it('should configure x axis with extra space', function() {
-    var xAxis = elm.find('svg').children()[0].childNodes[0];
+    var xAxis = elm.find('svg').children()[0].childNodes[1];
 
     var ticks = xAxis.childNodes;
 
@@ -41,7 +41,7 @@ describe('column series', function() {
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     expect(content.getAttribute('class')).toBe('content');
     expect(content.childNodes.length).toBe(1);
 
@@ -52,28 +52,25 @@ describe('column series', function() {
 
   it('should draw columns', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     var columnGroup = content.childNodes[0];
     expect(columnGroup.nodeName).toBe('g');
 
     var columns = columnGroup.childNodes;
     expect(columns.length).toBe(6);
-
-    var expectedCoordinates = [
-      {x: '116', y: '414', height: '36', opacity: '1'},
-      {x: '231', y: '378', height: '72', opacity: '1'},
-      {x: '347', y: '315', height: '135', opacity: '1'},
-      {x: '463', y: '306', height: '144', opacity: '1'},
-      {x: '579', y: '243', height: '207', opacity: '1'},
-      {x: '694', y: '72', height: '378', opacity: '1'}
-    ];
+    
+    var fn = function(att) {return function(a, b) {return a + ' ' + b.getAttribute(att);}};
+    var computedX = Array.prototype.reduce.call(columns, fn('x'), 'X');
+    var computedY = Array.prototype.reduce.call(columns, fn('y'), 'Y');
+    var computedH = Array.prototype.reduce.call(columns, fn('height'), 'H');
+    
+    expect(computedX).toEqual("X 116 231 347 463 579 694");
+    expect(computedY).toEqual("Y 410 370 300 290 220 30");
+    expect(computedH).toEqual("H 40 80 150 160 230 420");
 
     for (var i = 0; i < columns.length; i++) {
       expect(columns[i].nodeName).toBe('rect');
-      expect(columns[i].getAttribute('x')).toBe(expectedCoordinates[i].x);
-      expect(columns[i].getAttribute('y')).toBe(expectedCoordinates[i].y);
-      expect(columns[i].getAttribute('height')).toBe(expectedCoordinates[i].height);
-      expect(columns[i].style['fill-opacity']).toBe(expectedCoordinates[i].opacity);
+      expect(columns[i].style['fill-opacity']).toBe('1');
     }
   });
   
@@ -88,28 +85,28 @@ describe('column series', function() {
     });
     
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     var columnGroup = content.childNodes[0];
     expect(columnGroup.nodeName).toBe('g');
 
     var columns = columnGroup.childNodes;
     expect(columns.length).toBe(6);
 
-    var expectedCoordinates = [
-      {x: '116', y: '0', height: '450', opacity: '0'},
-      {x: '231', y: '378', height: '72', opacity: '1'},
-      {x: '347', y: '315', height: '135', opacity: '1'},
-      {x: '463', y: '306', height: '144', opacity: '1'},
-      {x: '579', y: '243', height: '207', opacity: '1'},
-      {x: '694', y: '72', height: '378', opacity: '1'}
-    ];
+    var expectedOpacities = ['0', '1', '1', '1', '1', '1'];
+
+    var fn = function(att) {return function(a, b) {return a + ' ' + b.getAttribute(att);}};
+    var computedX = Array.prototype.reduce.call(columns, fn('x'), 'X');
+    var computedY = Array.prototype.reduce.call(columns, fn('y'), 'Y');
+    var computedH = Array.prototype.reduce.call(columns, fn('height'), 'H');
+    
+    expect(computedX).toEqual("X 116 231 347 463 579 694");
+    expect(computedY).toEqual("Y 0 370 300 290 220 30");
+    expect(computedH).toEqual("H 450 80 150 160 230 420");
+    
 
     for (var i = 0; i < columns.length; i++) {
       expect(columns[i].nodeName).toBe('rect');
-      expect(columns[i].getAttribute('x')).toBe(expectedCoordinates[i].x);
-      expect(columns[i].getAttribute('y')).toBe(expectedCoordinates[i].y);
-      expect(columns[i].getAttribute('height')).toBe(expectedCoordinates[i].height);
-      expect(columns[i].style['fill-opacity']).toBe(expectedCoordinates[i].opacity);
+      expect(columns[i].style['fill-opacity']).toBe(expectedOpacities[i]);
     }
   });
 });
