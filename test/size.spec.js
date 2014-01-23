@@ -7,7 +7,8 @@ describe('size', function() {
     scope = $rootScope;
     $compile(elm)(scope);
 
-    isolatedScope = angular.element(elm.children()[0]).scope();
+    isolatedScope = angular.element(elm.children()[0]).isolateScope();
+    
     spyOn(isolatedScope, 'redraw');
     spyOn(isolatedScope, 'update').andCallThrough();
 
@@ -43,7 +44,7 @@ describe('size computation method', function() {
     scope = $rootScope;
     $compile(elm)(scope);
 
-    isolatedScope = angular.element(elm.children()[0]).scope();
+    isolatedScope = angular.element(elm.children()[0]).isolateScope();
     spyOn(isolatedScope, 'redraw');
     spyOn(isolatedScope, 'update').andCallThrough();
 
@@ -69,7 +70,7 @@ describe('size computation method', function() {
     scope = $rootScope;
     $compile(elm)(scope);
 
-    isolatedScope = angular.element(elm.children()[0]).scope();
+    isolatedScope = angular.element(elm.children()[0]).isolateScope();
     spyOn(isolatedScope, 'redraw');
     spyOn(isolatedScope, 'update').andCallThrough();
     

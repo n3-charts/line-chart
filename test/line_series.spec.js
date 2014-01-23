@@ -17,20 +17,20 @@ describe('line series', function() {
   });
 
   it('should properly configure y axis', function() {
-    var yAxis = elm.find('svg').children()[0].childNodes[1];
+    var yAxis = elm.find('svg').children()[0].childNodes[2];
 
     var ticks = yAxis.childNodes;
 
-    expect(ticks.length).toBe(12);
+    expect(ticks.length).toBe(11);
 
     expect(ticks[0].textContent).toBe('0');
-    expect(ticks[10].textContent).toBe('50');
+    expect(ticks[9].textContent).toBe('45');
   });
 
   it('should create a group', function() {
     var svgGroup = elm.find('svg').children()[0];
 
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     expect(content.childNodes.length).toBe(2);
 
     var lineGroup = content.childNodes[0];
@@ -40,36 +40,32 @@ describe('line series', function() {
 
   it('should draw dots', function() {
     var svgGroup = elm.find('svg').children()[0];
-    var content = svgGroup.childNodes[2];
+    var content = svgGroup.childNodes[3];
     var dotsGroup = content.childNodes[1];
     expect(dotsGroup.nodeName).toBe('g');
 
     var dots = dotsGroup.childNodes;
     expect(dots.length).toBe(6);
 
-    var expectedCoordinates = [
-      {x: '0', y: '414'},
-      {x: '162', y: '378'},
-      {x: '324', y: '315'},
-      {x: '486', y: '306'},
-      {x: '648', y: '243'},
-      {x: '810', y: '72'}
-    ];
+    var fn = function(att) {return function(a, b) {return a + ' ' + b.getAttribute(att);}};
+    var computedX = Array.prototype.reduce.call(dots, fn('cx'), 'X');
+    var computedY = Array.prototype.reduce.call(dots, fn('cy'), 'Y');
+    
+    expect(computedX).toEqual("X 0 162 324 486 648 810");
+    expect(computedY).toEqual("Y 410 370 300 290 220 30");
 
     for (var i = 0; i < dots.length; i++) {
       expect(dots[i].nodeName).toBe('circle');
-      expect(dots[i].getAttribute('cx')).toBe(expectedCoordinates[i].x);
-      expect(dots[i].getAttribute('cy')).toBe(expectedCoordinates[i].y);
     }
   });
 
   it('should draw a line', function() {
-    var content = elm.find('svg').children()[0].childNodes[2];
+    var content = elm.find('svg').children()[0].childNodes[3];
     var lineGroup = content.childNodes[0];
 
     var linePath = lineGroup.childNodes[0];
     expect(linePath.getAttribute('class')).toBe('line');
     expect(linePath.getAttribute('d'))
-      .toBe('M0,414L162,378L324,315L486,306L648,243L810,72');
+      .toBe('M0,410L162,370L324,300L486,290L648,220L810,30');
   });
 });

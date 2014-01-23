@@ -1,6 +1,6 @@
-/*! line-chart - v1.0.2 - 2013-10-22
+/*! line-chart - v1.0.3 - 2014-01-15
 * https://github.com/n3-charts/line-chart
-* Copyright (c) 2013 n3-charts  Licensed ,  */
+* Copyright (c) 2014 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
 
 .directive('linechart', ['n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
@@ -62,8 +62,11 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
           .drawArea(svg, axes, dataPerSeries, lineMode)
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
           .drawLines(svg, axes, dataPerSeries, lineMode)
-          .drawDots(svg, axes, dataPerSeries)
         ;
+
+        if (!isThumbnail) {
+          n3utils.drawDots(svg, axes, dataPerSeries);
+        }
       }
 
       if (!isThumbnail) {
@@ -97,22 +100,62 @@ angular.module('n3charts.utils', [])
 .factory('n3utils', ['$window', function($window) {
   return {
 
+addPattern: function(svg, series) {
+  var group = svg.select('defs').append('pattern').attr({
+    id: series.type + 'Pattern_' + series.index,
+    patternUnits: "userSpaceOnUse",
+    x: 0, y: 0,
+    width: 60, height: 60
+  }).append('g')
+    .style({
+      'fill': series.color,
+      'fill-opacity': 0.3
+    });
+
+  group.append('rect')
+    .style('fill-opacity', 0.3)
+    .attr('width', 60)
+    .attr('height', 60)
+
+  group.append('path')
+    .attr('d', "M 10 0 l10 0 l -20 20 l 0 -10 z");
+
+  group.append('path')
+    .attr('d', "M40 0 l10 0 l-50 50 l0 -10 z");
+
+  group.append('path')
+    .attr('d', "M60 10 l0 10 l-40 40 l-10 0 z");
+
+  group.append('path')
+    .attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
+},
+
 drawArea: function(svg, scales, data, interpolateMode){
+  var areaSeries = data.filter(function(series) { return series.type === 'area'; });
+
+  areaSeries.forEach(function(series) {this.addPattern(svg, series);}, this);
+
   var drawers = {
     y: this.createLeftAreaDrawer(scales, interpolateMode),
     y2: this.createRightAreaDrawer(scales, interpolateMode)
   };
 
   svg.select('.content').selectAll('.areaGroup')
-    .data(data.filter(function(series) { return series.type === 'area'; }))
+    .data(areaSeries)
     .enter().append('g')
-      .style('fill', function(serie) { return serie.color; })
+      // .style('fill', function(serie) { return serie.color; })
       .attr('class', function(s) {
         return 'areaGroup ' + 'series_' + s.index;
       })
       .append('path')
         .attr('class', 'area')
-        .style('opacity', '0.3')
+        .style('fill', function(s) {
+          if (s.striped !== true) {
+            return s.color;
+          }
+          return "url(#areaPattern_" + s.index + ")";
+        })
+        .style('opacity', function(s) {return s.striped ? '1' : '0.3';})
         .attr('d',  function(d) { return drawers[d.axis](d.values); });
 
   return this;
@@ -291,7 +334,7 @@ drawLegend: function(svg, series, dimensions) {
 
   for (var i = 1; i < series.length; i++) {
     var l = series[i - 1].label || series[i - 1].y;
-    layout.push(this.getTextWidth(l) + layout[i - 1] + 30);
+    layout.push(this.getTextWidth(l) + layout[i - 1] + 40);
   }
 
   var that = this;
@@ -303,32 +346,71 @@ drawLegend: function(svg, series, dimensions) {
       .attr({
         'class': 'legendItem',
         'transform': function(s, i) {
-          return 'translate(' + layout[i] + ',' + (dimensions.height - 35) + ')';
+          return 'translate(' + layout[i] + ',' + (dimensions.height - 40) + ')';
         }
       });
 
+
+  item
+    .on('click', function(s, i) {
+      d3.select(this).attr('opacity', that.toggleSeries(svg, i) ? '1' : '0.2');
+    })
+
+  var d = 16;
   item.append('circle')
     .attr({
       'fill': function(s) {return s.color;},
-      'r': 4,
       'stroke': function(s) {return s.color;},
-      'stroke-width': '2px'
-    })
-    .on('click', function(s, i) {
-      d3.select(this).attr('fill-opacity', that.toggleSeries(svg, i) ? '1' : '0.2');
+      'stroke-width': '2px',
+      'r': d/2
+    });
+
+  item.append('path')
+    .attr({
+      'fill-opacity': function(s) {return (s.type === 'area' || s.type === 'column') ? '1' : '0';},
+      'fill': 'white',
+      'stroke': 'white',
+      'stroke-width': '2px',
+      'd': function(s) {return that.getLegendItemPath(s, d, d);}
     })
     ;
+
+  item.append('circle')
+    .attr({
+      'fill-opacity': 0,
+      'stroke': function(s) {return s.color;},
+      'stroke-width': '2px',
+      'r': d/2
+    });
 
   item.append('text')
     .attr({
       'font-family': 'monospace',
       'font-size': 10,
-      'transform': 'translate(10, 3)',
+      'transform': 'translate(13, 4)',
       'text-rendering': 'geometric-precision'
     })
     .text(function(s) {return s.label || s.y;});
 
   return this;
+},
+
+getLegendItemPath: function(series, w, h) {
+  if (series.type === 'column') {
+    var path = 'M-' + w/3 + ' -' + h/8 + ' l0 ' + h + ' '; 
+    path += 'M0' + ' -' + h/3 + ' l0 ' + h + ' '; 
+    path += 'M' +w/3 + ' -' + h/10 + ' l0 ' + h + ' '; 
+
+    return path;
+  }
+
+  var base_path = 'M-' + w/2 + ' 0' + h/3 + ' l' + w/3 + ' -' + h/3 + ' l' + w/3 + ' ' +  h/3 + ' l' + w/3 + ' -' + 2*h/3;
+
+  if (series.type === 'area') {
+    return base_path + ' l0 ' + h + ' l-' + w + ' 0z';
+  }
+
+  return base_path;
 },
 
 toggleSeries: function(svg, index) {
@@ -429,6 +511,9 @@ bootstrap: function(element, dimensions) {
         ',' + dimensions.top + ')'
       );
 
+  svg.append('defs')
+    .attr('class', 'patterns');
+
   return svg;
 },
 
@@ -437,6 +522,7 @@ createContent: function(svg) {
     .attr('class', 'content')
     .attr('clip-path', 'url(#clip)')
   ;
+  
 },
 
 createClippingPath: function(svg, dimensions) {
@@ -463,6 +549,7 @@ getDataPerSeries: function(data, options) {
       index: straightenedData.length,
       name: s.y,
       values: [],
+      striped: s.striped === true ? true: undefined,
       color: s.color,
       axis: s.axis || 'y',
       type: s.type || 'line'
@@ -513,10 +600,10 @@ adjustMargins: function(dimensions, options, data) {
 },
 
 adjustMarginsForThumbnail: function(dimensions, axes) {
-  dimensions.top = 10;
-  dimensions.bottom = 30;
-  dimensions.left = 5;
-  dimensions.right = 5;
+  dimensions.top = 1;
+  dimensions.bottom = 2;
+  dimensions.left = 0;
+  dimensions.right = 1;
 },
 
 getTextWidth: function(text) {
@@ -969,61 +1056,6 @@ hideTooltips: function(svg) {
   svg.select("#y2Tooltip")
     .transition()
     .attr({'opacity': 0 });
-},
-
-activateZoom: function(element, svg, axes, dimensions, columnWidth) {
-  var y2Scale_old = axes.y2Scale;
-  var y2Scale = y2Scale_old ? y2Scale_old.copy() : undefined;
-  var that = this;
-
-  var onZoom = function() {
-    var b = behavior;
-
-    if (y2Scale_old) {
-      y2Scale.domain(y2Scale_old.range().map(function(y) { return (y - b.translate()[1]) / b.scale(); }).map(y2Scale_old.invert));
-      svg.select('.y2.axis').call(axes.y2Axis.scale(y2Scale));
-    }
-
-    svg.select('.x.axis').call(axes.xAxis);
-    svg.select('.y.axis').call(axes.yAxis);
-
-    that
-      .updateAreas(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
-      .updateColumns(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale}, b.scale() * columnWidth)
-      .updateLines(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
-      .updateDots(svg, {xScale: b.x(), yScale: b.y(), y2Scale: y2Scale})
-    ;
-  };
-
-  var behavior = d3.behavior.zoom()
-    .x(axes.xScale)
-    .y(axes.yScale)
-    .on("zoom", onZoom);
-
-  d3.select(element)
-    .attr('tabindex', '0')
-    .style('outline', '0px solid transparent')
-    // .on('mouseover', function() {
-    //   d3.event.currentTarget.focus();
-    // })
-    // .on('mouseout', function() {
-    //   d3.event.currentTarget.blur();
-    // })
-    .on('keydown', function() {
-      if (d3.event.shiftKey) {
-        svg.append("svg:rect")
-          .attr({
-            'id': 'zoomPane',
-            "class": "pane",
-            "width": dimensions.width,
-            "height": dimensions.height,
-          })
-          .call(behavior);
-      }
-    })
-    .on('keyup', function() {
-      svg.selectAll('#zoomPane').remove();
-    });
 }
 
   };
