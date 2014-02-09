@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.3 - 2014-01-15
+/*! line-chart - v1.0.3 - 2014-02-09
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2014 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -340,6 +340,12 @@ drawLegend: function(svg, series, dimensions) {
   var that = this;
   var legend = svg.append('g').attr('class', 'legend');
 
+  var d = 16;
+  svg.select('defs').append('svg:clipPath')
+    .attr({
+      "id": "legend-clip"
+    }).append('circle').attr({'r': d/2});
+
   var item = legend.selectAll('.legendItem')
     .data(series)
     .enter().append('g')
@@ -351,12 +357,10 @@ drawLegend: function(svg, series, dimensions) {
       });
 
 
-  item
-    .on('click', function(s, i) {
-      d3.select(this).attr('opacity', that.toggleSeries(svg, i) ? '1' : '0.2');
-    })
+  item.on('click', function(s, i) {
+    d3.select(this).attr('opacity', that.toggleSeries(svg, i) ? '1' : '0.2');
+  });
 
-  var d = 16;
   item.append('circle')
     .attr({
       'fill': function(s) {return s.color;},
@@ -367,6 +371,7 @@ drawLegend: function(svg, series, dimensions) {
 
   item.append('path')
     .attr({
+      'clip-path': "url(#legend-clip)",
       'fill-opacity': function(s) {return (s.type === 'area' || s.type === 'column') ? '1' : '0';},
       'fill': 'white',
       'stroke': 'white',
@@ -383,6 +388,7 @@ drawLegend: function(svg, series, dimensions) {
       'r': d/2
     });
 
+
   item.append('text')
     .attr({
       'font-family': 'monospace',
@@ -397,9 +403,9 @@ drawLegend: function(svg, series, dimensions) {
 
 getLegendItemPath: function(series, w, h) {
   if (series.type === 'column') {
-    var path = 'M-' + w/3 + ' -' + h/8 + ' l0 ' + h + ' '; 
-    path += 'M0' + ' -' + h/3 + ' l0 ' + h + ' '; 
-    path += 'M' +w/3 + ' -' + h/10 + ' l0 ' + h + ' '; 
+    var path = 'M-' + w/3 + ' -' + h/8 + ' l0 ' + h + ' ';
+    path += 'M0' + ' -' + h/3 + ' l0 ' + h + ' ';
+    path += 'M' +w/3 + ' -' + h/10 + ' l0 ' + h + ' ';
 
     return path;
   }
@@ -428,7 +434,8 @@ toggleSeries: function(svg, index) {
     });
 
   return isVisible;
-},
+}
+,
 
 drawLines: function(svg, scales, data, interpolateMode) {
   var drawers = {
