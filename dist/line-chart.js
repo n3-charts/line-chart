@@ -719,27 +719,28 @@ createAxes: function(svg, dimensions, axesOptions) {
   var y = axesOptions.y.type === 'log'
     ? d3.scale.log().clamp(true).rangeRound([height, 0])
     : d3.scale.linear().rangeRound([height, 0]);
-  
+
   var y2 = (drawY2Axis && axesOptions.y2.type === 'log')
     ? d3.scale.log().clamp(true).rangeRound([height, 0])
     : d3.scale.linear().rangeRound([height, 0]);
 
   var xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction);
-  var yAxis = d3.svg.axis().scale(y).orient('left');
-  var y2Axis = d3.svg.axis().scale(y2).orient('right');
+  var yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction);
+  var y2Axis = d3.svg.axis().scale(y2).orient('right')
+    .tickFormat(axesOptions.y2 ? axesOptions.y2.labelFunction : undefined);
 
   var style = function(group) {
     group.style({
       'font': '10px monospace',
       'shape-rendering': 'crispEdges'
     });
-    
+
     group.selectAll('path').style({
       'fill': 'none',
       'stroke': '#000'
     });
   };
-  
+
   var that = this;
 
   return {
@@ -782,17 +783,17 @@ setScalesDomain: function(scales, data, series, svg, axesOptions) {
 
   var ySeries = series.filter(function(s) { return s.axis !== 'y2'; });
   var y2Series = series.filter(function(s) { return s.axis === 'y2'; });
-  
+
   var yDomain = this.yExtent(ySeries, data);
   if (axesOptions.y.type === 'log') {
     yDomain[0] = yDomain[0] === 0 ? 0.001 : yDomain[0];
   }
-  
+
   var y2Domain = this.yExtent(y2Series, data);
   if (axesOptions.y2 && axesOptions.y2.type === 'log') {
     y2Domain[0] = y2Domain[0] === 0 ? 0.001 : y2Domain[0];
   }
-  
+
   scales.yScale.domain(yDomain).nice();
   scales.y2Scale.domain(y2Domain).nice();
 
@@ -851,7 +852,8 @@ haveSecondYAxis: function(series) {
   });
 
   return doesHave;
-},
+}
+,
 
 addTooltips: function (svg, dimensions, axesOptions) {
   var width = dimensions.width;
