@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.3 - 2014-02-09
+/*! line-chart - v1.0.4 - 09 February 2014
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2014 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -52,16 +52,14 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
         n3utils.drawLegend(svg, series, dimensions);
       }
 
-      var lineMode = options.lineMode;
-
       if (dataPerSeries.length > 0) {
 
         var columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
 
         n3utils
-          .drawArea(svg, axes, dataPerSeries, lineMode)
+          .drawArea(svg, axes, dataPerSeries, options)
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
-          .drawLines(svg, axes, dataPerSeries, lineMode)
+          .drawLines(svg, axes, dataPerSeries, options)
         ;
 
         if (!isThumbnail) {
@@ -130,20 +128,19 @@ addPattern: function(svg, series) {
     .attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
 },
 
-drawArea: function(svg, scales, data, interpolateMode){
+drawArea: function(svg, scales, data, options){
   var areaSeries = data.filter(function(series) { return series.type === 'area'; });
 
   areaSeries.forEach(function(series) {this.addPattern(svg, series);}, this);
 
   var drawers = {
-    y: this.createLeftAreaDrawer(scales, interpolateMode),
-    y2: this.createRightAreaDrawer(scales, interpolateMode)
+    y: this.createLeftAreaDrawer(scales, options.lineMode, options.tension),
+    y2: this.createRightAreaDrawer(scales, options.lineMode, options.tension)
   };
 
   svg.select('.content').selectAll('.areaGroup')
     .data(areaSeries)
     .enter().append('g')
-      // .style('fill', function(serie) { return serie.color; })
       .attr('class', function(s) {
         return 'areaGroup ' + 'series_' + s.index;
       })
@@ -161,33 +158,24 @@ drawArea: function(svg, scales, data, interpolateMode){
   return this;
 },
 
-updateAreas: function(svg, scales, interpolateMode) {
-  var drawers = {
-    y: this.createLeftAreaDrawer(scales, interpolateMode),
-    y2: this.createRightAreaDrawer(scales, interpolateMode)
-  };
-
-  svg.select('.content').selectAll('.areaGroup').selectAll('path')
-    .attr('d', function(d) {return drawers[d.axis](d.values);});
-
-  return this;
-},
-
-createLeftAreaDrawer: function(scales, interpolateMode) {
+createLeftAreaDrawer: function(scales, mode, tension) {
   return d3.svg.area()
     .x(function(d) { return scales.xScale(d.x); })
     .y0(function(d) { return scales.yScale(0); })
     .y1(function(d) { return scales.yScale(d.value); })
-    .interpolate(interpolateMode);
+    .interpolate(mode)
+    .tension(tension);
 },
 
-createRightAreaDrawer: function(scales, interpolateMode) {
+createRightAreaDrawer: function(scales, mode, tension) {
   return d3.svg.area()
     .x(function(d) { return scales.xScale(d.x); })
     .y0(function(d) { return scales.y2Scale(0); })
     .y1(function(d) { return scales.y2Scale(d.value); })
-    .interpolate(interpolateMode);
-},
+    .interpolate(mode)
+    .tension(tension);
+}
+,
 
 getBestColumnWidth: function(dimensions, data) {
   if (!data || data.length === 0) {
@@ -327,7 +315,8 @@ updateDots: function(svg, scales) {
     });
 
     return this;
-},
+}
+,
 
 drawLegend: function(svg, series, dimensions) {
   var layout = [0];
@@ -437,10 +426,10 @@ toggleSeries: function(svg, index) {
 }
 ,
 
-drawLines: function(svg, scales, data, interpolateMode) {
+drawLines: function(svg, scales, data, options) {
   var drawers = {
-    y: this.createLeftLineDrawer(scales, interpolateMode),
-    y2: this.createRightLineDrawer(scales, interpolateMode)
+    y: this.createLeftLineDrawer(scales, options.lineMode, options.tension),
+    y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
   };
 
   svg.select('.content').selectAll('.lineGroup')
@@ -461,30 +450,20 @@ drawLines: function(svg, scales, data, interpolateMode) {
   return this;
 },
 
-updateLines: function(svg, scales, interpolateMode) {
-  var drawers = {
-    y: this.createLeftLineDrawer(scales, interpolateMode),
-    y2: this.createRightLineDrawer(scales, interpolateMode)
-  };
-
-  svg.select('.content').selectAll('.lineGroup').selectAll('path')
-    .attr('d', function(d) {return drawers[d.axis](d.values);});
-
-  return this;
-},
-
-createLeftLineDrawer: function(scales, interpolateMode) {
+createLeftLineDrawer: function(scales, mode, tension) {
   return d3.svg.line()
     .x(function(d) {return scales.xScale(d.x);})
     .y(function(d) {return scales.yScale(d.value);})
-    .interpolate(interpolateMode);
+    .interpolate(mode)
+    .tension(tension);
 },
 
-createRightLineDrawer: function(scales, interpolateMode) {
+createRightLineDrawer: function(scales, mode, tension) {
   return d3.svg.line()
     .x(function(d) {return scales.xScale(d.x);})
     .y(function(d) {return scales.y2Scale(d.value);})
-    .interpolate(interpolateMode);
+    .interpolate(mode)
+    .tension(tension);
 }
 ,
 
@@ -530,7 +509,6 @@ createContent: function(svg) {
     .attr('class', 'content')
     .attr('clip-path', 'url(#clip)')
   ;
-
 },
 
 createClippingPath: function(svg, dimensions) {
@@ -639,6 +617,7 @@ getDefaultOptions: function() {
   return {
     tooltipMode: 'default',
     lineMode: 'linear',
+    tension: 0.7,
     axes: {
       x: {type: 'linear', key: 'x'},
       y: {type: 'linear'}
@@ -657,6 +636,8 @@ sanitizeOptions: function(options) {
   options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
 
   options.lineMode = options.lineMode ? options.lineMode : 'linear';
+  options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
+
   options.tooltipMode = options.tooltipMode ? options.tooltipMode : 'default';
 
   return options;
