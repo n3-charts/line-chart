@@ -10,6 +10,21 @@ describe('legend', function() {
     });
   });
 
+  it('should create a clipping path for legend items', function() {
+    var svgChildren = elm.find('svg').children();
+
+    var patterns = svgChildren[0].childNodes[0];
+
+    expect(patterns.getAttribute('class')).toBe('patterns');
+    expect(patterns.childNodes.length).toBe(1);
+
+    var pattern = patterns.childNodes[0];
+    expect(pattern.getAttribute('id')).toBe('legend-clip');
+    expect(pattern.tagName).toBe('clipPath');
+
+    expect(pattern.innerHTML).toBe('<circle r="8"></circle>')
+  });
+
   it('should create legend elements', function() {
     var svgGroup = elm.find('svg').children()[0];
 
@@ -25,6 +40,8 @@ describe('legend', function() {
 
     expect(l_0.childNodes[0].nodeName).toBe('circle');
     expect(l_0.childNodes[0].getAttribute('fill')).toBe('#4682b4');
+
+    expect(l_0.childNodes[1].getAttribute('clip-path')).toBe('url(#legend-clip)');
 
     var e = document.createEvent("MouseEvents");
     e.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
