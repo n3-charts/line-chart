@@ -455,7 +455,7 @@ drawLines: function(svg, scales, data, interpolateMode) {
         .attr('d', function(d) {return drawers[d.axis](d.values);})
         .style({
           'fill': 'none',
-          'stroke-width': '1px'
+          'stroke-width': function(s) {return s.thickness;}
         });
 
   return this;
@@ -485,7 +485,8 @@ createRightLineDrawer: function(scales, interpolateMode) {
     .x(function(d) {return scales.xScale(d.x);})
     .y(function(d) {return scales.y2Scale(d.value);})
     .interpolate(interpolateMode);
-},
+}
+,
 
 getPixelCssProp: function(element, propertyName) {
   var string = $window.getComputedStyle(element, null).getPropertyValue(propertyName);
@@ -529,7 +530,7 @@ createContent: function(svg) {
     .attr('class', 'content')
     .attr('clip-path', 'url(#clip)')
   ;
-  
+
 },
 
 createClippingPath: function(svg, dimensions) {
@@ -559,7 +560,8 @@ getDataPerSeries: function(data, options) {
       striped: s.striped === true ? true: undefined,
       color: s.color,
       axis: s.axis || 'y',
-      type: s.type || 'line'
+      type: s.type,
+      thickness: s.thickness
     };
 
     data.forEach(function(row) {
@@ -630,7 +632,8 @@ getWidestOrdinate: function(data, series) {
   });
 
   return widest;
-},
+}
+,
 
 getDefaultOptions: function() {
   return {
@@ -648,11 +651,11 @@ sanitizeOptions: function(options) {
   if (options === null || options === undefined) {
     return this.getDefaultOptions();
   }
-  
+
   options.series = this.sanitizeSeriesOptions(options.series);
 
   options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
-  
+
   options.lineMode = options.lineMode ? options.lineMode : 'linear';
   options.tooltipMode = options.tooltipMode ? options.tooltipMode : 'default';
 
@@ -663,12 +666,14 @@ sanitizeSeriesOptions: function(options) {
   if (!options) {
     return [];
   }
-  
+
   var colors = d3.scale.category10();
   options.forEach(function(s, i) {
-    s.color = s.color ? s.color : colors(i)
+    s.color = s.color ? s.color : colors(i);
+    s.type = /^(line|area|column)$/.test(s.type) ? s.type : "line";
+    s.thickness = s.type !== "column" ? (/^\d+px$/.test(s.thickness) ? s.thickness : "1px") : undefined;
   });
-  
+
   return options;
 },
 
@@ -676,18 +681,18 @@ sanitizeAxes: function(axesOptions, secondAxis) {
   if (!axesOptions) {
     axesOptions = {};
   }
-  
+
   axesOptions.x = this.sanitizeAxisOptions(axesOptions.x);
   if (!axesOptions.x.key) {
     axesOptions.x.key = "x";
   }
-  
+
   axesOptions.y = this.sanitizeAxisOptions(axesOptions.y);
-  
+
   if (secondAxis) {
     axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2);
   }
-  
+
   return axesOptions;
 },
 
@@ -695,13 +700,14 @@ sanitizeAxisOptions: function(options) {
   if (!options) {
     return {type: 'linear'};
   }
-  
+
   if (!options.type) {
     options.type = 'linear';
   }
-  
+
   return options;
-},
+}
+,
 
 createAxes: function(svg, dimensions, axesOptions) {
   var drawY2Axis = axesOptions.y2 !== undefined;

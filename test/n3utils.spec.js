@@ -17,20 +17,20 @@ describe('n3utils', function() {
     var options = {
       axes: {x: {key: 'x', tooltipFormatter: xFormatter}},
       series: [
-        {y: 'value', axis: 'y2', color: 'steelblue'},
-        {y: 'foo', color: 'red', type: 'area'}
+        {y: 'value', axis: 'y2', color: 'steelblue', type: 'line', thickness: '1px'},
+        {y: 'foo', color: 'red', type: 'area', thickness: '3px'}
       ]
     };
 
     var expected = [{
       xFormatter: xFormatter,
-      name: 'value', color: 'steelblue', axis: 'y2', type: 'line', index: 0,
+      name: 'value', color: 'steelblue', axis: 'y2', type: 'line', index: 0, thickness: '1px',
       values: [
         {x: 0, value: 4, axis: 'y2'}, {x: 1, value: 8, axis: 'y2'}
       ]
     }, {
       xFormatter: xFormatter,
-      name: 'foo', color: 'red', axis: 'y', type: 'area', index: 1,
+      name: 'foo', color: 'red', axis: 'y', type: 'area', index: 1, thickness: '3px',
       values: [
         {x: 0, value: 4.154, axis: 'y'}, {x: 1, value: 8.15485, axis: 'y'}
       ]
@@ -83,7 +83,7 @@ describe('n3utils', function() {
 
       expect(dimensions).toEqual({left: 30, right: 50, top: 20, bottom: 30});
     }));
-    
+
     it('should adjust margins for one left series', inject(function(n3utils) {
       var data = [
       {x: 0, foo: 4.154, value: 4},
