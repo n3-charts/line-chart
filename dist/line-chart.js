@@ -468,7 +468,8 @@ createRightLineDrawer: function(scales, mode, tension) {
 ,
 
 getPixelCssProp: function(element, propertyName) {
-  var string = $window.getComputedStyle(element, null).getPropertyValue(propertyName);
+  var string = $window.getComputedStyle(element, null)
+    .getPropertyValue(propertyName);
   return +string.replace(/px$/, '');
 },
 
@@ -542,7 +543,7 @@ getDataPerSeries: function(data, options) {
       thickness: s.thickness
     };
 
-    data.forEach(function(row) {
+    data.filter(function(row) {return row[s.y] !== undefined;}).forEach(function(row) {
       seriesData.values.push({
         x: row[options.axes.x.key],
         value: row[s.y],
@@ -603,6 +604,10 @@ getWidestOrdinate: function(data, series) {
 
   data.forEach(function(row) {
     series.forEach(function(series) {
+      if (row[series.y] === undefined) {
+        return
+      }
+
       if (('' + row[series.y]).length > ('' + widest).length) {
         widest = row[series.y];
       }
