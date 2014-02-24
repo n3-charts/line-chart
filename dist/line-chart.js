@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.4 - 09 February 2014
+/*! line-chart - v1.0.4 - 24 February 2014
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2014 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -805,12 +805,12 @@ setXScale: function(xScale, data, series, axesOptions) {
   xScale.domain(d3.extent(data, function(d) { return d[axesOptions.x.key]; }));
 
   if (series.filter(function(s) { return s.type === 'column'; }).length) {
-    this.adjustXScaleForColumns(xScale, data);
+    this.adjustXScaleForColumns(xScale, data, axesOptions.x.key);
   }
 },
 
-adjustXScaleForColumns: function(xScale, data) {
-  var step = this.getAverageStep(data, 'x');
+adjustXScaleForColumns: function(xScale, data, field) {
+  var step = this.getAverageStep(data, field);
   var d = xScale.domain();
 
   if (angular.isDate(d[0])) {
