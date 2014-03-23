@@ -8,11 +8,11 @@ describe('column series', function() {
   beforeEach(function() {
     scope.$apply(function() {
       scope.data = [
-        {x: 0, value: 4}, {x: 1, value: 8}, {x: 2, value: 15},
-        {x: 3, value: 16}, {x: 4, value: 23}, {x: 5, value: 42}
+        {abscissa: 0, value: 4}, {abscissa: 1, value: 8}, {abscissa: 2, value: 15},
+        {abscissa: 3, value: 16}, {abscissa: 4, value: 23}, {abscissa: 5, value: 42}
       ];
 
-      scope.options = {series: [{y: 'value', color: '#4682b4', type: 'column'}]};
+      scope.options = {axes: {x: {key: 'abscissa'}}, series: [{y: 'value', color: '#4682b4', type: 'column'}]};
     });
   });
 
@@ -58,12 +58,12 @@ describe('column series', function() {
 
     var columns = columnGroup.childNodes;
     expect(columns.length).toBe(6);
-    
+
     var fn = function(att) {return function(a, b) {return a + ' ' + b.getAttribute(att);}};
     var computedX = Array.prototype.reduce.call(columns, fn('x'), 'X');
     var computedY = Array.prototype.reduce.call(columns, fn('y'), 'Y');
     var computedH = Array.prototype.reduce.call(columns, fn('height'), 'H');
-    
+
     expect(computedX).toEqual("X 116 231 347 463 579 694");
     expect(computedY).toEqual("Y 410 370 300 290 220 30");
     expect(computedH).toEqual("H 40 80 150 160 230 420");
@@ -73,7 +73,7 @@ describe('column series', function() {
       expect(columns[i].style['fill-opacity']).toBe('1');
     }
   });
-  
+
   it('should draw zero value columns with full height and opacity to zero', function() {
     scope.$apply(function() {
       scope.data = [
@@ -83,7 +83,7 @@ describe('column series', function() {
 
       scope.options = {series: [{y: 'value', color: '#4682b4', type: 'column'}]};
     });
-    
+
     var svgGroup = elm.find('svg').children()[0];
     var content = svgGroup.childNodes[3];
     var columnGroup = content.childNodes[0];
@@ -98,11 +98,11 @@ describe('column series', function() {
     var computedX = Array.prototype.reduce.call(columns, fn('x'), 'X');
     var computedY = Array.prototype.reduce.call(columns, fn('y'), 'Y');
     var computedH = Array.prototype.reduce.call(columns, fn('height'), 'H');
-    
+
     expect(computedX).toEqual("X 116 231 347 463 579 694");
     expect(computedY).toEqual("Y 0 370 300 290 220 30");
     expect(computedH).toEqual("H 450 80 150 160 230 420");
-    
+
 
     for (var i = 0; i < columns.length; i++) {
       expect(columns[i].nodeName).toBe('rect');

@@ -74,9 +74,9 @@ describe('area series', function() {
     var patterns = svgChildren[0].childNodes[0];
 
     expect(patterns.getAttribute('class')).toBe('patterns');
-    expect(patterns.childNodes.length).toBe(1);
+    expect(patterns.childNodes.length).toBe(2);
 
-    var pattern = patterns.childNodes[0];
+    var pattern = patterns.childNodes[1];
     expect(pattern.getAttribute('id')).toBe('areaPattern_0');
 
     var patternGroup = pattern.childNodes[0];
@@ -127,11 +127,11 @@ describe('area series', function() {
 
     var expectedX = "X 0 162 324 486 648 810";
     var expectedY = "Y 410 370 300 290 220 30";
-    
+
     var computedX = Array.prototype.reduce.call(dots, function(a, b) {
       return a + ' ' + b.getAttribute('cx');
     }, 'X');
-    
+
     var computedY = Array.prototype.reduce.call(dots, function(a, b) {
       return a + ' ' + b.getAttribute('cy');
     }, 'Y');
@@ -139,7 +139,7 @@ describe('area series', function() {
     for (var i = 0; i < dots.length; i++) {
       expect(dots[i].nodeName).toBe('circle');
     }
-    
+
     expect(computedX).toEqual(expectedX);
     expect(computedY).toEqual(expectedY);
   });

@@ -12,7 +12,7 @@ describe('line series', function() {
         {x: 3, value: 16}, {x: 4, value: 23}, {x: 5, value: 42}
       ];
 
-      scope.options = {series: [{y: 'value', color: '#4682b4'} ]};
+      scope.options = {series: [{y: 'value', color: '#4682b4', thickness: "3px"} ]};
     });
   });
 
@@ -50,7 +50,7 @@ describe('line series', function() {
     var fn = function(att) {return function(a, b) {return a + ' ' + b.getAttribute(att);}};
     var computedX = Array.prototype.reduce.call(dots, fn('cx'), 'X');
     var computedY = Array.prototype.reduce.call(dots, fn('cy'), 'Y');
-    
+
     expect(computedX).toEqual("X 0 162 324 486 648 810");
     expect(computedY).toEqual("Y 410 370 300 290 220 30");
 
@@ -65,6 +65,10 @@ describe('line series', function() {
 
     var linePath = lineGroup.childNodes[0];
     expect(linePath.getAttribute('class')).toBe('line');
+
+    expect(linePath.getAttribute('style')).toBe("fill: none; stroke-width: 3px;");
+
+
     expect(linePath.getAttribute('d'))
       .toBe('M0,410L162,370L324,300L486,290L648,220L810,30');
   });
