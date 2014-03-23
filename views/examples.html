@@ -26,8 +26,8 @@
       <linechart data='example.data' options='example.options'></linechart>
     </div>
     <div class='unit-40 options'>
-      <pre ng-bind-html-unsafe='"$scope.options = " + (example.options | pretty) + ";"'></pre>
-      <pre style="height: 30%;" ng-bind-html-unsafe='"$scope.data = " + (example.data | pretty:1) + ";"'></pre>
+      <pre ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:80:"columns") + ";" | safe'></pre>
+      <pre style="height: 30%;" ng-bind-html='"$scope.example = " + (example.data | prettyUnsafe:1:"levels") + ";" | safe '></pre>
       <input type="range" min="2" max="{{max}}" ng-model="example.visibleRows" ng-change="crop(example)"/>
     </div>
   </div>
