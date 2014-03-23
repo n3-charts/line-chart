@@ -1,4 +1,4 @@
-angular.module('demo.examples', ['pretty'])
+angular.module('demo.examples', ['apojop'])
 
 .factory('appUtils', function() {
   return {
@@ -12,10 +12,10 @@ angular.module('demo.examples', ['pretty'])
           data[j] = row;
         }
       }
-      
+
       return data;
     },
-    
+
     logData: function(rowCount, seriesCount) {
       var data = [];
 
@@ -24,13 +24,13 @@ angular.module('demo.examples', ['pretty'])
           var row = data[j] || {foo: j};
           row['val_' + i] = (j+1)*100000 + parseInt(Math.cos(j)*200000);
           data[j] = row;
-        
+
         }
       }
-      
+
       return data;
     },
-    
+
     timedData: function(rowCount, seriesCount) {
       var data = [];
 
@@ -55,16 +55,15 @@ angular.module('demo.examples', ['pretty'])
   mixpanel.track("Examples");
   var colors = d3.scale.category10();
   $scope.max = 100;
-  
+
   var linData = appUtils.linearData($scope.max, 4);
   var timData = appUtils.timedData($scope.max, 4);
   var logData = appUtils.logData($scope.max, 4);
-  
+
   $scope.crop = function(example) {
-    mixpanel.track("Cropping data", {example: example.label, rows: example.visibleRows});
     example.data = example.originData.slice(0, example.visibleRows);
   };
-  
+
   $scope.examples = [
     {
       label: 'Linear series',
@@ -78,7 +77,7 @@ angular.module('demo.examples', ['pretty'])
         {y: 'val_0', label: 'An area sinusoid', color: colors(2), type: 'area'}
       ]}
     },
-    
+
     {
       label: 'Log series',
       description: 'Vertical axes can be configured as logarithmic axes. This is convenient to display wide-range data.',

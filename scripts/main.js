@@ -1,4 +1,4 @@
-angular.module('demo.main', ['n3-charts.linechart', 'demo.examples'])
+angular.module('demo.main', ['ngRoute', 'n3-charts.linechart', 'demo.examples'])
 
 .config(['$routeProvider', function config($routeProvider) {
   $routeProvider
@@ -31,7 +31,7 @@ angular.module('demo.main', ['n3-charts.linechart', 'demo.examples'])
     {y: 'y', type: 'area', striped: true, label: 'Two'},
     {y: 'other_y', type: 'area', label: 'Three', striped: true}
   ], lineMode: 'cardinal'};
-  
+
 })
 
 ;
