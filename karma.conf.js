@@ -24,13 +24,13 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
-      
+
     ],
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-    reporters: ['progress', 'coverage'],
+    reporters: ['dots', 'coverage'],
 
     preprocessors: {
       'dist/line-chart.min.js': 'coverage'

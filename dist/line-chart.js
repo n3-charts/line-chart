@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.3 - 2014-01-23
+/*! line-chart - v1.0.4 - 23 March 2014
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2014 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -46,22 +46,19 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
       }
 
       n3utils.createContent(svg);
-      n3utils.createClippingPath(svg, dimensions);
 
       if (!isThumbnail) {
         n3utils.drawLegend(svg, series, dimensions);
       }
-
-      var lineMode = options.lineMode;
 
       if (dataPerSeries.length > 0) {
 
         var columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
 
         n3utils
-          .drawArea(svg, axes, dataPerSeries, lineMode)
+          .drawArea(svg, axes, dataPerSeries, options)
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
-          .drawLines(svg, axes, dataPerSeries, lineMode)
+          .drawLines(svg, axes, dataPerSeries, options)
         ;
 
         if (!isThumbnail) {
@@ -130,20 +127,19 @@ addPattern: function(svg, series) {
     .attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
 },
 
-drawArea: function(svg, scales, data, interpolateMode){
+drawArea: function(svg, scales, data, options){
   var areaSeries = data.filter(function(series) { return series.type === 'area'; });
 
   areaSeries.forEach(function(series) {this.addPattern(svg, series);}, this);
 
   var drawers = {
-    y: this.createLeftAreaDrawer(scales, interpolateMode),
-    y2: this.createRightAreaDrawer(scales, interpolateMode)
+    y: this.createLeftAreaDrawer(scales, options.lineMode, options.tension),
+    y2: this.createRightAreaDrawer(scales, options.lineMode, options.tension)
   };
 
   svg.select('.content').selectAll('.areaGroup')
     .data(areaSeries)
     .enter().append('g')
-      // .style('fill', function(serie) { return serie.color; })
       .attr('class', function(s) {
         return 'areaGroup ' + 'series_' + s.index;
       })
@@ -161,33 +157,24 @@ drawArea: function(svg, scales, data, interpolateMode){
   return this;
 },
 
-updateAreas: function(svg, scales, interpolateMode) {
-  var drawers = {
-    y: this.createLeftAreaDrawer(scales, interpolateMode),
-    y2: this.createRightAreaDrawer(scales, interpolateMode)
-  };
-
-  svg.select('.content').selectAll('.areaGroup').selectAll('path')
-    .attr('d', function(d) {return drawers[d.axis](d.values);});
-
-  return this;
-},
-
-createLeftAreaDrawer: function(scales, interpolateMode) {
+createLeftAreaDrawer: function(scales, mode, tension) {
   return d3.svg.area()
     .x(function(d) { return scales.xScale(d.x); })
     .y0(function(d) { return scales.yScale(0); })
     .y1(function(d) { return scales.yScale(d.value); })
-    .interpolate(interpolateMode);
+    .interpolate(mode)
+    .tension(tension);
 },
 
-createRightAreaDrawer: function(scales, interpolateMode) {
+createRightAreaDrawer: function(scales, mode, tension) {
   return d3.svg.area()
     .x(function(d) { return scales.xScale(d.x); })
     .y0(function(d) { return scales.y2Scale(0); })
     .y1(function(d) { return scales.y2Scale(d.value); })
-    .interpolate(interpolateMode);
-},
+    .interpolate(mode)
+    .tension(tension);
+}
+,
 
 getBestColumnWidth: function(dimensions, data) {
   if (!data || data.length === 0) {
@@ -244,7 +231,7 @@ drawColumns: function(svg, axes, data, columnWidth) {
     .data(function(d) {return d.values;})
     .enter().append("rect")
       .style("fill-opacity", function(d) {return d.value == 0 ? 0 : 1;})
-      
+
       .attr({
         width: columnWidth,
         x: function(d) {return axes.xScale(d.x);},
@@ -259,7 +246,7 @@ drawColumns: function(svg, axes, data, columnWidth) {
           return d.value === 0 ? 0 : axes[d.axis + 'Scale'](Math.max(0, d.value));
         }
       });
-  
+
   return this;
 },
 
@@ -327,7 +314,8 @@ updateDots: function(svg, scales) {
     });
 
     return this;
-},
+}
+,
 
 drawLegend: function(svg, series, dimensions) {
   var layout = [0];
@@ -340,6 +328,12 @@ drawLegend: function(svg, series, dimensions) {
   var that = this;
   var legend = svg.append('g').attr('class', 'legend');
 
+  var d = 16;
+  svg.select('defs').append('svg:clipPath')
+    .attr({
+      "id": "legend-clip"
+    }).append('circle').attr({'r': d/2});
+
   var item = legend.selectAll('.legendItem')
     .data(series)
     .enter().append('g')
@@ -351,12 +345,10 @@ drawLegend: function(svg, series, dimensions) {
       });
 
 
-  item
-    .on('click', function(s, i) {
-      d3.select(this).attr('opacity', that.toggleSeries(svg, i) ? '1' : '0.2');
-    })
+  item.on('click', function(s, i) {
+    d3.select(this).attr('opacity', that.toggleSeries(svg, i) ? '1' : '0.2');
+  });
 
-  var d = 16;
   item.append('circle')
     .attr({
       'fill': function(s) {return s.color;},
@@ -367,6 +359,7 @@ drawLegend: function(svg, series, dimensions) {
 
   item.append('path')
     .attr({
+      'clip-path': "url(#legend-clip)",
       'fill-opacity': function(s) {return (s.type === 'area' || s.type === 'column') ? '1' : '0';},
       'fill': 'white',
       'stroke': 'white',
@@ -383,6 +376,7 @@ drawLegend: function(svg, series, dimensions) {
       'r': d/2
     });
 
+
   item.append('text')
     .attr({
       'font-family': 'monospace',
@@ -397,9 +391,9 @@ drawLegend: function(svg, series, dimensions) {
 
 getLegendItemPath: function(series, w, h) {
   if (series.type === 'column') {
-    var path = 'M-' + w/3 + ' -' + h/8 + ' l0 ' + h + ' '; 
-    path += 'M0' + ' -' + h/3 + ' l0 ' + h + ' '; 
-    path += 'M' +w/3 + ' -' + h/10 + ' l0 ' + h + ' '; 
+    var path = 'M-' + w/3 + ' -' + h/8 + ' l0 ' + h + ' ';
+    path += 'M0' + ' -' + h/3 + ' l0 ' + h + ' ';
+    path += 'M' +w/3 + ' -' + h/10 + ' l0 ' + h + ' ';
 
     return path;
   }
@@ -428,12 +422,13 @@ toggleSeries: function(svg, index) {
     });
 
   return isVisible;
-},
+}
+,
 
-drawLines: function(svg, scales, data, interpolateMode) {
+drawLines: function(svg, scales, data, options) {
   var drawers = {
-    y: this.createLeftLineDrawer(scales, interpolateMode),
-    y2: this.createRightLineDrawer(scales, interpolateMode)
+    y: this.createLeftLineDrawer(scales, options.lineMode, options.tension),
+    y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
   };
 
   svg.select('.content').selectAll('.lineGroup')
@@ -448,40 +443,32 @@ drawLines: function(svg, scales, data, interpolateMode) {
         .attr('d', function(d) {return drawers[d.axis](d.values);})
         .style({
           'fill': 'none',
-          'stroke-width': '1px'
+          'stroke-width': function(s) {return s.thickness;}
         });
 
   return this;
 },
 
-updateLines: function(svg, scales, interpolateMode) {
-  var drawers = {
-    y: this.createLeftLineDrawer(scales, interpolateMode),
-    y2: this.createRightLineDrawer(scales, interpolateMode)
-  };
-
-  svg.select('.content').selectAll('.lineGroup').selectAll('path')
-    .attr('d', function(d) {return drawers[d.axis](d.values);});
-
-  return this;
-},
-
-createLeftLineDrawer: function(scales, interpolateMode) {
+createLeftLineDrawer: function(scales, mode, tension) {
   return d3.svg.line()
     .x(function(d) {return scales.xScale(d.x);})
     .y(function(d) {return scales.yScale(d.value);})
-    .interpolate(interpolateMode);
+    .interpolate(mode)
+    .tension(tension);
 },
 
-createRightLineDrawer: function(scales, interpolateMode) {
+createRightLineDrawer: function(scales, mode, tension) {
   return d3.svg.line()
     .x(function(d) {return scales.xScale(d.x);})
     .y(function(d) {return scales.y2Scale(d.value);})
-    .interpolate(interpolateMode);
-},
+    .interpolate(mode)
+    .tension(tension);
+}
+,
 
 getPixelCssProp: function(element, propertyName) {
-  var string = $window.getComputedStyle(element, null).getPropertyValue(propertyName);
+  var string = $window.getComputedStyle(element, null)
+    .getPropertyValue(propertyName);
   return +string.replace(/px$/, '');
 },
 
@@ -518,19 +505,7 @@ bootstrap: function(element, dimensions) {
 },
 
 createContent: function(svg) {
-  svg.append('g')
-    .attr('class', 'content')
-    .attr('clip-path', 'url(#clip)')
-  ;
-  
-},
-
-createClippingPath: function(svg, dimensions) {
-  svg.append("svg:clipPath")
-  .attr("id", "clip")
-  .append("svg:rect")
-    .attr("width", dimensions.width - dimensions.left - dimensions.right)
-    .attr("height", dimensions.height - dimensions.top - dimensions.bottom);
+  svg.append('g').attr('class', 'content');
 },
 
 getDataPerSeries: function(data, options) {
@@ -552,10 +527,11 @@ getDataPerSeries: function(data, options) {
       striped: s.striped === true ? true: undefined,
       color: s.color,
       axis: s.axis || 'y',
-      type: s.type || 'line'
+      type: s.type,
+      thickness: s.thickness
     };
 
-    data.forEach(function(row) {
+    data.filter(function(row) {return row[s.y] !== undefined;}).forEach(function(row) {
       seriesData.values.push({
         x: row[options.axes.x.key],
         value: row[s.y],
@@ -616,6 +592,10 @@ getWidestOrdinate: function(data, series) {
 
   data.forEach(function(row) {
     series.forEach(function(series) {
+      if (row[series.y] === undefined) {
+        return
+      }
+
       if (('' + row[series.y]).length > ('' + widest).length) {
         widest = row[series.y];
       }
@@ -623,12 +603,14 @@ getWidestOrdinate: function(data, series) {
   });
 
   return widest;
-},
+}
+,
 
 getDefaultOptions: function() {
   return {
     tooltipMode: 'default',
     lineMode: 'linear',
+    tension: 0.7,
     axes: {
       x: {type: 'linear', key: 'x'},
       y: {type: 'linear'}
@@ -641,12 +623,14 @@ sanitizeOptions: function(options) {
   if (options === null || options === undefined) {
     return this.getDefaultOptions();
   }
-  
+
   options.series = this.sanitizeSeriesOptions(options.series);
 
   options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
-  
+
   options.lineMode = options.lineMode ? options.lineMode : 'linear';
+  options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
+
   options.tooltipMode = options.tooltipMode ? options.tooltipMode : 'default';
 
   return options;
@@ -656,12 +640,14 @@ sanitizeSeriesOptions: function(options) {
   if (!options) {
     return [];
   }
-  
+
   var colors = d3.scale.category10();
   options.forEach(function(s, i) {
-    s.color = s.color ? s.color : colors(i)
+    s.color = s.color ? s.color : colors(i);
+    s.type = /^(line|area|column)$/.test(s.type) ? s.type : "line";
+    s.thickness = s.type !== "column" ? (/^\d+px$/.test(s.thickness) ? s.thickness : "1px") : undefined;
   });
-  
+
   return options;
 },
 
@@ -669,18 +655,18 @@ sanitizeAxes: function(axesOptions, secondAxis) {
   if (!axesOptions) {
     axesOptions = {};
   }
-  
+
   axesOptions.x = this.sanitizeAxisOptions(axesOptions.x);
   if (!axesOptions.x.key) {
     axesOptions.x.key = "x";
   }
-  
+
   axesOptions.y = this.sanitizeAxisOptions(axesOptions.y);
-  
+
   if (secondAxis) {
     axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2);
   }
-  
+
   return axesOptions;
 },
 
@@ -688,13 +674,14 @@ sanitizeAxisOptions: function(options) {
   if (!options) {
     return {type: 'linear'};
   }
-  
+
   if (!options.type) {
     options.type = 'linear';
   }
-  
+
   return options;
-},
+}
+,
 
 createAxes: function(svg, dimensions, axesOptions) {
   var drawY2Axis = axesOptions.y2 !== undefined;
@@ -712,27 +699,28 @@ createAxes: function(svg, dimensions, axesOptions) {
   var y = axesOptions.y.type === 'log'
     ? d3.scale.log().clamp(true).rangeRound([height, 0])
     : d3.scale.linear().rangeRound([height, 0]);
-  
+
   var y2 = (drawY2Axis && axesOptions.y2.type === 'log')
     ? d3.scale.log().clamp(true).rangeRound([height, 0])
     : d3.scale.linear().rangeRound([height, 0]);
 
   var xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction);
-  var yAxis = d3.svg.axis().scale(y).orient('left');
-  var y2Axis = d3.svg.axis().scale(y2).orient('right');
+  var yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction);
+  var y2Axis = d3.svg.axis().scale(y2).orient('right')
+    .tickFormat(axesOptions.y2 ? axesOptions.y2.labelFunction : undefined);
 
   var style = function(group) {
     group.style({
       'font': '10px monospace',
       'shape-rendering': 'crispEdges'
     });
-    
+
     group.selectAll('path').style({
       'fill': 'none',
       'stroke': '#000'
     });
   };
-  
+
   var that = this;
 
   return {
@@ -775,17 +763,17 @@ setScalesDomain: function(scales, data, series, svg, axesOptions) {
 
   var ySeries = series.filter(function(s) { return s.axis !== 'y2'; });
   var y2Series = series.filter(function(s) { return s.axis === 'y2'; });
-  
+
   var yDomain = this.yExtent(ySeries, data);
   if (axesOptions.y.type === 'log') {
     yDomain[0] = yDomain[0] === 0 ? 0.001 : yDomain[0];
   }
-  
+
   var y2Domain = this.yExtent(y2Series, data);
   if (axesOptions.y2 && axesOptions.y2.type === 'log') {
     y2Domain[0] = y2Domain[0] === 0 ? 0.001 : y2Domain[0];
   }
-  
+
   scales.yScale.domain(yDomain).nice();
   scales.y2Scale.domain(y2Domain).nice();
 
@@ -810,12 +798,12 @@ setXScale: function(xScale, data, series, axesOptions) {
   xScale.domain(d3.extent(data, function(d) { return d[axesOptions.x.key]; }));
 
   if (series.filter(function(s) { return s.type === 'column'; }).length) {
-    this.adjustXScaleForColumns(xScale, data);
+    this.adjustXScaleForColumns(xScale, data, axesOptions.x.key);
   }
 },
 
-adjustXScaleForColumns: function(xScale, data) {
-  var step = this.getAverageStep(data, 'x');
+adjustXScaleForColumns: function(xScale, data, field) {
+  var step = this.getAverageStep(data, field);
   var d = xScale.domain();
 
   if (angular.isDate(d[0])) {
@@ -844,7 +832,8 @@ haveSecondYAxis: function(series) {
   });
 
   return doesHave;
-},
+}
+,
 
 addTooltips: function (svg, dimensions, axesOptions) {
   var width = dimensions.width;
@@ -852,7 +841,7 @@ addTooltips: function (svg, dimensions, axesOptions) {
 
   width = width - dimensions.left - dimensions.right;
   height = height - dimensions.top - dimensions.bottom;
-  
+
   var w = 24;
   var h = 18;
   var p = 5;
@@ -982,12 +971,12 @@ updateYTooltip: function(svg, target) {
   var textY = '' + target.datum.value;
   var w = this.getTextWidth(textY);
   var yTooltipText = yTooltip.select('text').text(textY);
-  
+
   yTooltipText.attr({
     'transform': 'translate(' + (- w - 2) + ',3)',
     'width': w
   });
-  
+
   yTooltip.select('path')
     .attr('fill', target.series.color)
     .attr('d', this.getYTooltipPath(w));
@@ -1021,7 +1010,7 @@ updateY2Tooltip: function(svg, target) {
     'transform': 'translate(7, ' + (parseFloat(target.y) + 3) + ')',
     'w': w
   });
-  
+
   y2Tooltip.select('path')
     .attr({
       'fill': target.series.color,
