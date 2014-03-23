@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.4 - 24 February 2014
+/*! line-chart - v1.0.4 - 23 March 2014
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2014 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
