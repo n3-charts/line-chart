@@ -46,7 +46,6 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
       }
 
       n3utils.createContent(svg);
-      n3utils.createClippingPath(svg, dimensions);
 
       if (!isThumbnail) {
         n3utils.drawLegend(svg, series, dimensions);
@@ -506,18 +505,7 @@ bootstrap: function(element, dimensions) {
 },
 
 createContent: function(svg) {
-  svg.append('g')
-    .attr('class', 'content')
-    .attr('clip-path', 'url(#clip)')
-  ;
-},
-
-createClippingPath: function(svg, dimensions) {
-  svg.append("svg:clipPath")
-  .attr("id", "clip")
-  .append("svg:rect")
-    .attr("width", dimensions.width - dimensions.left - dimensions.right)
-    .attr("height", dimensions.height - dimensions.top - dimensions.bottom);
+  svg.append('g').attr('class', 'content');
 },
 
 getDataPerSeries: function(data, options) {
