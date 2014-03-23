@@ -39,6 +39,19 @@ body {
   margin-bottom: 30px;
 }
 
+span.label {
+  border: 1px solid lightgrey;
+  border-radius: 17px;
+  padding: 1px 5px 2px 5px;
+  font-size: 11px;
+}
+
+span.label.label-green {
+  background-color: #90af45;
+  border: 0px;
+  color: white;
+}
+
 /* THUMBNAIL */
 .mini-chart {
   height: 100px;
@@ -47,22 +60,26 @@ body {
 
 .thumbnail {
   box-shadow: 6px 6px 10px #DDD;
-  height: 600px;
   padding: 10px;
   border: 1px solid #CECECE;
 }
 
 .thumbnail .chart {
-  height: 100%;
+  height: 600px;
 }
 
-.thumbnail .options {
+.thumbnail .settings {
+  height: 600px;
   padding: 10px;
-  height: 500px;
   border-left: 1px solid #CECECE;
-  height: 100%;
 }
 
-.thumbnail .options > pre {
+.thumbnail .settings .options {
+  height: 200px;
+  font-size: 10px;
+}
+
+.thumbnail .settings .data {
+  height: 300px;
   font-size: 10px;
 }
