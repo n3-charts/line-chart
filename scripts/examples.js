@@ -69,8 +69,8 @@ angular.module('demo.examples', ['apojop'])
       label: 'Linear series',
       description: 'Standard linear data is fully supported and can be displayed as lines, columns and areas.',
       originData: linData,
-      visibleRows: 100,
-      data: linData.slice(0, 100),
+      visibleRows: 20,
+      data: linData.slice(0, 20),
       options: {series: [
         {y: 'val_0', label: 'A line sinusoid', color: colors(0)},
         {y: 'val_0', label: 'A column sinusoid', color: colors(1), type: 'column'},
@@ -82,8 +82,8 @@ angular.module('demo.examples', ['apojop'])
       label: 'Log series',
       description: 'Vertical axes can be configured as logarithmic axes. This is convenient to display wide-range data.',
       originData: logData,
-      visibleRows: 100,
-      data: logData.slice(0, 100),
+      visibleRows: 20,
+      data: logData.slice(0, 20),
       options: {axes: {x: {key: 'foo', labelFunction: function(v) {return 'Na';}}, y: {type: 'log'}},
         series: [{y: 'val_0', label: 'Batmaaan', color: colors(4)}]
       }
@@ -91,10 +91,10 @@ angular.module('demo.examples', ['apojop'])
 
     {
       label: 'Time series',
-      description: 'Date objects are also accepted as abscissas values.',
+      description: 'Date objects ? Check.',
       originData: timData,
-      visibleRows: 100,
-      data: timData.slice(0, 100),
+      visibleRows: 20,
+      data: timData.slice(0, 20),
       options: {axes: {
         x: {type: 'date', tooltipFormatter: function(d) {return moment(d).fromNow();}}
       },
@@ -104,8 +104,8 @@ angular.module('demo.examples', ['apojop'])
     {
       label: 'Area series',
       originData: linData,
-      visibleRows: 100,
-      data: linData.slice(0, 100),
+      visibleRows: 20,
+      data: linData.slice(0, 20),
       description: 'Area series are fully supported.',
       options: {series: [{y: 'val_0', label: 'A colorful area series', color: colors(1), type: 'area'}]}
     },
@@ -113,8 +113,8 @@ angular.module('demo.examples', ['apojop'])
     {
       label: 'Column series',
       originData: linData,
-      visibleRows: 100,
-      data: linData.slice(0, 100),
+      visibleRows: 20,
+      data: linData.slice(0, 20),
       description: 'Column series are fully supported too. The chart adjusts its x-axis so that columns are never cropped.',
       options: {series: [{y: 'val_0', label: 'The best column series ever', color: colors(2), type: 'column'}]}
     },
@@ -122,8 +122,8 @@ angular.module('demo.examples', ['apojop'])
     {
       label: 'Two axes',
       originData: linData,
-      visibleRows: 100,
-      data: linData.slice(0, 100),
+      visibleRows: 20,
+      data: linData.slice(0, 20),
       description: 'Series can be represented on another axis, just say it in the options !',
       options: {series: [
         {y: 'val_0', label: 'On the left !', color: colors(3)},
@@ -134,8 +134,8 @@ angular.module('demo.examples', ['apojop'])
     {
       label: 'Interpolation',
       originData: linData,
-      visibleRows: 100,
-      data: linData.slice(0, 100),
+      visibleRows: 20,
+      data: linData.slice(0, 20),
       description: 'D3.js adds some eye-candy when asked, and it is awesome.',
       options: {lineMode: 'bundle', series: [
       {y: 'val_0', label: 'Ping', color: colors(5)},
@@ -146,9 +146,9 @@ angular.module('demo.examples', ['apojop'])
     {
       label: 'Several series',
       originData: linData,
-      visibleRows: 100,
-      data: linData.slice(0, 100),
-      description: 'You can mix series types, n3-charts handles the rest.',
+      visibleRows: 20,
+      data: linData.slice(0, 20),
+      description: 'You can mix series types, n3-charts handles it. Yeah, baby.',
       options: {lineMode: 'cardinal', series: [
       {y: 'val_0', label: 'This', type: 'area', color: colors(7)},
       {y: 'val_1', label: 'Is', type: 'column', color: colors(8)},
