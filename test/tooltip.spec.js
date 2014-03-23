@@ -24,7 +24,7 @@ describe('tooltip', function() {
 
     expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup series_0');
 
-    var xTooltip = content[7];
+    var xTooltip = content[6];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");
@@ -55,7 +55,7 @@ describe('tooltip', function() {
 
     expect(leftAxisDotGroup.getAttribute('class')).toBe('dotGroup series_0');
 
-    var xTooltip = content[7];
+    var xTooltip = content[6];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");
@@ -77,7 +77,7 @@ describe('tooltip', function() {
 
     expect(rightAxisColumnGroup.getAttribute('class')).toBe('columnGroup series_1');
 
-    var xTooltip = content[7];
+    var xTooltip = content[6];
     expect(xTooltip.getAttribute('id')).toBe('xTooltip');
 
     var e = document.createEvent("MouseEvents");

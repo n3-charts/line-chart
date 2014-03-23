@@ -44,11 +44,10 @@ describe('thumbnail mode', function() {
     var svgGroup = elm.find('svg').children()[0];
 
     var content = svgGroup.childNodes;
-    expect(content.length).toBe(3);
+    expect(content.length).toBe(2);
 
     expect(content[0].getAttribute('class')).toBe('patterns');
     expect(content[1].getAttribute('class')).toBe('content');
-    expect(content[2].getAttribute('id')).toBe('clip');
   });
 
   describe('line series', function() {
