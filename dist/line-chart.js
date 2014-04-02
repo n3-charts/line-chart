@@ -1,4 +1,4 @@
-/*! line-chart - v1.0.4 - 23 March 2014
+/*! line-chart - v1.0.4 - 02 April 2014
 * https://github.com/n3-charts/line-chart
 * Copyright (c) 2014 n3-charts  Licensed ,  */
 angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -79,7 +79,7 @@ angular.module('n3-charts.linechart', ['n3charts.utils'])
 
     $window.addEventListener('resize', window_resize);
 
-    scope.$watch('data', scope.update);
+    scope.$watchCollection('data', scope.update);
     scope.$watch('options', scope.update, true);
   };
 
@@ -231,7 +231,7 @@ drawColumns: function(svg, axes, data, columnWidth) {
     .data(function(d) {return d.values;})
     .enter().append("rect")
       .style("fill-opacity", function(d) {return d.value == 0 ? 0 : 1;})
-
+      
       .attr({
         width: columnWidth,
         x: function(d) {return axes.xScale(d.x);},
@@ -246,7 +246,7 @@ drawColumns: function(svg, axes, data, columnWidth) {
           return d.value === 0 ? 0 : axes[d.axis + 'Scale'](Math.max(0, d.value));
         }
       });
-
+  
   return this;
 },
 
@@ -841,7 +841,7 @@ addTooltips: function (svg, dimensions, axesOptions) {
 
   width = width - dimensions.left - dimensions.right;
   height = height - dimensions.top - dimensions.bottom;
-
+  
   var w = 24;
   var h = 18;
   var p = 5;
@@ -971,12 +971,12 @@ updateYTooltip: function(svg, target) {
   var textY = '' + target.datum.value;
   var w = this.getTextWidth(textY);
   var yTooltipText = yTooltip.select('text').text(textY);
-
+  
   yTooltipText.attr({
     'transform': 'translate(' + (- w - 2) + ',3)',
     'width': w
   });
-
+  
   yTooltip.select('path')
     .attr('fill', target.series.color)
     .attr('d', this.getYTooltipPath(w));
@@ -1010,7 +1010,7 @@ updateY2Tooltip: function(svg, target) {
     'transform': 'translate(7, ' + (parseFloat(target.y) + 3) + ')',
     'w': w
   });
-
+  
   y2Tooltip.select('path')
     .attr({
       'fill': target.series.color,
@@ -1048,4 +1048,4 @@ hideTooltips: function(svg) {
 }
 
   };
-}])
+}]);
