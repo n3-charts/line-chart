@@ -17,7 +17,7 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/d3/d3.js',
-      'dist/line-chart.min.js',
+      'dist/line-chart.js',
       '/tmp/line-chart.spec.js'
     ],
 
@@ -33,7 +33,7 @@ module.exports = function(config) {
     reporters: ['dots', 'coverage'],
 
     preprocessors: {
-      'dist/line-chart.min.js': 'coverage'
+      'dist/line-chart.js': 'coverage'
     },
 
     coverageReporter: {
