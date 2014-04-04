@@ -38,7 +38,19 @@ module.exports = function(grunt) {
     },
 
     concat: {
-      src: {
+      utils: {
+        src: ['lib/utils/*.coffee'],
+        dest: '/tmp/utils.coffee',
+        options: {
+          banner: grunt.file.read('lib/utils/utils.coffee.prefix'),
+          footer: grunt.file.read('lib/utils/utils.coffee.suffix'),
+          separator: '\n\n',
+          process: function(src, filepath) {
+            return '# ' + filepath + '\n' + src + '\n# ----\n';
+          }
+        }
+      },
+      js: {
         options: {
           banner: '<%= banner %>',
           stripBanners: true,
@@ -46,22 +58,8 @@ module.exports = function(grunt) {
             return '# ' + filepath + '\n' + src + '\n# ----\n';
           }
         },
-        utils: {
-          src: ['lib/utils/*.coffee'],
-          dest: '/tmp/utils.coffee',
-          options: {
-            banner: grunt.file.read('lib/utils/utils.coffee.prefix'),
-            footer: grunt.file.read('lib/utils/utils.coffee.suffix'),
-            separator: '\n\n',
-            process: function(src, filepath) {
-              return '# ' + filepath + '\n' + src + '\n# ----\n';
-            }
-          }
-        },
-        js: {
-          src: ['lib/<%= pkg.name %>.coffee', '/tmp/utils.coffee'],
-          dest: 'dist/<%= pkg.name %>.coffee'
-        }
+        src: ['lib/<%= pkg.name %>.coffee', '/tmp/utils.coffee'],
+        dest: 'dist/<%= pkg.name %>.coffee'
       },
       test: {
         options: {banner: ''},
