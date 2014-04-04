@@ -1,5 +1,0 @@
-angular.module('n3charts.utils', [])
-
-.factory('n3utils', ['$window', function($window) {
-  return {
-
