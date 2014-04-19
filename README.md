@@ -46,7 +46,7 @@ $scope.options = {
     y2: {type: 'linear'}
   },
   series: [
-    {y: 'value', color: 'steelblue', , thickness: '2px', type: 'area', striped: true, label: 'Pouet'},
+    {y: 'value', color: 'steelblue', thickness: '2px', type: 'area', striped: true, label: 'Pouet'},
     {y: 'otherValue', axis: 'y2', color: 'lightsteelblue'}
   ],
   lineMode: 'linear',
