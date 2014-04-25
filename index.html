@@ -15,6 +15,12 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script><!-- end Mixpanel -->
 </head>
 
 <body>
+<!-- ClickTale Top part -->
+<script type="text/javascript">
+var WRInitTime=(new Date()).getTime();
+</script>
+<!-- ClickTale end of Top part -->
+
   <div class="units-row">
     <div class='unit-100'>
       <header id="header" class="group">
@@ -44,6 +50,23 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script><!-- end Mixpanel -->
 <script src="bower_components/apojop/apojop.min.js"></script>
 <script src="scripts/examples.js"></script>
 <script src="scripts/main.js"></script>
+  
+<!-- ClickTale Bottom part -->
+
+<script type='text/javascript'>
+// The ClickTale Balkan Tracking Code may be programmatically customized using hooks:
+// 
+//   function ClickTalePreRecordingHook() { /* place your customized code here */  }
+//
+// For details about ClickTale hooks, please consult the wiki page http://wiki.clicktale.com/Article/Customizing_code_version_2
+
+document.write(unescape("%3Cscript%20src='"+
+(document.location.protocol=='https:'?
+"https://cdnssl.clicktale.net/www07/ptc/71d3072a-ca8d-4bf0-8d50-95dba1e752c1.js":
+"http://cdn.clicktale.net/www07/ptc/71d3072a-ca8d-4bf0-8d50-95dba1e752c1.js")+"'%20type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<!-- ClickTale end of Bottom part -->
 
 </body>
 </html>
