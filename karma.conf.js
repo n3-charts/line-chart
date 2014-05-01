@@ -9,7 +9,7 @@ module.exports = function(config) {
 
 
     // frameworks to use
-    frameworks: ['jasmine'],
+    frameworks: ['mocha', 'chai', 'sinon'],
 
 
     // list of files / patterns to load in the browser
@@ -18,7 +18,7 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/d3/d3.js',
       'dist/line-chart.min.js',
-      '/tmp/line-chart.spec.js'
+      'test/*.coffee'
     ],
 
 
@@ -33,7 +33,8 @@ module.exports = function(config) {
     reporters: ['dots', 'coverage'],
 
     preprocessors: {
-      'dist/line-chart.min.js': 'coverage'
+      'dist/line-chart.min.js': 'coverage',
+      'test/*.coffee': 'coffee'
     },
 
     coverageReporter: {
