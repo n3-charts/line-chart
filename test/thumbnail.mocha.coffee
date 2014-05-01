@@ -87,7 +87,7 @@ describe 'thumbnail mode', ->
       areaGroup = element.childByClass('areaGroup series_0')
       expect(areaGroup.getAttribute('style')).to.equal null
       areaPath = areaGroup.childByClass('area')
-      expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(0, 0, 255); opacity: 0.3;'
+      expect(areaPath.getAttribute('style').trim()).to.equal 'fill: blue; opacity: 0.3;'
       expect(areaPath.getAttribute('d')).to.equal 'M0,453L180,409L360,331L539,320L719,243L899,33L899,497L719,497L539,497L360,497L180,497L0,497Z'
 
     it 'should draw a line', ->

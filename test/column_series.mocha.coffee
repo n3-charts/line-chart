@@ -82,7 +82,9 @@ describe 'column series', ->
 
     while i < columns.length
       expect(columns[i].domElement.nodeName).to.equal 'rect'
-      expect(columns[i].domElement.style['fill-opacity']).to.equal '1'
+
+      # BAH PUTAIN.
+      expect(window.getComputedStyle(columns[i].domElement).getPropertyValue('fill-opacity')).to.equal '1'
       i++
 
   it 'should draw zero value columns with full height and opacity to zero', ->
@@ -127,7 +129,7 @@ describe 'column series', ->
 
     while i < columns.length
       expect(columns[i].domElement.nodeName).to.equal 'rect'
-      expect(columns[i].domElement.style['fill-opacity']).to.equal expectedOpacities[i]
+      expect(window.getComputedStyle(columns[i].domElement).getPropertyValue('fill-opacity')).to.equal expectedOpacities[i]
       i++
     return
 

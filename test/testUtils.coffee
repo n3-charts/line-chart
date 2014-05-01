@@ -71,6 +71,23 @@ utils.factory 'pepito', ($compile, $rootScope, fakeMouse) ->
   }
 
 utils.factory 'fakeMouse', ->
+  defaults =
+    alt : false
+    bubbles : true
+    button : 0
+    cancelable : true
+    clientX : 0
+    clientY : 0
+    ctrl : false
+    detail : 1
+    key : 0
+    meta : false
+    relatedTarget : null
+    screenX : 0
+    screenY : 0
+    shift : false
+    view : window
+
   eventPath = (element) ->
     path = [element]
     tmp = element
@@ -89,7 +106,25 @@ utils.factory 'fakeMouse', ->
 
   dispatch = (element, type) ->
     event = document.createEvent("MouseEvent")
-    event.initMouseEvent(type, true, true, window)
+    event.initMouseEvent(
+      type,
+      true
+      true
+      defaults.view
+      defaults.detail
+      defaults.screenX
+      defaults.screenY
+      defaults.clientX
+      defaults.clientY
+      defaults.ctrl
+      defaults.alt
+      defaults.shift
+      defaults.meta
+      defaults.button
+      defaults.relatedTarget
+    );
+
+
     element.dispatchEvent(event)
     return event
 

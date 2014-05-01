@@ -33,7 +33,7 @@ module.exports = function(grunt) {
       continuous: {
         singleRun: true,
         autoWatch: false,
-        browsers: ['Chrome']
+        browsers: ['Firefox']
       }
     },
 
@@ -107,6 +107,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
+  grunt.registerTask('travis', 'default');
   grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous']);
   grunt.registerTask('coverage', ['concat', 'karma:unit']);
 };
