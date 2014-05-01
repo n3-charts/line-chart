@@ -8,7 +8,7 @@ Here is a [demo page](http://n3-charts.github.io/line-chart/).
  + Install using bower : `bower install n3-line-chart` (or copy `line-chart.min.js` wherever you want)
  + Reference `line-chart.min.js` in your index.html file
  + Reference the module in your app file :
-    ```js
+    ```
     angular.module('myApp', ['n3-line-chart'])
     ```
 
