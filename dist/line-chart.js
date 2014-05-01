@@ -758,6 +758,7 @@ mod.factory('n3utils', [
         p = 5;
         xTooltip = svg.append('g').attr({
           'id': 'xTooltip',
+          'class': 'xTooltip',
           'opacity': 0
         });
         xTooltip.append('path').attr('transform', "translate(0," + (height + 1) + ")");
@@ -771,8 +772,9 @@ mod.factory('n3utils', [
           'text-rendering': 'geometric-precision'
         });
         yTooltip = svg.append('g').attr({
-          'id': 'yTooltip',
-          'opacity': 0
+          id: 'yTooltip',
+          "class": 'yTooltip',
+          opacity: 0
         });
         yTooltip.append('path');
         yTooltip.append('text').attr({
@@ -786,6 +788,7 @@ mod.factory('n3utils', [
         if (axesOptions.y2 != null) {
           y2Tooltip = svg.append('g').attr({
             'id': 'y2Tooltip',
+            'class': 'y2Tooltip',
             'opacity': 0,
             'transform': 'translate(' + width + ',0)'
           });

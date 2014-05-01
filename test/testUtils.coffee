@@ -3,7 +3,7 @@ utils = angular.module 'testUtils', []
 # Late friday, no better idea for a name
 utils.factory 'pepito', ($compile, $rootScope, fakeMouse) ->
   return {
-    directive: (html) ->
+    directive: (html, preDigestHook) ->
       elm = angular.element(html)
 
       outerScope = $rootScope
@@ -11,12 +11,14 @@ utils.factory 'pepito', ($compile, $rootScope, fakeMouse) ->
 
       innerScope = elm.isolateScope()
 
+      e = this.wrap(elm[0])
+      preDigestHook?(e)
       outerScope.$digest()
 
       return {
         outerScope: outerScope
         innerScope: innerScope
-        element: this.wrap(elm[0])
+        element: e
       }
 
     wrap: (_domElement) ->
