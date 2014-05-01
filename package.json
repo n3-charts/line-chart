@@ -18,5 +18,6 @@
     "karma-coverage": "*",
     "karma-jasmine": "~0.1.5",
     "karma-chrome-launcher": "~0.1.3"
+
   }
 }
