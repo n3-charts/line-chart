@@ -1,7 +1,7 @@
 describe "options", ->
   n3utils = undefined
 
-  beforeEach module 'n3-charts.linechart'
+  beforeEach module 'n3-line-chart'
 
   beforeEach inject (_n3utils_) ->
     n3utils = _n3utils_
@@ -105,7 +105,7 @@ describe "options", ->
   describe "series", ->
     it "should set line or area's line thickness", ->
       f = n3utils.sanitizeSeriesOptions
-      
+
       expect(f([
         {}
         {type: "area", thickness: "2px"}

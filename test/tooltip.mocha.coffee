@@ -7,7 +7,7 @@ describe 'tooltip', ->
 
   tooltipSpy = undefined
 
-  beforeEach module 'n3-charts.linechart'
+  beforeEach module 'n3-line-chart'
   beforeEach module 'testUtils'
 
   beforeEach inject (n3utils, _fakeMouse_) ->
