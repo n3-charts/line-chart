@@ -22,6 +22,12 @@ module.exports = function(grunt) {
       'Copyright (c) <%= grunt.template.today("yyyy") %> n3-charts' +
       '\n###\n',
 
+    bannerjs: '/*\n<%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+      '<%= grunt.template.today("dd mmmm yyyy") %>\n' +
+      '<%= pkg.homepage ? pkg.homepage + "\\n" : "" %>' +
+      'Copyright (c) <%= grunt.template.today("yyyy") %> n3-charts' +
+      '\n*/\n',
+
     watch: {
       files: ['lib/**/*.coffee', 'test/*.mocha.coffee'],
       tasks: ['default']
@@ -85,7 +91,7 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: '<%= banner %>'
+        banner: '<%= bannerjs %>'
       },
       js: {
         src: 'dist/<%= pkg.name %>.js',
@@ -108,6 +114,6 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('travis', 'default');
-  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous']);
+  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous', ]);
   grunt.registerTask('coverage', ['concat', 'karma:unit']);
 };
