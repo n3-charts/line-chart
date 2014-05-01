@@ -23,7 +23,7 @@ module.exports = function(grunt) {
       '\n###\n',
 
     watch: {
-      files: ['lib/**/*.coffee', 'test/*.spec.js'],
+      files: ['lib/**/*.coffee', 'test/*.mocha.coffee'],
       tasks: ['default']
     },
 
@@ -60,11 +60,6 @@ module.exports = function(grunt) {
         },
         src: ['lib/<%= pkg.name %>.coffee', '/tmp/utils.coffee'],
         dest: 'dist/<%= pkg.name %>.coffee'
-      },
-      test: {
-        options: {banner: ''},
-        src: ['test/spec.prefix', 'test/*.spec.js' ,'test/spec.suffix'],
-        dest: '/tmp/<%= pkg.name %>.spec.js'
       }
     },
 

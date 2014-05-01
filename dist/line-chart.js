@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.4 - 04 April 2014
+line-chart - v1.0.4 - 01 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -580,7 +580,7 @@ mod.factory('n3utils', [
           s.color || (s.color = colors(i));
           s.type = (_ref = s.type) === 'line' || _ref === 'area' || _ref === 'column' ? s.type : "line";
           if (s.type === 'column') {
-            return s.thickness = void 0;
+            return delete s.thickness;
           } else if (!/^\d+px$/.test(s.thickness)) {
             return s.thickness = '1px';
           }
