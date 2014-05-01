@@ -35,6 +35,11 @@ module.exports = function(grunt) {
         autoWatch: false,
         browsers: ['Chrome']
       }
+      travis: {
+        singleRun: true,
+        autoWatch: false,
+        browsers: ['Firefox']
+      }
     },
 
     concat: {
@@ -85,6 +90,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
+  grunt.registerTask('travis', ['jshint', 'concat', 'uglify', 'karma:travis']);
   grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'karma:continuous']);
   grunt.registerTask('coverage', ['concat', 'karma:unit']);
 };
