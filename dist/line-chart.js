@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.4 - 01 May 2014
+line-chart - v1.0.5 - 01 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
