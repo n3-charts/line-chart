@@ -5,12 +5,14 @@ A line chart implementation for [AngularJS](http://angularjs.org/) applications.
 Here is a [demo page](http://n3-charts.github.io/line-chart/).
 
 ### How to install
- + Copy `line-chart.min.js` wherever you want
- + Reference it in your index.html file
+ + Install using bower : `bower install n3-line-chart` (or copy `line-chart.min.js` wherever you want)
+ + Reference `line-chart.min.js` in your index.html file
  + Reference the module in your app file :
-     angular.module('myApp', [
-      'n3-charts.linechart'
-    ])
+    ```js
+    angular.module('myApp', ['n3-line-chart'])
+    ```
+
+> The module was originally named `n3-charts.linechart`. This is still valid but will probably be removed in the future.
 
 ### How to use
 A line chart is called using this syntax :

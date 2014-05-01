@@ -1,6 +1,6 @@
 {
-  "name": "n3-charts-line-chart",
-  "version": "1.0.5",
+  "name": "n3-line-chart",
+  "version": "1.0.6",
   "main": "dist/line-chart.min.js",
   "ignore": [
     "**/.*",
@@ -8,7 +8,10 @@
     "coverage",
     "lib",
     "node_modules",
-    "test"
+    "test",
+    "Gruntfile.js",
+    "karma.conf.js",
+    "package.json"
   ],
   "dependencies": {
     "d3": "*",
