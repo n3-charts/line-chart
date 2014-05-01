@@ -88,7 +88,7 @@ describe 'area series', ->
     areaGroup = element.childByClass('areaGroup series_0')
     expect(areaGroup.getStyle()).to.equal null
     areaPath = areaGroup.child('path')
-    expect(areaPath.getStyle().trim()).to.equal 'fill: url(#areaPattern_0); opacity: 1;'
+    expect(areaPath.getStyle().trim()).to.equal 'fill: url("#areaPattern_0") none; opacity: 1;'
     expect(areaPath.hasClass('area')).to.equal true
     expect(areaPath.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30L810,450L648,450L486,450L324,450L162,450L0,450Z'
 
