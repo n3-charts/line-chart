@@ -34,7 +34,7 @@ module.exports = function(grunt) {
         singleRun: true,
         autoWatch: false,
         browsers: ['Chrome']
-      }
+      },
       travis: {
         singleRun: true,
         autoWatch: false,
