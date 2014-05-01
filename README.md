@@ -1,4 +1,4 @@
-# n3-charts.line-chart [![Build Status](https://drone.io/github.com/n3-charts/line-chart/status.png)](https://drone.io/github.com/n3-charts/line-chart/latest)
+# n3-charts.line-chart [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart)
 
 A line chart implementation for [AngularJS](http://angularjs.org/) applications. It makes an extensive use of the wonderful [D3.js](http://d3js.org/) library.
 
