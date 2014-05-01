@@ -777,6 +777,7 @@ mod.factory('n3utils', ['$window', ($window) ->
         xTooltip = svg.append('g')
           .attr(
             'id': 'xTooltip'
+            'class': 'xTooltip'
             'opacity': 0
           )
 
@@ -797,8 +798,9 @@ mod.factory('n3utils', ['$window', ($window) ->
 
         yTooltip = svg.append('g')
           .attr(
-            'id': 'yTooltip'
-            'opacity': 0
+            id: 'yTooltip'
+            class: 'yTooltip'
+            opacity: 0
           )
 
         yTooltip.append('path')
@@ -816,6 +818,7 @@ mod.factory('n3utils', ['$window', ($window) ->
           y2Tooltip = svg.append('g')
             .attr(
               'id': 'y2Tooltip'
+              'class': 'y2Tooltip'
               'opacity': 0
               'transform': 'translate(' + width + ',0)'
             )
