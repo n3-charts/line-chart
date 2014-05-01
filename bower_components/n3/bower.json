@@ -1,0 +1,19 @@
+{
+  "name": "n3-charts-line-chart",
+  "version": "1.0.5",
+  "main": "dist/line-chart.min.js",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "coverage",
+    "lib",
+    "node_modules",
+    "test"
+  ],
+  "dependencies": {
+    "d3": "*",
+    "angular": "*",
+    "angular-mocks": "*",
+    "moment": "*"
+  }
+}
