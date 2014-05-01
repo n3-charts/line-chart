@@ -1,8 +1,8 @@
-# n3-charts.line-chart [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart)
+# n3-line-chart [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart)
 
-A line chart implementation for [AngularJS](http://angularjs.org/) applications. It makes an extensive use of the wonderful [D3.js](http://d3js.org/) library.
+Awesome chart for [AngularJS](http://angularjs.org/) applications. Makes an extensive use of the wonderful [D3.js](http://d3js.org/) library. Might also contain bits of unicorns.
 
-Here is a [demo page](http://n3-charts.github.io/line-chart/).
+Here is a [demo page](http://n3-charts.github.io/line-chart/) (with full release notes, too).
 
 ### How to install
  + Install using bower : `bower install n3-line-chart` (or copy `line-chart.min.js` wherever you want)
