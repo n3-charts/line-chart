@@ -16,15 +16,21 @@ module.exports = function(grunt) {
   grunt.initConfig({
     // Metadata.
     pkg: grunt.file.readJSON('package.json'),
-    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+    banner: '###\n<%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("dd mmmm yyyy") %>\n' +
-      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-      '* Copyright (c) <%= grunt.template.today("yyyy") %> n3-charts ' +
-      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+      '<%= pkg.homepage ? pkg.homepage + "\\n" : "" %>' +
+      'Copyright (c) <%= grunt.template.today("yyyy") %> n3-charts' +
+      '\n###\n',
+
+    bannerjs: '/*\n<%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+      '<%= grunt.template.today("dd mmmm yyyy") %>\n' +
+      '<%= pkg.homepage ? pkg.homepage + "\\n" : "" %>' +
+      'Copyright (c) <%= grunt.template.today("yyyy") %> n3-charts' +
+      '\n*/\n',
 
     watch: {
-      files: ['lib/**/*.js', 'test/*.spec.js'],
-      tasks: ['jshint', 'concat', 'uglify', 'karma:continuous']
+      files: ['lib/**/*.coffee', 'test/*.mocha.coffee'],
+      tasks: ['default']
     },
 
     karma: {
@@ -33,45 +39,62 @@ module.exports = function(grunt) {
       continuous: {
         singleRun: true,
         autoWatch: false,
-        browsers: ['Chrome']
-      },
-      travis: {
-        singleRun: true,
-        autoWatch: false,
         browsers: ['Firefox']
       }
     },
 
     concat: {
-      options: {
-        banner: '<%= banner %>',
-        stripBanners: true
-      },
       utils: {
-        src: ['lib/utils/*.js'],
-        dest: '/tmp/utils.js',
+        src: ['lib/utils/*.coffee'],
+        dest: '/tmp/utils.coffee',
         options: {
-          banner: grunt.file.read('lib/utils/utils.js.prefix'),
-          footer: grunt.file.read('lib/utils/utils.js.suffix'),
-          separator: ',\n\n'
+          banner: grunt.file.read('lib/utils/utils.coffee.prefix'),
+          footer: grunt.file.read('lib/utils/utils.coffee.suffix'),
+          separator: '\n\n',
+          process: function(src, filepath) {
+            return '# ' + filepath + '\n' + src + '\n# ----\n';
+          }
         }
       },
       js: {
-        src: ['lib/<%= pkg.name %>.js', '/tmp/utils.js'],
-        dest: 'dist/<%= pkg.name %>.js'
+        options: {
+          banner: '<%= banner %>',
+          stripBanners: true,
+          process: function(src, filepath) {
+            return '# ' + filepath + '\n' + src + '\n# ----\n';
+          }
+        },
+        src: ['lib/<%= pkg.name %>.coffee', '/tmp/utils.coffee'],
+        dest: 'dist/<%= pkg.name %>.coffee'
+      }
+    },
+
+    coffeelint: {
+      app: ['dist/<%= pkg.name %>.coffee'],
+      options: {
+        'max_line_length': {
+          'level': 'ignore'
+        }
+      }
+    },
+
+    coffee: {
+      options: {
+        bare: true
       },
-      test: {
-        src: ['test/spec.prefix', 'test/*.spec.js' ,'test/spec.suffix'],
-        dest: '/tmp/<%= pkg.name %>.spec.js'
+      compile: {
+        files: {
+          'dist/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.coffee'
+        }
       }
     },
 
     uglify: {
       options: {
-        banner: '<%= banner %>'
+        banner: '<%= bannerjs %>'
       },
       js: {
-        src: '<%= concat.js.dest %>',
+        src: 'dist/<%= pkg.name %>.js',
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
@@ -90,7 +113,12 @@ module.exports = function(grunt) {
   });
 
   // Default task.
+<<<<<<< HEAD
   grunt.registerTask('travis', ['jshint', 'concat', 'uglify', 'karma:travis']);
   grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'karma:continuous']);
+=======
+  grunt.registerTask('travis', 'default');
+  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous', ]);
+>>>>>>> develop
   grunt.registerTask('coverage', ['concat', 'karma:unit']);
 };
