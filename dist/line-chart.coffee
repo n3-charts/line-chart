@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.4 - 04 April 2014
+line-chart - v1.0.4 - 01 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -587,7 +587,7 @@ mod.factory('n3utils', ['$window', ($window) ->
           s.type = if s.type in ['line', 'area', 'column'] then s.type else "line"
 
           if s.type is 'column'
-            s.thickness = undefined
+            delete s.thickness
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 
