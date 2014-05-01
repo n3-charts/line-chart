@@ -113,12 +113,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-<<<<<<< HEAD
-  grunt.registerTask('travis', ['jshint', 'concat', 'uglify', 'karma:travis']);
-  grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'karma:continuous']);
-=======
   grunt.registerTask('travis', 'default');
   grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous', ]);
->>>>>>> develop
   grunt.registerTask('coverage', ['concat', 'karma:unit']);
 };
