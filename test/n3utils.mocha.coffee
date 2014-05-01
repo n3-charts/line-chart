@@ -1,5 +1,5 @@
 describe 'n3utils', ->
-  beforeEach module 'n3-charts.linechart'
+  beforeEach module 'n3-line-chart'
   beforeEach module 'testUtils'
 
   n3utils = undefined

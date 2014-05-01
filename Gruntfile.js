@@ -29,7 +29,7 @@ module.exports = function(grunt) {
       '\n*/\n',
 
     watch: {
-      files: ['lib/**/*.coffee', 'test/*.mocha.coffee'],
+      files: ['lib/**/*.coffee', 'test/**/*.mocha.coffee'],
       tasks: ['default']
     },
 

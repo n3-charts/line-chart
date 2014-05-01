@@ -1,6 +1,11 @@
-angular.module('n3-charts.linechart', ['n3charts.utils'])
+old_m = angular.module('n3-charts.linechart', ['n3charts.utils'])
+m = angular.module('n3-line-chart', ['n3charts.utils'])
 
-.directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
+directive = (name, conf) ->
+  old_m.directive(name, conf)
+  m.directive(name, conf)
+
+directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
   link  = (scope, element, attrs, ctrl) ->
     dim = n3utils.getDefaultMargins()
 

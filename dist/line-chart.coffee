@@ -1,12 +1,17 @@
 ###
-line-chart - v1.0.5 - 01 May 2014
+line-chart - v1.0.6 - 01 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
 # lib/line-chart.coffee
-angular.module('n3-charts.linechart', ['n3charts.utils'])
+old_m = angular.module('n3-charts.linechart', ['n3charts.utils'])
+m = angular.module('n3-line-chart', ['n3charts.utils'])
 
-.directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
+directive = (name, conf) ->
+  old_m.directive(name, conf)
+  m.directive(name, conf)
+
+directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
   link  = (scope, element, attrs, ctrl) ->
     dim = n3utils.getDefaultMargins()
 
