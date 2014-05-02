@@ -1,0 +1,21 @@
+
+## On Mac OS 10.9.2
+
+#### Do not try to install PIL
+Seriously. It might be valid on other platforms (oh sweet Jesus playing bagpipe in a bunker I miss Debian), but it seems to be deprecated, at least on OS X.
+
+#### Install pip
+
+```
+sudo easy_install pip
+```
+
+#### Install Pillow
+
+```
+export CFLAGS=-Qunused-arguments
+export CPPFLAGS=-Qunused-arguments
+sudo -E pip install pillow
+```
+
+The first two lines and the `-E` flag are there to prevent some obscure `gcc` error/warning I really don't give a flying fart about.
