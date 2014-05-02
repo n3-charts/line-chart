@@ -1,0 +1,7 @@
+angular.module('example', ['n3-line-chart'])
+  .controller('ExampleCtrl', function($scope) {
+    $scope.data = [{x: 0, value: 1}, {x: 1, value: 12}, {x: 2, value: 7}];
+    $scope.options = {
+      series: [{y: 'value', type: 'area'}]
+    };
+  });

@@ -33,6 +33,7 @@
     "bower": "~1.3.3",
     "phantomjs": "~1.9.7-5",
     "image-diff": "~1.0.1",
-    "imagemagick": "~0.1.3"
+    "imagemagick": "~0.1.3",
+    "grunt-shell": "~0.7.0"
   }
 }
