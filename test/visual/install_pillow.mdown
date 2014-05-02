@@ -19,3 +19,10 @@ sudo -E pip install pillow
 ```
 
 The first two lines and the `-E` flag are there to prevent some obscure `gcc` error/warning I really don't give a flying fart about.
+
+## On Linux
+Come on. I figured out to install that on a Mac, don't tell me you got here without knowing how to use `apt`.
+
+
+## On Windows
+I'll pretend you didn't ask that.

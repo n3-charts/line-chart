@@ -109,11 +109,18 @@ module.exports = function(grunt) {
       test: {
         src: ['lib/*.js']
       }
+    },
+
+    shell: {
+      visual: {
+        options: {},
+        command: './test/visual/scripts/run.py'
+      }
     }
   });
 
   // Default task.
-  grunt.registerTask('travis', 'default');
-  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous', ]);
-  grunt.registerTask('coverage', ['concat', 'karma:unit']);
+  grunt.registerTask('travis', ['default', 'shell:visual']);
+  grunt.registerTask('visual', ['concat', 'coffeelint', 'coffee', 'uglify', 'shell:visual']);
+  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous']);
 };
