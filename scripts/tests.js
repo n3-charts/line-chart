@@ -23,7 +23,7 @@ angular.module('tests', [])
 
 .controller('TestsCtrl', function($scope, appUtils) {
   mixpanel.track("Tests");
-  d3.json('../data/test_results.json', function(error, result) {
+  d3.json('data/test_results.json', function(error, result) {
     $scope.tests = result.results;
     $scope.$apply();
   });
