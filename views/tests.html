@@ -1,17 +1,25 @@
 <div class='unit-100'>
   <hgroup>
     <h4>Visual regression tests</h4>
-    <h4 class='subheading'>tests description</h4>
+    <h4 class='subheading'>On this page, you'll find several test cases. Each of them has been played on the Travis CI server during last build, either it failed or not. The score near each test's name corresponds to a pixel diff between the two images. Lower is better.</h4>
   </hgroup>
 </div>
 <div class='units-row' ng-repeat='test in tests'>
   <div class='unit-100'>
     <hgroup>
-      <h4>{{test.name}}</h4>
-      <h4 class='subheading'>{{test.description}}</h4>
+      <h4>{{test.name | firstUp}} <span class='label score' ng-class="{good: test.success, bad: !test.success}">{{test.score | round}}</span></h4>
+      <h4 class='subheading'>{{test.description | firstUp}}</h4>
     </hgroup>
   </div>
   <div class='units-row units-split thumbnail'>
+    <div class='unit-100'>
+      <div class="unit-50">
+        <span class='label'>Expectation</span>
+      </div>
+      <div class="unit-50">
+        <span class='label'>Screenshot</span>
+      </div>
+    </div>
     <div class='unit-50'>
       <img ng-src="../data/{{test.expected_image}}">
     </div>
