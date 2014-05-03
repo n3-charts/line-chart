@@ -24,6 +24,7 @@
     "commit": "304be0a78795e60e177364998a80c7d69fc1b23c"
   },
   "_source": "git://github.com/n3-charts/line-chart.git",
-  "_target": "~1.0.4",
-  "_originalSource": "n3-charts.line-chart"
+  "_target": "~1.0.5",
+  "_originalSource": "n3-line-chart",
+  "_direct": true
 }

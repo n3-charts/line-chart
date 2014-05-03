@@ -1,4 +1,4 @@
-angular.module('demo.examples', ['apojop'])
+angular.module('examples', ['apojop'])
 
 .factory('appUtils', function() {
   return {

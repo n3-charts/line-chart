@@ -1,0 +1,22 @@
+<div class='unit-100'>
+  <hgroup>
+    <h4>Visual regression tests</h4>
+    <h4 class='subheading'>tests description</h4>
+  </hgroup>
+</div>
+<div class='units-row' ng-repeat='test in tests'>
+  <div class='unit-100'>
+    <hgroup>
+      <h4>{{test.name}}</h4>
+      <h4 class='subheading'>{{test.description}}</h4>
+    </hgroup>
+  </div>
+  <div class='units-row units-split thumbnail'>
+    <div class='unit-50'>
+      <img ng-src="../data/{{test.expected_image}}">
+    </div>
+    <div class='unit-50'>
+      <img ng-src="../data/{{test.computed_image}}">
+    </div>
+  </div>
+</div>

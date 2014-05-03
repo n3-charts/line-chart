@@ -16,6 +16,10 @@
     "angular-mocks": "*",
     "moment": "*",
     "apojop": "~1.0.4",
-    "angular-route": "~1.2.15"
+    "angular-route": "~1.2.15",
+    "n3-line-chart": "~1.0.5"
+  },
+  "resolutions": {
+    "angular": "1.2.16"
   }
 }

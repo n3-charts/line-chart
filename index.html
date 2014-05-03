@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" ng-app="demo.main">
+<html lang="en" ng-app="demo">
 <head>
   <link rel="icon" type="image/png" href="assets/images/logo_small.png" />
   <link href="assets/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
@@ -28,8 +28,10 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
           <ul>
             <li><a href="#">Home</a></li>
             <li><a href="#/examples">Examples</a></li>
-            <li><a href="http://plnkr.co/edit/rU1AdH?p=preview" target="_blank">Playground <i class='icon-external-link'></i></a></li>
-            <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='icon-external-link'></i></a></li>
+            <li><a href="#/tests">Tests</a></li>
+            <li><a href="http://plnkr.co/edit/rU1AdH?p=preview" target="_blank">Playground <i class='icon-external-link' style="font-size: 10px;"></i></a></li>
+            <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='icon-external-link' style="font-size: 10px;"></i></a></li>
+            <li><a href="https://travis-ci.org/n3-charts/line-chart" target="_blank">Travis CI <i class='icon-external-link' style="font-size: 10px;"></i></a></li>
           </ul>
         </nav>
       </header>
@@ -39,13 +41,14 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
     <div class='units-row' ng-view></div>
   </div>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
-<script src="bower_components/angular/angular.min.js"></script>
+<script src="bower_components/moment/min/moment.min.js"></script>
+<script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="bower_components/n3/dist/line-chart.min.js"></script>
+<script src="bower_components/d3/d3.min.js"></script>
+<script src="bower_components/n3-line-chart/dist/line-chart.min.js"></script>
 <script src="bower_components/apojop/apojop.min.js"></script>
 <script src="scripts/examples.js"></script>
+<script src="scripts/tests.js"></script>
 <script src="scripts/main.js"></script>
 
 </body>

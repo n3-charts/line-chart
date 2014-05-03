@@ -1,7 +1,8 @@
-angular.module('demo.main', ['ngRoute', 'n3-charts.linechart', 'demo.examples'])
+angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests'])
 
 .config(['$routeProvider', function config($routeProvider) {
   $routeProvider
+  .when('/tests', {controller: 'TestsCtrl', templateUrl: 'views/tests.html'})
   .when('/examples', {controller: 'ExamplesCtrl', templateUrl: 'views/examples.html'})
   .when('/', {controller: 'HomeCtrl', templateUrl: 'views/home.html'})
   .otherwise({redirectTo: '/'});
