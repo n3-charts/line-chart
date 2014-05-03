@@ -44,6 +44,9 @@ class bcolors:
 def success(message):
   print bcolors.OKGREEN + message + bcolors.ENDC
 
+def info(message):
+  print "[INFO] " + message
+
 def error(message):
   print bcolors.FAIL + message + bcolors.ENDC
 
@@ -111,11 +114,11 @@ def create_temp_dir():
   target = ".tmp"
 
   if os.path.exists(target):
-    debug("Directory .tmp already exists, removing it")
+    info("Directory .tmp already exists, removing it")
     shutil.rmtree(target)
 
   os.mkdir(target)
-  debug("Created .tmp directory")
+  info("Creating .tmp directory")
 
   return target
 
@@ -137,7 +140,7 @@ def get_content(path):
 
 
 def generate_test_files(dirs, project_path, template_path):
-  debug('Creating test files...')
+  info('Creating test files')
   with cd('.tmp'):
     for test in dirs:
       name = generate_test_file(test, project_path, template_path)
@@ -166,7 +169,8 @@ def capture_tests(project_path):
   with cd('.tmp'):
     files = os.listdir('.')
 
-    debug('Capturing images...')
+
+    info('Capturing images')
 
     for file in files:
       img = file.split('.')[0] + '.png'
@@ -222,6 +226,7 @@ def compare(dirs):
         o['success'] = True
 
       o['comment'] = None
+      pretty_print_result(o, name)
 
   return images, errors
 
@@ -237,19 +242,16 @@ def histo_diff (expected, computed):
   return math.sqrt(reduce(operator.add, map(lambda a,b: (a-b)**2, h0, h1))/len(h0))
 
 
-def pretty_print(results):
-  for key in results:
-    o = results[key]
-    if o['comment'] is not None:
-      error('[FAIL] ' + key + ' : ' + o['desc'])
-      error('       ' + o['comment'])
+def pretty_print_result(result, name):
+  if result['comment'] is not None:
+    error('[FAIL] ' + name + ' : ' + result['desc'])
+    error('       ' + result['comment'])
+  else:
+    if result['success']:
+      success('[PASS] ' + name + ' : ' + result['desc'])
     else:
-      if o['success']:
-        success('[PASS] ' + key + ' : ' + o['desc'])
-      else:
-        error('[FAIL] ' + key + ' : ' + o['desc'])
-        error('       diff too high : ' + str(o['score']))
-
+      error('[FAIL] ' + name + ' : ' + result['desc'])
+      error('       diff too high : ' + str(result['score']))
 
 def bootstrap():
     parser = argparse.ArgumentParser(prog='line-chart visual regression tool')
@@ -265,9 +267,10 @@ def copy_computed_to_tests(dirs):
   with cd('.tmp'):
     for test in dirs:
       name = os.path.basename(test)
-      success("Copying capture for " + name)
+      debug("Copying capture for " + name)
       shutil.copy(name + ".png", test + "/expected.png")
 
+    info(str(len(dirs)) + " screenshots copied as references")
 
 def prepare_for_git(results):
   os.mkdir('.tmp/ready_for_git')
@@ -324,7 +327,6 @@ with cd(visual):
     copy_computed_to_tests(dirs)
   else:
     results, errors = compare(dirs)
-    pretty_print(results)
     prepare_for_git(results)
 
     if errors > 0:
