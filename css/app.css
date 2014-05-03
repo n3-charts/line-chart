@@ -30,6 +30,19 @@ body {
   vertical-align: middle;
 }
 
+/* TESTS */
+span.label.score.good {
+  background-color: #90af45;
+  border: 0px;
+  color: white;
+}
+
+span.label.score.bad {
+  background-color: red;
+  border: 0px;
+  color: white;
+}
+
 /* HOME */
 
 .preview-chart {
