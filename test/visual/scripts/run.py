@@ -221,6 +221,7 @@ def compare(dirs):
       o['score'] = sc
       if sc > 100:
         o['success'] = False
+        o['comment'] = "The two images appear to be different (result > 100)"
         errors += 1
       else:
         o['success'] = True
