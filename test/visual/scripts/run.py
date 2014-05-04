@@ -219,7 +219,7 @@ def compare(dirs):
     else:
       sc = histo_diff(o['expected'], o['computed'])
       o['score'] = sc
-      if sc > 50:
+      if sc > 100:
         o['success'] = False
         errors += 1
       else:
@@ -252,6 +252,7 @@ def pretty_print_result(result, name):
     else:
       error('[FAIL] ' + name + ' : ' + result['desc'])
       error('       diff too high : ' + str(result['score']))
+
 
 def bootstrap():
     parser = argparse.ArgumentParser(prog='line-chart visual regression tool')
