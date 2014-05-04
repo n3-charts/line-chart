@@ -39,7 +39,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="6" style="text-align:right;">{{tests.length}} tests ({{(tests | filter:success).length}} failed)</td>
+        <td colspan="6" style="text-align:right;">{{tests.length}} tests ({{(tests | filter:{success:false}).length}} failed)</td>
       </tr>
     </tfoot>
   </table>
