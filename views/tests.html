@@ -1,6 +1,6 @@
 <div class='unit-100'>
     <h3 class="subheading"><a ng-href="{{link}}">{{description}}</a></h3>
-    <h4 class='subheading'>On this page, you'll find several test cases. Each of them has been played on the Travis CI server during last build, either it failed or not. The score near each test's name corresponds to a pixel diff between the two images. Lower is better.</h4>
+    <h4 class='subheading'>On this page, you'll find several test cases. Each of them has been played on the Travis CI server during last build, either it failed or not. The score near each test's name corresponds to a pixel diff between the two images. Lower is better. Click on a line (alt-clic for all) to see the expected and computed images.</h4>
 </div>
 
 <div class="unit-100 thumbnail">
@@ -16,17 +16,15 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat-start="test in tests" ng-class="{good: test.success, bad: !test.success}">
-        <td><i class="fa fa-fw" ng-class="{'fa-check': test.success, 'fa-times': !test.success}"></i></td>
+      <tr ng-repeat-start="test in tests" class="actionable" ng-click="test.expanded ? collapse(test, $event) : expand(test, $event)">
+        <td><i class="fa fa-fw" ng-class="{'fa-check': test.success, 'fa-times': !test.success, good: test.success, bad: !test.success}"></i></td>
         <td>{{test.name | firstUp}}</td>
         <td>{{test.description}}</td>
         <td>{{test.comment || '-'}}</td>
         <td>{{test.score | round}}</td>
-        <td class="actionable" ng-click="expand(test, $event)" ng-if="!test.expanded"><i class="fa fa-angle-down"> </i></td>
-        <td class="actionable" ng-click="collapse(test, $event)" ng-if="test.expanded"><i class="fa fa-angle-up"> </i></td>
       </tr>
       <tr ng-if="test.expanded" ng-repeat-end>
-        <td colspan="6">
+        <td colspan="5">
           <figure class="comparison">
             <img ng-src="data/{{test.expected_image}}">
             <figcaption>Expected</figcaption>
@@ -39,33 +37,8 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="6" style="text-align:right;">{{tests.length}} tests ({{(tests | filter:{success:false}).length}} failed)</td>
+        <td colspan="5" style="text-align:right;">{{tests.length}} tests ({{(tests | filter:{success:false}).length}} failed)</td>
       </tr>
     </tfoot>
   </table>
 </div>
-
-
-  <!-- <div class='unit-100'>
-    <hgroup>
-      <h4>{{test.name | firstUp}} <span class='label score' ng-class="{good: test.success, bad: !test.success}">{{test.score | round}}</span></h4>
-      <h4 class='subheading'>{{test.description | firstUp}}</h4>
-    </hgroup>
-  </div>
-  <div class='units-row units-split thumbnail'>
-    <div class='unit-100'>
-      <div class="unit-50">
-        <span class='label'>Expectation</span>
-      </div>
-      <div class="unit-50">
-        <span class='label'>Screenshot</span>
-      </div>
-    </div>
-    <div class='unit-50'>
-      <img ng-src="data/{{test.expected_image}}">
-    </div>
-    <div class='unit-50'>
-      <img ng-src="data/{{test.computed_image}}">
-    </div>
-  </div>
-</div> -->

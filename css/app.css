@@ -31,16 +31,20 @@ body {
 }
 
 /* TESTS */
-tr.good {
+.good {
   color: rgba(104, 173, 40, 1);
 }
 
-tr.bad {
+.bad {
   color: #E9281D;
 }
 
 *.actionable {
   cursor: pointer;
+}
+
+tr.actionable:hover {
+  background-color: rgb(243, 243, 243);
 }
 
 figure.comparison {
