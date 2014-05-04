@@ -31,16 +31,25 @@ body {
 }
 
 /* TESTS */
-span.label.score.good {
-  background-color: #90af45;
-  border: 0px;
-  color: white;
+tr.good {
+  color: rgba(104, 173, 40, 1);
 }
 
-span.label.score.bad {
-  background-color: red;
-  border: 0px;
-  color: white;
+tr.bad {
+  color: #E9281D;
+}
+
+*.actionable {
+  cursor: pointer;
+}
+
+figure.comparison {
+  display:inline-block;
+  width: 50%;
+}
+
+figure.comparison > figcaption {
+  text-align: center;
 }
 
 /* HOME */
