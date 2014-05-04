@@ -29,7 +29,7 @@ module.exports = function(grunt) {
       '\n*/\n',
 
     watch: {
-      files: ['lib/**/*.coffee', 'test/**/*.mocha.coffee'],
+      files: ['lib/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
       tasks: ['default']
     },
 
@@ -109,11 +109,18 @@ module.exports = function(grunt) {
       test: {
         src: ['lib/*.js']
       }
+    },
+
+    shell: {
+      visual: {
+        options: {},
+        command: './test/visual/scripts/run.py'
+      }
     }
   });
 
   // Default task.
-  grunt.registerTask('travis', 'default');
-  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous', ]);
-  grunt.registerTask('coverage', ['concat', 'karma:unit']);
+  grunt.registerTask('travis', ['default', 'shell:visual']);
+  grunt.registerTask('visual', ['concat', 'coffeelint', 'coffee', 'uglify', 'shell:visual']);
+  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous']);
 };

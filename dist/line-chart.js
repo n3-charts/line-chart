@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 01 May 2014
+line-chart - v1.0.6 - 04 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -356,7 +356,7 @@ mod.factory('n3utils', [
           'r': d / 2
         });
         item.append('text').attr({
-          'font-family': 'monospace',
+          'font-family': 'Courier',
           'font-size': 10,
           'transform': 'translate(13, 4)',
           'text-rendering': 'geometric-precision'
@@ -648,7 +648,7 @@ mod.factory('n3utils', [
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat((_ref = axesOptions.y2) != null ? _ref.labelFunction : void 0);
         style = function(group) {
           group.style({
-            'font': '10px monospace',
+            'font': '10px Courier',
             'shape-rendering': 'crispEdges'
           });
           return group.selectAll('path').style({
