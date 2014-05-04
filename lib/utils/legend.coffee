@@ -57,7 +57,7 @@
 
         item.append('text')
           .attr(
-            'font-family': 'monospace'
+            'font-family': 'Courier'
             'font-size': 10
             'transform': 'translate(13, 4)'
             'text-rendering': 'geometric-precision'

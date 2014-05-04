@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 02 May 2014
+line-chart - v1.0.6 - 04 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -356,7 +356,7 @@ mod.factory('n3utils', ['$window', ($window) ->
 
         item.append('text')
           .attr(
-            'font-family': 'monospace'
+            'font-family': 'Courier'
             'font-size': 10
             'transform': 'translate(13, 4)'
             'text-rendering': 'geometric-precision'
@@ -653,7 +653,7 @@ mod.factory('n3utils', ['$window', ($window) ->
 
         style = (group) ->
           group.style(
-            'font': '10px monospace'
+            'font': '10px Courier'
             'shape-rendering': 'crispEdges'
           )
 
