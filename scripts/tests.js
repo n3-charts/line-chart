@@ -19,11 +19,11 @@ angular.module('tests', [])
     $scope.tests = result.results;
     b = $scope.build = result.build;
 
-    if (b.is_a_pull_request !== null) {
-      $scope.description = "Pull request #" + b.is_a_pull_request + " (for merge into " + b.branch + ")";
+    if (b.is_a_pull_request !== "false") {
+      $scope.description = "Build triggered by pull request #" + b.is_a_pull_request + " (for merge into " + b.branch + ")";
       $scope.link = "https://github.com/n3-charts/line-chart/pull/" + b.is_a_pull_request;
     } else {
-      $scope.description = "Branch " + b.branch;
+      $scope.description = "Build triggered by a push on branch " + b.branch;
       $scope.link = "https://github.com/n3-charts/line-chart/tree/" + b.branch;
     }
 
