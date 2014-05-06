@@ -1,8 +1,8 @@
 # n3-line-chart [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart)
 
-Awesome chart for [AngularJS](http://angularjs.org/) applications. Makes an extensive use of the wonderful [D3.js](http://d3js.org/) library. Might also contain bits of unicorns.
+n3-line-chart makes creating beautiful charts for [AngularJS](http://angularjs.org/) applications easy and semantic. It is built on top of [D3.js](http://d3js.org/).
 
-Here is a [demo page](http://n3-charts.github.io/line-chart/) (with full release notes, too).
+You can find examples on the [demo page](http://n3-charts.github.io/line-chart/).
 
 ### How to install
  + Install using bower : `bower install n3-line-chart` (or copy `line-chart.min.js` wherever you want)
@@ -104,15 +104,15 @@ The mode can be set to 'thumbnail' (default is empty string). If so, the chart w
 ### Building
 Fetch the repo :
 ```sh
-$ git clone https://github.com/angular-d3/line-chart.git
+$ git clone https://github.com/n3-charts/line-chart.git
 ```
 
-Install stuff :
+Install dev dependencies :
 ```sh
 $ npm install
 ```
 
-Install moar stuff :
+Install components :
 ```sh
 $ bower install
 ```
@@ -122,11 +122,20 @@ Watch :
 $ grunt watch
 ```
 
-Hack.
+Or just build :
+```sh
+$ grunt
+```
+
+Or run the visual tests, too :
+```sh
+$ grunt travis
+```
+
 
 ### Testing
-AngularJS is designed to be testable, and so is this project.
-It has a good coverage rate (above 90%), and we want to keep it this way.
+AngularJS is designed to build testable apps, so is this project.
+It has a good coverage rate (above 95%), let's keep it this way.
 
   [1]: https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
   [2]: https://github.com/n3-charts/line-chart/issues/44
