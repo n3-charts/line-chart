@@ -19,7 +19,7 @@ directive('linechart', [
   'n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
     var link;
     link = function(scope, element, attrs, ctrl) {
-      var dim, timeoutPromise, window_resize;
+      var dim, handlers, isUpdatingOptions, timeoutPromise, window_resize;
       dim = n3utils.getDefaultMargins();
       scope.updateDimensions = function(dimensions) {
         var bottom, left, right, top;
@@ -34,9 +34,20 @@ directive('linechart', [
         scope.updateDimensions(dim);
         return scope.redraw(dim);
       };
+      isUpdatingOptions = false;
+      handlers = {
+        onSeriesVisibilityChange: function(_arg) {
+          var index, newVisibility, series;
+          series = _arg.series, index = _arg.index, newVisibility = _arg.newVisibility;
+          isUpdatingOptions = true;
+          scope.options.series[index].visible = newVisibility;
+          scope.$apply();
+          return isUpdatingOptions = false;
+        }
+      };
       scope.redraw = function(dimensions) {
         var axes, columnWidth, data, dataPerSeries, isThumbnail, options, series, svg;
-        options = n3utils.sanitizeOptions(scope.options);
+        options = n3utils.sanitizeOptions(angular.copy(scope.options));
         data = scope.data;
         series = options.series;
         dataPerSeries = n3utils.getDataPerSeries(data, options);
@@ -54,7 +65,7 @@ directive('linechart', [
         }
         n3utils.createContent(svg);
         if (!isThumbnail) {
-          n3utils.drawLegend(svg, series, dimensions);
+          n3utils.drawLegend(svg, series, dimensions, handlers);
         }
         if (dataPerSeries.length) {
           columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
@@ -74,7 +85,12 @@ directive('linechart', [
       };
       $window.addEventListener('resize', window_resize);
       scope.$watch('data', scope.update);
-      return scope.$watch('options', scope.update, true);
+      return scope.$watch('options', function(v) {
+        if (isUpdatingOptions) {
+          return;
+        }
+        return scope.update();
+      }, true);
     };
     return {
       replace: true,
@@ -92,7 +108,7 @@ directive('linechart', [
 mod = angular.module('n3charts.utils', []);
 
 mod.factory('n3utils', [
-  '$window', '$log', function($window, $log) {
+  '$window', '$log', '$rootScope', function($window, $log, $rootScope) {
     return {
       addPattern: function(svg, series) {
         var group;
@@ -298,7 +314,7 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      drawLegend: function(svg, series, dimensions) {
+      drawLegend: function(svg, series, dimensions, handlers) {
         var d, i, item, l, layout, legend, that;
         layout = [0];
         i = 1;
@@ -318,7 +334,14 @@ mod.factory('n3utils', [
           }
         });
         item.on('click', function(s, i) {
-          return d3.select(this).attr('opacity', that.toggleSeries(svg, i) ? '1' : '0.2');
+          var isNowVisible;
+          isNowVisible = that.toggleSeries(svg, i);
+          d3.select(this).attr('opacity', isNowVisible ? '1' : '0.2');
+          return typeof handlers.onSeriesVisibilityChange === "function" ? handlers.onSeriesVisibilityChange({
+            series: s,
+            index: i,
+            newVisibility: isNowVisible
+          }) : void 0;
         });
         item.append('circle').attr({
           'fill': function(s) {

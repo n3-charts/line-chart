@@ -19,6 +19,7 @@ describe 'legend', ->
       <linechart data='data' options='options'></linechart>
     </div>
     """
+    innerScope = element.childByClass('chart').aElement.isolateScope()
 
   beforeEach ->
     outerScope.$apply ->
@@ -39,6 +40,18 @@ describe 'legend', ->
           type: 'column'
         }
       ]
+
+  it 'should update the outer options when a series is hidden or shown', ->
+    spy = sinon.spy()
+    outerScope.$watch('options', spy, true)
+
+    element.childrenByClass('legendItem')[0].click()
+    expect(outerScope.options.series[0].visible).to.equal(false)
+    expect(spy.callCount).to.equal(1)
+
+    element.childrenByClass('legendItem')[0].click()
+    expect(outerScope.options.series[0].visible).to.equal(true)
+    expect(spy.callCount).to.equal(2)
 
   it 'should create a clipping path for legend items', ->
     patterns = element.childByClass('patterns')
