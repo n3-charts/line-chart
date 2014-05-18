@@ -21,6 +21,28 @@ describe 'scales', ->
     </div>
     """
 
+  describe 'min and max', ->
+    beforeEach ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, value: 4}
+          {x: 1, value: 8}
+        ]
+        outerScope.options =
+          axes:
+            y: {min: 5, max: 6}
+          series: [
+            {y: 'value', color: '#4682b4', label: 'toto'}
+            {y: 'value', axis: 'y2', color: '#4682b4', type: 'column'}
+          ]
+
+    it 'should work for vertical axes', ->
+      yticks = element.childByClass('y axis').children('text')
+      computedYTicks = yticks.map (t) -> t.domElement.textContent
+      expect(computedYTicks).to.eql(
+        ['5.0', '5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '6.0']
+      )
+
   describe 'logarithmic y axes', ->
     beforeEach ->
       outerScope.$apply ->
@@ -69,18 +91,8 @@ describe 'scales', ->
       expect(computedY2Ticks.join(' ')).to.eql expectedTicks
 
     it 'should configure y axis with logarithmic values', ->
-      expectedTicks = [
-        '1e+0'
-        '2e+0'
-        '3e+0'
-        '4e+0'
-        '5e+0'
-        '6e+0'
-        '7e+0'
-        '8e+0'
-        '9e+0'
-        '1e+1'
-      ]
+      expectedTicks =
+        ['1e+0', '2e+0', '3e+0', '4e+0', '5e+0', '6e+0', '7e+0', '8e+0', '9e+0', '1e+1']
       yticks = element.childByClass('y axis').children('text')
       computedYTicks = yticks.map (t) -> t.domElement.textContent
       expect(computedYTicks).to.eql expectedTicks
@@ -96,35 +108,16 @@ describe 'scales', ->
             {y: 'value', axis: 'y2', color: '#4682b4', type: 'column'}
           ]
 
-      expectedTicks = [
-        '1e+0'
-        '2e+0'
-        '3e+0'
-        '4e+0'
-        '5e+0'
-        '6e+0'
-        '7e+0'
-        '8e+0'
-        '9e+0'
-        '1e+1'
-      ]
+      expectedTicks =
+        ['1e+0', '2e+0', '3e+0', '4e+0', '5e+0', '6e+0', '7e+0', '8e+0', '9e+0', '1e+1']
 
       y2ticks = element.childByClass('y2 axis').children('text')
       computedY2Ticks = y2ticks.map (t) -> t.domElement.textContent
       expect(computedY2Ticks).to.eql expectedTicks
 
     it 'should let y2 axis in linear mode if told so', ->
-      expectedTicks = [
-        '4.0'
-        '4.5'
-        '5.0'
-        '5.5'
-        '6.0'
-        '6.5'
-        '7.0'
-        '7.5'
-        '8.0'
-      ]
+      expectedTicks =
+        ['4.0', '4.5', '5.0', '5.5', '6.0', '6.5', '7.0', '7.5', '8.0']
 
       y2ticks = element.childByClass('y2 axis').children('text')
       computedY2Ticks = y2ticks.map (t) -> t.domElement.textContent

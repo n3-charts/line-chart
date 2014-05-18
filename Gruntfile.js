@@ -30,7 +30,7 @@ module.exports = function(grunt) {
 
     watch: {
       files: ['lib/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
-      tasks: ['default']
+      tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified']
     },
 
     karma: {
@@ -39,7 +39,35 @@ module.exports = function(grunt) {
       continuous: {
         singleRun: true,
         autoWatch: false,
-        browsers: ['Firefox']
+        browsers: ['Firefox'],
+        options: {
+          files: [
+            'bower_components/angular/angular.js',
+            'bower_components/angular-mocks/angular-mocks.js',
+            'bower_components/d3/d3.js',
+            'dist/line-chart.min.js',
+            'test/unit/**/*.coffee'
+          ],
+        }
+      },
+
+      unminified: {
+        singleRun: true,
+        autoWatch: false,
+        browsers: ['Firefox'],
+        options: {
+          files: [
+            'bower_components/angular/angular.js',
+            'bower_components/angular-mocks/angular-mocks.js',
+            'bower_components/d3/d3.js',
+            'dist/line-chart.js',
+            'test/unit/**/*.coffee'
+          ],
+          preprocessors: {
+            'dist/line-chart.js': 'coverage',
+            'test/unit/**/*.coffee': 'coffee'
+          }
+        }
       }
     },
 

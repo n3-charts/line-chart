@@ -87,16 +87,8 @@
       setScalesDomain: (scales, data, series, svg, axesOptions) ->
         this.setXScale(scales.xScale, data, series, axesOptions)
 
-        ySeries = series.filter (s) -> s.axis isnt 'y2'
-        y2Series = series.filter (s) -> s.axis is 'y2'
-
-        yDomain = this.yExtent(ySeries, data)
-        if axesOptions.y.type is 'log'
-          yDomain[0] = if yDomain[0] is 0 then 0.001 else yDomain[0]
-
-        y2Domain = this.yExtent(y2Series, data)
-        if axesOptions.y2?.type is 'log'
-          y2Domain[0] = if y2Domain[0] is 0 then 0.001 else y2Domain[0]
+        yDomain = this.getVerticalDomain(axesOptions, data, series, 'y')
+        y2Domain = this.getVerticalDomain(axesOptions, data, series, 'y2')
 
         scales.yScale.domain(yDomain).nice()
         scales.y2Scale.domain(y2Domain).nice()
@@ -104,6 +96,18 @@
         svg.selectAll('.x.axis').call(scales.xAxis)
         svg.selectAll('.y.axis').call(scales.yAxis)
         svg.selectAll('.y2.axis').call(scales.y2Axis)
+
+      getVerticalDomain: (axesOptions, data, series, key) ->
+        return [] unless o = axesOptions[key]
+
+        domain = this.yExtent((series.filter (s) -> s.axis is key), data)
+        if o.type is 'log'
+          domain[0] = if domain[0] is 0 then 0.001 else domain[0]
+
+        domain[0] = o.min if o.min?
+        domain[1] = o.max if o.max?
+
+        return domain
 
       yExtent: (series, data) ->
         minY = Number.POSITIVE_INFINITY

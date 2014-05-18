@@ -1,4 +1,4 @@
 mod = angular.module('n3charts.utils', [])
 
-mod.factory('n3utils', ['$window', ($window) ->
+mod.factory('n3utils', ['$window', '$log', ($window, $log) ->
   return {
