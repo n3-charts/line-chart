@@ -29,6 +29,7 @@
 
         colors = d3.scale.category10()
         options.forEach (s, i) ->
+          s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
           s.type = if s.type in ['line', 'area', 'column'] then s.type else "line"
 
@@ -47,7 +48,37 @@
         axesOptions.y = this.sanitizeAxisOptions(axesOptions.y)
         axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2) if secondAxis
 
+        this.sanitizeExtrema(axesOptions.y)
+        this.sanitizeExtrema(axesOptions.y2) if secondAxis
+
         return axesOptions
+
+      sanitizeExtrema: (options) ->
+        min = this.getSanitizedExtremum(options.min)
+        if min?
+          options.min = min
+        else
+          delete options.min
+
+        max = this.getSanitizedExtremum(options.max)
+        if max?
+          options.max = max
+        else
+          delete options.max
+
+
+
+      getSanitizedExtremum: (value) ->
+        return undefined unless value?
+
+        number = parseInt(value, 10)
+
+        if isNaN(number)
+          $log.warn("Invalid extremum value : #{value}, deleting it.")
+          return undefined
+
+        return number
+
 
       sanitizeAxisOptions: (options) ->
         return {type: 'linear'} unless options?

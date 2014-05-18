@@ -212,10 +212,12 @@ def compare(dirs):
       o['comment'] = "No expected image"
       o['success'] = False
       errors += 1
+      croak_and_slam_the_door('No expected image, aborting (please use "run.py -u -o ' + name + '" to init the test case')
     elif not os.path.isfile(o['computed']):
       o['comment'] = "No computed image"
       o['success'] = False
       errors += 1
+      croak_and_slam_the_door('No computed image, aborting.')
     else:
       sc = histo_diff(o['expected'], o['computed'])
       o['score'] = sc
