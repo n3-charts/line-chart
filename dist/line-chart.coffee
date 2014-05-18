@@ -27,8 +27,17 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       scope.updateDimensions(dim)
       scope.redraw(dim)
 
+
+    isUpdatingOptions = false
+    handlers =
+      onSeriesVisibilityChange: ({series, index, newVisibility}) ->
+        isUpdatingOptions = true
+        scope.options.series[index].visible = newVisibility
+        scope.$apply()
+        isUpdatingOptions = false
+
     scope.redraw = (dimensions) ->
-      options = n3utils.sanitizeOptions(scope.options)
+      options = n3utils.sanitizeOptions(angular.copy(scope.options))
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
@@ -51,7 +60,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       n3utils.createContent(svg)
 
-      n3utils.drawLegend(svg, series, dimensions) unless isThumbnail
+      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
 
       if dataPerSeries.length
         columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
@@ -73,7 +82,11 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.update)
-    scope.$watch('options', scope.update, true)
+    scope.$watch('options', (v) ->
+      return if isUpdatingOptions
+
+      scope.update()
+    , true)
 
   return {
     replace: true
@@ -89,7 +102,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 # /tmp/utils.coffee
 mod = angular.module('n3charts.utils', [])
 
-mod.factory('n3utils', ['$window', '$log', ($window, $log) ->
+mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootScope) ->
   return {
 # lib/utils/areas.coffee
       addPattern: (svg, series) ->
@@ -297,7 +310,7 @@ mod.factory('n3utils', ['$window', '$log', ($window, $log) ->
 
 
 # lib/utils/legend.coffee
-      drawLegend: (svg, series, dimensions) ->
+      drawLegend: (svg, series, dimensions, handlers) ->
         layout = [0]
 
         i = 1
@@ -324,7 +337,10 @@ mod.factory('n3utils', ['$window', '$log', ($window, $log) ->
             )
 
         item.on('click', (s, i) ->
-          d3.select(this).attr('opacity', if that.toggleSeries(svg, i) then '1' else '0.2')
+          isNowVisible = that.toggleSeries(svg, i)
+
+          d3.select(this).attr('opacity', if isNowVisible then '1' else '0.2')
+          handlers.onSeriesVisibilityChange?({series: s, index: i, newVisibility: isNowVisible})
         )
 
         item.append('circle')
