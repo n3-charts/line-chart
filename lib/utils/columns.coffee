@@ -13,7 +13,7 @@
         data = data.filter (s) -> s.type is 'column'
 
         x1 = d3.scale.ordinal()
-          .domain(data.map (s) -> s.name)
+          .domain(data.map (s) -> s.name + s.index)
           .rangeRoundBands([0, data.length * columnWidth], 0.05)
 
         that = this
@@ -24,7 +24,7 @@
             .attr('class', (s) -> 'columnGroup ' + 'series_' + s.index)
             .style("fill", (s) -> s.color)
             .style("fill-opacity", 0.8)
-            .attr("transform", (s) -> "translate(" + (x1(s.name) - data.length*columnWidth/2) + ",0)")
+            .attr("transform", (s) -> "translate(" + (x1(s.name + s.index) - data.length*columnWidth/2) + ",0)")
             .on('mouseover', (series) ->
               target = d3.select(d3.event.target)
 

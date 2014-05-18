@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 04 May 2014
+line-chart - v1.0.6 - 18 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -92,7 +92,7 @@ directive('linechart', [
 mod = angular.module('n3charts.utils', []);
 
 mod.factory('n3utils', [
-  '$window', function($window) {
+  '$window', '$log', function($window, $log) {
     return {
       addPattern: function(svg, series) {
         var group;
@@ -178,7 +178,7 @@ mod.factory('n3utils', [
           return s.type === 'column';
         });
         x1 = d3.scale.ordinal().domain(data.map(function(s) {
-          return s.name;
+          return s.name + s.index;
         })).rangeRoundBands([0, data.length * columnWidth], 0.05);
         that = this;
         colGroup = svg.select('.content').selectAll('.columnGroup').data(data).enter().append("g").attr('class', function(s) {
@@ -186,7 +186,7 @@ mod.factory('n3utils', [
         }).style("fill", function(s) {
           return s.color;
         }).style("fill-opacity", 0.8).attr("transform", function(s) {
-          return "translate(" + (x1(s.name) - data.length * columnWidth / 2) + ",0)";
+          return "translate(" + (x1(s.name + s.index) - data.length * columnWidth / 2) + ",0)";
         }).on('mouseover', function(series) {
           var target;
           target = d3.select(d3.event.target);
@@ -585,9 +585,10 @@ mod.factory('n3utils', [
         }
         colors = d3.scale.category10();
         options.forEach(function(s, i) {
-          var _ref;
+          var _ref, _ref1;
+          s.axis = ((_ref = s.axis) != null ? _ref.toLowerCase() : void 0) !== 'y2' ? 'y' : 'y2';
           s.color || (s.color = colors(i));
-          s.type = (_ref = s.type) === 'line' || _ref === 'area' || _ref === 'column' ? s.type : "line";
+          s.type = (_ref1 = s.type) === 'line' || _ref1 === 'area' || _ref1 === 'column' ? s.type : "line";
           if (s.type === 'column') {
             return delete s.thickness;
           } else if (!/^\d+px$/.test(s.thickness)) {
@@ -607,7 +608,38 @@ mod.factory('n3utils', [
         if (secondAxis) {
           axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2);
         }
+        this.sanitizeExtrema(axesOptions.y);
+        if (secondAxis) {
+          this.sanitizeExtrema(axesOptions.y2);
+        }
         return axesOptions;
+      },
+      sanitizeExtrema: function(options) {
+        var max, min;
+        min = this.getSanitizedExtremum(options.min);
+        if (min != null) {
+          options.min = min;
+        } else {
+          delete options.min;
+        }
+        max = this.getSanitizedExtremum(options.max);
+        if (max != null) {
+          return options.max = max;
+        } else {
+          return delete options.max;
+        }
+      },
+      getSanitizedExtremum: function(value) {
+        var number;
+        if (value == null) {
+          return void 0;
+        }
+        number = parseInt(value, 10);
+        if (isNaN(number)) {
+          $log.warn("Invalid extremum value : " + value + ", deleting it.");
+          return void 0;
+        }
+        return number;
       },
       sanitizeAxisOptions: function(options) {
         if (options == null) {
@@ -684,27 +716,34 @@ mod.factory('n3utils', [
         };
       },
       setScalesDomain: function(scales, data, series, svg, axesOptions) {
-        var y2Domain, y2Series, yDomain, ySeries, _ref;
+        var y2Domain, yDomain;
         this.setXScale(scales.xScale, data, series, axesOptions);
-        ySeries = series.filter(function(s) {
-          return s.axis !== 'y2';
-        });
-        y2Series = series.filter(function(s) {
-          return s.axis === 'y2';
-        });
-        yDomain = this.yExtent(ySeries, data);
-        if (axesOptions.y.type === 'log') {
-          yDomain[0] = yDomain[0] === 0 ? 0.001 : yDomain[0];
-        }
-        y2Domain = this.yExtent(y2Series, data);
-        if (((_ref = axesOptions.y2) != null ? _ref.type : void 0) === 'log') {
-          y2Domain[0] = y2Domain[0] === 0 ? 0.001 : y2Domain[0];
-        }
+        yDomain = this.getVerticalDomain(axesOptions, data, series, 'y');
+        y2Domain = this.getVerticalDomain(axesOptions, data, series, 'y2');
         scales.yScale.domain(yDomain).nice();
         scales.y2Scale.domain(y2Domain).nice();
         svg.selectAll('.x.axis').call(scales.xAxis);
         svg.selectAll('.y.axis').call(scales.yAxis);
         return svg.selectAll('.y2.axis').call(scales.y2Axis);
+      },
+      getVerticalDomain: function(axesOptions, data, series, key) {
+        var domain, o;
+        if (!(o = axesOptions[key])) {
+          return [];
+        }
+        domain = this.yExtent(series.filter(function(s) {
+          return s.axis === key;
+        }), data);
+        if (o.type === 'log') {
+          domain[0] = domain[0] === 0 ? 0.001 : domain[0];
+        }
+        if (o.min != null) {
+          domain[0] = o.min;
+        }
+        if (o.max != null) {
+          domain[1] = o.max;
+        }
+        return domain;
       },
       yExtent: function(series, data) {
         var maxY, minY;

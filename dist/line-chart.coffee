@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 04 May 2014
+line-chart - v1.0.6 - 18 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -89,7 +89,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 # /tmp/utils.coffee
 mod = angular.module('n3charts.utils', [])
 
-mod.factory('n3utils', ['$window', ($window) ->
+mod.factory('n3utils', ['$window', '$log', ($window, $log) ->
   return {
 # lib/utils/areas.coffee
       addPattern: (svg, series) ->
@@ -182,7 +182,7 @@ mod.factory('n3utils', ['$window', ($window) ->
         data = data.filter (s) -> s.type is 'column'
 
         x1 = d3.scale.ordinal()
-          .domain(data.map (s) -> s.name)
+          .domain(data.map (s) -> s.name + s.index)
           .rangeRoundBands([0, data.length * columnWidth], 0.05)
 
         that = this
@@ -193,7 +193,7 @@ mod.factory('n3utils', ['$window', ($window) ->
             .attr('class', (s) -> 'columnGroup ' + 'series_' + s.index)
             .style("fill", (s) -> s.color)
             .style("fill-opacity", 0.8)
-            .attr("transform", (s) -> "translate(" + (x1(s.name) - data.length*columnWidth/2) + ",0)")
+            .attr("transform", (s) -> "translate(" + (x1(s.name + s.index) - data.length*columnWidth/2) + ",0)")
             .on('mouseover', (series) ->
               target = d3.select(d3.event.target)
 
@@ -588,6 +588,7 @@ mod.factory('n3utils', ['$window', ($window) ->
 
         colors = d3.scale.category10()
         options.forEach (s, i) ->
+          s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
           s.type = if s.type in ['line', 'area', 'column'] then s.type else "line"
 
@@ -606,7 +607,37 @@ mod.factory('n3utils', ['$window', ($window) ->
         axesOptions.y = this.sanitizeAxisOptions(axesOptions.y)
         axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2) if secondAxis
 
+        this.sanitizeExtrema(axesOptions.y)
+        this.sanitizeExtrema(axesOptions.y2) if secondAxis
+
         return axesOptions
+
+      sanitizeExtrema: (options) ->
+        min = this.getSanitizedExtremum(options.min)
+        if min?
+          options.min = min
+        else
+          delete options.min
+
+        max = this.getSanitizedExtremum(options.max)
+        if max?
+          options.max = max
+        else
+          delete options.max
+
+
+
+      getSanitizedExtremum: (value) ->
+        return undefined unless value?
+
+        number = parseInt(value, 10)
+
+        if isNaN(number)
+          $log.warn("Invalid extremum value : #{value}, deleting it.")
+          return undefined
+
+        return number
+
 
       sanitizeAxisOptions: (options) ->
         return {type: 'linear'} unless options?
@@ -708,16 +739,8 @@ mod.factory('n3utils', ['$window', ($window) ->
       setScalesDomain: (scales, data, series, svg, axesOptions) ->
         this.setXScale(scales.xScale, data, series, axesOptions)
 
-        ySeries = series.filter (s) -> s.axis isnt 'y2'
-        y2Series = series.filter (s) -> s.axis is 'y2'
-
-        yDomain = this.yExtent(ySeries, data)
-        if axesOptions.y.type is 'log'
-          yDomain[0] = if yDomain[0] is 0 then 0.001 else yDomain[0]
-
-        y2Domain = this.yExtent(y2Series, data)
-        if axesOptions.y2?.type is 'log'
-          y2Domain[0] = if y2Domain[0] is 0 then 0.001 else y2Domain[0]
+        yDomain = this.getVerticalDomain(axesOptions, data, series, 'y')
+        y2Domain = this.getVerticalDomain(axesOptions, data, series, 'y2')
 
         scales.yScale.domain(yDomain).nice()
         scales.y2Scale.domain(y2Domain).nice()
@@ -725,6 +748,18 @@ mod.factory('n3utils', ['$window', ($window) ->
         svg.selectAll('.x.axis').call(scales.xAxis)
         svg.selectAll('.y.axis').call(scales.yAxis)
         svg.selectAll('.y2.axis').call(scales.y2Axis)
+
+      getVerticalDomain: (axesOptions, data, series, key) ->
+        return [] unless o = axesOptions[key]
+
+        domain = this.yExtent((series.filter (s) -> s.axis is key), data)
+        if o.type is 'log'
+          domain[0] = if domain[0] is 0 then 0.001 else domain[0]
+
+        domain[0] = o.min if o.min?
+        domain[1] = o.max if o.max?
+
+        return domain
 
       yExtent: (series, data) ->
         minY = Number.POSITIVE_INFINITY

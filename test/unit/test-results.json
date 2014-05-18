@@ -1,0 +1,133 @@
+{
+    "abscissas custom ticklabel formatter": {
+        "should configure x axis": "PASSED",
+        "should draw a line": "PASSED"
+    },
+    "abscissas default key": {
+        "should configure x axis": "PASSED",
+        "should draw a line": "PASSED"
+    },
+    "abscissas custom key": {
+        "should properly configure x axis from custom key": "PASSED",
+        "should draw a line": "PASSED"
+    },
+    "area series": {
+        "should properly configure y axis": "PASSED",
+        "should properly configure x axis": "PASSED",
+        "should create 3 elements": "PASSED",
+        "should create an area group": "PASSED",
+        "should create stripes pattern when told so": "PASSED",
+        "should link pattern to fill style": "PASSED",
+        "should create a line group": "PASSED",
+        "should create a dots group": "PASSED"
+    },
+    "chart initialization (old module name)": {
+        "should create one svg element": "PASSED",
+        "should draw two axes by default": "PASSED",
+        "should generate properly the main elements": "PASSED"
+    },
+    "chart initialization": {
+        "should create one svg element": "PASSED",
+        "should draw two axes by default": "PASSED",
+        "should generate properly the main elements": "PASSED"
+    },
+    "column series": {
+        "should properly configure y axis": "PASSED",
+        "should configure x axis with extra space": "PASSED",
+        "should create a group": "PASSED",
+        "should draw columns": "PASSED",
+        "should draw zero value columns with full height and opacity to zero": "PASSED"
+    },
+    "legend": {
+        "should create a clipping path for legend items": "PASSED",
+        "should create legend elements": "PASSED"
+    },
+    "lineMode set to cardinal": {
+        "should draw an interpolated area": "PASSED",
+        "should draw an interpolated area regarding the line tension": "PASSED",
+        "should draw an interpolated line": "PASSED",
+        "should create a dots group with coordinates unchanged": "PASSED"
+    },
+    "line series": {
+        "should properly configure y axis": "PASSED",
+        "should create a group": "PASSED",
+        "should draw dots": "PASSED",
+        "should draw a line": "PASSED"
+    },
+    "n3utils": {
+        "should compute data per series": "PASSED",
+        "should compute the widest y value": "PASSED"
+    },
+    "n3utils getBestColumnWidth": {
+        "should handle no data": "PASSED"
+    },
+    "n3utils adjustMargins": {
+        "should return default margins for no series": "PASSED",
+        "should adjust margins for one left series": "PASSED",
+        "should adjust margins for two left series": "PASSED",
+        "should adjust margins for one left series and one right series": "PASSED"
+    },
+    "options linemode": {
+        "should add the default tension": "PASSED",
+        "should preserve the given tension": "PASSED"
+    },
+    "options axes": {
+        "should return default options when given null or undefined": "PASSED",
+        "should set default axes and empty series": "PASSED",
+        "should set default x axis type to linear": "PASSED",
+        "should set default y axis": "PASSED",
+        "should set default x axis": "PASSED",
+        "should allow x axis key configuration": "PASSED"
+    },
+    "options series": {
+        "should set line or area's line thickness": "PASSED",
+        "should set series colors if none found": "PASSED"
+    },
+    "ordinates custom ticklabel formatter": {
+        "should configure y axis": "PASSED",
+        "should configure y2 axis": "PASSED"
+    },
+    "scales logarithmic y axes": {
+        "should prevent log(0) from happening": "PASSED",
+        "should configure y axis with logarithmic values": "PASSED",
+        "should configure y2 axis with logarithmic values": "PASSED",
+        "should let y2 axis in linear mode if told so": "PASSED"
+    },
+    "with a second axis": {
+        "should configure y axis only with y series": "PASSED",
+        "should properly configure y2 axis": "PASSED",
+        "should draw two lines": "PASSED",
+        "should draw y area": "PASSED",
+        "should draw y2 area": "PASSED",
+        "should draw y axis dots": "PASSED",
+        "should draw y2 axis dots": "PASSED"
+    },
+    "size": {
+        "should update when $window resize": "PASSED",
+        "should pass the new dimensions to redraw when $window is resized ": "PASSED"
+    },
+    "size size computation method": {
+        "should have default size": "PASSED",
+        "should detect parent's top padding": "PASSED"
+    },
+    "thumbnail mode": {
+        "should create one svg element": "PASSED",
+        "should create only content": "PASSED"
+    },
+    "thumbnail mode line series": {
+        "should create a group": "PASSED",
+        "should only draw a line": "PASSED"
+    },
+    "thumbnail mode area series": {
+        "should create a group and draw an area": "PASSED",
+        "should draw a line": "PASSED"
+    },
+    "time series": {
+        "should properly configure x axis": "PASSED"
+    },
+    "tooltip": {
+        "should show/hide the tooltip when hovering/leaving a left axis dot": "PASSED",
+        "should work when no x-formatter is found": "PASSED",
+        "should show/hide the tooltip when hovering/leaving a right axis column": "PASSED"
+    }
+}
