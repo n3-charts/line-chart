@@ -177,13 +177,13 @@ mod.factory('n3utils', [
           return scales.y2Scale(d.value);
         }).interpolate(mode).tension(tension);
       },
-      getBestColumnWidth: function(dimensions, data) {
+      getBestColumnWidth: function(dimensions, seriesData) {
         var avWidth, gap, n, seriesCount;
-        if (!(data && data.length !== 0)) {
+        if (!(seriesData && seriesData.length !== 0)) {
           return 10;
         }
-        n = data[0].values.length + 2;
-        seriesCount = data.length;
+        n = seriesData[0].values.length + 2;
+        seriesCount = seriesData.length;
         gap = 0;
         avWidth = dimensions.width - dimensions.left - dimensions.right;
         return parseInt(Math.max((avWidth - (n - 1) * gap) / (n * seriesCount), 5));
@@ -195,7 +195,7 @@ mod.factory('n3utils', [
         });
         x1 = d3.scale.ordinal().domain(data.map(function(s) {
           return s.name + s.index;
-        })).rangeRoundBands([0, data.length * columnWidth], 0.05);
+        })).rangeBands([0, data.length * columnWidth], 0);
         that = this;
         colGroup = svg.select('.content').selectAll('.columnGroup').data(data).enter().append("g").attr('class', function(s) {
           return 'columnGroup ' + 'series_' + s.index;
@@ -780,17 +780,36 @@ mod.factory('n3utils', [
             return d[s.y];
           }));
         });
+        if (minY === maxY) {
+          if (minY > 0) {
+            return [0, minY * 2];
+          } else {
+            return [minY * 2, 0];
+          }
+        }
         return [minY, maxY];
       },
       setXScale: function(xScale, data, series, axesOptions) {
-        xScale.domain(d3.extent(data, function(d) {
-          return d[axesOptions.x.key];
-        }));
+        xScale.domain(this.xExtent(data, axesOptions.x.key));
         if (series.filter(function(s) {
           return s.type === 'column';
         }).length) {
           return this.adjustXScaleForColumns(xScale, data, axesOptions.x.key);
         }
+      },
+      xExtent: function(data, key) {
+        var from, to, _ref;
+        _ref = d3.extent(data, function(d) {
+          return d[key];
+        }), from = _ref[0], to = _ref[1];
+        if (from === to) {
+          if (from > 0) {
+            return [0, from * 2];
+          } else {
+            return [from * 2, 0];
+          }
+        }
+        return [from, to];
       },
       adjustXScaleForColumns: function(xScale, data, field) {
         var d, step;
@@ -804,6 +823,9 @@ mod.factory('n3utils', [
       },
       getAverageStep: function(data, field) {
         var i, n, sum;
+        if (!(data.length > 1)) {
+          return 0;
+        }
         sum = 0;
         n = data.length - 1;
         i = 0;

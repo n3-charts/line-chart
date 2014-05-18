@@ -1,5 +1,6 @@
 describe 'scales', ->
 
+  n3utils = undefined
   element = undefined
   innerScope = undefined
   outerScope = undefined
@@ -7,7 +8,8 @@ describe 'scales', ->
   beforeEach module 'n3-line-chart'
   beforeEach module 'testUtils'
 
-  beforeEach inject (n3utils) ->
+  beforeEach inject (_n3utils_) ->
+    n3utils = _n3utils_
     sinon.stub n3utils, 'getDefaultMargins', ->
       top: 20
       right: 50
@@ -20,6 +22,21 @@ describe 'scales', ->
       <linechart data='data' options='options'></linechart>
     </div>
     """
+
+  describe 'unit functions', ->
+    describe 'getAverageStep', ->
+      it 'should return 0 if only one datum', ->
+        expect(n3utils.getAverageStep([{x: 1}], 'x')).to.equal(0)
+
+    describe 'xExtent', ->
+      it 'should work event with one datum', ->
+        expect(n3utils.xExtent([{x: 1}], 'x')).to.eql([0, 2])
+        expect(n3utils.xExtent([{x: -1}], 'x')).to.eql([-2, 0])
+
+    describe 'yExtent', ->
+      it 'should work even with one datum', ->
+        expect(n3utils.yExtent([{y: 'val'}], [{val: 0.6}])).to.eql([0, 1.2])
+        expect(n3utils.yExtent([{y: 'val'}], [{val: -0.6}])).to.eql([-1.2, 0])
 
   describe 'min and max', ->
     beforeEach ->

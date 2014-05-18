@@ -117,24 +117,41 @@
           minY = Math.min(minY, d3.min(data, (d) -> d[s.y]))
           maxY = Math.max(maxY, d3.max(data, (d) -> d[s.y]))
 
+        if minY is maxY
+          if minY > 0
+            return [0, minY*2]
+          else
+            return [minY*2, 0]
+
         return [minY, maxY]
 
       setXScale: (xScale, data, series, axesOptions) ->
-        xScale.domain(d3.extent(data, (d) -> d[axesOptions.x.key]))
+        xScale.domain(this.xExtent(data, axesOptions.x.key))
 
         if series.filter((s) -> s.type is 'column').length
           this.adjustXScaleForColumns(xScale, data, axesOptions.x.key)
 
+      xExtent: (data, key) ->
+        [from, to] = d3.extent(data, (d) -> d[key])
+
+        if from is to
+          if from > 0
+            return [0, from*2]
+          else
+            return [from*2, 0]
+
+        return [from, to]
+
       adjustXScaleForColumns: (xScale, data, field) ->
         step = this.getAverageStep(data, field)
         d = xScale.domain()
-
         if angular.isDate(d[0])
           xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)])
         else
           xScale.domain([d[0] - step, d[1] + step])
 
       getAverageStep: (data, field) ->
+        return 0 unless data.length > 1
         sum = 0
         n = data.length - 1
         i = 0
