@@ -180,12 +180,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # lib/utils/columns.coffee
-      getBestColumnWidth: (dimensions, data) ->
-        return 10 unless data and data.length isnt 0
+      getBestColumnWidth: (dimensions, seriesData) ->
+        return 10 unless seriesData and seriesData.length isnt 0
 
         # +2 because abscissas will be extended to one more row at each end
-        n = data[0].values.length + 2
-        seriesCount = data.length
+        n = seriesData[0].values.length + 2
+        seriesCount = seriesData.length
         gap = 0 # space between two rows
         avWidth = dimensions.width - dimensions.left - dimensions.right
 
@@ -196,7 +196,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         x1 = d3.scale.ordinal()
           .domain(data.map (s) -> s.name + s.index)
-          .rangeRoundBands([0, data.length * columnWidth], 0.05)
+          .rangeBands([0, data.length * columnWidth], 0)
 
         that = this
 
@@ -785,24 +785,41 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           minY = Math.min(minY, d3.min(data, (d) -> d[s.y]))
           maxY = Math.max(maxY, d3.max(data, (d) -> d[s.y]))
 
+        if minY is maxY
+          if minY > 0
+            return [0, minY*2]
+          else
+            return [minY*2, 0]
+
         return [minY, maxY]
 
       setXScale: (xScale, data, series, axesOptions) ->
-        xScale.domain(d3.extent(data, (d) -> d[axesOptions.x.key]))
+        xScale.domain(this.xExtent(data, axesOptions.x.key))
 
         if series.filter((s) -> s.type is 'column').length
           this.adjustXScaleForColumns(xScale, data, axesOptions.x.key)
 
+      xExtent: (data, key) ->
+        [from, to] = d3.extent(data, (d) -> d[key])
+
+        if from is to
+          if from > 0
+            return [0, from*2]
+          else
+            return [from*2, 0]
+
+        return [from, to]
+
       adjustXScaleForColumns: (xScale, data, field) ->
         step = this.getAverageStep(data, field)
         d = xScale.domain()
-
         if angular.isDate(d[0])
           xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)])
         else
           xScale.domain([d[0] - step, d[1] + step])
 
       getAverageStep: (data, field) ->
+        return 0 unless data.length > 1
         sum = 0
         n = data.length - 1
         i = 0

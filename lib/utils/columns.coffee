@@ -1,9 +1,9 @@
-      getBestColumnWidth: (dimensions, data) ->
-        return 10 unless data and data.length isnt 0
+      getBestColumnWidth: (dimensions, seriesData) ->
+        return 10 unless seriesData and seriesData.length isnt 0
 
         # +2 because abscissas will be extended to one more row at each end
-        n = data[0].values.length + 2
-        seriesCount = data.length
+        n = seriesData[0].values.length + 2
+        seriesCount = seriesData.length
         gap = 0 # space between two rows
         avWidth = dimensions.width - dimensions.left - dimensions.right
 
@@ -14,7 +14,7 @@
 
         x1 = d3.scale.ordinal()
           .domain(data.map (s) -> s.name + s.index)
-          .rangeRoundBands([0, data.length * columnWidth], 0.05)
+          .rangeBands([0, data.length * columnWidth], 0)
 
         that = this
 
