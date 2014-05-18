@@ -21,8 +21,17 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       scope.updateDimensions(dim)
       scope.redraw(dim)
 
+
+    isUpdatingOptions = false
+    handlers =
+      onSeriesVisibilityChange: ({series, index, newVisibility}) ->
+        isUpdatingOptions = true
+        scope.options.series[index].visible = newVisibility
+        scope.$apply()
+        isUpdatingOptions = false
+
     scope.redraw = (dimensions) ->
-      options = n3utils.sanitizeOptions(scope.options)
+      options = n3utils.sanitizeOptions(angular.copy(scope.options))
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
@@ -45,7 +54,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       n3utils.createContent(svg)
 
-      n3utils.drawLegend(svg, series, dimensions) unless isThumbnail
+      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
 
       if dataPerSeries.length
         columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
@@ -67,7 +76,11 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.update)
-    scope.$watch('options', scope.update, true)
+    scope.$watch('options', (v) ->
+      return if isUpdatingOptions
+
+      scope.update()
+    , true)
 
   return {
     replace: true

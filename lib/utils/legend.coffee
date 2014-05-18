@@ -1,4 +1,4 @@
-      drawLegend: (svg, series, dimensions) ->
+      drawLegend: (svg, series, dimensions, handlers) ->
         layout = [0]
 
         i = 1
@@ -25,7 +25,10 @@
             )
 
         item.on('click', (s, i) ->
-          d3.select(this).attr('opacity', if that.toggleSeries(svg, i) then '1' else '0.2')
+          isNowVisible = that.toggleSeries(svg, i)
+
+          d3.select(this).attr('opacity', if isNowVisible then '1' else '0.2')
+          handlers.onSeriesVisibilityChange?({series: s, index: i, newVisibility: isNowVisible})
         )
 
         item.append('circle')
