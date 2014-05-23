@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 02 June 2014
+line-chart - v1.0.6 - 23 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -41,7 +41,16 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
-      isThumbnail = attrs.mode is 'thumbnail'
+      if attrs.mode is 'thumbnail'
+        isThumbnail = true
+        options.drawLegend = false
+        options.drawDots = false
+        options.addTooltips = false
+      
+      # set default options
+      options.drawLegend ?= true
+      options.drawDots ?= true
+      options.addTooltips ?= true
 
       n3utils.clean(element[0])
 
@@ -60,6 +69,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       n3utils.createContent(svg)
 
+      if options.drawLegend then n3utils.drawLegend(svg, series, dimensions, handlers)
 
       if dataPerSeries.length
         columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
@@ -67,12 +77,11 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         n3utils
           .drawArea(svg, axes, dataPerSeries, options)
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
-          .drawLines(svg, axes, dataPerSeries, options)
+        .drawLines(svg, axes, dataPerSeries, options)
 
-        n3utils.drawDots(svg, axes, dataPerSeries) unless isThumbnail
+        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries)
 
-      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
-      n3utils.addTooltips(svg, dimensions, options.axes) unless isThumbnail
+      if options.addTooltips then n3utils.addTooltips(svg, dimensions, options.axes)
 
     timeoutPromise = undefined
     window_resize = ->
@@ -310,36 +319,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # lib/utils/legend.coffee
-      computeLegendLayout: (series, dimensions) ->
-        fn = (s) -> s.label || s.y
-
-        layout = [0]
-        leftSeries = series.filter (s) -> s.axis is 'y'
-        i = 1
-        while i < leftSeries.length
-          layout.push @getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40
-          i++
-
-
-        rightSeries = series.filter (s) -> s.axis is 'y2'
-        return layout if rightSeries.length is 0
-
-        w = dimensions.width - dimensions.right - dimensions.left
-
-        rightLayout = [w - @getTextWidth(fn(rightSeries[rightSeries.length - 1]))]
-
-        j = rightSeries.length - 2
-        while j >= 0
-          label = fn(rightSeries[j])
-          rightLayout.push w - @getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40
-          j--
-
-        rightLayout.reverse()
-
-        return layout.concat(rightLayout)
-
       drawLegend: (svg, series, dimensions, handlers) ->
-        layout = this.computeLegendLayout(series, dimensions)
+        layout = [0]
+
+        i = 1
+        while i < series.length
+          l = series[i - 1].label or series[i - 1].y
+          layout.push @getTextWidth(l) + layout[i - 1] + 40
+          i++
 
 
         that = this
@@ -352,17 +339,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         item = legend.selectAll('.legendItem')
           .data(series)
-
-        item.enter().append('g')
+          .enter().append('g')
             .attr(
               'class': 'legendItem'
               'transform': (s, i) -> "translate(#{layout[i]},#{dimensions.height-40})"
-              'opacity': (s, i) ->
-                if s.visible is false
-                  that.toggleSeries(svg, i)
-                  return '0.2'
-
-                return '1'
             )
 
         item.on('click', (s, i) ->
@@ -444,24 +424,55 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 # lib/utils/lines.coffee
       drawLines: (svg, scales, data, options) ->
+        that = this
+        
         drawers =
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension)
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
 
-        svg.select('.content').selectAll('.lineGroup')
+        lineGroup = svg.select('.content').selectAll('.lineGroup')
           .data data.filter (s) -> s.type in ['line', 'area']
           .enter().append('g')
-            .style('stroke', (s) -> s.color)
-            .attr('class', (s) -> "lineGroup series_#{s.index}")
-            .append('path')
-              .attr(
-                class: 'line'
-                d: (d) -> drawers[d.axis](d.values)
-              )
-              .style(
-                'fill': 'none'
-                'stroke-width': (s) -> s.thickness
-              )
+        lineGroup.style('stroke', (s) -> s.color)
+        .attr('class', (s) -> "lineGroup series_#{s.index}")
+        .append('path')
+          .attr(
+            class: 'line'
+            d: (d) -> drawers[d.axis](d.values)
+          )
+          .style(
+            'fill': 'none'
+            'stroke-width': (s) -> s.thickness
+          )
+        if options.addLineTooltips
+          lineGroup.on 'mouseover', (series) ->
+            target = d3.select(d3.event.target)
+            mousePos = d3.mouse(this)
+            # interpolate between two closest data points
+            valuesData = target.datum().values
+            for datum in valuesData
+              x = scales.xScale(datum.x)
+              y = scales.yScale(datum.value)
+              if x < mousePos[0]
+                lastX = x
+                lastY = y
+                lastDatum = datum
+              else
+                # figure out how far along the line we are
+                xPercentage = (mousePos[0] - lastX) / (x - lastX)
+                xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x))
+                yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value))
+                interpDatum = x: xVal, value: yVal
+                break
+
+            that.onMouseOver(svg, {
+              series: series
+              x: mousePos[0]
+              y: mousePos[1]
+              datum: interpDatum
+            })
+          .on 'mouseout', (d) ->
+            that.onMouseOut(svg)
 
         return this
 

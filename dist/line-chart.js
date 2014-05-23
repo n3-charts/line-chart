@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 02 June 2014
+line-chart - v1.0.6 - 23 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -51,7 +51,21 @@ directive('linechart', [
         data = scope.data;
         series = options.series;
         dataPerSeries = n3utils.getDataPerSeries(data, options);
-        isThumbnail = attrs.mode === 'thumbnail';
+        if (attrs.mode === 'thumbnail') {
+          isThumbnail = true;
+          options.drawLegend = false;
+          options.drawDots = false;
+          options.addTooltips = false;
+        }
+        if (options.drawLegend == null) {
+          options.drawLegend = true;
+        }
+        if (options.drawDots == null) {
+          options.drawDots = true;
+        }
+        if (options.addTooltips == null) {
+          options.addTooltips = true;
+        }
         n3utils.clean(element[0]);
         svg = n3utils.bootstrap(element[0], dimensions);
         axes = n3utils.createAxes(svg, dimensions, options.axes).andAddThemIf(isThumbnail);
@@ -64,17 +78,17 @@ directive('linechart', [
           n3utils.adjustMargins(dimensions, options, data);
         }
         n3utils.createContent(svg);
+        if (options.drawLegend) {
+          n3utils.drawLegend(svg, series, dimensions, handlers);
+        }
         if (dataPerSeries.length) {
           columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
           n3utils.drawArea(svg, axes, dataPerSeries, options).drawColumns(svg, axes, dataPerSeries, columnWidth).drawLines(svg, axes, dataPerSeries, options);
-          if (!isThumbnail) {
+          if (options.drawDots) {
             n3utils.drawDots(svg, axes, dataPerSeries);
           }
         }
-        if (!isThumbnail) {
-          n3utils.drawLegend(svg, series, dimensions, handlers);
-        }
-        if (!isThumbnail) {
+        if (options.addTooltips) {
           return n3utils.addTooltips(svg, dimensions, options.axes);
         }
       };
@@ -314,56 +328,23 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      computeLegendLayout: function(series, dimensions) {
-        var fn, i, j, label, layout, leftSeries, rightLayout, rightSeries, w;
-        fn = function(s) {
-          return s.label || s.y;
-        };
+      drawLegend: function(svg, series, dimensions, handlers) {
+        var d, i, item, l, layout, legend, that;
         layout = [0];
-        leftSeries = series.filter(function(s) {
-          return s.axis === 'y';
-        });
         i = 1;
-        while (i < leftSeries.length) {
-          layout.push(this.getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40);
+        while (i < series.length) {
+          l = series[i - 1].label || series[i - 1].y;
+          layout.push(this.getTextWidth(l) + layout[i - 1] + 40);
           i++;
         }
-        rightSeries = series.filter(function(s) {
-          return s.axis === 'y2';
-        });
-        if (rightSeries.length === 0) {
-          return layout;
-        }
-        w = dimensions.width - dimensions.right - dimensions.left;
-        rightLayout = [w - this.getTextWidth(fn(rightSeries[rightSeries.length - 1]))];
-        j = rightSeries.length - 2;
-        while (j >= 0) {
-          label = fn(rightSeries[j]);
-          rightLayout.push(w - this.getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40);
-          j--;
-        }
-        rightLayout.reverse();
-        return layout.concat(rightLayout);
-      },
-      drawLegend: function(svg, series, dimensions, handlers) {
-        var d, item, layout, legend, that;
-        layout = this.computeLegendLayout(series, dimensions);
         that = this;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
-        item = legend.selectAll('.legendItem').data(series);
-        item.enter().append('g').attr({
+        item = legend.selectAll('.legendItem').data(series).enter().append('g').attr({
           'class': 'legendItem',
           'transform': function(s, i) {
             return "translate(" + layout[i] + "," + (dimensions.height - 40) + ")";
-          },
-          'opacity': function(s, i) {
-            if (s.visible === false) {
-              that.toggleSeries(svg, i);
-              return '0.2';
-            }
-            return '1';
           }
         });
         item.on('click', function(s, i) {
@@ -449,15 +430,17 @@ mod.factory('n3utils', [
         return isVisible;
       },
       drawLines: function(svg, scales, data, options) {
-        var drawers;
+        var drawers, lineGroup, that;
+        that = this;
         drawers = {
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension),
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
         };
-        svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
+        lineGroup = svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
           var _ref;
           return (_ref = s.type) === 'line' || _ref === 'area';
-        })).enter().append('g').style('stroke', function(s) {
+        })).enter().append('g');
+        lineGroup.style('stroke', function(s) {
           return s.color;
         }).attr('class', function(s) {
           return "lineGroup series_" + s.index;
@@ -472,6 +455,41 @@ mod.factory('n3utils', [
             return s.thickness;
           }
         });
+        if (options.addLineTooltips) {
+          lineGroup.on('mouseover', function(series) {
+            var datum, interpDatum, lastDatum, lastX, lastY, mousePos, target, valuesData, x, xPercentage, xVal, y, yVal, _i, _len;
+            target = d3.select(d3.event.target);
+            mousePos = d3.mouse(this);
+            valuesData = target.datum().values;
+            for (_i = 0, _len = valuesData.length; _i < _len; _i++) {
+              datum = valuesData[_i];
+              x = scales.xScale(datum.x);
+              y = scales.yScale(datum.value);
+              if (x < mousePos[0]) {
+                lastX = x;
+                lastY = y;
+                lastDatum = datum;
+              } else {
+                xPercentage = (mousePos[0] - lastX) / (x - lastX);
+                xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x));
+                yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value));
+                interpDatum = {
+                  x: xVal,
+                  value: yVal
+                };
+                break;
+              }
+            }
+            return that.onMouseOver(svg, {
+              series: series,
+              x: mousePos[0],
+              y: mousePos[1],
+              datum: interpDatum
+            });
+          }).on('mouseout', function(d) {
+            return that.onMouseOut(svg);
+          });
+        }
         return this;
       },
       createLeftLineDrawer: function(scales, mode, tension) {

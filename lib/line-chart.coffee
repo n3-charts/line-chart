@@ -35,7 +35,16 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
-      isThumbnail = attrs.mode is 'thumbnail'
+      if attrs.mode is 'thumbnail'
+        isThumbnail = true
+        options.drawLegend = false
+        options.drawDots = false
+        options.addTooltips = false
+      
+      # set default options
+      options.drawLegend ?= true
+      options.drawDots ?= true
+      options.addTooltips ?= true
 
       n3utils.clean(element[0])
 
@@ -54,6 +63,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       n3utils.createContent(svg)
 
+      if options.drawLegend then n3utils.drawLegend(svg, series, dimensions, handlers)
 
       if dataPerSeries.length
         columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
@@ -63,10 +73,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
           .drawLines(svg, axes, dataPerSeries, options)
 
-        n3utils.drawDots(svg, axes, dataPerSeries) unless isThumbnail
+        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries)
 
-      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
-      n3utils.addTooltips(svg, dimensions, options.axes) unless isThumbnail
+      if options.addTooltips then n3utils.addTooltips(svg, dimensions, options.axes)
 
     timeoutPromise = undefined
     window_resize = ->
