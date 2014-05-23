@@ -25,10 +25,10 @@
             mousePos = d3.mouse(this)
             # interpolate between two closest data points
             valuesData = target.datum().values
-            for datum in valuesData
+            for datum, i in valuesData
               x = scales.xScale(datum.x)
               y = scales.yScale(datum.value)
-              if x < mousePos[0]
+              if x < mousePos[0] and i != valuesData.length - 1
                 lastX = x
                 lastY = y
                 lastDatum = datum
