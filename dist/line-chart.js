@@ -456,16 +456,16 @@ mod.factory('n3utils', [
           }
         });
         if (options.addLineTooltips) {
-          lineGroup.on('mouseover', function(series) {
-            var datum, interpDatum, lastDatum, lastX, lastY, mousePos, target, valuesData, x, xPercentage, xVal, y, yVal, _i, _len;
+          lineGroup.on('mousemove', function(series) {
+            var datum, i, interpDatum, lastDatum, lastX, lastY, mousePos, target, valuesData, x, xPercentage, xVal, y, yVal, _i, _len;
             target = d3.select(d3.event.target);
             mousePos = d3.mouse(this);
             valuesData = target.datum().values;
-            for (_i = 0, _len = valuesData.length; _i < _len; _i++) {
-              datum = valuesData[_i];
+            for (i = _i = 0, _len = valuesData.length; _i < _len; i = ++_i) {
+              datum = valuesData[i];
               x = scales.xScale(datum.x);
               y = scales.yScale(datum.value);
-              if (x < mousePos[0]) {
+              if (x < mousePos[0] && i !== valuesData.length - 1) {
                 lastX = x;
                 lastY = y;
                 lastDatum = datum;
