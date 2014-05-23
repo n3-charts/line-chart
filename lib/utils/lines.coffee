@@ -20,7 +20,7 @@
             'stroke-width': (s) -> s.thickness
           )
         if options.addLineTooltips
-          lineGroup.on 'mouseover', (series) ->
+          lineGroup.on 'mousemove', (series) ->
             target = d3.select(d3.event.target)
             mousePos = d3.mouse(this)
             # interpolate between two closest data points
