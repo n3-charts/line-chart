@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 23 May 2014
+line-chart - v1.0.6 - 28 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -470,14 +470,22 @@ mod.factory('n3utils', [
                 lastY = y;
                 lastDatum = datum;
               } else {
-                xPercentage = (mousePos[0] - lastX) / (x - lastX);
-                xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x));
-                yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value));
-                interpDatum = {
-                  x: xVal,
-                  value: yVal
-                };
-                break;
+                if (!lastDatum) {
+                  interpDatum = {
+                    x: x,
+                    value: y
+                  };
+                  break;
+                } else {
+                  xPercentage = (mousePos[0] - lastX) / (x - lastX);
+                  xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x));
+                  yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value));
+                  interpDatum = {
+                    x: xVal,
+                    value: yVal
+                  };
+                  break;
+                }
               }
             }
             return that.onMouseOver(svg, {
