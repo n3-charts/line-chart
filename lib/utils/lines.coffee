@@ -33,12 +33,17 @@
                 lastY = y
                 lastDatum = datum
               else
-                # figure out how far along the line we are
-                xPercentage = (mousePos[0] - lastX) / (x - lastX)
-                xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x))
-                yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value))
-                interpDatum = x: xVal, value: yVal
-                break
+                # if x position is left of leftmost datapoint
+                if !lastDatum
+                  interpDatum = x: x, value: y
+                  break
+                else
+                  # figure out how far along the line we are
+                  xPercentage = (mousePos[0] - lastX) / (x - lastX)
+                  xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x))
+                  yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value))
+                  interpDatum = x: xVal, value: yVal
+                  break
 
             that.onMouseOver(svg, {
               series: series
