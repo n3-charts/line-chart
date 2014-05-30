@@ -8,6 +8,10 @@
             y: {type: 'linear'}
           }
           series: []
+          drawLegend: true
+          drawDots: true
+          addTooltips: true
+          addLineTooltips: false
         }
 
       sanitizeOptions: (options) ->
@@ -21,6 +25,11 @@
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
 
         options.tooltipMode or= 'default'
+
+        options.drawLegend = true unless options.drawLegend is false
+        options.drawDots = true unless options.drawDots is false
+        options.addTooltips = true unless options.addTooltips is false
+        options.addLineTooltips = false unless options.addLineTooltips is true
 
         return options
 

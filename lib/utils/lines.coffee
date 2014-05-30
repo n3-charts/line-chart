@@ -20,30 +20,39 @@
             'stroke-width': (s) -> s.thickness
           )
         if options.addLineTooltips
-          lineGroup.on 'mousemove', (series) ->
+          interpolateData = (series) ->
             target = d3.select(d3.event.target)
-            mousePos = d3.mouse(this)
-            # interpolate between two closest data points
+            try
+              mousePos = d3.mouse(this)
+            catch error
+              mousePos = [0, 0]
+            # interpolate between min/max based on mouse coords
             valuesData = target.datum().values
+            # find min/max coords and values
             for datum, i in valuesData
               x = scales.xScale(datum.x)
               y = scales.yScale(datum.value)
-              if x < mousePos[0] and i != valuesData.length - 1
-                lastX = x
-                lastY = y
-                lastDatum = datum
-              else
-                # if x position is left of leftmost datapoint
-                if !lastDatum
-                  interpDatum = x: x, value: y
-                  break
-                else
-                  # figure out how far along the line we are
-                  xPercentage = (mousePos[0] - lastX) / (x - lastX)
-                  xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x))
-                  yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value))
-                  interpDatum = x: xVal, value: yVal
-                  break
+              if !minXPos? or x < minXPos
+                minXPos = x
+                minXValue = datum.x
+              if !maxXPos? or x > maxXPos
+                maxXPos = x
+                maxXValue = datum.x
+              if !minYPos? or y < minYPos
+                minYPos = y
+              if !maxYPos? or y > maxYPos
+                maxYPos = y
+              if !minYValue? or datum.value < minYValue
+                minYValue = datum.value
+              if !maxYValue? or datum.value > maxYValue
+                maxYValue = datum.value
+            
+            xPercentage = (mousePos[0] - minXPos) / (maxXPos - minXPos)
+            yPercentage = (mousePos[1] - minYPos) / (maxYPos - minYPos)
+            xVal = Math.round(xPercentage * (maxXValue - minXValue) + minXValue)
+            yVal = Math.round((1 - yPercentage) * (maxYValue - minYValue) + minYValue)
+
+            interpDatum = x: xVal, value: yVal
 
             that.onMouseOver(svg, {
               series: series
@@ -51,6 +60,7 @@
               y: mousePos[1]
               datum: interpDatum
             })
+          lineGroup.on 'mousemove', interpolateData
           .on 'mouseout', (d) ->
             that.onMouseOut(svg)
 

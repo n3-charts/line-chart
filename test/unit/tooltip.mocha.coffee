@@ -52,6 +52,7 @@ describe 'tooltip', ->
             color: '#4682b4'
           }
         ]
+        addLineTooltips: true
 
 
   it 'should show/hide the tooltip when hovering/leaving a left axis dot', ->
@@ -63,6 +64,17 @@ describe 'tooltip', ->
     fakeMouse.hoverIn(leftAxisDotGroup.domElement)
     fakeMouse.hoverOut(leftAxisDotGroup.domElement)
     expect(tooltipSpy.callCount).to.equal(1)
+
+  it 'should show/hide the tooltip when hovering/leaving a line', ->
+    content = element.childByClass('content')
+    linePath = content.childByClass('line')
+
+    xTooltip = element.childByClass('xTooltip')
+    expect(xTooltip.getAttribute('id')).to.equal 'xTooltip'
+    
+    fakeMouse.hoverMove(linePath.domElement)
+    fakeMouse.hoverOut(linePath.domElement)
+    expect(tooltipSpy.callCount).to.equal(2)
 
   it 'should work when no x-formatter is found', ->
     outerScope.$apply ->
