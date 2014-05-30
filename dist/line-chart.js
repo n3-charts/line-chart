@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 28 May 2014
+line-chart - v1.0.6 - 30 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -56,15 +56,6 @@ directive('linechart', [
           options.drawLegend = false;
           options.drawDots = false;
           options.addTooltips = false;
-        }
-        if (options.drawLegend == null) {
-          options.drawLegend = true;
-        }
-        if (options.drawDots == null) {
-          options.drawDots = true;
-        }
-        if (options.addTooltips == null) {
-          options.addTooltips = true;
         }
         n3utils.clean(element[0]);
         svg = n3utils.bootstrap(element[0], dimensions);
@@ -430,7 +421,7 @@ mod.factory('n3utils', [
         return isVisible;
       },
       drawLines: function(svg, scales, data, options) {
-        var drawers, lineGroup, that;
+        var drawers, interpolateData, lineGroup, that;
         that = this;
         drawers = {
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension),
@@ -456,45 +447,57 @@ mod.factory('n3utils', [
           }
         });
         if (options.addLineTooltips) {
-          lineGroup.on('mousemove', function(series) {
-            var datum, i, interpDatum, lastDatum, lastX, lastY, mousePos, target, valuesData, x, xPercentage, xVal, y, yVal, _i, _len;
+          interpolateData = function(series) {
+            var datum, error, i, interpDatum, maxXPos, maxXValue, maxYPos, maxYValue, minXPos, minXValue, minYPos, minYValue, mousePos, target, valuesData, x, xPercentage, xVal, y, yPercentage, yVal, _i, _len;
             target = d3.select(d3.event.target);
-            mousePos = d3.mouse(this);
+            try {
+              mousePos = d3.mouse(this);
+            } catch (_error) {
+              error = _error;
+              mousePos = [0, 0];
+            }
             valuesData = target.datum().values;
             for (i = _i = 0, _len = valuesData.length; _i < _len; i = ++_i) {
               datum = valuesData[i];
               x = scales.xScale(datum.x);
               y = scales.yScale(datum.value);
-              if (x < mousePos[0] && i !== valuesData.length - 1) {
-                lastX = x;
-                lastY = y;
-                lastDatum = datum;
-              } else {
-                if (!lastDatum) {
-                  interpDatum = {
-                    x: x,
-                    value: y
-                  };
-                  break;
-                } else {
-                  xPercentage = (mousePos[0] - lastX) / (x - lastX);
-                  xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x));
-                  yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value));
-                  interpDatum = {
-                    x: xVal,
-                    value: yVal
-                  };
-                  break;
-                }
+              if ((typeof minXPos === "undefined" || minXPos === null) || x < minXPos) {
+                minXPos = x;
+                minXValue = datum.x;
+              }
+              if ((typeof maxXPos === "undefined" || maxXPos === null) || x > maxXPos) {
+                maxXPos = x;
+                maxXValue = datum.x;
+              }
+              if ((typeof minYPos === "undefined" || minYPos === null) || y < minYPos) {
+                minYPos = y;
+              }
+              if ((typeof maxYPos === "undefined" || maxYPos === null) || y > maxYPos) {
+                maxYPos = y;
+              }
+              if ((typeof minYValue === "undefined" || minYValue === null) || datum.value < minYValue) {
+                minYValue = datum.value;
+              }
+              if ((typeof maxYValue === "undefined" || maxYValue === null) || datum.value > maxYValue) {
+                maxYValue = datum.value;
               }
             }
+            xPercentage = (mousePos[0] - minXPos) / (maxXPos - minXPos);
+            yPercentage = (mousePos[1] - minYPos) / (maxYPos - minYPos);
+            xVal = Math.round(xPercentage * (maxXValue - minXValue) + minXValue);
+            yVal = Math.round((1 - yPercentage) * (maxYValue - minYValue) + minYValue);
+            interpDatum = {
+              x: xVal,
+              value: yVal
+            };
             return that.onMouseOver(svg, {
               series: series,
               x: mousePos[0],
               y: mousePos[1],
               datum: interpDatum
             });
-          }).on('mouseout', function(d) {
+          };
+          lineGroup.on('mousemove', interpolateData).on('mouseout', function(d) {
             return that.onMouseOut(svg);
           });
         }
@@ -646,7 +649,11 @@ mod.factory('n3utils', [
               type: 'linear'
             }
           },
-          series: []
+          series: [],
+          drawLegend: true,
+          drawDots: true,
+          addTooltips: true,
+          addLineTooltips: false
         };
       },
       sanitizeOptions: function(options) {
@@ -658,6 +665,18 @@ mod.factory('n3utils', [
         options.lineMode || (options.lineMode = 'linear');
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
         options.tooltipMode || (options.tooltipMode = 'default');
+        if (options.drawLegend !== false) {
+          options.drawLegend = true;
+        }
+        if (options.drawDots !== false) {
+          options.drawDots = true;
+        }
+        if (options.addTooltips !== false) {
+          options.addTooltips = true;
+        }
+        if (options.addLineTooltips !== true) {
+          options.addLineTooltips = false;
+        }
         return options;
       },
       sanitizeSeriesOptions: function(options) {

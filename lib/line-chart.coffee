@@ -41,11 +41,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         options.drawDots = false
         options.addTooltips = false
       
-      # set default options
-      options.drawLegend ?= true
-      options.drawDots ?= true
-      options.addTooltips ?= true
-
       n3utils.clean(element[0])
 
       svg = n3utils.bootstrap(element[0], dimensions)

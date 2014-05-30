@@ -6,6 +6,42 @@ describe 'options', ->
   beforeEach inject (_n3utils_) ->
     n3utils = _n3utils_
 
+  describe 'drawLegend', ->
+    it 'should set default drawLegend value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.drawLegend).to.equal true
+
+    it 'should preserve the given drawLegend value if defined and valid', ->
+      o = n3utils.sanitizeOptions(drawLegend: false)
+      expect(o.drawLegend).to.equal false
+
+  describe 'drawDots', ->
+    it 'should set default drawDots value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.drawDots).to.equal true
+
+    it 'should preserve the given drawDots value if defined and valid', ->
+      o = n3utils.sanitizeOptions(drawDots: false)
+      expect(o.drawDots).to.equal false
+
+  describe 'addTooltips', ->
+    it 'should set default addTooltips value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.addTooltips).to.equal true
+
+    it 'should preserve the given addTooltips value if defined and valid', ->
+      o = n3utils.sanitizeOptions(addTooltips: false)
+      expect(o.addTooltips).to.equal false
+
+  describe 'addLineTooltips', ->
+    it 'should set default addLineTooltips value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.addLineTooltips).to.equal false
+
+    it 'should preserve the given addLineTooltips value if defined and valid', ->
+      o = n3utils.sanitizeOptions(addLineTooltips: true)
+      expect(o.addLineTooltips).to.equal true
+
   describe 'linemode', ->
     it 'should add the default tension', ->
       o = n3utils.sanitizeOptions()
@@ -22,6 +58,11 @@ describe 'options', ->
         tooltipMode: 'default'
         lineMode: 'linear'
         tension: 0.7
+        drawLegend: true
+        drawDots: true
+        addTooltips: true
+        addLineTooltips: false
+
         axes:
           x:
             type: 'linear'
@@ -68,6 +109,11 @@ describe 'options', ->
         tooltipMode: 'default'
         lineMode: 'linear'
         tension: 0.7
+        drawLegend: true
+        drawDots: true
+        addTooltips: true
+        addLineTooltips: false
+
         axes:
           x:
             type: 'linear'
@@ -90,6 +136,11 @@ describe 'options', ->
         tooltipMode: 'default'
         lineMode: 'linear'
         tension: 0.7
+        drawLegend: true
+        drawDots: true
+        addTooltips: true
+        addLineTooltips: false
+
         axes:
           x:
             type: 'linear'
@@ -106,6 +157,11 @@ describe 'options', ->
         tooltipMode: 'default'
         lineMode: 'linear'
         tension: 0.7
+        drawLegend: true
+        drawDots: true
+        addTooltips: true
+        addLineTooltips: false
+
         axes:
           x:
             type: 'linear'
@@ -136,6 +192,11 @@ describe 'options', ->
         tooltipMode: 'default'
         lineMode: 'linear'
         tension: 0.7
+        drawLegend: true
+        drawDots: true
+        addTooltips: true
+        addLineTooltips: false
+
         axes:
           x:
             type: 'linear'
@@ -199,6 +260,11 @@ describe 'options', ->
         tooltipMode: 'default'
         lineMode: 'linear'
         tension: 0.7
+        drawLegend: true
+        drawDots: true
+        addTooltips: true
+        addLineTooltips: false
+
         axes:
           x:
             type: 'linear'

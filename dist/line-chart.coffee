@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 28 May 2014
+line-chart - v1.0.6 - 30 May 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -47,11 +47,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         options.drawDots = false
         options.addTooltips = false
       
-      # set default options
-      options.drawLegend ?= true
-      options.drawDots ?= true
-      options.addTooltips ?= true
-
       n3utils.clean(element[0])
 
       svg = n3utils.bootstrap(element[0], dimensions)
@@ -445,30 +440,39 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'stroke-width': (s) -> s.thickness
           )
         if options.addLineTooltips
-          lineGroup.on 'mousemove', (series) ->
+          interpolateData = (series) ->
             target = d3.select(d3.event.target)
-            mousePos = d3.mouse(this)
-            # interpolate between two closest data points
+            try
+              mousePos = d3.mouse(this)
+            catch error
+              mousePos = [0, 0]
+            # interpolate between min/max based on mouse coords
             valuesData = target.datum().values
+            # find min/max coords and values
             for datum, i in valuesData
               x = scales.xScale(datum.x)
               y = scales.yScale(datum.value)
-              if x < mousePos[0] and i != valuesData.length - 1
-                lastX = x
-                lastY = y
-                lastDatum = datum
-              else
-                # if x position is left of leftmost datapoint
-                if !lastDatum
-                  interpDatum = x: x, value: y
-                  break
-                else
-                  # figure out how far along the line we are
-                  xPercentage = (mousePos[0] - lastX) / (x - lastX)
-                  xVal = Math.round(lastDatum.x + xPercentage * (datum.x - lastDatum.x))
-                  yVal = Math.round(lastDatum.value + xPercentage * (datum.value - lastDatum.value))
-                  interpDatum = x: xVal, value: yVal
-                  break
+              if !minXPos? or x < minXPos
+                minXPos = x
+                minXValue = datum.x
+              if !maxXPos? or x > maxXPos
+                maxXPos = x
+                maxXValue = datum.x
+              if !minYPos? or y < minYPos
+                minYPos = y
+              if !maxYPos? or y > maxYPos
+                maxYPos = y
+              if !minYValue? or datum.value < minYValue
+                minYValue = datum.value
+              if !maxYValue? or datum.value > maxYValue
+                maxYValue = datum.value
+            
+            xPercentage = (mousePos[0] - minXPos) / (maxXPos - minXPos)
+            yPercentage = (mousePos[1] - minYPos) / (maxYPos - minYPos)
+            xVal = Math.round(xPercentage * (maxXValue - minXValue) + minXValue)
+            yVal = Math.round((1 - yPercentage) * (maxYValue - minYValue) + minYValue)
+
+            interpDatum = x: xVal, value: yVal
 
             that.onMouseOver(svg, {
               series: series
@@ -476,6 +480,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               y: mousePos[1]
               datum: interpDatum
             })
+          lineGroup.on 'mousemove', interpolateData
           .on 'mouseout', (d) ->
             that.onMouseOut(svg)
 
@@ -628,6 +633,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             y: {type: 'linear'}
           }
           series: []
+          drawLegend: true
+          drawDots: true
+          addTooltips: true
+          addLineTooltips: false
         }
 
       sanitizeOptions: (options) ->
@@ -641,6 +650,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
 
         options.tooltipMode or= 'default'
+
+        options.drawLegend = true unless options.drawLegend is false
+        options.drawDots = true unless options.drawDots is false
+        options.addTooltips = true unless options.addTooltips is false
+        options.addLineTooltips = false unless options.addLineTooltips is true
 
         return options
 
