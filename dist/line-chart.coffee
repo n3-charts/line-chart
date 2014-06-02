@@ -60,7 +60,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       n3utils.createContent(svg)
 
-      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
 
       if dataPerSeries.length
         columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
@@ -72,6 +71,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
         n3utils.drawDots(svg, axes, dataPerSeries) unless isThumbnail
 
+      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
       n3utils.addTooltips(svg, dimensions, options.axes) unless isThumbnail
 
     timeoutPromise = undefined
@@ -352,10 +352,17 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         item = legend.selectAll('.legendItem')
           .data(series)
-          .enter().append('g')
+
+        item.enter().append('g')
             .attr(
               'class': 'legendItem'
               'transform': (s, i) -> "translate(#{layout[i]},#{dimensions.height-40})"
+              'opacity': (s, i) ->
+                if s.visible is false
+                  that.toggleSeries(svg, i)
+                  return '0.2'
+
+                return '1'
             )
 
         item.on('click', (s, i) ->

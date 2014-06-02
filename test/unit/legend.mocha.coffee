@@ -71,7 +71,40 @@ describe 'legend', ->
     expect(l_0.childNodes[1].getAttribute('clip-path')).to.equal 'url(#legend-clip)'
 
     fakeMouse.clickOn(l_0.childNodes[0])
+
+    expect(element.childByClass('lineGroup series_0').getAttribute('opacity')).to.equal('0')
+    expect(element.childByClass('dotGroup series_0').getAttribute('opacity')).to.equal('0')
+    expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('0.2')
     fakeMouse.clickOn(l_0.childNodes[0])
+    expect(element.childByClass('lineGroup series_0').getAttribute('opacity')).to.equal('1')
+    expect(element.childByClass('dotGroup series_0').getAttribute('opacity')).to.equal('1')
+    expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('1')
+
+  it 'should be able to hide a series at startup', ->
+    outerScope.$apply ->
+      outerScope.data = [
+        {x: 0, value: 4}
+        {x: 1, value: 8}
+      ]
+      outerScope.options = series: [
+        {
+          y: 'value'
+          color: '#4682b4'
+          label: 'toto'
+          visible: false
+        }
+        {
+          y: 'value'
+          axis: 'y2'
+          color: '#4682b4'
+          type: 'column'
+        }
+      ]
+
+    expect(element.childByClass('lineGroup series_0').getAttribute('opacity')).to.equal('0')
+    expect(element.childByClass('dotGroup series_0').getAttribute('opacity')).to.equal('0')
+    expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('0.2')
+
 
   describe 'layout computation', ->
     n3utils = null

@@ -40,10 +40,17 @@
 
         item = legend.selectAll('.legendItem')
           .data(series)
-          .enter().append('g')
+
+        item.enter().append('g')
             .attr(
               'class': 'legendItem'
               'transform': (s, i) -> "translate(#{layout[i]},#{dimensions.height-40})"
+              'opacity': (s, i) ->
+                if s.visible is false
+                  that.toggleSeries(svg, i)
+                  return '0.2'
+
+                return '1'
             )
 
         item.on('click', (s, i) ->
