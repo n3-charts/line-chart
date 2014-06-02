@@ -1,11 +1,33 @@
-      drawLegend: (svg, series, dimensions, handlers) ->
-        layout = [0]
+      computeLegendLayout: (series, dimensions) ->
+        fn = (s) -> s.label || s.y
 
+        layout = [0]
+        leftSeries = series.filter (s) -> s.axis is 'y'
         i = 1
-        while i < series.length
-          l = series[i - 1].label or series[i - 1].y
-          layout.push @getTextWidth(l) + layout[i - 1] + 40
+        while i < leftSeries.length
+          layout.push @getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40
           i++
+
+
+        rightSeries = series.filter (s) -> s.axis is 'y2'
+        return layout if rightSeries.length is 0
+
+        w = dimensions.width - dimensions.right - dimensions.left
+
+        rightLayout = [w - @getTextWidth(fn(rightSeries[rightSeries.length - 1]))]
+
+        j = rightSeries.length - 2
+        while j >= 0
+          label = fn(rightSeries[j])
+          rightLayout.push w - @getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40
+          j--
+
+        rightLayout.reverse()
+
+        return layout.concat(rightLayout)
+
+      drawLegend: (svg, series, dimensions, handlers) ->
+        layout = this.computeLegendLayout(series, dimensions)
 
 
         that = this

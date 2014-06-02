@@ -61,7 +61,7 @@ describe 'legend', ->
     expect(pattern.domElement.tagName).to.equal 'clipPath'
     expect(pattern.innerHTML()).to.equal '<circle r="8"></circle>'
 
-  it 'should create legend elements', ->
+  it 'should create legend elements', inject (fakeMouse) ->
     legendGroup = element.childByClass('legend')
     expect(legendGroup.children().length).to.equal 2
     l_0 = legendGroup.children()[0].domElement
@@ -69,7 +69,37 @@ describe 'legend', ->
     expect(l_0.childNodes[0].nodeName).to.equal 'circle'
     expect(l_0.childNodes[0].getAttribute('fill')).to.equal '#4682b4'
     expect(l_0.childNodes[1].getAttribute('clip-path')).to.equal 'url(#legend-clip)'
-    e = document.createEvent('MouseEvents')
-    e.initMouseEvent 'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
-    l_0.childNodes[0].dispatchEvent e
-    l_0.childNodes[0].dispatchEvent e
+
+    fakeMouse.clickOn(l_0.childNodes[0])
+    fakeMouse.clickOn(l_0.childNodes[0])
+
+  describe 'layout computation', ->
+    n3utils = null
+    dim = {top: 20, right: 40, bottom: 30, left: 40, width: 900, height: 500}
+
+    beforeEach inject (_n3utils_) ->
+      n3utils = _n3utils_
+
+    it 'should compute for left series', ->
+      series = [
+        {label: 'pouet', axis: 'y'}
+        {label: 'tut', axis: 'y'}
+      ]
+
+      expect(n3utils.computeLegendLayout(series, dim)).to.eql([0, 75])
+
+    it 'should compute for right series too', ->
+      series = [
+        {label: 'pouet', axis: 'y'}
+        {label: 'tut', axis: 'y2'}
+        {label: 'bwabwabwa', axis: 'y2'}
+      ]
+
+      expect(n3utils.computeLegendLayout(series, dim)).to.eql([0, 700, 765])
+
+
+
+
+
+
+
