@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 30 May 2014
+line-chart - v1.0.6 - 02 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -55,7 +55,7 @@ directive('linechart', [
           isThumbnail = true;
           options.drawLegend = false;
           options.drawDots = false;
-          options.addTooltips = false;
+          options.tooltipMode = 'none';
         }
         n3utils.clean(element[0]);
         svg = n3utils.bootstrap(element[0], dimensions);
@@ -76,10 +76,10 @@ directive('linechart', [
           columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
           n3utils.drawArea(svg, axes, dataPerSeries, options).drawColumns(svg, axes, dataPerSeries, columnWidth).drawLines(svg, axes, dataPerSeries, options);
           if (options.drawDots) {
-            n3utils.drawDots(svg, axes, dataPerSeries);
+            n3utils.drawDots(svg, axes, dataPerSeries, options);
           }
         }
-        if (options.addTooltips) {
+        if (options.tooltipMode !== 'none') {
           return n3utils.addTooltips(svg, dimensions, options.axes);
         }
       };
@@ -265,32 +265,20 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      drawDots: function(svg, axes, data) {
-        var that;
+      drawDots: function(svg, axes, data, options) {
+        var dotGroup, that;
         that = this;
-        svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
+        dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
           var _ref;
           return (_ref = s.type) === 'line' || _ref === 'area';
-        })).enter().append('g').attr({
+        })).enter().append('g');
+        dotGroup.attr({
           "class": function(s) {
             return "dotGroup series_" + s.index;
           },
           fill: function(s) {
             return s.color;
           }
-        }).on('mouseover', function(series) {
-          var target;
-          target = d3.select(d3.event.target);
-          target.attr('r', 4);
-          return that.onMouseOver(svg, {
-            series: series,
-            x: target.attr('cx'),
-            y: target.attr('cy'),
-            datum: target.datum()
-          });
-        }).on('mouseout', function(d) {
-          d3.select(d3.event.target).attr('r', 2);
-          return that.onMouseOut(svg);
         }).selectAll('.dot').data(function(d) {
           return d.values;
         }).enter().append('circle').attr({
@@ -306,6 +294,22 @@ mod.factory('n3utils', [
           'stroke': 'white',
           'stroke-width': '2px'
         });
+        if (options.tooltipMode === 'dots' || options.tooltipMode === 'both') {
+          dotGroup.on('mouseover', function(series) {
+            var target;
+            target = d3.select(d3.event.target);
+            target.attr('r', 4);
+            return that.onMouseOver(svg, {
+              series: series,
+              x: target.attr('cx'),
+              y: target.attr('cy'),
+              datum: target.datum()
+            });
+          }).on('mouseout', function(d) {
+            d3.select(d3.event.target).attr('r', 2);
+            return that.onMouseOut(svg);
+          });
+        }
         return this;
       },
       updateDots: function(svg, scales) {
@@ -446,7 +450,7 @@ mod.factory('n3utils', [
             return s.thickness;
           }
         });
-        if (options.addLineTooltips) {
+        if (options.tooltipMode === 'both' || options.tooltipMode === 'lines') {
           interpolateData = function(series) {
             var datum, error, i, interpDatum, maxXPos, maxXValue, maxYPos, maxYValue, minXPos, minXValue, minYPos, minYValue, mousePos, target, valuesData, x, xPercentage, xVal, y, yPercentage, yVal, _i, _len;
             target = d3.select(d3.event.target);
@@ -637,7 +641,7 @@ mod.factory('n3utils', [
       },
       getDefaultOptions: function() {
         return {
-          tooltipMode: 'default',
+          tooltipMode: 'dots',
           lineMode: 'linear',
           tension: 0.7,
           axes: {
@@ -651,9 +655,7 @@ mod.factory('n3utils', [
           },
           series: [],
           drawLegend: true,
-          drawDots: true,
-          addTooltips: true,
-          addLineTooltips: false
+          drawDots: true
         };
       },
       sanitizeOptions: function(options) {
@@ -664,18 +666,17 @@ mod.factory('n3utils', [
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
         options.lineMode || (options.lineMode = 'linear');
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
-        options.tooltipMode || (options.tooltipMode = 'default');
+        if (options.addTooltips === false && (options.tooltipMode == null)) {
+          options.tooltipMode = 'none';
+        }
+        if (['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) === -1) {
+          options.tooltipMode = 'dots';
+        }
         if (options.drawLegend !== false) {
           options.drawLegend = true;
         }
         if (options.drawDots !== false) {
           options.drawDots = true;
-        }
-        if (options.addTooltips !== false) {
-          options.addTooltips = true;
-        }
-        if (options.addLineTooltips !== true) {
-          options.addLineTooltips = false;
         }
         return options;
       },

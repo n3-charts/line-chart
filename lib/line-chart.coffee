@@ -39,7 +39,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         isThumbnail = true
         options.drawLegend = false
         options.drawDots = false
-        options.addTooltips = false
+        options.tooltipMode = 'none'
       
       n3utils.clean(element[0])
 
@@ -68,9 +68,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
           .drawLines(svg, axes, dataPerSeries, options)
 
-        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries)
+        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries, options)
 
-      if options.addTooltips then n3utils.addTooltips(svg, dimensions, options.axes)
+      n3utils.addTooltips(svg, dimensions, options.axes) unless options.tooltipMode is 'none'
 
     timeoutPromise = undefined
     window_resize = ->

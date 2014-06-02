@@ -19,7 +19,7 @@
             'fill': 'none'
             'stroke-width': (s) -> s.thickness
           )
-        if options.addLineTooltips
+        if options.tooltipMode is 'both' or options.tooltipMode is 'lines'
           interpolateData = (series) ->
             target = d3.select(d3.event.target)
             try
