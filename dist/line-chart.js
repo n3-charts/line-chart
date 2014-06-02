@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 18 May 2014
+line-chart - v1.0.6 - 02 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -314,15 +314,40 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      drawLegend: function(svg, series, dimensions, handlers) {
-        var d, i, item, l, layout, legend, that;
+      computeLegendLayout: function(series, dimensions) {
+        var fn, i, j, label, layout, leftSeries, rightLayout, rightSeries, w;
+        fn = function(s) {
+          return s.label || s.y;
+        };
         layout = [0];
+        leftSeries = series.filter(function(s) {
+          return s.axis === 'y';
+        });
         i = 1;
-        while (i < series.length) {
-          l = series[i - 1].label || series[i - 1].y;
-          layout.push(this.getTextWidth(l) + layout[i - 1] + 40);
+        while (i < leftSeries.length) {
+          layout.push(this.getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40);
           i++;
         }
+        rightSeries = series.filter(function(s) {
+          return s.axis === 'y2';
+        });
+        if (rightSeries.length === 0) {
+          return layout;
+        }
+        w = dimensions.width - dimensions.right - dimensions.left;
+        rightLayout = [w - this.getTextWidth(fn(rightSeries[rightSeries.length - 1]))];
+        j = rightSeries.length - 2;
+        while (j >= 0) {
+          label = fn(rightSeries[j]);
+          rightLayout.push(w - this.getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40);
+          j--;
+        }
+        rightLayout.reverse();
+        return layout.concat(rightLayout);
+      },
+      drawLegend: function(svg, series, dimensions, handlers) {
+        var d, item, layout, legend, that;
+        layout = this.computeLegendLayout(series, dimensions);
         that = this;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
