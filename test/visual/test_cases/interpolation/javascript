@@ -39,6 +39,6 @@ angular.module('example', ['n3-line-chart'])
         y2: {type: "linear"}
       },
       tension: 0.7,
-      tooltipMode: "default"
+      tooltipMode: "dots"
     };
   });

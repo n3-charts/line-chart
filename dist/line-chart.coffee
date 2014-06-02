@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 30 May 2014
+line-chart - v1.0.6 - 02 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -45,7 +45,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         isThumbnail = true
         options.drawLegend = false
         options.drawDots = false
-        options.addTooltips = false
+        options.tooltipMode = 'none'
       
       n3utils.clean(element[0])
 
@@ -74,9 +74,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
         .drawLines(svg, axes, dataPerSeries, options)
 
-        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries)
+        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries, options)
 
-      if options.addTooltips then n3utils.addTooltips(svg, dimensions, options.axes)
+      n3utils.addTooltips(svg, dimensions, options.axes) unless options.tooltipMode is 'none'
 
     timeoutPromise = undefined
     window_resize = ->
@@ -261,43 +261,44 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # lib/utils/dots.coffee
-      drawDots: (svg, axes, data) ->
+      drawDots: (svg, axes, data, options) ->
         that = this
 
-        svg.select('.content').selectAll('.dotGroup')
+        dotGroup = svg.select('.content').selectAll('.dotGroup')
           .data data.filter (s) -> s.type in ['line', 'area']
           .enter().append('g')
+        dotGroup.attr(
+            class: (s) -> "dotGroup series_#{s.index}"
+            fill: (s) -> s.color
+          )
+          .selectAll('.dot').data (d) -> d.values
+            .enter().append('circle')
             .attr(
-              class: (s) -> "dotGroup series_#{s.index}"
-              fill: (s) -> s.color
+              'class': 'dot'
+              'r': 2
+              'cx': (d) -> axes.xScale(d.x)
+              'cy': (d) -> axes[d.axis + 'Scale'](d.value)
             )
-            .on('mouseover', (series) ->
-              target = d3.select(d3.event.target)
-              target.attr('r', 4)
+            .style(
+              'stroke': 'white'
+              'stroke-width': '2px'
+            )
+        if options.tooltipMode is 'dots' or options.tooltipMode is 'both'
+          dotGroup.on('mouseover', (series) ->
+            target = d3.select(d3.event.target)
+            target.attr('r', 4)
 
-              that.onMouseOver(svg, {
-                series: series
-                x: target.attr('cx')
-                y: target.attr('cy')
-                datum: target.datum()
-              })
-            )
-            .on('mouseout', (d) ->
-              d3.select(d3.event.target).attr('r', 2)
-              that.onMouseOut(svg)
-            )
-            .selectAll('.dot').data (d) -> d.values
-              .enter().append('circle')
-              .attr(
-                'class': 'dot'
-                'r': 2
-                'cx': (d) -> axes.xScale(d.x)
-                'cy': (d) -> axes[d.axis + 'Scale'](d.value)
-              )
-              .style(
-                'stroke': 'white'
-                'stroke-width': '2px'
-              )
+            that.onMouseOver(svg, {
+              series: series
+              x: target.attr('cx')
+              y: target.attr('cy')
+              datum: target.datum()
+            })
+          )
+          .on('mouseout', (d) ->
+            d3.select(d3.event.target).attr('r', 2)
+            that.onMouseOut(svg)
+          )
 
         return this
 
@@ -439,7 +440,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'fill': 'none'
             'stroke-width': (s) -> s.thickness
           )
-        if options.addLineTooltips
+        if options.tooltipMode is 'both' or options.tooltipMode is 'lines'
           interpolateData = (series) ->
             target = d3.select(d3.event.target)
             try
@@ -625,7 +626,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # lib/utils/options.coffee
       getDefaultOptions: ->
         return {
-          tooltipMode: 'default'
+          tooltipMode: 'dots'
           lineMode: 'linear'
           tension: 0.7
           axes: {
@@ -635,8 +636,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           series: []
           drawLegend: true
           drawDots: true
-          addTooltips: true
-          addLineTooltips: false
         }
 
       sanitizeOptions: (options) ->
@@ -649,12 +648,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
 
-        options.tooltipMode or= 'default'
+        if options.addTooltips is false and !options.tooltipMode?
+          options.tooltipMode = 'none'
+        if ['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) is -1
+          options.tooltipMode = 'dots'
 
         options.drawLegend = true unless options.drawLegend is false
         options.drawDots = true unless options.drawDots is false
-        options.addTooltips = true unless options.addTooltips is false
-        options.addLineTooltips = false unless options.addLineTooltips is true
 
         return options
 
