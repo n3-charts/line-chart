@@ -64,15 +64,15 @@ directive('linechart', [
           n3utils.adjustMargins(dimensions, options, data);
         }
         n3utils.createContent(svg);
-        if (!isThumbnail) {
-          n3utils.drawLegend(svg, series, dimensions, handlers);
-        }
         if (dataPerSeries.length) {
           columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
           n3utils.drawArea(svg, axes, dataPerSeries, options).drawColumns(svg, axes, dataPerSeries, columnWidth).drawLines(svg, axes, dataPerSeries, options);
           if (!isThumbnail) {
             n3utils.drawDots(svg, axes, dataPerSeries);
           }
+        }
+        if (!isThumbnail) {
+          n3utils.drawLegend(svg, series, dimensions, handlers);
         }
         if (!isThumbnail) {
           return n3utils.addTooltips(svg, dimensions, options.axes);
@@ -352,10 +352,18 @@ mod.factory('n3utils', [
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
-        item = legend.selectAll('.legendItem').data(series).enter().append('g').attr({
+        item = legend.selectAll('.legendItem').data(series);
+        item.enter().append('g').attr({
           'class': 'legendItem',
           'transform': function(s, i) {
             return "translate(" + layout[i] + "," + (dimensions.height - 40) + ")";
+          },
+          'opacity': function(s, i) {
+            if (s.visible === false) {
+              that.toggleSeries(svg, i);
+              return '0.2';
+            }
+            return '1';
           }
         });
         item.on('click', function(s, i) {

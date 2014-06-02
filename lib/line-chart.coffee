@@ -54,7 +54,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       n3utils.createContent(svg)
 
-      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
 
       if dataPerSeries.length
         columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
@@ -66,6 +65,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
         n3utils.drawDots(svg, axes, dataPerSeries) unless isThumbnail
 
+      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
       n3utils.addTooltips(svg, dimensions, options.axes) unless isThumbnail
 
     timeoutPromise = undefined
