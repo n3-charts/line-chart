@@ -64,7 +64,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       n3utils.createContent(svg)
 
-      if options.drawLegend then n3utils.drawLegend(svg, series, dimensions, handlers)
 
       if dataPerSeries.length
         columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
@@ -76,6 +75,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
         if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries, options)
 
+      if options.drawLegend then n3utils.drawLegend(svg, series, dimensions, handlers)
       n3utils.addTooltips(svg, dimensions, options.axes) unless options.tooltipMode is 'none'
 
     timeoutPromise = undefined

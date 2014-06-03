@@ -69,15 +69,15 @@ directive('linechart', [
           n3utils.adjustMargins(dimensions, options, data);
         }
         n3utils.createContent(svg);
-        if (options.drawLegend) {
-          n3utils.drawLegend(svg, series, dimensions, handlers);
-        }
         if (dataPerSeries.length) {
           columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
           n3utils.drawArea(svg, axes, dataPerSeries, options).drawColumns(svg, axes, dataPerSeries, columnWidth).drawLines(svg, axes, dataPerSeries, options);
           if (options.drawDots) {
             n3utils.drawDots(svg, axes, dataPerSeries, options);
           }
+        }
+        if (options.drawLegend) {
+          n3utils.drawLegend(svg, series, dimensions, handlers);
         }
         if (options.tooltipMode !== 'none') {
           return n3utils.addTooltips(svg, dimensions, options.axes);
