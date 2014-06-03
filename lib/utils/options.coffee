@@ -21,9 +21,7 @@
 
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
-
-        if options.addTooltips is false and !options.tooltipMode?
-          options.tooltipMode = 'none'
+        
         if ['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) is -1
           options.tooltipMode = 'dots'
 

@@ -24,11 +24,6 @@ describe 'options', ->
       o = n3utils.sanitizeOptions(drawDots: false)
       expect(o.drawDots).to.equal false
 
-  describe 'addTooltips', ->
-    it "should set tooltipMode to 'none' if addTooltips is false", ->
-      o = n3utils.sanitizeOptions(addTooltips: false)
-      expect(o.tooltipMode).to.equal 'none'
-
   describe 'tooltipMode', ->
     it 'should preserve the given tooltipMode value if defined and valid', ->
       o = n3utils.sanitizeOptions(tooltipMode: 'none')

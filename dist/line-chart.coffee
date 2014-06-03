@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 02 June 2014
+line-chart - v1.0.6 - 03 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -72,7 +72,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         n3utils
           .drawArea(svg, axes, dataPerSeries, options)
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
-        .drawLines(svg, axes, dataPerSeries, options)
+          .drawLines(svg, axes, dataPerSeries, options)
 
         if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries, options)
 
@@ -315,14 +315,36 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # lib/utils/legend.coffee
-      drawLegend: (svg, series, dimensions, handlers) ->
-        layout = [0]
+      computeLegendLayout: (series, dimensions) ->
+        fn = (s) -> s.label || s.y
 
+        layout = [0]
+        leftSeries = series.filter (s) -> s.axis is 'y'
         i = 1
-        while i < series.length
-          l = series[i - 1].label or series[i - 1].y
-          layout.push @getTextWidth(l) + layout[i - 1] + 40
+        while i < leftSeries.length
+          layout.push @getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40
           i++
+
+
+        rightSeries = series.filter (s) -> s.axis is 'y2'
+        return layout if rightSeries.length is 0
+
+        w = dimensions.width - dimensions.right - dimensions.left
+
+        rightLayout = [w - @getTextWidth(fn(rightSeries[rightSeries.length - 1]))]
+
+        j = rightSeries.length - 2
+        while j >= 0
+          label = fn(rightSeries[j])
+          rightLayout.push w - @getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40
+          j--
+
+        rightLayout.reverse()
+
+        return layout.concat(rightLayout)
+
+      drawLegend: (svg, series, dimensions, handlers) ->
+        layout = this.computeLegendLayout(series, dimensions)
 
 
         that = this
@@ -335,10 +357,17 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         item = legend.selectAll('.legendItem')
           .data(series)
-          .enter().append('g')
+
+        item.enter().append('g')
             .attr(
               'class': 'legendItem'
               'transform': (s, i) -> "translate(#{layout[i]},#{dimensions.height-40})"
+              'opacity': (s, i) ->
+                if s.visible is false
+                  that.toggleSeries(svg, i)
+                  return '0.2'
+
+                return '1'
             )
 
         item.on('click', (s, i) ->
@@ -647,9 +676,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
-
-        if options.addTooltips is false and !options.tooltipMode?
-          options.tooltipMode = 'none'
+        
         if ['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) is -1
           options.tooltipMode = 'dots'
 
