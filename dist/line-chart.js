@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 02 June 2014
+line-chart - v1.0.6 - 03 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -323,23 +323,56 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      drawLegend: function(svg, series, dimensions, handlers) {
-        var d, i, item, l, layout, legend, that;
+      computeLegendLayout: function(series, dimensions) {
+        var fn, i, j, label, layout, leftSeries, rightLayout, rightSeries, w;
+        fn = function(s) {
+          return s.label || s.y;
+        };
         layout = [0];
+        leftSeries = series.filter(function(s) {
+          return s.axis === 'y';
+        });
         i = 1;
-        while (i < series.length) {
-          l = series[i - 1].label || series[i - 1].y;
-          layout.push(this.getTextWidth(l) + layout[i - 1] + 40);
+        while (i < leftSeries.length) {
+          layout.push(this.getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40);
           i++;
         }
+        rightSeries = series.filter(function(s) {
+          return s.axis === 'y2';
+        });
+        if (rightSeries.length === 0) {
+          return layout;
+        }
+        w = dimensions.width - dimensions.right - dimensions.left;
+        rightLayout = [w - this.getTextWidth(fn(rightSeries[rightSeries.length - 1]))];
+        j = rightSeries.length - 2;
+        while (j >= 0) {
+          label = fn(rightSeries[j]);
+          rightLayout.push(w - this.getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40);
+          j--;
+        }
+        rightLayout.reverse();
+        return layout.concat(rightLayout);
+      },
+      drawLegend: function(svg, series, dimensions, handlers) {
+        var d, item, layout, legend, that;
+        layout = this.computeLegendLayout(series, dimensions);
         that = this;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
-        item = legend.selectAll('.legendItem').data(series).enter().append('g').attr({
+        item = legend.selectAll('.legendItem').data(series);
+        item.enter().append('g').attr({
           'class': 'legendItem',
           'transform': function(s, i) {
             return "translate(" + layout[i] + "," + (dimensions.height - 40) + ")";
+          },
+          'opacity': function(s, i) {
+            if (s.visible === false) {
+              that.toggleSeries(svg, i);
+              return '0.2';
+            }
+            return '1';
           }
         });
         item.on('click', function(s, i) {
@@ -666,9 +699,6 @@ mod.factory('n3utils', [
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
         options.lineMode || (options.lineMode = 'linear');
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
-        if (options.addTooltips === false && (options.tooltipMode == null)) {
-          options.tooltipMode = 'none';
-        }
         if (['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) === -1) {
           options.tooltipMode = 'dots';
         }
