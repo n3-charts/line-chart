@@ -35,8 +35,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
-      isThumbnail = attrs.mode is 'thumbnail'
-
+      if attrs.mode is 'thumbnail'
+        isThumbnail = true
+        options.drawLegend = false
+        options.drawDots = false
+        options.tooltipMode = 'none'
+      
       n3utils.clean(element[0])
 
       svg = n3utils.bootstrap(element[0], dimensions)
@@ -63,10 +67,10 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
           .drawLines(svg, axes, dataPerSeries, options)
 
-        n3utils.drawDots(svg, axes, dataPerSeries) unless isThumbnail
+        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries, options)
 
-      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
-      n3utils.addTooltips(svg, dimensions, options.axes) unless isThumbnail
+      if options.drawLegend then n3utils.drawLegend(svg, series, dimensions, handlers)
+      n3utils.addTooltips(svg, dimensions, options.axes) unless options.tooltipMode is 'none'
 
     timeoutPromise = undefined
     window_resize = ->

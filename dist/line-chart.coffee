@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 02 June 2014
+line-chart - v1.0.6 - 03 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -41,8 +41,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
-      isThumbnail = attrs.mode is 'thumbnail'
-
+      if attrs.mode is 'thumbnail'
+        isThumbnail = true
+        options.drawLegend = false
+        options.drawDots = false
+        options.tooltipMode = 'none'
+      
       n3utils.clean(element[0])
 
       svg = n3utils.bootstrap(element[0], dimensions)
@@ -69,10 +73,10 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
           .drawColumns(svg, axes, dataPerSeries, columnWidth)
           .drawLines(svg, axes, dataPerSeries, options)
 
-        n3utils.drawDots(svg, axes, dataPerSeries) unless isThumbnail
+        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries, options)
 
-      n3utils.drawLegend(svg, series, dimensions, handlers) unless isThumbnail
-      n3utils.addTooltips(svg, dimensions, options.axes) unless isThumbnail
+      if options.drawLegend then n3utils.drawLegend(svg, series, dimensions, handlers)
+      n3utils.addTooltips(svg, dimensions, options.axes) unless options.tooltipMode is 'none'
 
     timeoutPromise = undefined
     window_resize = ->
@@ -257,43 +261,44 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # lib/utils/dots.coffee
-      drawDots: (svg, axes, data) ->
+      drawDots: (svg, axes, data, options) ->
         that = this
 
-        svg.select('.content').selectAll('.dotGroup')
+        dotGroup = svg.select('.content').selectAll('.dotGroup')
           .data data.filter (s) -> s.type in ['line', 'area']
           .enter().append('g')
+        dotGroup.attr(
+            class: (s) -> "dotGroup series_#{s.index}"
+            fill: (s) -> s.color
+          )
+          .selectAll('.dot').data (d) -> d.values
+            .enter().append('circle')
             .attr(
-              class: (s) -> "dotGroup series_#{s.index}"
-              fill: (s) -> s.color
+              'class': 'dot'
+              'r': 2
+              'cx': (d) -> axes.xScale(d.x)
+              'cy': (d) -> axes[d.axis + 'Scale'](d.value)
             )
-            .on('mouseover', (series) ->
-              target = d3.select(d3.event.target)
-              target.attr('r', 4)
+            .style(
+              'stroke': 'white'
+              'stroke-width': '2px'
+            )
+        if options.tooltipMode is 'dots' or options.tooltipMode is 'both'
+          dotGroup.on('mouseover', (series) ->
+            target = d3.select(d3.event.target)
+            target.attr('r', 4)
 
-              that.onMouseOver(svg, {
-                series: series
-                x: target.attr('cx')
-                y: target.attr('cy')
-                datum: target.datum()
-              })
-            )
-            .on('mouseout', (d) ->
-              d3.select(d3.event.target).attr('r', 2)
-              that.onMouseOut(svg)
-            )
-            .selectAll('.dot').data (d) -> d.values
-              .enter().append('circle')
-              .attr(
-                'class': 'dot'
-                'r': 2
-                'cx': (d) -> axes.xScale(d.x)
-                'cy': (d) -> axes[d.axis + 'Scale'](d.value)
-              )
-              .style(
-                'stroke': 'white'
-                'stroke-width': '2px'
-              )
+            that.onMouseOver(svg, {
+              series: series
+              x: target.attr('cx')
+              y: target.attr('cy')
+              datum: target.datum()
+            })
+          )
+          .on('mouseout', (d) ->
+            d3.select(d3.event.target).attr('r', 2)
+            that.onMouseOut(svg)
+          )
 
         return this
 
@@ -444,24 +449,70 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 # lib/utils/lines.coffee
       drawLines: (svg, scales, data, options) ->
+        that = this
+        
         drawers =
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension)
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
 
-        svg.select('.content').selectAll('.lineGroup')
+        lineGroup = svg.select('.content').selectAll('.lineGroup')
           .data data.filter (s) -> s.type in ['line', 'area']
           .enter().append('g')
-            .style('stroke', (s) -> s.color)
-            .attr('class', (s) -> "lineGroup series_#{s.index}")
-            .append('path')
-              .attr(
-                class: 'line'
-                d: (d) -> drawers[d.axis](d.values)
-              )
-              .style(
-                'fill': 'none'
-                'stroke-width': (s) -> s.thickness
-              )
+        lineGroup.style('stroke', (s) -> s.color)
+        .attr('class', (s) -> "lineGroup series_#{s.index}")
+        .append('path')
+          .attr(
+            class: 'line'
+            d: (d) -> drawers[d.axis](d.values)
+          )
+          .style(
+            'fill': 'none'
+            'stroke-width': (s) -> s.thickness
+          )
+        if options.tooltipMode is 'both' or options.tooltipMode is 'lines'
+          interpolateData = (series) ->
+            target = d3.select(d3.event.target)
+            try
+              mousePos = d3.mouse(this)
+            catch error
+              mousePos = [0, 0]
+            # interpolate between min/max based on mouse coords
+            valuesData = target.datum().values
+            # find min/max coords and values
+            for datum, i in valuesData
+              x = scales.xScale(datum.x)
+              y = scales.yScale(datum.value)
+              if !minXPos? or x < minXPos
+                minXPos = x
+                minXValue = datum.x
+              if !maxXPos? or x > maxXPos
+                maxXPos = x
+                maxXValue = datum.x
+              if !minYPos? or y < minYPos
+                minYPos = y
+              if !maxYPos? or y > maxYPos
+                maxYPos = y
+              if !minYValue? or datum.value < minYValue
+                minYValue = datum.value
+              if !maxYValue? or datum.value > maxYValue
+                maxYValue = datum.value
+            
+            xPercentage = (mousePos[0] - minXPos) / (maxXPos - minXPos)
+            yPercentage = (mousePos[1] - minYPos) / (maxYPos - minYPos)
+            xVal = Math.round(xPercentage * (maxXValue - minXValue) + minXValue)
+            yVal = Math.round((1 - yPercentage) * (maxYValue - minYValue) + minYValue)
+
+            interpDatum = x: xVal, value: yVal
+
+            that.onMouseOver(svg, {
+              series: series
+              x: mousePos[0]
+              y: mousePos[1]
+              datum: interpDatum
+            })
+          lineGroup.on 'mousemove', interpolateData
+          .on 'mouseout', (d) ->
+            that.onMouseOut(svg)
 
         return this
 
@@ -604,7 +655,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # lib/utils/options.coffee
       getDefaultOptions: ->
         return {
-          tooltipMode: 'default'
+          tooltipMode: 'dots'
           lineMode: 'linear'
           tension: 0.7
           axes: {
@@ -612,6 +663,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             y: {type: 'linear'}
           }
           series: []
+          drawLegend: true
+          drawDots: true
         }
 
       sanitizeOptions: (options) ->
@@ -623,8 +676,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
+        
+        if ['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) is -1
+          options.tooltipMode = 'dots'
 
-        options.tooltipMode or= 'default'
+        options.drawLegend = true unless options.drawLegend is false
+        options.drawDots = true unless options.drawDots is false
 
         return options
 

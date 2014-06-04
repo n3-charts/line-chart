@@ -137,6 +137,7 @@ utils.factory 'fakeMouse', ->
 
     hoverIn: (element) -> bubbleUp(element, 'mouseover')
     hoverOut: (element) -> bubbleUp(element, 'mouseout')
+    mouseMove: (element) -> bubbleUp(element, 'mousemove')
   }
 
 utils.factory 'focus', ->
