@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 02 June 2014
+line-chart - v1.0.6 - 03 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -51,7 +51,12 @@ directive('linechart', [
         data = scope.data;
         series = options.series;
         dataPerSeries = n3utils.getDataPerSeries(data, options);
-        isThumbnail = attrs.mode === 'thumbnail';
+        if (attrs.mode === 'thumbnail') {
+          isThumbnail = true;
+          options.drawLegend = false;
+          options.drawDots = false;
+          options.tooltipMode = 'none';
+        }
         n3utils.clean(element[0]);
         svg = n3utils.bootstrap(element[0], dimensions);
         axes = n3utils.createAxes(svg, dimensions, options.axes).andAddThemIf(isThumbnail);
@@ -67,14 +72,14 @@ directive('linechart', [
         if (dataPerSeries.length) {
           columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries);
           n3utils.drawArea(svg, axes, dataPerSeries, options).drawColumns(svg, axes, dataPerSeries, columnWidth).drawLines(svg, axes, dataPerSeries, options);
-          if (!isThumbnail) {
-            n3utils.drawDots(svg, axes, dataPerSeries);
+          if (options.drawDots) {
+            n3utils.drawDots(svg, axes, dataPerSeries, options);
           }
         }
-        if (!isThumbnail) {
+        if (options.drawLegend) {
           n3utils.drawLegend(svg, series, dimensions, handlers);
         }
-        if (!isThumbnail) {
+        if (options.tooltipMode !== 'none') {
           return n3utils.addTooltips(svg, dimensions, options.axes);
         }
       };
@@ -260,32 +265,20 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      drawDots: function(svg, axes, data) {
-        var that;
+      drawDots: function(svg, axes, data, options) {
+        var dotGroup, that;
         that = this;
-        svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
+        dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
           var _ref;
           return (_ref = s.type) === 'line' || _ref === 'area';
-        })).enter().append('g').attr({
+        })).enter().append('g');
+        dotGroup.attr({
           "class": function(s) {
             return "dotGroup series_" + s.index;
           },
           fill: function(s) {
             return s.color;
           }
-        }).on('mouseover', function(series) {
-          var target;
-          target = d3.select(d3.event.target);
-          target.attr('r', 4);
-          return that.onMouseOver(svg, {
-            series: series,
-            x: target.attr('cx'),
-            y: target.attr('cy'),
-            datum: target.datum()
-          });
-        }).on('mouseout', function(d) {
-          d3.select(d3.event.target).attr('r', 2);
-          return that.onMouseOut(svg);
         }).selectAll('.dot').data(function(d) {
           return d.values;
         }).enter().append('circle').attr({
@@ -301,6 +294,22 @@ mod.factory('n3utils', [
           'stroke': 'white',
           'stroke-width': '2px'
         });
+        if (options.tooltipMode === 'dots' || options.tooltipMode === 'both') {
+          dotGroup.on('mouseover', function(series) {
+            var target;
+            target = d3.select(d3.event.target);
+            target.attr('r', 4);
+            return that.onMouseOver(svg, {
+              series: series,
+              x: target.attr('cx'),
+              y: target.attr('cy'),
+              datum: target.datum()
+            });
+          }).on('mouseout', function(d) {
+            d3.select(d3.event.target).attr('r', 2);
+            return that.onMouseOut(svg);
+          });
+        }
         return this;
       },
       updateDots: function(svg, scales) {
@@ -449,15 +458,17 @@ mod.factory('n3utils', [
         return isVisible;
       },
       drawLines: function(svg, scales, data, options) {
-        var drawers;
+        var drawers, interpolateData, lineGroup, that;
+        that = this;
         drawers = {
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension),
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
         };
-        svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
+        lineGroup = svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
           var _ref;
           return (_ref = s.type) === 'line' || _ref === 'area';
-        })).enter().append('g').style('stroke', function(s) {
+        })).enter().append('g');
+        lineGroup.style('stroke', function(s) {
           return s.color;
         }).attr('class', function(s) {
           return "lineGroup series_" + s.index;
@@ -472,6 +483,61 @@ mod.factory('n3utils', [
             return s.thickness;
           }
         });
+        if (options.tooltipMode === 'both' || options.tooltipMode === 'lines') {
+          interpolateData = function(series) {
+            var datum, error, i, interpDatum, maxXPos, maxXValue, maxYPos, maxYValue, minXPos, minXValue, minYPos, minYValue, mousePos, target, valuesData, x, xPercentage, xVal, y, yPercentage, yVal, _i, _len;
+            target = d3.select(d3.event.target);
+            try {
+              mousePos = d3.mouse(this);
+            } catch (_error) {
+              error = _error;
+              mousePos = [0, 0];
+            }
+            valuesData = target.datum().values;
+            for (i = _i = 0, _len = valuesData.length; _i < _len; i = ++_i) {
+              datum = valuesData[i];
+              x = scales.xScale(datum.x);
+              y = scales.yScale(datum.value);
+              if ((typeof minXPos === "undefined" || minXPos === null) || x < minXPos) {
+                minXPos = x;
+                minXValue = datum.x;
+              }
+              if ((typeof maxXPos === "undefined" || maxXPos === null) || x > maxXPos) {
+                maxXPos = x;
+                maxXValue = datum.x;
+              }
+              if ((typeof minYPos === "undefined" || minYPos === null) || y < minYPos) {
+                minYPos = y;
+              }
+              if ((typeof maxYPos === "undefined" || maxYPos === null) || y > maxYPos) {
+                maxYPos = y;
+              }
+              if ((typeof minYValue === "undefined" || minYValue === null) || datum.value < minYValue) {
+                minYValue = datum.value;
+              }
+              if ((typeof maxYValue === "undefined" || maxYValue === null) || datum.value > maxYValue) {
+                maxYValue = datum.value;
+              }
+            }
+            xPercentage = (mousePos[0] - minXPos) / (maxXPos - minXPos);
+            yPercentage = (mousePos[1] - minYPos) / (maxYPos - minYPos);
+            xVal = Math.round(xPercentage * (maxXValue - minXValue) + minXValue);
+            yVal = Math.round((1 - yPercentage) * (maxYValue - minYValue) + minYValue);
+            interpDatum = {
+              x: xVal,
+              value: yVal
+            };
+            return that.onMouseOver(svg, {
+              series: series,
+              x: mousePos[0],
+              y: mousePos[1],
+              datum: interpDatum
+            });
+          };
+          lineGroup.on('mousemove', interpolateData).on('mouseout', function(d) {
+            return that.onMouseOut(svg);
+          });
+        }
         return this;
       },
       createLeftLineDrawer: function(scales, mode, tension) {
@@ -608,7 +674,7 @@ mod.factory('n3utils', [
       },
       getDefaultOptions: function() {
         return {
-          tooltipMode: 'default',
+          tooltipMode: 'dots',
           lineMode: 'linear',
           tension: 0.7,
           axes: {
@@ -620,7 +686,9 @@ mod.factory('n3utils', [
               type: 'linear'
             }
           },
-          series: []
+          series: [],
+          drawLegend: true,
+          drawDots: true
         };
       },
       sanitizeOptions: function(options) {
@@ -631,7 +699,15 @@ mod.factory('n3utils', [
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
         options.lineMode || (options.lineMode = 'linear');
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
-        options.tooltipMode || (options.tooltipMode = 'default');
+        if (['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) === -1) {
+          options.tooltipMode = 'dots';
+        }
+        if (options.drawLegend !== false) {
+          options.drawLegend = true;
+        }
+        if (options.drawDots !== false) {
+          options.drawDots = true;
+        }
         return options;
       },
       sanitizeSeriesOptions: function(options) {

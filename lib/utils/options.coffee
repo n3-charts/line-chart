@@ -1,6 +1,6 @@
       getDefaultOptions: ->
         return {
-          tooltipMode: 'default'
+          tooltipMode: 'dots'
           lineMode: 'linear'
           tension: 0.7
           axes: {
@@ -8,6 +8,8 @@
             y: {type: 'linear'}
           }
           series: []
+          drawLegend: true
+          drawDots: true
         }
 
       sanitizeOptions: (options) ->
@@ -19,8 +21,12 @@
 
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
+        
+        if ['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) is -1
+          options.tooltipMode = 'dots'
 
-        options.tooltipMode or= 'default'
+        options.drawLegend = true unless options.drawLegend is false
+        options.drawDots = true unless options.drawDots is false
 
         return options
 
