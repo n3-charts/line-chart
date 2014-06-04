@@ -116,13 +116,13 @@
         isVisible = false
 
         svg.select('.content').selectAll('.series_' + index)
-          .attr('opacity', (s) ->
-            if d3.select(this).attr('opacity') is '0'
+          .style('display', (s) ->
+            if d3.select(this).style('display') is 'none'
               isVisible = true
-              return '1'
-
-            isVisible = false
-            return '0'
+              return 'initial'
+            else
+              isVisible = false
+              return 'none'
           )
 
         return isVisible

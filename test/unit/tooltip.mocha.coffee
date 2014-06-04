@@ -6,11 +6,33 @@ describe 'tooltip', ->
   fakeMouse = undefined
 
   tooltipSpy = undefined
+  flushD3 = undefined
+  checkVisibilityOf = undefined
 
   beforeEach module 'n3-line-chart'
   beforeEach module 'testUtils'
 
   beforeEach inject (n3utils, _fakeMouse_) ->
+    flushD3 = ->
+      now = Date.now
+      Date.now = -> Infinity
+      d3.timer.flush()
+      Date.now = now
+
+    checkVisibilityOf = (args) ->
+      flushD3()
+      args.forEach (axis) ->
+        if element.childByClass("#{axis}Tooltip").getAttribute('opacity') isnt '1'
+          console.warn "#{axis}Tooltip is not visible, but it should"
+        expect(element.childByClass("#{axis}Tooltip").getAttribute('opacity')).to.equal('1')
+
+      ['x', 'y', 'y2'].forEach (axis) ->
+        if args.indexOf(axis) is -1
+          if element.childByClass("#{axis}Tooltip").getAttribute('opacity') isnt '0'
+            console.warn "#{axis}Tooltip is visible, but it shouldn't"
+          expect(element.childByClass("#{axis}Tooltip").getAttribute('opacity')).to.equal('0')
+
+
     fakeMouse = _fakeMouse_
 
     sinon.stub n3utils, 'getDefaultMargins', ->
@@ -18,6 +40,7 @@ describe 'tooltip', ->
       right: 50
       bottom: 30
       left: 50
+
 
   beforeEach inject (pepito) ->
     {element, innerScope, outerScope} = pepito.directive """
@@ -58,23 +81,24 @@ describe 'tooltip', ->
   it 'should show/hide the tooltip when hovering/leaving a left axis dot', ->
     leftAxisDotGroup = element.childByClass('dotGroup series_0')
 
-    xTooltip = element.childByClass('xTooltip')
-    expect(xTooltip.getAttribute('id')).to.equal 'xTooltip'
+    checkVisibilityOf([])
 
     fakeMouse.hoverIn(leftAxisDotGroup.domElement)
+    checkVisibilityOf(['x', 'y'])
+
     fakeMouse.hoverOut(leftAxisDotGroup.domElement)
-    expect(tooltipSpy.callCount).to.equal(1)
+    checkVisibilityOf([])
 
   it 'should show/hide the tooltip when moving over/leaving a line', ->
     content = element.childByClass('content')
     linePath = content.childByClass('line')
 
-    xTooltip = element.childByClass('xTooltip')
-    expect(xTooltip.getAttribute('id')).to.equal 'xTooltip'
-    
+    checkVisibilityOf([])
     fakeMouse.mouseMove(linePath.domElement)
+    checkVisibilityOf(['x', 'y'])
+
     fakeMouse.hoverOut(linePath.domElement)
-    expect(tooltipSpy.callCount).to.equal(2)
+    checkVisibilityOf([])
 
   it 'should work when no x-formatter is found', ->
     outerScope.$apply ->
@@ -93,17 +117,21 @@ describe 'tooltip', ->
 
     leftAxisDotGroup = element.childByClass('dotGroup series_0')
 
-    xTooltip = element.childByClass('xTooltip')
-    expect(xTooltip.getAttribute('id')).to.equal 'xTooltip'
+    checkVisibilityOf([])
 
     fakeMouse.hoverIn(leftAxisDotGroup.domElement)
+    checkVisibilityOf(['x', 'y'])
+
     fakeMouse.hoverOut(leftAxisDotGroup.domElement)
+    checkVisibilityOf([])
 
   it 'should show/hide the tooltip when hovering/leaving a right axis column', ->
     rightAxisColumnGroup = element.childByClass('columnGroup series_1')
-    xTooltip = element.childByClass('xTooltip')
+
+    checkVisibilityOf([])
 
     fakeMouse.hoverIn(rightAxisColumnGroup.domElement)
+    checkVisibilityOf(['x', 'y2'])
+
     fakeMouse.hoverOut(rightAxisColumnGroup.domElement)
-
-
+    checkVisibilityOf([])
