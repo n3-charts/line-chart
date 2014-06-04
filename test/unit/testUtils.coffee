@@ -65,7 +65,9 @@ utils.factory 'pepito', ($compile, $rootScope, fakeMouse) ->
         hasClass: (c) -> _aElement.hasClass(c)
         innerHTML: -> _domElement.innerHTML
         value: -> _domElement.value
-        getStyle: -> _domElement.getAttribute('style')
+        getStyle: (attr) ->
+          return _domElement.getAttribute('style') unless attr
+          return _domElement.style[attr]
         getAttribute: (key) -> _domElement.getAttribute(key)
       }
   }

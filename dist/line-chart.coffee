@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 03 June 2014
+line-chart - v1.0.6 - 04 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -37,7 +37,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         isUpdatingOptions = false
 
     scope.redraw = (dimensions) ->
-      options = n3utils.sanitizeOptions(angular.copy(scope.options))
+      options = n3utils.sanitizeOptions(scope.options)
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
@@ -46,7 +46,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         options.drawLegend = false
         options.drawDots = false
         options.tooltipMode = 'none'
-      
+
       n3utils.clean(element[0])
 
       svg = n3utils.bootstrap(element[0], dimensions)
@@ -433,13 +433,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         isVisible = false
 
         svg.select('.content').selectAll('.series_' + index)
-          .attr('opacity', (s) ->
-            if d3.select(this).attr('opacity') is '0'
+          .style('display', (s) ->
+            if d3.select(this).style('display') is 'none'
               isVisible = true
-              return '1'
-
-            isVisible = false
-            return '0'
+              return 'initial'
+            else
+              isVisible = false
+              return 'none'
           )
 
         return isVisible

@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.6 - 03 June 2014
+line-chart - v1.0.6 - 04 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -47,7 +47,7 @@ directive('linechart', [
       };
       scope.redraw = function(dimensions) {
         var axes, columnWidth, data, dataPerSeries, isThumbnail, options, series, svg;
-        options = n3utils.sanitizeOptions(angular.copy(scope.options));
+        options = n3utils.sanitizeOptions(scope.options);
         data = scope.data;
         series = options.series;
         dataPerSeries = n3utils.getDataPerSeries(data, options);
@@ -447,13 +447,14 @@ mod.factory('n3utils', [
       toggleSeries: function(svg, index) {
         var isVisible;
         isVisible = false;
-        svg.select('.content').selectAll('.series_' + index).attr('opacity', function(s) {
-          if (d3.select(this).attr('opacity') === '0') {
+        svg.select('.content').selectAll('.series_' + index).style('display', function(s) {
+          if (d3.select(this).style('display') === 'none') {
             isVisible = true;
-            return '1';
+            return 'initial';
+          } else {
+            isVisible = false;
+            return 'none';
           }
-          isVisible = false;
-          return '0';
         });
         return isVisible;
       },
