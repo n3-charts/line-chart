@@ -72,12 +72,15 @@ describe 'legend', ->
 
     fakeMouse.clickOn(l_0.childNodes[0])
 
-    expect(element.childByClass('lineGroup series_0').getAttribute('opacity')).to.equal('0')
-    expect(element.childByClass('dotGroup series_0').getAttribute('opacity')).to.equal('0')
+    fn = (cl) -> element.childByClass(cl).getStyle('display')
+
+    expect(fn('lineGroup series_0')).to.equal('none')
+    expect(fn('dotGroup series_0')).to.equal('none')
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('0.2')
+
     fakeMouse.clickOn(l_0.childNodes[0])
-    expect(element.childByClass('lineGroup series_0').getAttribute('opacity')).to.equal('1')
-    expect(element.childByClass('dotGroup series_0').getAttribute('opacity')).to.equal('1')
+    expect(fn('lineGroup series_0')).to.equal('initial')
+    expect(fn('dotGroup series_0')).to.equal('initial')
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('1')
 
   it 'should be able to hide a series at startup', ->
@@ -101,8 +104,9 @@ describe 'legend', ->
         }
       ]
 
-    expect(element.childByClass('lineGroup series_0').getAttribute('opacity')).to.equal('0')
-    expect(element.childByClass('dotGroup series_0').getAttribute('opacity')).to.equal('0')
+    fn = (cl) -> element.childByClass(cl).getStyle('display')
+    expect(fn('lineGroup series_0')).to.equal('none')
+    expect(fn('dotGroup series_0')).to.equal('none')
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('0.2')
 
 
@@ -129,10 +133,3 @@ describe 'legend', ->
       ]
 
       expect(n3utils.computeLegendLayout(series, dim)).to.eql([0, 700, 765])
-
-
-
-
-
-
-
