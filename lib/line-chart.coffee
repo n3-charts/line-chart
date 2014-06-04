@@ -31,7 +31,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         isUpdatingOptions = false
 
     scope.redraw = (dimensions) ->
-      options = n3utils.sanitizeOptions(angular.copy(scope.options))
+      options = n3utils.sanitizeOptions(scope.options)
       data = scope.data
       series = options.series
       dataPerSeries = n3utils.getDataPerSeries(data, options)
@@ -40,7 +40,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         options.drawLegend = false
         options.drawDots = false
         options.tooltipMode = 'none'
-      
+
       n3utils.clean(element[0])
 
       svg = n3utils.bootstrap(element[0], dimensions)
