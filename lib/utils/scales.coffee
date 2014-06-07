@@ -26,6 +26,9 @@
         else
           y2 = d3.scale.linear().rangeRound([height, 0])
 
+        y.clamp(true)
+        y2.clamp(true)
+
         xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction)
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction)
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat(axesOptions.y2?.labelFunction)
