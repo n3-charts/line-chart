@@ -53,7 +53,9 @@ $scope.options = {
   ],
   lineMode: 'linear',
   tension: 0.7,
-  tooltipMode: 'dots'
+  tooltipMode: 'dots',
+  drawLegend: true,
+  drawDots: true
 }
 ```
 ##### Axes
@@ -103,6 +105,8 @@ The `tension` can be set, too (default is `0.7`). See [issue #44][2] about that.
 > For more information about interpolation, please consult the [D3.js documentation about that][1].
 
 The `tooltipMode` can be set to `none`, `dots`, `lines` or `both`.
+
+The `drawLegend` and `drawDots` are optional. They respectively enable/disable the chart's legend and the lines and areas dots. Default is `true` for both.
 
 #### Mode
 The mode can be set to 'thumbnail' (default is empty string). If so, the chart will take as much space as it can, and it will only display the series. No axes, no legend, no tooltips. Furthermore, the lines or areas will be drawn without dots. This is convenient for sparklines.
