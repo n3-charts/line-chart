@@ -17,6 +17,10 @@
     "d3": "*",
     "angular": "*",
     "angular-mocks": "*",
-    "moment": "*"
+    "moment": "*",
+    "n3-line-chart": "*"
+  },
+  "resolutions": {
+    "angular": "1.2.17"
   }
 }
