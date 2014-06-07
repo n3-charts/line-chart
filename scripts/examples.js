@@ -184,7 +184,7 @@ angular.module('examples', ['apojop'])
 
   $scope.miniExamples = $scope.examples.map(function(e) {
     return {
-      options: e.options,
+      options: angular.copy(e.options),
       data: e.data.slice(0, 10)
     };
   });
