@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.6 - 04 June 2014
+line-chart - v1.0.6 - 07 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -779,6 +779,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           y2 = d3.scale.log().clamp(true).rangeRound([height, 0])
         else
           y2 = d3.scale.linear().rangeRound([height, 0])
+
+        y.clamp(true)
+        y2.clamp(true)
 
         xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction)
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction)
