@@ -244,20 +244,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return this
 
-      updateColumns: (svg, scales, columnWidth) ->
-        svg.select('.content').selectAll('.columnGroup').selectAll('rect')
-          .attr(
-            width: columnWidth
-            x: (d) -> scales.xScale(d.x)
-            y: (d) -> scales[d.axis + 'Scale'](Math.max(0, d.value))
-            height: (d) ->
-              Math.abs(
-                scales[d.axis + 'Scale'](d.value) - scales[d.axis + 'Scale'](0)
-              )
-          )
-
-        return this
-
 # ----
 
 
@@ -297,15 +283,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .on('mouseout', (d) ->
             d3.select(d3.event.target).attr('r', 2)
             handlers.onMouseOut?(svg)
-          )
-
-        return this
-
-      updateDots: (svg, scales) ->
-        svg.select('.content').selectAll('.dotGroup').selectAll('.dot')
-          .attr(
-            'cx': (d) -> scales.xScale(d.x)
-            'cy': (d) -> scales[d.axis + 'Scale'](d.value)
           )
 
         return this

@@ -36,12 +36,3 @@
           )
 
         return this
-
-      updateDots: (svg, scales) ->
-        svg.select('.content').selectAll('.dotGroup').selectAll('.dot')
-          .attr(
-            'cx': (d) -> scales.xScale(d.x)
-            'cy': (d) -> scales[d.axis + 'Scale'](d.value)
-          )
-
-        return this

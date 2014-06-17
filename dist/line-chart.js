@@ -248,21 +248,6 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      updateColumns: function(svg, scales, columnWidth) {
-        svg.select('.content').selectAll('.columnGroup').selectAll('rect').attr({
-          width: columnWidth,
-          x: function(d) {
-            return scales.xScale(d.x);
-          },
-          y: function(d) {
-            return scales[d.axis + 'Scale'](Math.max(0, d.value));
-          },
-          height: function(d) {
-            return Math.abs(scales[d.axis + 'Scale'](d.value) - scales[d.axis + 'Scale'](0));
-          }
-        });
-        return this;
-      },
       drawDots: function(svg, axes, data, options, handlers) {
         var dotGroup, _ref;
         dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
@@ -307,17 +292,6 @@ mod.factory('n3utils', [
             return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
           });
         }
-        return this;
-      },
-      updateDots: function(svg, scales) {
-        svg.select('.content').selectAll('.dotGroup').selectAll('.dot').attr({
-          'cx': function(d) {
-            return scales.xScale(d.x);
-          },
-          'cy': function(d) {
-            return scales[d.axis + 'Scale'](d.value);
-          }
-        });
         return this;
       },
       computeLegendLayout: function(series, dimensions) {
