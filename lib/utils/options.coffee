@@ -12,8 +12,13 @@
           drawDots: true
         }
 
-      sanitizeOptions: (options) ->
+      sanitizeOptions: (options, mode) ->
         return this.getDefaultOptions() unless options?
+
+        if mode is 'thumbnail'
+          options.drawLegend = false
+          options.drawDots = false
+          options.tooltipMode = 'none'
 
         options.series = this.sanitizeSeriesOptions(options.series)
 
@@ -21,9 +26,12 @@
 
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
-        
-        if ['none', 'dots', 'lines', 'both'].indexOf(options.tooltipMode) is -1
+
+        if options.tooltipMode not in ['none', 'dots', 'lines', 'both', 'scrubber']
           options.tooltipMode = 'dots'
+
+        if options.tooltipMode is 'scrubber'
+          options.drawLegend = true
 
         options.drawLegend = true unless options.drawLegend is false
         options.drawDots = true unless options.drawDots is false

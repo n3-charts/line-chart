@@ -30,7 +30,9 @@ module.exports = function(grunt) {
 
     watch: {
       files: ['lib/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
-      tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified']
+      // tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified', 'uglify', 'karma:continuous'],
+      tasks: ['concat', 'coffee', 'uglify']
+
     },
 
     karma: {

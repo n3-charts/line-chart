@@ -35,6 +35,63 @@
       createContent: (svg) ->
         svg.append('g').attr('class', 'content')
 
+      createGlass: (svg, dimensions, handlers, axes, data) ->
+        glass = svg.append('g')
+          .attr(
+            'class': 'glass-container'
+            'opacity': 0
+          )
+
+        items = glass.selectAll('.scrubberItem')
+          .data(data)
+          .enter()
+            .append('g')
+              .attr(
+                'class', (s, i) -> "scrubberItem series_#{i}"
+              )
+
+        items.append('circle')
+          .attr(
+            'class': (s, i) -> "scrubberDot series_#{i}"
+            'fill': 'white'
+            'stroke': (s) -> s.color
+            'stroke-width': '2px'
+            'r': 4
+          )
+
+        items.append('path')
+          .attr(
+            'class': (s, i) -> "scrubberPath series_#{i}"
+            'y': '-7px'
+            'fill': (s) -> s.color
+          )
+
+        items.append('text')
+          .style('text-anchor', (s) -> return if s.axis is 'y' then 'end' else 'start')
+          .attr(
+            'class': (d, i) -> "scrubberText series_#{i}"
+            'height': '14px'
+            'font-family': 'Courier'
+            'font-size': 10
+            'fill': 'white'
+            'transform': (s) ->
+              return if s.axis is 'y' then 'translate(-7, 3)' else 'translate(7, 3)'
+            'text-rendering': 'geometric-precision'
+          )
+          .text (s) -> s.label || s.y
+
+        glass.append('rect')
+          .attr(
+            class: 'glass'
+            width: dimensions.width - dimensions.left - dimensions.right
+            height: dimensions.height - dimensions.top - dimensions.bottom
+          )
+          .style('fill', 'white')
+          .style('fill-opacity', 0.000001)
+          .on('mouseover', ->
+            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data)
+          )
+
       getDataPerSeries: (data, options) ->
         series = options.series
         axes = options.axes
