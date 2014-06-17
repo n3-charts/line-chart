@@ -30,28 +30,13 @@ module.exports = function(grunt) {
 
     watch: {
       files: ['lib/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
-      // tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified', 'uglify', 'karma:continuous'],
-      tasks: ['concat', 'coffee', 'uglify']
+      tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified', 'uglify', 'karma:minified'],
+      // tasks: ['concat', 'coffee', 'uglify']
 
     },
 
     karma: {
       options: testConfig('karma.conf.js'),
-
-      continuous: {
-        singleRun: true,
-        autoWatch: false,
-        browsers: ['Firefox'],
-        options: {
-          files: [
-            'bower_components/angular/angular.js',
-            'bower_components/angular-mocks/angular-mocks.js',
-            'bower_components/d3/d3.js',
-            'dist/line-chart.min.js',
-            'test/unit/**/*.coffee'
-          ],
-        }
-      },
 
       unminified: {
         singleRun: true,
@@ -69,6 +54,25 @@ module.exports = function(grunt) {
             'dist/line-chart.js': 'coverage',
             'test/unit/**/*.coffee': 'coffee'
           }
+        }
+      },
+
+      minified: {
+        singleRun: true,
+        autoWatch: false,
+        browsers: ['Firefox'],
+        options: {
+          files: [
+            'bower_components/angular/angular.js',
+            'bower_components/angular-mocks/angular-mocks.js',
+            'bower_components/d3/d3.js',
+            'dist/line-chart.min.js',
+            'test/unit/**/*.coffee'
+          ],
+          preprocessors: {
+            'test/unit/**/*.coffee': 'coffee'
+          },
+          reporters: ['dots'],
         }
       }
     },
@@ -152,5 +156,5 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('travis', ['default', 'shell:visual']);
   grunt.registerTask('visual', ['concat', 'coffeelint', 'coffee', 'uglify', 'shell:visual']);
-  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:continuous']);
+  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:minified']);
 };

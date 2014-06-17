@@ -54,17 +54,3 @@
             )
 
         return this
-
-      updateColumns: (svg, scales, columnWidth) ->
-        svg.select('.content').selectAll('.columnGroup').selectAll('rect')
-          .attr(
-            width: columnWidth
-            x: (d) -> scales.xScale(d.x)
-            y: (d) -> scales[d.axis + 'Scale'](Math.max(0, d.value))
-            height: (d) ->
-              Math.abs(
-                scales[d.axis + 'Scale'](d.value) - scales[d.axis + 'Scale'](0)
-              )
-          )
-
-        return this
