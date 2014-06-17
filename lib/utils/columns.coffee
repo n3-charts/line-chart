@@ -9,26 +9,24 @@
 
         return parseInt(Math.max((avWidth - (n - 1)*gap) / (n*seriesCount), 5))
 
-      drawColumns: (svg, axes, data, columnWidth) ->
+      drawColumns: (svg, axes, data, columnWidth, handlers) ->
         data = data.filter (s) -> s.type is 'column'
 
         x1 = d3.scale.ordinal()
           .domain(data.map (s) -> s.name + s.index)
           .rangeBands([0, data.length * columnWidth], 0)
 
-        that = this
-
         colGroup = svg.select('.content').selectAll('.columnGroup')
           .data(data)
           .enter().append("g")
             .attr('class', (s) -> 'columnGroup ' + 'series_' + s.index)
-            .style("fill", (s) -> s.color)
-            .style("fill-opacity", 0.8)
-            .attr("transform", (s) -> "translate(" + (x1(s.name + s.index) - data.length*columnWidth/2) + ",0)")
+            .style('fill', (s) -> s.color)
+            .style('fill-opacity', 0.8)
+            .attr('transform', (s) -> "translate(" + (x1(s.name + s.index) - data.length*columnWidth/2) + ",0)")
             .on('mouseover', (series) ->
               target = d3.select(d3.event.target)
 
-              that.onMouseOver(svg, {
+              handlers.onMouseOver?(svg, {
                 series: series
                 x: target.attr('x')
                 y: axes[series.axis + 'Scale'](target.datum().value)
@@ -37,7 +35,7 @@
             )
             .on('mouseout', (d) ->
               d3.select(d3.event.target).attr('r', 2)
-              that.onMouseOut(svg)
+              handlers.onMouseOut?(svg)
             )
 
         colGroup.selectAll("rect")
