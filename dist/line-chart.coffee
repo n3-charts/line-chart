@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.7 - 17 June 2014
+line-chart - v1.0.7 - 18 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -89,7 +89,8 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       promise = $timeout(scope.update, 1)
 
     $window.addEventListener('resize', window_resize)
-    scope.$watch('data', scope.update)
+
+    scope.$watch('data', scope.update, true)
     scope.$watch('options', (v) ->
       return if isUpdatingOptions
       scope.update()
