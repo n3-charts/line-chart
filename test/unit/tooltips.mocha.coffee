@@ -100,6 +100,35 @@ describe 'tooltip', ->
     fakeMouse.hoverOut(linePath.domElement)
     checkVisibilityOf([])
 
+  describe 'scrubber mode', ->
+    beforeEach ->
+      outerScope.$apply ->
+        outerScope.options = {
+          series: [
+            {
+              y: 'value'
+              color: '#4682b4'
+            }
+            {
+              y: 'value'
+              axis: 'y2'
+              color: '#4682b4'
+              type: 'column'
+            }
+          ]
+          tooltipMode: 'scrubber'
+        }
+
+    it 'should create a glass', ->
+      expect(element.childByClass('glass')).not.to.equal(undefined)
+
+    it 'should change the legend on mouse over', inject (fakeMouse) ->
+      glass = element.childByClass('glass')
+
+      fakeMouse.hoverIn(glass.domElement)
+
+
+
   it 'should work when no x-formatter is found', ->
     outerScope.$apply ->
       outerScope.options = series: [

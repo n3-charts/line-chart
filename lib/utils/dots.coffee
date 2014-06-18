@@ -1,6 +1,4 @@
-      drawDots: (svg, axes, data, options) ->
-        that = this
-
+      drawDots: (svg, axes, data, options, handlers) ->
         dotGroup = svg.select('.content').selectAll('.dotGroup')
           .data data.filter (s) -> s.type in ['line', 'area']
           .enter().append('g')
@@ -20,12 +18,12 @@
               'stroke': 'white'
               'stroke-width': '2px'
             )
-        if options.tooltipMode is 'dots' or options.tooltipMode is 'both'
+        if options.tooltipMode in ['dots', 'both', 'scrubber']
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
             target.attr('r', 4)
 
-            that.onMouseOver(svg, {
+            handlers.onMouseOver?(svg, {
               series: series
               x: target.attr('cx')
               y: target.attr('cy')
@@ -34,16 +32,7 @@
           )
           .on('mouseout', (d) ->
             d3.select(d3.event.target).attr('r', 2)
-            that.onMouseOut(svg)
-          )
-
-        return this
-
-      updateDots: (svg, scales) ->
-        svg.select('.content').selectAll('.dotGroup').selectAll('.dot')
-          .attr(
-            'cx': (d) -> scales.xScale(d.x)
-            'cy': (d) -> scales[d.axis + 'Scale'](d.value)
+            handlers.onMouseOut?(svg)
           )
 
         return this

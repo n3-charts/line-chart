@@ -65,7 +65,7 @@ describe 'legend', ->
     legendGroup = element.childByClass('legend')
     expect(legendGroup.children().length).to.equal 2
     l_0 = legendGroup.children()[0].domElement
-    expect(l_0.getAttribute('class')).to.equal 'legendItem'
+    expect(l_0.getAttribute('class')).to.equal 'legendItem series_0'
     expect(l_0.childNodes[0].nodeName).to.equal 'circle'
     expect(l_0.childNodes[0].getAttribute('fill')).to.equal '#4682b4'
     expect(l_0.childNodes[1].getAttribute('clip-path')).to.equal 'url(#legend-clip)'

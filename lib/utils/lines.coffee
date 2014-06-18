@@ -1,6 +1,4 @@
-      drawLines: (svg, scales, data, options) ->
-        that = this
-        
+      drawLines: (svg, scales, data, options, handlers) ->
         drawers =
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension)
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
@@ -19,7 +17,7 @@
             'fill': 'none'
             'stroke-width': (s) -> s.thickness
           )
-        if options.tooltipMode is 'both' or options.tooltipMode is 'lines'
+        if options.tooltipMode in ['both', 'lines']
           interpolateData = (series) ->
             target = d3.select(d3.event.target)
             try
@@ -46,7 +44,7 @@
                 minYValue = datum.value
               if !maxYValue? or datum.value > maxYValue
                 maxYValue = datum.value
-            
+
             xPercentage = (mousePos[0] - minXPos) / (maxXPos - minXPos)
             yPercentage = (mousePos[1] - minYPos) / (maxYPos - minYPos)
             xVal = Math.round(xPercentage * (maxXValue - minXValue) + minXValue)
@@ -54,15 +52,16 @@
 
             interpDatum = x: xVal, value: yVal
 
-            that.onMouseOver(svg, {
+            handlers.onMouseOver?(svg, {
               series: series
               x: mousePos[0]
               y: mousePos[1]
               datum: interpDatum
             })
-          lineGroup.on 'mousemove', interpolateData
-          .on 'mouseout', (d) ->
-            that.onMouseOut(svg)
+
+          lineGroup
+            .on 'mousemove', interpolateData
+            .on 'mouseout', (d) -> handlers.onMouseOut?(svg)
 
         return this
 

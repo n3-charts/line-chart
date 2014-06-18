@@ -7,13 +7,14 @@ directive = (name, conf) ->
 
 directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
   link  = (scope, element, attrs, ctrl) ->
-    dim = n3utils.getDefaultMargins()
+    _u = n3utils
+    dim = _u.getDefaultMargins()
 
     scope.updateDimensions = (dimensions) ->
-      top = n3utils.getPixelCssProp(element[0].parentElement, 'padding-top')
-      bottom = n3utils.getPixelCssProp(element[0].parentElement, 'padding-bottom')
-      left = n3utils.getPixelCssProp(element[0].parentElement, 'padding-left')
-      right = n3utils.getPixelCssProp(element[0].parentElement, 'padding-right')
+      top = _u.getPixelCssProp(element[0].parentElement, 'padding-top')
+      bottom = _u.getPixelCssProp(element[0].parentElement, 'padding-bottom')
+      left = _u.getPixelCssProp(element[0].parentElement, 'padding-left')
+      right = _u.getPixelCssProp(element[0].parentElement, 'padding-right')
       dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right
       dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom
 
@@ -23,7 +24,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
 
     isUpdatingOptions = false
-    handlers =
+    initialHandlers =
       onSeriesVisibilityChange: ({series, index, newVisibility}) ->
         isUpdatingOptions = true
         scope.options.series[index].visible = newVisibility
@@ -31,58 +32,60 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         isUpdatingOptions = false
 
     scope.redraw = (dimensions) ->
-      options = n3utils.sanitizeOptions(scope.options)
-      data = scope.data
-      series = options.series
-      dataPerSeries = n3utils.getDataPerSeries(data, options)
-      if attrs.mode is 'thumbnail'
-        isThumbnail = true
-        options.drawLegend = false
-        options.drawDots = false
-        options.tooltipMode = 'none'
+      options = _u.sanitizeOptions(scope.options, attrs.mode)
+      handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options))
+      dataPerSeries = _u.getDataPerSeries(scope.data, options)
 
-      n3utils.clean(element[0])
+      isThumbnail = attrs.mode is 'thumbnail'
 
-      svg = n3utils.bootstrap(element[0], dimensions)
-      axes = n3utils
+      _u.clean(element[0])
+
+      svg = _u.bootstrap(element[0], dimensions)
+      axes = _u
         .createAxes(svg, dimensions, options.axes)
         .andAddThemIf(isThumbnail)
 
       if dataPerSeries.length
-        n3utils.setScalesDomain(axes, data, options.series, svg, options.axes)
+        _u.setScalesDomain(axes, scope.data, options.series, svg, options.axes)
 
       if isThumbnail
-        n3utils.adjustMarginsForThumbnail(dimensions, axes)
+        _u.adjustMarginsForThumbnail(dimensions, axes)
       else
-        n3utils.adjustMargins(dimensions, options, data)
+        _u.adjustMargins(dimensions, options, scope.data)
 
-      n3utils.createContent(svg)
-
+      _u.createContent(svg, handlers)
 
       if dataPerSeries.length
-        columnWidth = n3utils.getBestColumnWidth(dimensions, dataPerSeries)
+        columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries)
 
-        n3utils
-          .drawArea(svg, axes, dataPerSeries, options)
-          .drawColumns(svg, axes, dataPerSeries, columnWidth)
-          .drawLines(svg, axes, dataPerSeries, options)
+        _u
+          .drawArea(svg, axes, dataPerSeries, options, handlers)
+          .drawColumns(svg, axes, dataPerSeries, columnWidth, handlers)
+          .drawLines(svg, axes, dataPerSeries, options, handlers)
 
-        if options.drawDots then n3utils.drawDots(svg, axes, dataPerSeries, options)
+        if options.drawDots
+          _u.drawDots(svg, axes, dataPerSeries, options, handlers)
 
-      if options.drawLegend then n3utils.drawLegend(svg, series, dimensions, handlers)
-      n3utils.addTooltips(svg, dimensions, options.axes) unless options.tooltipMode is 'none'
+      if options.drawLegend
+        _u.drawLegend(svg, options.series, dimensions, handlers)
 
-    timeoutPromise = undefined
+      if options.tooltipMode is 'scrubber'
+        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries)
+      else if options.tooltipMode isnt 'none'
+        _u.addTooltips(svg, dimensions, options.axes)
+
+
+
+
+    promise = undefined
     window_resize = ->
-      $timeout.cancel(timeoutPromise)
-      timeoutPromise = $timeout(scope.update, 1)
+      $timeout.cancel(promise) if promise?
+      promise = $timeout(scope.update, 1)
 
     $window.addEventListener('resize', window_resize)
-
     scope.$watch('data', scope.update)
     scope.$watch('options', (v) ->
       return if isUpdatingOptions
-
       scope.update()
     , true)
 
