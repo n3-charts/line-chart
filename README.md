@@ -104,7 +104,7 @@ The `tension` can be set, too (default is `0.7`). See [issue #44][2] about that.
 
 > For more information about interpolation, please consult the [D3.js documentation about that][1].
 
-The `tooltipMode` can be set to `none`, `dots`, `lines` or `both`.
+The `tooltipMode` can be set to `none`, `dots`, `lines` or `both`. It can also be set to `scrubber`, which displays tooltips for all series.
 
 The `drawLegend` and `drawDots` are optional. They respectively enable/disable the chart's legend and the lines and areas dots. Default is `true` for both.
 
