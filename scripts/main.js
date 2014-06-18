@@ -27,11 +27,11 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests'])
     {x: 13, y: 2.578, other_y: -8.835, val_2: 14.978, val_3: -16.557}
   ];
 
-  $scope.options = {series: [
+  $scope.options = {axes: {y2: {min: -15, max: 15}},series: [
     {y: 'val_2', label: 'One', type: 'area', striped: true},
     {y: 'y', type: 'area', striped: true, label: 'Two'},
-    {y: 'other_y', type: 'area', label: 'Three', striped: true}
-  ], lineMode: 'cardinal'};
+    {y: 'other_y', type: 'area', label: 'Three', striped: true, axis: 'y2'}
+  ], lineMode: 'cardinal', tooltipMode: 'scrubber'};
 
 })
 
