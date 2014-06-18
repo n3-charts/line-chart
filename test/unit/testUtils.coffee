@@ -103,10 +103,12 @@ utils.factory 'fakeMouse', ->
     return path
 
   bubbleUp = (element, type) ->
+    element = element.domElement || element
     dispatch(elm, type) for elm in eventPath(element)
 
 
   dispatch = (element, type) ->
+    element = element.domElement || element
     event = document.createEvent("MouseEvent")
     event.initMouseEvent(
       type,
@@ -124,8 +126,7 @@ utils.factory 'fakeMouse', ->
       defaults.meta
       defaults.button
       defaults.relatedTarget
-    );
-
+    )
 
     element.dispatchEvent(event)
     return event
@@ -139,7 +140,7 @@ utils.factory 'fakeMouse', ->
 
     hoverIn: (element) -> bubbleUp(element, 'mouseover')
     hoverOut: (element) -> bubbleUp(element, 'mouseout')
-    mouseMove: (element) -> bubbleUp(element, 'mousemove')
+    mouseMove: (element) -> dispatch(element, 'mousemove')
   }
 
 utils.factory 'focus', ->

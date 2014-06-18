@@ -7,6 +7,10 @@ describe 'options', ->
     n3utils = _n3utils_
 
   describe 'drawLegend', ->
+    it 'should set drawLegend to true if tooltipMode is scrubber', ->
+      o = n3utils.sanitizeOptions(drawLegend: false, tooltipMode: 'scrubber')
+      expect(o.drawLegend).to.equal true
+
     it 'should set default drawLegend value if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
       expect(o.drawLegend).to.equal true

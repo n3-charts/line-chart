@@ -29,7 +29,6 @@
       drawLegend: (svg, series, dimensions, handlers) ->
         layout = this.computeLegendLayout(series, dimensions)
 
-
         that = this
         legend = svg.append('g').attr('class', 'legend')
 
@@ -43,7 +42,7 @@
 
         item.enter().append('g')
             .attr(
-              'class': 'legendItem'
+              'class': (s, i) -> "legendItem series_#{i}"
               'transform': (s, i) -> "translate(#{layout[i]},#{dimensions.height-40})"
               'opacity': (s, i) ->
                 if s.visible is false
@@ -89,6 +88,7 @@
 
         item.append('text')
           .attr(
+            'class': (d, i) -> "legendItem series_#{i}"
             'font-family': 'Courier'
             'font-size': 10
             'transform': 'translate(13, 4)'
