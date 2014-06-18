@@ -1,6 +1,6 @@
 {
   "name": "n3-line-chart",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "dist/line-chart.min.js",
   "ignore": [
     "**/.*",
@@ -20,13 +20,13 @@
     "moment": "*"
   },
   "homepage": "https://github.com/n3-charts/line-chart",
-  "_release": "1.0.7",
+  "_release": "1.0.8",
   "_resolution": {
     "type": "version",
-    "tag": "1.0.7",
-    "commit": "21d2ce7c81e3579d6f39fb0f94a6eda1eb44699c"
+    "tag": "1.0.8",
+    "commit": "81c4cbec3c98e95a78c4ecf6e5d5ed1486c6aeb2"
   },
   "_source": "git://github.com/n3-charts/line-chart.git",
-  "_target": "~1.0.5",
+  "_target": "*",
   "_originalSource": "n3-line-chart"
 }

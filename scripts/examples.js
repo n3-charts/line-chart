@@ -170,12 +170,12 @@ angular.module('examples', ['apojop'])
     },
 
     {
-      label: 'A last one',
+      label: 'Scrubber mode',
       originData: linData,
       visibleRows: 10,
       data: linData.slice(0, 10),
-      description: 'This one has no particular purpose.',
-      options: {lineMode: 'cardinal', series: [
+      description: 'Tooltip can also be set to scrubber mode.',
+      options: {tooltipMode: 'scrubber', lineMode: 'cardinal', series: [
       {y: 'val_0', label: 'Rowdy', type: 'area', striped: true, color: colors(10)},
       {y: 'val_1', label: 'Eagle', type: 'area', striped: true, color: colors(14)},
       ]}
