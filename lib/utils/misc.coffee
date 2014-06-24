@@ -112,6 +112,7 @@
             type: s.type
             thickness: s.thickness
             dashed: if s.dashed is true then true else undefined
+            drawDots: if s.drawDots is false then false else true
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(
