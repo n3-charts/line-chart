@@ -1,6 +1,6 @@
       getDefaultOptions: ->
         return {
-          tooltipMode: 'dots'
+          tooltip: {mode: 'axes', interpolate: false}
           lineMode: 'linear'
           tension: 0.7
           axes: {
@@ -18,7 +18,7 @@
         if mode is 'thumbnail'
           options.drawLegend = false
           options.drawDots = false
-          options.tooltipMode = 'none'
+          options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
 
@@ -27,8 +27,7 @@
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
 
-        if options.tooltipMode not in ['none', 'dots', 'lines', 'both', 'scrubber']
-          options.tooltipMode = 'dots'
+        this.sanitizeTooltip(options)
 
         if options.tooltipMode is 'scrubber'
           options.drawLegend = true
@@ -37,6 +36,19 @@
         options.drawDots = true unless options.drawDots is false
 
         return options
+
+      sanitizeTooltip: (options) ->
+        if !options.tooltip
+          options.tooltip = {mode: 'axes', interpolate: false}
+          return
+
+        if options.tooltip.mode not in ['none', 'axes', 'scrubber']
+          options.tooltip.mode = 'axes'
+
+        options.tooltip.interpolate = !!options.tooltip.interpolate
+
+        if options.tooltip.mode is 'scrubber' and options.tooltip.interpolate
+          throw new Error('Unable to interpolate tooltip for scrubber mode')
 
       sanitizeSeriesOptions: (options) ->
         return [] unless options?

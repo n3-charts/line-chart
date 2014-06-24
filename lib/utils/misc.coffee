@@ -35,7 +35,7 @@
       createContent: (svg) ->
         svg.append('g').attr('class', 'content')
 
-      createGlass: (svg, dimensions, handlers, axes, data) ->
+      createGlass: (svg, dimensions, handlers, axes, data, options) ->
         glass = svg.append('g')
           .attr(
             'class': 'glass-container'
@@ -89,7 +89,7 @@
           .style('fill', 'white')
           .style('fill-opacity', 0.000001)
           .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data)
+            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options)
           )
 
       getDataPerSeries: (data, options) ->
@@ -132,22 +132,12 @@
         dimensions.top = defaults.top
         dimensions.bottom = defaults.bottom
 
-      adjustMargins: (dimensions, options, data) ->
+      adjustMargins: (svg, dimensions, options, data) ->
         this.resetMargins(dimensions)
-
         return unless data and data.length
 
-        series = options.series
-
-        leftSeries = series.filter (s) -> s.axis isnt 'y2'
-        leftWidest = this.getWidestOrdinate(data, leftSeries)
-        dimensions.left = this.getTextWidth('' + leftWidest) + 20
-
-        rightSeries = series.filter (s) -> s.axis is 'y2'
-        return unless rightSeries.length
-
-        rightWidest = this.getWidestOrdinate(data, rightSeries)
-        dimensions.right = this.getTextWidth('' + rightWidest) + 20
+        dimensions.left = this.getWidestTickWidth(svg, 'y')
+        dimensions.right = this.getWidestTickWidth(svg, 'y2')
 
       adjustMarginsForThumbnail: (dimensions, axes) ->
         dimensions.top = 1
@@ -155,18 +145,14 @@
         dimensions.left = 0
         dimensions.right = 1
 
-      getTextWidth: (text) ->
-        # return Math.max(25, text.length*6.7);
-        return parseInt(text.length*5) + 10
+      getTextBBox: (svgTextElement) ->
+        return svgTextElement.getBBox()
 
-      getWidestOrdinate: (data, series) ->
-        widest = ''
+      getWidestTickWidth: (svg, axisKey) ->
+        max = 0
+        bbox = this.getTextBBox
 
-        data.forEach (row) ->
-          series.forEach (series) ->
-            return unless row[series.y]?
+        ticks = svg.select(".#{axisKey}.axis").selectAll('.tick')
+        ticks[0]?.map (t) -> max = Math.max(max, bbox(t).width)
 
-            if ('' + row[series.y]).length > ('' + widest).length
-              widest = row[series.y]
-
-        return widest
+        return max

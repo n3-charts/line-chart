@@ -51,7 +51,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       if isThumbnail
         _u.adjustMarginsForThumbnail(dimensions, axes)
       else
-        _u.adjustMargins(dimensions, options, scope.data)
+        _u.adjustMargins(svg, dimensions, options, scope.data)
 
       _u.createContent(svg, handlers)
 
@@ -69,9 +69,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       if options.drawLegend
         _u.drawLegend(svg, options.series, dimensions, handlers)
 
-      if options.tooltipMode is 'scrubber'
-        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries)
-      else if options.tooltipMode isnt 'none'
+      if options.tooltip.mode is 'scrubber'
+        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options)
+      else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
 
 
