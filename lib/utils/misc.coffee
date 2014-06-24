@@ -111,6 +111,7 @@
             axis: s.axis || 'y'
             type: s.type
             thickness: s.thickness
+            dashed: if s.dashed is true then true else undefined
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(
