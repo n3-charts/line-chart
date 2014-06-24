@@ -18,7 +18,8 @@
               'stroke': 'white'
               'stroke-width': '2px'
             )
-        if options.tooltipMode in ['dots', 'both', 'scrubber']
+
+        if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
             target.attr('r', 4)

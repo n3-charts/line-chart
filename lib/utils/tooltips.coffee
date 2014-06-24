@@ -1,5 +1,5 @@
       getTooltipHandlers: (options) ->
-        if options.tooltipMode is 'scrubber'
+        if options.tooltip.mode is 'scrubber'
           return {
             onChartHover: angular.bind(this, this.showScrubber)
           }
@@ -9,18 +9,18 @@
             onMouseOut: angular.bind(this, this.onMouseOut)
           }
 
-      showScrubber: (svg, glass, axes, data) ->
+      showScrubber: (svg, glass, axes, data, options) ->
         that = this
         glass.on('mousemove', ->
           svg.selectAll('.glass-container').attr('opacity', 1)
-          that.updateScrubber(svg, d3.mouse(this), axes, data)
+          that.updateScrubber(svg, d3.mouse(this), axes, data, options)
         )
         glass.on('mouseout', ->
           glass.on('mousemove', null)
           svg.selectAll('.glass-container').attr('opacity', 0)
         )
 
-      updateScrubber: (svg, [x, y], axes, data) ->
+      updateScrubber: (svg, [x, y], axes, data, options) ->
         # Dichotomy FTW
         getClosest = (values, value) ->
           left = 0
@@ -53,15 +53,13 @@
           item.transition().duration(50)
             .attr('transform': "translate(#{axes.xScale(v.x)}, #{axes[v.axis + 'Scale'](v.value)})")
 
-          item.select('text').text(v.value)
+          textElement = item.select('text')
+
+          textElement.text(v.x + ' : ' + v.value)
+          w = that.getTextBBox(textElement[0][0]).width + 5
 
           item.select('path')
-            .attr('d', (s) ->
-              if s.axis is 'y2'
-                return that.getY2TooltipPath(that.getTextWidth('' + v.value))
-              else
-                return that.getYTooltipPath(that.getTextWidth('' + v.value))
-            )
+            .attr 'd', (s) -> that["get#{s.axis.toUpperCase()}TooltipPath"](w)
 
 
       addTooltips: (svg, dimensions, axesOptions) ->
@@ -147,58 +145,57 @@
       onMouseOut: (svg) ->
         this.hideTooltips(svg)
 
-      updateXTooltip: (svg, event) ->
+      updateXTooltip: (svg, {x, datum, series}) ->
         xTooltip = svg.select("#xTooltip")
-          .transition()
+
+        xTooltip.transition()
           .attr(
             'opacity': 1.0
-            'transform': 'translate(' + event.x + ',0)'
+            'transform': "translate(#{x},0)"
           )
 
-        textX = undefined
-        if event.series.xFormatter?
-          textX = '' + event.series.xFormatter(event.datum.x)
-        else
-          textX = '' + event.datum.x
+        textX = series.xFormatter?(datum.x) || datum.x
 
-        xTooltip.select('text').text(textX)
+        label = xTooltip.select('text')
+        label.text(textX)
+
         xTooltip.select('path')
-          .attr('fill', event.series.color)
-          .attr('d', this.getXTooltipPath(textX))
+          .attr('fill', series.color)
+          .attr('d', this.getXTooltipPath(label[0][0]))
 
-      getXTooltipPath: (text) ->
-        w = this.getTextWidth(text)
+      getXTooltipPath: (textElement) ->
+        w = Math.max(this.getTextBBox(textElement).width, 15)
         h = 18
         p = 5 # Size of the 'arrow' that points towards the axis
 
         return 'm-' + w/2 + ' ' + p + ' ' +
           'l0 ' + h + ' ' +
           'l' + w + ' 0 ' +
-          'l0 ' + '-' + h +
-          'l-' + (w/2 - p) + ' 0 ' +
-          'l-' + p + ' -' + h/4 + ' ' +
-          'l-' + p + ' ' + h/4 + ' ' +
-          'l-' + (w/2 - p) + ' 0z'
+          'l0 ' + '' + (-h) +
+          'l' + (-w/2 + p) + ' 0 ' +
+          'l' + (-p) + ' -' + h/4 + ' ' +
+          'l' + (-p) + ' ' + h/4 + ' ' +
+          'l' + (-w/2 + p) + ' 0z'
 
-      updateYTooltip: (svg, event) ->
+      updateYTooltip: (svg, {y, datum, series}) ->
         yTooltip = svg.select("#yTooltip")
-          .transition()
+        yTooltip.transition()
           .attr(
             'opacity': 1.0
-            'transform': 'translate(0, ' + event.y + ')'
+            'transform': "translate(0, #{y})"
           )
 
-        textY = '' + event.datum.value
-        w = this.getTextWidth(textY)
-        yTooltipText = yTooltip.select('text').text(textY)
+        label = yTooltip.select('text')
+        label.text(datum.value)
+        w = this.getTextBBox(label[0][0]).width + 5
 
-        yTooltipText.attr(
+        label.attr(
           'transform': 'translate(' + (- w - 2) + ',3)'
           'width': w
         )
 
         yTooltip.select('path')
-          .attr('fill', event.series.color)
+          .attr('fill', series.color)
           .attr('d', this.getYTooltipPath(w))
 
       getYTooltipPath: (w) ->
@@ -206,32 +203,32 @@
         p = 5 # Size of the 'arrow' that points towards the axis
 
         return 'm0 0' +
-          'l-' + p + ' -' + p + ' ' +
-          'l0 -' + (h/2 - p) + ' ' +
-          'l-' + w + ' 0 ' +
+          'l' + (-p) + ' ' + (-p) + ' ' +
+          'l0 ' + (-h/2 + p) + ' ' +
+          'l' + (-w) + ' 0 ' +
           'l0 ' + h + ' ' +
           'l' + w + ' 0 ' +
-          'l0 -' + (h/2 - p) +
-          'l-' + p + ' ' + p + 'z'
+          'l0 ' + (-h/2 + p) +
+          'l' + (-p) + ' ' + p + 'z'
 
-      updateY2Tooltip: (svg, event) ->
+      updateY2Tooltip: (svg, {y, datum, series}) ->
         y2Tooltip = svg.select("#y2Tooltip")
-          .transition()
+        y2Tooltip.transition()
           .attr('opacity', 1.0)
 
-        textY = '' + event.datum.value
-        w = this.getTextWidth(textY)
-        y2TooltipText = y2Tooltip.select('text').text(textY)
-        y2TooltipText.attr(
-          'transform': 'translate(7, ' + (parseFloat(event.y) + 3) + ')'
+        label = y2Tooltip.select('text')
+        label.text(datum.value)
+        w = this.getTextBBox(label[0][0]).width + 5
+        label.attr(
+          'transform': 'translate(7, ' + (parseFloat(y) + 3) + ')'
           'w': w
         )
 
         y2Tooltip.select('path')
           .attr(
-            'fill': event.series.color
+            'fill': series.color
             'd': this.getY2TooltipPath(w)
-            'transform': 'translate(0, ' + event.y + ')'
+            'transform': 'translate(0, ' + y + ')'
           )
 
       getY2TooltipPath: (w) ->
@@ -242,10 +239,10 @@
           'l' + p + ' ' + p + ' ' +
           'l0 ' + (h/2 - p) + ' ' +
           'l' + w + ' 0 ' +
-          'l0 -' + h + ' ' +
-          'l-' + w + ' 0 ' +
+          'l0 ' + (-h) + ' ' +
+          'l' + (-w) + ' 0 ' +
           'l0 ' + (h/2 - p) + ' ' +
-          'l-' + p + ' ' + p + 'z'
+          'l' + (-p) + ' ' + p + 'z'
 
       hideTooltips: (svg) ->
         svg.select("#xTooltip")

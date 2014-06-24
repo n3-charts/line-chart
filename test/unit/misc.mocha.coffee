@@ -1,4 +1,4 @@
-describe 'n3utils', ->
+describe 'misc', ->
   beforeEach module 'n3-line-chart'
   beforeEach module 'testUtils'
 
@@ -88,7 +88,7 @@ describe 'n3utils', ->
       expect(computed[0][k]).to.eql expected[0][k]
       expect(computed[1][k]).to.eql expected[1][k]
 
-  it 'should compute the widest y value', ->
+  it.skip 'should compute the widest y value', ->
     data = [
       {x: 0, foo: 4.154, value: 4}
       {x: 1, foo: 8.15485, value: 8}
@@ -106,12 +106,18 @@ describe 'n3utils', ->
     expect(n3utils.getWidestOrdinate(data, series)).to.equal 1.1548578
 
   describe 'adjustMargins', ->
+    fakeSvg = {}
+
     beforeEach ->
       sinon.stub n3utils, 'getDefaultMargins', ->
         top: 20
         right: 50
         bottom: 30
         left: 50
+
+      sinon.stub n3utils, 'getWidestTickWidth', (svg, axisKey) ->
+        if axisKey is 'y' then return 30 else return 50
+
 
     it 'should return default margins for no series', ->
       data = [
@@ -127,7 +133,8 @@ describe 'n3utils', ->
         right: 10
 
       options = series: []
-      n3utils.adjustMargins dimensions, options, data
+      n3utils.adjustMargins fakeSvg, dimensions, options, data
+
       expect(dimensions).to.eql
         left: 30
         right: 50

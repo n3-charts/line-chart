@@ -75,7 +75,7 @@ describe 'tooltip', ->
             color: '#4682b4'
           }
         ]
-        tooltipMode: 'both'
+        tooltip: {mode: 'axes', interpolate: true}
 
 
   it 'should show/hide the tooltip when hovering/leaving a left axis dot', ->
@@ -116,7 +116,7 @@ describe 'tooltip', ->
               type: 'column'
             }
           ]
-          tooltipMode: 'scrubber'
+          tooltip: {mode: 'scrubber', interpolate: false}
         }
 
     it 'should create a glass', ->
