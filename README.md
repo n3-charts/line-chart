@@ -142,7 +142,6 @@ Or run the visual tests, too :
 $ grunt travis
 ```
 
-
 ### Testing
 AngularJS is designed to build testable apps, so is this project.
 It has a good coverage rate (above 95%), let's keep it this way.
