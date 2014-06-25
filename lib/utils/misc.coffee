@@ -111,6 +111,7 @@
             axis: s.axis || 'y'
             type: s.type
             thickness: s.thickness
+            lineMode: s.lineMode
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(
