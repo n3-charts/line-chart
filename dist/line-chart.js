@@ -462,7 +462,7 @@ mod.factory('n3utils', [
             if (s.lineMode === 'dashed') {
               return '10,3';
             }
-            return '0';
+            return void 0;
           }
         });
         if ((_ref = options.tooltipMode) === 'both' || _ref === 'lines') {

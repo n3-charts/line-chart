@@ -74,16 +74,15 @@ describe 'line series', ->
     content = element.childByClass('content')
     linePath = content.childByClass('line')
     expect(linePath.getAttribute('class')).to.equal 'line'
-    expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px; stroke-dasharray: 0;'
+    expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px;'
     expect(linePath.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30'
 
   it 'should update the chart if the array is changed (but not reassigned)', ->
-    outerScope.$apply ->
-      outerScope.data[0].value = 7
+    outerScope.$apply -> outerScope.data[0].value = 7
 
     content = element.childByClass('content')
     linePath = content.childByClass('line')
     expect(linePath.getAttribute('class')).to.equal 'line'
-    expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px; stroke-dasharray: 0;'
+    expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px;'
     expect(linePath.getAttribute('d')).not.to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30'
 
