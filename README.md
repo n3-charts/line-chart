@@ -84,6 +84,7 @@ The `series` key must be an array which contains objects with the following prop
 + `striped` : optional, can be either `true` or `false`. Default is `false`. Will be ignored if the series type is not 'area'.
 + `thickness` : optional, can be `{n}px`. Default is `1px`. Will be ignored if the series type is not 'area' or 'line'.
 + `dashed` : optional, can be either `true` or `false`. Default is false. Defines whether the series is rendered as a dashed line. 
++ `drawDots` : optional, can be either `true` or `false`. Default is true. Defines whether the series is rendered with dots on a per `series` basis. 
 + `visible` : optional, can be either `true` or `false`. Default is true. Defines whether the series is initially visible. Will be updated if the series gets hidden or shown through a click on the legend.
 
 ##### Optional stuff
