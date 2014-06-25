@@ -216,6 +216,49 @@ describe 'options', ->
 
 
   describe 'series', ->
+    it 'should sanitize lineMode', ->
+      f = n3utils.sanitizeSeriesOptions
+
+      expect(f([
+        {type: 'line', lineMode: 'dashed'}
+        {type: 'line', lineMode: 42}
+        {type: 'area', lineMode: 'dashed'}
+        {type: 'column', lineMode: 'dashed'}
+        {type: 'column'}
+      ])).to.eql [
+        {
+          type: "line",
+          lineMode: "dashed",
+          axis: "y",
+          color: "#1f77b4",
+          thickness: "1px"
+        },
+        {
+          type: "line",
+          axis: "y",
+          color: "#ff7f0e",
+          thickness: "1px"
+        },
+        {
+          type: "area",
+          lineMode: "dashed",
+          axis: "y",
+          color: "#2ca02c",
+          thickness: "1px"
+        },
+        {
+          type: "column",
+          axis: "y",
+          color: "#d62728"
+        },
+        {
+          type: "column",
+          axis: "y",
+          color: "#9467bd"
+        }
+      ]
+
+
     it 'should set y as the default axis', ->
       f = n3utils.sanitizeSeriesOptions
       expect(f([
