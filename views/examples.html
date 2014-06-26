@@ -1,36 +1,29 @@
-<div class='unit-100'>
-  <hgroup>
-    <h4>Thumbnail mode</h4>
-    <h4 class='subheading'>The chart can be configured to display only data (this is called the thumbnail mode). This is convenient for dashboards, sparklines...</h4>
-  </hgroup>
-</div>
-<div class='units-row'>
-  <div class='unit-50'>
-    <div class="unit-20 mini-chart" ng-repeat='example in miniExamples.slice(0, 5)'>
-      <linechart data='example.data' options='example.options' mode='thumbnail'></linechart>
-    </div>
-  </div>
-  <div class='unit-50'>
-    <div class="unit-20 mini-chart" ng-repeat='example in miniExamples.slice(5)'>
-      <linechart data='example.data' options='example.options' mode='thumbnail'></linechart>
-    </div>
-  </div>
-</div>
-<div class='units-row' ng-repeat='example in examples'>
-  <div class='unit-100'>
+<div class='pure-g' ng-repeat='example in examples'>
+  <div class='pure-u-1'>
     <hgroup>
-      <h4>{{example.label}}</h4>
-      <h4 class='subheading'>{{example.description}}</h4>
+      <h3>{{example.label}}</h3>
+      <h3 class='subheading'>{{example.description}}</h3>
     </hgroup>
   </div>
-  <div class='units-row units-split thumbnail'>
-    <div class='unit-60 chart'>
+  <div class='pure-g thumbnail'>
+    <div class='pure-u-3-5 chart'>
       <linechart data='example.data' options='example.options'></linechart>
     </div>
-    <div class='unit-40 settings'>
+    <div class='pure-u-2-5 settings'>
+      <div class='label'></div>
       <pre class="options" ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:80:"columns") + ";" | safe'></pre>
-      <pre class="data" ng-bind-html='"$scope.example = " + (example.data | prettyUnsafe:1:"levels") + ";" | safe '></pre>
+      <div class='label'></div>
+      <pre class="data" ng-bind-html='"$scope.data = " + (example.data | prettyUnsafe:1:"levels") + ";" | safe '></pre>
       <input type="range" min="2" max="{{max}}" ng-model="example.visibleRows" ng-change="crop(example)"/>
     </div>
   </div>
 </div>
+<div class='pure-u-1 mini-charts'>
+  <hgroup>
+    <h3>Thumbnail mode</h3>
+    <h3 class='subheading'>The chart can be configured to display only data (this is called the thumbnail mode). This is convenient for dashboards, sparklines...</h3>
+  </hgroup>
+  <div class="mini-chart" ng-repeat='example in miniExamples'>
+    <linechart data='example.data' options='example.options' mode='thumbnail'></linechart>
+  </div>
+  </div>
