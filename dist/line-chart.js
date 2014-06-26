@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.8 - 18 June 2014
+line-chart - v1.0.8 - 26 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -252,7 +252,7 @@ mod.factory('n3utils', [
         var dotGroup, _ref;
         dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
           var _ref;
-          return (_ref = s.type) === 'line' || _ref === 'area';
+          return ((_ref = s.type) === 'line' || _ref === 'area') && s.drawDots;
         })).enter().append('g');
         dotGroup.attr({
           "class": function(s) {
@@ -457,6 +457,12 @@ mod.factory('n3utils', [
           'fill': 'none',
           'stroke-width': function(s) {
             return s.thickness;
+          },
+          'stroke-dasharray': function(s) {
+            if (s.lineMode === 'dashed') {
+              return '10,3';
+            }
+            return void 0;
           }
         });
         if ((_ref = options.tooltipMode) === 'both' || _ref === 'lines') {
@@ -642,7 +648,9 @@ mod.factory('n3utils', [
             color: s.color,
             axis: s.axis || 'y',
             type: s.type,
-            thickness: s.thickness
+            thickness: s.thickness,
+            lineMode: s.lineMode,
+            drawDots: s.drawDots === false ? false : true
           };
           data.filter(function(row) {
             return row[s.y] != null;
@@ -764,14 +772,18 @@ mod.factory('n3utils', [
         }
         colors = d3.scale.category10();
         options.forEach(function(s, i) {
-          var _ref, _ref1;
+          var _ref, _ref1, _ref2, _ref3;
           s.axis = ((_ref = s.axis) != null ? _ref.toLowerCase() : void 0) !== 'y2' ? 'y' : 'y2';
           s.color || (s.color = colors(i));
           s.type = (_ref1 = s.type) === 'line' || _ref1 === 'area' || _ref1 === 'column' ? s.type : "line";
           if (s.type === 'column') {
-            return delete s.thickness;
+            delete s.thickness;
+            delete s.lineMode;
           } else if (!/^\d+px$/.test(s.thickness)) {
-            return s.thickness = '1px';
+            s.thickness = '1px';
+          }
+          if (((_ref2 = s.type) === 'line' || _ref2 === 'area') && ((_ref3 = s.lineMode) !== 'dashed')) {
+            return delete s.lineMode;
           }
         });
         return options;

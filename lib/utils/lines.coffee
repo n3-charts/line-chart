@@ -17,8 +17,8 @@
             'fill': 'none'
             'stroke-width': (s) -> s.thickness
             'stroke-dasharray': (s) ->
-                return '0' if s.dashed isnt true
-                return "10,3"
+              return '10,3' if s.lineMode is 'dashed'
+              return undefined
           )
         if options.tooltipMode in ['both', 'lines']
           interpolateData = (series) ->
