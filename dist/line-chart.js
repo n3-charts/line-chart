@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.0.8 - 26 June 2014
+line-chart - v1.0.9 - 26 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -779,6 +779,7 @@ mod.factory('n3utils', [
           if (s.type === 'column') {
             delete s.thickness;
             delete s.lineMode;
+            delete s.drawDots;
           } else if (!/^\d+px$/.test(s.thickness)) {
             s.thickness = '1px';
           }
