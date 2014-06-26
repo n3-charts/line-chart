@@ -112,7 +112,7 @@
             type: s.type
             thickness: s.thickness
             lineMode: s.lineMode
-            drawDots: if s.drawDots is false then false else true
+            drawDots: s.drawDots isnt false
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(

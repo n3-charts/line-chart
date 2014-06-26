@@ -650,7 +650,7 @@ mod.factory('n3utils', [
             type: s.type,
             thickness: s.thickness,
             lineMode: s.lineMode,
-            drawDots: s.drawDots === false ? false : true
+            drawDots: s.drawDots !== false
           };
           data.filter(function(row) {
             return row[s.y] != null;
