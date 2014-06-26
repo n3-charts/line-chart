@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.8 - 18 June 2014
+line-chart - v1.0.9 - 26 June 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -443,6 +443,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .style(
             'fill': 'none'
             'stroke-width': (s) -> s.thickness
+            'stroke-dasharray': (s) ->
+              return '10,3' if s.lineMode is 'dashed'
+              return undefined
           )
         if options.tooltipMode in ['both', 'lines']
           interpolateData = (series) ->
@@ -623,6 +626,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             axis: s.axis || 'y'
             type: s.type
             thickness: s.thickness
+            lineMode: s.lineMode
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(
@@ -737,8 +741,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           if s.type is 'column'
             delete s.thickness
+            delete s.lineMode
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
+
+          if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
+            delete s.lineMode
 
         return options
 

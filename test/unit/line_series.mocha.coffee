@@ -78,8 +78,7 @@ describe 'line series', ->
     expect(linePath.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30'
 
   it 'should update the chart if the array is changed (but not reassigned)', ->
-    outerScope.$apply ->
-      outerScope.data[0].value = 7
+    outerScope.$apply -> outerScope.data[0].value = 7
 
     content = element.childByClass('content')
     linePath = content.childByClass('line')
