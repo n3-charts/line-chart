@@ -2,10 +2,13 @@
 <html lang="en" ng-app="demo">
 <head>
   <link rel="icon" type="image/png" href="assets/images/logo_small.png" />
+
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
   <link href="assets/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
-  <link href="css/kube.min.css" rel="stylesheet" type="text/css" />
+
   <link href="css/app.css" rel="stylesheet" type="text/css" />
-  <script type="text/javascript" src="//dl1d2m8ri9v3j.cloudfront.net/releases/1.2.4/tracker.js" data-customer="96bab9b014e2442d9e6536c2468b6e3b"></script>
+  <link href="css/series.css" rel="stylesheet" type="text/css" />
+
   <!-- start Mixpanel -->
   <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
 typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
@@ -18,28 +21,25 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
 
 <body>
 
-  <div class="units-row">
-    <div class='unit-100'>
-      <header id="header" class="group">
-
-        <h1><a href="#/about"><img src="assets/images/logo_small.png">n3-charts</a></h1>
-
-        <nav class="navbar">
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#/examples">Examples</a></li>
-            <li><a href="#/tests">Tests</a></li>
-            <li><a href="http://plnkr.co/edit/rU1AdH?p=preview" target="_blank">Playground <i class='icon-external-link' style="font-size: 10px;"></i></a></li>
-            <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='icon-external-link' style="font-size: 10px;"></i></a></li>
-            <li><a href="https://travis-ci.org/n3-charts/line-chart" target="_blank">Travis CI <i class='icon-external-link' style="font-size: 10px;"></i></a></li>
-          </ul>
-        </nav>
-      </header>
+  <div class="pure-g">
+    <div class='pure-u-1'>
+      <div class="pure-menu pure-menu-open pure-menu-horizontal">
+        <h1 class="pure-menu-heading"><a href="#/about"><img src="assets/images/logo_small.png">n3-charts</a></h1>
+        <ul class="right">
+          <li><a href="#">Home</a></li>
+          <li><a href="#/examples">Examples</a></li>
+          <li><a href="#/tests">Tests</a></li>
+          <!-- <li><a href="http://plnkr.co/edit/rU1AdH?p=preview" target="_blank">Playground</a></li> -->
+          <li><a href="#/playground">Playground</a></li>
+          <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
+          <li><a href="https://travis-ci.org/n3-charts/line-chart" target="_blank">Travis CI <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
+        </ul>
+      </div>
     </div>
   </div>
-  <div class="units-row">
-    <div class='units-row' ng-view></div>
+  <div class="pure-g" ng-view>
   </div>
+  <div class="credits">Developped with love and care by <a href="https://github.com/lorem--ipsum"><i class='fa fa-github'></i> S&eacute;bastien Fragnaud</a>.</div>
 
 <script src="bower_components/moment/min/moment.min.js"></script>
 <script src="bower_components/angular/angular.js"></script>
@@ -49,6 +49,7 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
 <script src="bower_components/apojop/apojop.min.js"></script>
 <script src="scripts/examples.js"></script>
 <script src="scripts/tests.js"></script>
+<script src="scripts/playground.js"></script>
 <script src="scripts/main.js"></script>
 
 </body>

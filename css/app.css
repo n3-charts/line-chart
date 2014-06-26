@@ -1,6 +1,25 @@
 body {
   width: 90%;
   margin: 0 auto;
+  font-weight: 300;
+}
+
+a {
+  text-decoration: none;
+  border-bottom: 1px solid;
+  color: black;
+}
+
+a:hover {
+  color: #48AB4D;
+}
+
+h3 {
+  font-weight: 300;
+  margin-top: 2em;
+}
+
+p {
 }
 
 /* HEADER */
@@ -8,25 +27,27 @@ body {
   padding-top: 15px;
   margin-bottom: .6em;
 }
-#header h1 {
+h1.pure-menu-heading {
   float: left;
   font-size: 32px;
   margin-top: 1px;
   margin-bottom: 0;
   color: rgba(0, 0, 0, .8);
 }
-#header nav {
+
+.pure-menu-horizontal>ul.right {
   margin-top: 1.2em;
   margin-bottom: 0;
   float: right;
 }
 
-#header>h1>a {
+h1.pure-menu-heading>a {
   text-decoration: none;
+  font-weight: 100;
   color: #48AB4D;
 }
 
-#header>h1>a>img {
+h1.pure-menu-heading>a>img {
   vertical-align: middle;
 }
 
@@ -58,10 +79,26 @@ figure.comparison > figcaption {
 
 /* HOME */
 
+.title {
+  text-align: center;
+  margin: 50px 0;
+  color: grey;
+  text-transform: lowercase;
+}
+
+.title .maintitle {
+  font-size: 40px;
+}
+
+.title .subtitle {
+  font-size: 25px;
+  border-top: 1px solid;
+  margin: 0 auto;
+  width: 350px;
+}
+
 .preview-chart {
   height: 500px;
-  border: 1px solid #CECECE;
-  box-shadow: 6px 6px 10px #DDD;
   margin-bottom: 30px;
 }
 
@@ -78,15 +115,54 @@ span.label.label-green {
   color: white;
 }
 
-/* THUMBNAIL */
+div.release > a {
+  text-decoration: none;
+  border: none;
+}
+
+ul.notes {
+  margin-bottom: 50px;
+}
+
+ul.notes > li {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+div.credits {
+  text-align: center;
+  font-size: 10px;
+  border-top: 1px solid lightgrey;
+  color: grey;
+  padding-top: 5px;
+  width: 50%;
+  margin: 20px auto 20px auto;
+}
+
+/* EXAMPLES */
+
+h3.subheading {
+  margin-top: 0px;
+  font-size: 12px;
+}
+
+.mini-charts {
+  min-width: 1200px;
+  max-width: 1200px;
+}
+
 .mini-chart {
+  width: 115px;
+  margin: 0 1px;
+  display: inline-block;
   height: 100px;
   border: 1px solid #CECECE;
 }
 
 .thumbnail {
+  min-width: 1300px;
+  max-width: 1300px;
   box-shadow: 6px 6px 10px #DDD;
-  padding: 10px;
   border: 1px solid #CECECE;
 }
 
@@ -96,16 +172,29 @@ span.label.label-green {
 
 .thumbnail .settings {
   height: 600px;
-  padding: 10px;
-  border-left: 1px solid #CECECE;
 }
 
 .thumbnail .settings .options {
-  height: 200px;
+  overflow-y: scroll;
+  max-height: 350px;
   font-size: 10px;
 }
 
+.thumbnail .settings .label {
+  margin-top: 20px;
+  border-bottom: 1px solid lightgrey;
+  padding-bottom: 5px;
+  color: grey;
+  width: 90%;
+}
+
 .thumbnail .settings .data {
-  height: 300px;
+  overflow-y: scroll;
+  max-height: 100px;
   font-size: 10px;
+}
+
+/* PLAYGROUND */
+.follow-scroll {
+  position: fixed;
 }

@@ -1,0 +1,11 @@
+.series-renderer {
+  margin-bottom: 10px;
+}
+
+.series-renderer .summary {
+  cursor: pointer;
+}
+
+.series-renderer .detail * {
+  font-size: 10px;
+}

@@ -1,0 +1,39 @@
+<div class='pure-u-2-5'>
+  <form class="pure-form pure-form-aligned">
+    <fieldset>
+      <legend>General options</legend>
+      <div class="pure-control-group">
+        <label>Interpolation</label>
+        <select ng-model="options.lineMode" ng-options="mode for mode in interpolationModes"></select>
+      </div>
+
+      <div class="pure-control-group" ng-show="options.lineMode != 'linear'">
+        <label>Tension</label>
+        <input type="number" step="0.1" ng-model="options.tension" min="0.1" max="1.0" class="width-50"/>
+      </div>
+
+      <div class="pure-control-group">
+        <label>Tooltip mode</label>
+        <select ng-model="options.tooltipMode" ng-options="mode for mode in tooltipModes"></select>
+      </div>
+
+      <div class="pure-control-group">
+        <label>Dots</label>
+        <input type="checkbox" ng-model="options.drawDots">
+      </div>
+
+      <div class="pure-control-group">
+        <label>Legend</label>
+        <input type="checkbox" ng-model="options.drawLegend">
+      </div>
+
+    </fieldset>
+    <fieldset>
+      <legend>Series</legend>
+      <series series="series" fields="fields" ng-repeat="series in options.series"></series>
+    </fieldset>
+  </form>
+</div>
+<div class='pure-u-3-5' style="height: 500px;">
+  <linechart data='data' options='options'></linechart>
+</div>
