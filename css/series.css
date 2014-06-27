@@ -6,6 +6,29 @@
   cursor: pointer;
 }
 
+.series-renderer .summary .color-preview {
+  background-color: rgb(188, 189, 34);
+  padding: 0 7px;
+  border-radius: 8px;
+}
+
+.series-renderer .summary .pre-title {
+  background-color: white;
+  padding: 0px 0px 10px 1px;
+}
+
+.series-renderer .summary .title {
+  background-color: white;
+  padding: 0px 12px 0px 8px;
+}
+
+.series-renderer .detail {
+  margin-bottom: 10px;
+  border: 1px solid lightgrey;
+  padding: 8px 0px 5px 0px;
+  margin-top: -7px;
+}
+
 .series-renderer .detail * {
   font-size: 10px;
 }
