@@ -1,6 +1,8 @@
 <div class="series-renderer">
   <div class="summary" ng-click="expanded = !expanded">
-    <i class="fa" ng-class="expanded ? 'fa-caret-down' : 'fa-caret-right'"></i> {{series.label || series.y}}
+    <span class="pre-title"></span>
+    <span class="color-preview" ng-style="{'background-color': series.color}"></span>
+    <span class="title">{{series.label || series.y}}</span>
   </div>
   <div class="detail" ng-show="expanded">
     <div class="pure-control-group">

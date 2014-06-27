@@ -198,3 +198,31 @@ h3.subheading {
 .follow-scroll {
   position: fixed;
 }
+
+form.chart-options div {
+  font-size: 12px;
+}
+
+legend > span.only-hover {
+  display: none;
+}
+
+legend:hover > span.only-hover {
+  display: block;
+}
+
+legend > span.clickable {
+  cursor: pointer;
+}
+
+
+legend > span.small {
+  font-size: 10px;
+  line-height: 2em;
+}
+
+legend > span.right {
+  float: right;
+}
+
+

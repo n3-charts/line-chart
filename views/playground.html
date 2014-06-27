@@ -1,5 +1,5 @@
 <div class='pure-u-2-5'>
-  <form class="pure-form pure-form-aligned">
+  <form class="pure-form pure-form-aligned chart-options">
     <fieldset>
       <legend>General options</legend>
       <div class="pure-control-group">
@@ -29,7 +29,7 @@
 
     </fieldset>
     <fieldset>
-      <legend>Series</legend>
+      <legend>Series <span ng-click="toggleAll()" class="small right only-hover">click a series to edit it</span></legend>
       <series series="series" fields="fields" ng-repeat="series in options.series"></series>
     </fieldset>
   </form>
