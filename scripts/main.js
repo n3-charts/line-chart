@@ -4,7 +4,7 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
   $routeProvider
   .when('/tests', {controller: 'TestsCtrl', templateUrl: 'views/tests.html'})
   .when('/examples', {controller: 'ExamplesCtrl', templateUrl: 'views/examples.html'})
-  .when('/playground', {controller: 'PlaygroundCtrl', templateUrl: 'views/playground.html'})
+  .when('/playground', {controller: 'PlaygroundCtrl', templateUrl: 'views/playground.html', reloadOnSearch: false})
   .when('/', {controller: 'HomeCtrl', templateUrl: 'views/home.html'})
   .otherwise({redirectTo: '/'});
 }])

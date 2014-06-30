@@ -1,0 +1,39 @@
+<form class="pure-form pure-form-aligned chart-options">
+  <fieldset>
+    <legend>General</legend>
+    <div class="pure-control-group">
+      <label>Interpolation</label>
+      <select ng-model="options.lineMode" ng-options="mode for mode in interpolationModes"></select>
+    </div>
+
+    <div class="pure-control-group" ng-show="options.lineMode != 'linear'">
+      <label>Tension</label>
+      <input type="number" step="0.1" ng-model="options.tension" min="0.1" max="1.0" class="width-50"/>
+    </div>
+
+    <div class="pure-control-group">
+      <label>Tooltip mode</label>
+      <select ng-model="options.tooltipMode" ng-options="mode for mode in tooltipModes"></select>
+    </div>
+
+    <div class="pure-control-group">
+      <label>Dots</label>
+      <input type="checkbox" ng-model="options.drawDots">
+    </div>
+
+    <div class="pure-control-group">
+      <label>Legend</label>
+      <input type="checkbox" ng-model="options.drawLegend">
+    </div>
+
+  </fieldset>
+  <fieldset>
+    <legend>Series <span ng-click="addSeries()" class="small right only-hover clickable"><i class="fa fa-plus"></i></span></legend>
+    <series remove="removeSeries(series)" series="series" fields="fields" ng-repeat="series in options.series" remove="removeSeries(series)"></series>
+  </fieldset>
+
+  <fieldset>
+    <legend>Axes <span ng-click="toggleAll()" class="small right only-hover">click an axis to edit it</span></legend>
+    <axis axis="axis" key="key" fields="fields" ng-repeat="(key, axis) in options.axes"></axes>
+  </fieldset>
+</form>

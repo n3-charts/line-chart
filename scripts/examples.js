@@ -1,4 +1,4 @@
-angular.module('examples', ['apojop'])
+angular.module('utils', [])
 
 .factory('appUtils', function() {
   return {
@@ -51,6 +51,8 @@ angular.module('examples', ['apojop'])
   };
 })
 
+angular.module('examples', ['apojop', 'utils'])
+
 .controller('ExamplesCtrl', function($scope, appUtils) {
   mixpanel.track("Examples");
   var colors = d3.scale.category10();
@@ -69,6 +71,7 @@ angular.module('examples', ['apojop'])
       label: 'Linear series',
       description: 'Standard linear data is fully supported and can be displayed as lines, columns and areas.',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 20,
       data: linData.slice(0, 20),
       options: {series: [
@@ -82,6 +85,7 @@ angular.module('examples', ['apojop'])
       label: 'Log series',
       description: 'Vertical axes can be configured as logarithmic axes. This is convenient to display wide-range data.',
       originData: logData,
+      dataType: 'log',
       visibleRows: 20,
       data: logData.slice(0, 20),
       options: {axes: {x: {key: 'foo', labelFunction: function(v) {return 'Na';}}, y: {type: 'log'}},
@@ -93,6 +97,7 @@ angular.module('examples', ['apojop'])
       label: 'Time series',
       description: 'Date objects ? Check.',
       originData: timData,
+      dataType: 'timed',
       visibleRows: 20,
       data: timData.slice(0, 20),
       options: {axes: {
@@ -104,6 +109,7 @@ angular.module('examples', ['apojop'])
     {
       label: 'Area series',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 20,
       data: linData.slice(0, 20),
       description: 'Area series are fully supported.',
@@ -113,6 +119,7 @@ angular.module('examples', ['apojop'])
     {
       label: 'Column series',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 20,
       data: linData.slice(0, 20),
       description: 'Column series are fully supported too. The chart adjusts its x-axis so that columns are never cropped.',
@@ -122,6 +129,7 @@ angular.module('examples', ['apojop'])
     {
       label: 'Two axes',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 20,
       data: linData.slice(0, 20),
       description: 'Series can be represented on another axis, just say it in the options !',
@@ -134,6 +142,7 @@ angular.module('examples', ['apojop'])
     {
       label: 'Interpolation',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 20,
       data: linData.slice(0, 20),
       description: 'D3.js adds some eye-candy when asked, and it is awesome.',
@@ -146,6 +155,7 @@ angular.module('examples', ['apojop'])
     {
       label: 'Several series',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 20,
       data: linData.slice(0, 20),
       description: 'You can mix series types, n3-charts handles it. Yeah, baby.',
@@ -159,6 +169,7 @@ angular.module('examples', ['apojop'])
     {
       label: 'Striped areas',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 10,
       data: linData.slice(0, 10),
       description: 'Stripes are useless. But they\'re also awesome. Because, you know... stripes.',
@@ -172,6 +183,7 @@ angular.module('examples', ['apojop'])
     {
       label: 'Scrubber mode',
       originData: linData,
+      dataType: 'linear',
       visibleRows: 10,
       data: linData.slice(0, 10),
       description: 'Tooltip can also be set to scrubber mode.',
@@ -181,6 +193,10 @@ angular.module('examples', ['apojop'])
       ]}
     }
   ];
+
+  $scope.examples.forEach(function(e) {
+    e.jsonOptions = escape(angular.toJson(e.options));
+  });
 
   $scope.miniExamples = $scope.examples.map(function(e) {
     return {

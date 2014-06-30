@@ -1,8 +1,9 @@
 <div class="series-renderer">
-  <div class="summary" ng-click="expanded = !expanded">
+  <div class="summary">
     <span class="pre-title"></span>
     <span class="color-preview" ng-style="{'background-color': series.color}"></span>
-    <span class="title">{{series.label || series.y}}</span>
+    <span class="title" ng-click="expanded = !expanded">{{series.label || series.y}}</span>
+    <span class="remove" ng-click="remove()"><i class="fa fa-times-circle"></i></span>
   </div>
   <div class="detail" ng-show="expanded">
     <div class="pure-control-group">
@@ -38,7 +39,11 @@
     <div class="pure-control-group" ng-show="series.type != 'column'">
       <label>Thickness</label>
       <input type="range" min="1" max="10" step="1" ng-model='thickness'>
-      <!-- <input type="text" ng-model="series.thickness"> -->
+    </div>
+
+    <div class="pure-control-group" ng-if="series.type =='area'">
+      <label>Striped</label>
+      <input type="checkbox" ng-model="series.striped">
     </div>
   </div>
 </div>

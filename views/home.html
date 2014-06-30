@@ -8,15 +8,15 @@
   </div>
   <div class='pure-u-1'>
     <h3>What's that ?</h3>
-    <p>Built on top of D3.js and AngularJS, <emphasis>n3-charts.line-chart</emphasis> directive creates beautiful charts in AngularJS applications. It is simple and interactive.</p>
+    <p>Built on top of D3.js and AngularJS, <emphasis>n3-line-chart</emphasis> creates beautiful charts in AngularJS applications. It is simple and interactive.</p>
     <h3>How to use ?</h3>
-    <p>The <a href="http://github.com/n3-charts/line-chart" target="_blank">GitHub page <i class='fa fa-external-link'></i></a> contains an exhaustive, comprehensive guide to use the line-chart directive. For several use cases, please check the <a href="#/examples">examples</a> section.</p>
+    <p>The <a href="http://github.com/n3-charts/line-chart" target="_blank">GitHub page <i class='fa fa-external-link'></i></a> contains an exhaustive, comprehensive guide to use the directive. For several use cases, please check the <a href="#/examples">examples</a> section. You can also take a quick glance at the new <a href="#/playground">playground</a> and see if <emphasis>n3-line-chart</emphasis> fits your needs.</p>
     <h3>Release note</h3>
 
     <div class="release" ng-repeat='r in releases'>
       <a ng-href="https://github.com/n3-charts/line-chart/releases/tag/{{r.tag}}"><span class='release label' ng-class="{'label-green': $index == 0}">{{r.tag}} ({{r.name}})</span></a>
       <ul class="notes fa-ul">
-        <li ng-repeat="line in r.lines"><i class="fa-li fa fa-paw"></i><span  ng-bind-html="line"></span></li>
+        <li ng-repeat="line in r.lines"><i class="fa-li fa fa-paw"></i><span ng-bind-html="line"></span></li>
       </ul>
     </div>
 
