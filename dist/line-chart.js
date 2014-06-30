@@ -295,35 +295,47 @@ mod.factory('n3utils', [
         return this;
       },
       computeLegendLayout: function(svg, series, dimensions) {
-        var bbox, fn, i, j, leftItems, leftLayout, padding, rightItems, rightLayout, that, w;
+        var i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
         padding = 10;
         that = this;
-        bbox = function(t) {
-          return that.getTextBBox(t).width;
-        };
-        fn = function(s) {
-          return s.label || s.y;
-        };
+        leftWidths = this.getLegendItemsWidths(svg, 'y');
         leftLayout = [0];
-        leftItems = svg.selectAll('.legendItem.y')[0];
         i = 1;
-        while (i < leftItems.length) {
-          leftLayout.push(bbox(leftItems[i - 1]) + leftLayout[i - 1] + padding);
+        while (i < leftWidths.length) {
+          leftLayout.push(leftWidths[i - 1] + leftLayout[i - 1] + padding);
           i++;
         }
-        rightItems = svg.selectAll('.legendItem.y2')[0];
-        if (!(rightItems.length > 0)) {
+        rightWidths = this.getLegendItemsWidths(svg, 'y2');
+        if (!(rightWidths.length > 0)) {
           return [leftLayout];
         }
         w = dimensions.width - dimensions.right - dimensions.left;
-        rightLayout = [w - bbox(rightItems[rightItems.length - 1])];
-        j = rightItems.length - 2;
+        rightLayout = [w - rightWidths[rightWidths.length - 1]];
+        j = rightWidths.length - 2;
         while (j >= 0) {
-          rightLayout.push(w - bbox(rightItems[j]) - (w - rightLayout[rightLayout.length - 1]) - padding);
+          rightLayout.push(w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding);
           j--;
         }
         rightLayout.reverse();
         return [leftLayout, rightLayout];
+      },
+      getLegendItemsWidths: function(svg, axis) {
+        var bbox, i, items, that, widths;
+        that = this;
+        bbox = function(t) {
+          return that.getTextBBox(t).width;
+        };
+        items = svg.selectAll(".legendItem." + axis);
+        if (!(items.length > 0)) {
+          return [];
+        }
+        widths = [];
+        i = 0;
+        while (i < items[0].length) {
+          widths.push(bbox(items[0][i]));
+          i++;
+        }
+        return widths;
       },
       drawLegend: function(svg, series, dimensions, handlers) {
         var d, item, items, left, legend, right, that, _ref;
@@ -679,18 +691,48 @@ mod.factory('n3utils', [
         return dimensions.bottom = defaults.bottom;
       },
       adjustMargins: function(svg, dimensions, options, data) {
+        var leftSeries, leftWidest, rightSeries, rightWidest, series;
         this.resetMargins(dimensions);
         if (!(data && data.length)) {
           return;
         }
+        if (!options.series.length) {
+          return;
+        }
         dimensions.left = this.getWidestTickWidth(svg, 'y');
-        return dimensions.right = this.getWidestTickWidth(svg, 'y2');
+        dimensions.right = this.getWidestTickWidth(svg, 'y2');
+        if (options.tooltip.mode === 'scrubber') {
+          return;
+        }
+        series = options.series;
+        leftSeries = series.filter(function(s) {
+          return s.axis !== 'y2';
+        });
+        leftWidest = this.getWidestOrdinate(data, leftSeries);
+        dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20;
+        rightSeries = series.filter(function(s) {
+          return s.axis === 'y2';
+        });
+        if (!rightSeries.length) {
+          return;
+        }
+        rightWidest = this.getWidestOrdinate(data, rightSeries);
+        return dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20;
       },
       adjustMarginsForThumbnail: function(dimensions, axes) {
         dimensions.top = 1;
         dimensions.bottom = 2;
         dimensions.left = 0;
         return dimensions.right = 1;
+      },
+      estimateSideTooltipWidth: function(svg, text) {
+        var bbox, t;
+        t = svg.append('text');
+        t.text('' + text);
+        this.styleTooltip(t);
+        bbox = this.getTextBBox(t[0][0]);
+        t.remove();
+        return bbox;
       },
       getTextBBox: function(svgTextElement) {
         return svgTextElement.getBBox();
@@ -706,6 +748,21 @@ mod.factory('n3utils', [
           });
         }
         return max;
+      },
+      getWidestOrdinate: function(data, series) {
+        var widest;
+        widest = '';
+        data.forEach(function(row) {
+          return series.forEach(function(series) {
+            if (row[series.y] == null) {
+              return;
+            }
+            if (('' + row[series.y]).length > ('' + widest).length) {
+              return widest = row[series.y];
+            }
+          });
+        });
+        return widest;
       },
       getDefaultOptions: function() {
         return {
@@ -1072,18 +1129,30 @@ mod.factory('n3utils', [
         };
         that = this;
         return data.forEach(function(series, index) {
-          var item, textElement, v, w;
+          var abscissas, item, textElement, v, w;
           v = getClosest(series.values, axes.xScale.invert(x));
           item = svg.select(".scrubberItem.series_" + index);
           item.transition().duration(50).attr({
             'transform': "translate(" + (axes.xScale(v.x)) + ", " + (axes[v.axis + 'Scale'](v.value)) + ")"
           });
           textElement = item.select('text');
-          textElement.text(v.x + ' : ' + v.value);
+          abscissas = v.x;
+          if (options.axes.x.tooltipFormatter) {
+            abscissas = options.axes.x.tooltipFormatter(v.x);
+          }
+          textElement.text(abscissas + ' : ' + v.value);
           w = that.getTextBBox(textElement[0][0]).width + 5;
           return item.select('path').attr('d', function(s) {
             return that["get" + (s.axis.toUpperCase()) + "TooltipPath"](w);
           });
+        });
+      },
+      styleTooltip: function(d3TextElement) {
+        return d3TextElement.attr({
+          'font-family': 'monospace',
+          'font-size': 10,
+          'fill': 'white',
+          'text-rendering': 'geometric-precision'
         });
       },
       addTooltips: function(svg, dimensions, axesOptions) {
@@ -1101,29 +1170,21 @@ mod.factory('n3utils', [
           'opacity': 0
         });
         xTooltip.append('path').attr('transform', "translate(0," + (height + 1) + ")");
-        xTooltip.append('text').style('text-anchor', 'middle').attr({
+        this.styleTooltip(xTooltip.append('text').style('text-anchor', 'middle').attr({
           'width': w,
           'height': h,
-          'font-family': 'monospace',
-          'font-size': 10,
-          'transform': 'translate(0,' + (height + 19) + ')',
-          'fill': 'white',
-          'text-rendering': 'geometric-precision'
-        });
+          'transform': 'translate(0,' + (height + 19) + ')'
+        }));
         yTooltip = svg.append('g').attr({
           id: 'yTooltip',
           "class": 'yTooltip',
           opacity: 0
         });
         yTooltip.append('path');
-        yTooltip.append('text').attr({
+        this.styleTooltip(yTooltip.append('text').attr({
           'width': h,
-          'height': w,
-          'font-family': 'monospace',
-          'font-size': 10,
-          'fill': 'white',
-          'text-rendering': 'geometric-precision'
-        });
+          'height': w
+        }));
         if (axesOptions.y2 != null) {
           y2Tooltip = svg.append('g').attr({
             'id': 'y2Tooltip',
@@ -1132,14 +1193,10 @@ mod.factory('n3utils', [
             'transform': 'translate(' + width + ',0)'
           });
           y2Tooltip.append('path');
-          return y2Tooltip.append('text').attr({
+          return this.styleTooltip(y2Tooltip.append('text').attr({
             'width': h,
-            'height': w,
-            'font-family': 'monospace',
-            'font-size': 10,
-            'fill': 'white',
-            'text-rendering': 'geometric-precision'
-          });
+            'height': w
+          }));
         }
       },
       onMouseOver: function(svg, event) {

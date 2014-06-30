@@ -296,34 +296,46 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       computeLegendLayout: (svg, series, dimensions) ->
         padding = 10
         that = this
-        bbox = (t) -> that.getTextBBox(t).width
 
-        fn = (s) -> s.label || s.y
+        leftWidths = this.getLegendItemsWidths(svg, 'y')
 
         leftLayout = [0]
-        leftItems = svg.selectAll('.legendItem.y')[0]
-
         i = 1
-        while i < leftItems.length
-          leftLayout.push bbox(leftItems[i-1]) + leftLayout[i - 1] + padding
+        while i < leftWidths.length
+          leftLayout.push(leftWidths[i-1] + leftLayout[i - 1] + padding)
           i++
 
 
-        rightItems = svg.selectAll('.legendItem.y2')[0]
-        return [leftLayout] unless rightItems.length > 0
+        rightWidths = this.getLegendItemsWidths(svg, 'y2')
+        return [leftLayout] unless rightWidths.length > 0
 
         w = dimensions.width - dimensions.right - dimensions.left
 
-        rightLayout = [w - bbox(rightItems[rightItems.length - 1])]
+        rightLayout = [w - rightWidths[rightWidths.length - 1]]
 
-        j = rightItems.length - 2
+        j = rightWidths.length - 2
         while j >= 0
-          rightLayout.push w - bbox(rightItems[j]) - (w - rightLayout[rightLayout.length - 1]) - padding
+          rightLayout.push w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding
           j--
 
         rightLayout.reverse()
 
         return [leftLayout, rightLayout]
+
+      getLegendItemsWidths: (svg, axis) ->
+        that = this
+        bbox = (t) -> that.getTextBBox(t).width
+
+        items = svg.selectAll(".legendItem.#{axis}")
+        return [] unless items.length > 0
+
+        widths = []
+        i = 0
+        while i < items[0].length
+          widths.push(bbox(items[0][i]))
+          i++
+
+        return widths
 
       drawLegend: (svg, series, dimensions, handlers) ->
         that = this
@@ -662,15 +674,40 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       adjustMargins: (svg, dimensions, options, data) ->
         this.resetMargins(dimensions)
         return unless data and data.length
+        return unless options.series.length
 
         dimensions.left = this.getWidestTickWidth(svg, 'y')
         dimensions.right = this.getWidestTickWidth(svg, 'y2')
+
+        return if options.tooltip.mode is 'scrubber'
+
+        series = options.series
+
+        leftSeries = series.filter (s) -> s.axis isnt 'y2'
+        leftWidest = this.getWidestOrdinate(data, leftSeries)
+        dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20
+
+        rightSeries = series.filter (s) -> s.axis is 'y2'
+        return unless rightSeries.length
+
+        rightWidest = this.getWidestOrdinate(data, rightSeries)
+        dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20
 
       adjustMarginsForThumbnail: (dimensions, axes) ->
         dimensions.top = 1
         dimensions.bottom = 2
         dimensions.left = 0
         dimensions.right = 1
+
+      estimateSideTooltipWidth: (svg, text) ->
+        t = svg.append('text')
+        t.text('' + text)
+        this.styleTooltip(t)
+
+        bbox = this.getTextBBox(t[0][0])
+        t.remove()
+
+        return bbox
 
       getTextBBox: (svgTextElement) ->
         return svgTextElement.getBBox()
@@ -683,6 +720,18 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         ticks[0]?.map (t) -> max = Math.max(max, bbox(t).width)
 
         return max
+
+      getWidestOrdinate: (data, series) ->
+        widest = ''
+
+        data.forEach (row) ->
+          series.forEach (series) ->
+            return unless row[series.y]?
+
+            if ('' + row[series.y]).length > ('' + widest).length
+              widest = row[series.y]
+
+        return widest
 
 # ----
 
@@ -1041,12 +1090,24 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           textElement = item.select('text')
 
-          textElement.text(v.x + ' : ' + v.value)
+          abscissas = v.x
+          if options.axes.x.tooltipFormatter
+            abscissas = options.axes.x.tooltipFormatter(v.x)
+
+          textElement.text(abscissas + ' : ' + v.value)
           w = that.getTextBBox(textElement[0][0]).width + 5
 
           item.select('path')
             .attr 'd', (s) -> that["get#{s.axis.toUpperCase()}TooltipPath"](w)
 
+
+      styleTooltip: (d3TextElement) ->
+        return d3TextElement.attr({
+          'font-family': 'monospace'
+          'font-size': 10
+          'fill': 'white'
+          'text-rendering': 'geometric-precision'
+        })
 
       addTooltips: (svg, dimensions, axesOptions) ->
         width = dimensions.width
@@ -1069,17 +1130,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         xTooltip.append('path')
           .attr('transform', "translate(0,#{(height + 1)})")
 
-        xTooltip.append('text')
+        this.styleTooltip(xTooltip.append('text')
           .style('text-anchor', 'middle')
           .attr(
             'width': w
             'height': h
-            'font-family': 'monospace'
-            'font-size': 10
             'transform': 'translate(0,' + (height + 19) + ')'
-            'fill': 'white'
-            'text-rendering': 'geometric-precision'
           )
+        )
 
         yTooltip = svg.append('g')
           .attr(
@@ -1089,15 +1147,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           )
 
         yTooltip.append('path')
-        yTooltip.append('text')
+        this.styleTooltip(yTooltip.append('text')
           .attr(
             'width': h
             'height': w
-            'font-family': 'monospace'
-            'font-size': 10
-            'fill': 'white'
-            'text-rendering': 'geometric-precision'
           )
+        )
 
         if axesOptions.y2?
           y2Tooltip = svg.append('g')
@@ -1110,15 +1165,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           y2Tooltip.append('path')
 
-          y2Tooltip.append('text')
+          this.styleTooltip(y2Tooltip.append('text')
             .attr(
               'width': h
               'height': w
-              'font-family': 'monospace'
-              'font-size': 10
-              'fill': 'white'
-              'text-rendering': 'geometric-precision'
             )
+          )
 
       onMouseOver: (svg, event) ->
         this.updateXTooltip(svg, event)

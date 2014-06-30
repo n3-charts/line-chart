@@ -55,12 +55,24 @@
 
           textElement = item.select('text')
 
-          textElement.text(v.x + ' : ' + v.value)
+          abscissas = v.x
+          if options.axes.x.tooltipFormatter
+            abscissas = options.axes.x.tooltipFormatter(v.x)
+
+          textElement.text(abscissas + ' : ' + v.value)
           w = that.getTextBBox(textElement[0][0]).width + 5
 
           item.select('path')
             .attr 'd', (s) -> that["get#{s.axis.toUpperCase()}TooltipPath"](w)
 
+
+      styleTooltip: (d3TextElement) ->
+        return d3TextElement.attr({
+          'font-family': 'monospace'
+          'font-size': 10
+          'fill': 'white'
+          'text-rendering': 'geometric-precision'
+        })
 
       addTooltips: (svg, dimensions, axesOptions) ->
         width = dimensions.width
@@ -83,17 +95,14 @@
         xTooltip.append('path')
           .attr('transform', "translate(0,#{(height + 1)})")
 
-        xTooltip.append('text')
+        this.styleTooltip(xTooltip.append('text')
           .style('text-anchor', 'middle')
           .attr(
             'width': w
             'height': h
-            'font-family': 'monospace'
-            'font-size': 10
             'transform': 'translate(0,' + (height + 19) + ')'
-            'fill': 'white'
-            'text-rendering': 'geometric-precision'
           )
+        )
 
         yTooltip = svg.append('g')
           .attr(
@@ -103,15 +112,12 @@
           )
 
         yTooltip.append('path')
-        yTooltip.append('text')
+        this.styleTooltip(yTooltip.append('text')
           .attr(
             'width': h
             'height': w
-            'font-family': 'monospace'
-            'font-size': 10
-            'fill': 'white'
-            'text-rendering': 'geometric-precision'
           )
+        )
 
         if axesOptions.y2?
           y2Tooltip = svg.append('g')
@@ -124,15 +130,12 @@
 
           y2Tooltip.append('path')
 
-          y2Tooltip.append('text')
+          this.styleTooltip(y2Tooltip.append('text')
             .attr(
               'width': h
               'height': w
-              'font-family': 'monospace'
-              'font-size': 10
-              'fill': 'white'
-              'text-rendering': 'geometric-precision'
             )
+          )
 
       onMouseOver: (svg, event) ->
         this.updateXTooltip(svg, event)

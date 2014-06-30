@@ -36,8 +36,6 @@ describe 'scrubber tooltip', ->
     """
 
   beforeEach ->
-    tooltipSpy = sinon.spy()
-
     outerScope.$apply ->
       outerScope.data = [
         {x: 0, value: 4}
@@ -48,7 +46,7 @@ describe 'scrubber tooltip', ->
         {x: 5, value: 42}
       ]
       outerScope.options =
-        axes: {x: {tooltipFormatter: tooltipSpy}}
+        axes: {x: {tooltipFormatter: (v) -> '$' + v}}
         series: [
           {
             y: 'value'
@@ -80,7 +78,7 @@ describe 'scrubber tooltip', ->
 
     tooltips = element.childrenByClass('scrubberText')
 
-    # expect(tooltips[0].innerHTML()).to.equal('4')
-    # expect(tooltips[1].innerHTML()).to.equal('0')
+    expect(tooltips[0].innerHTML()).to.equal('$0 : 4')
+    expect(tooltips[1].innerHTML()).to.equal('$0 : 0')
 
     d3.mouse.restore()
