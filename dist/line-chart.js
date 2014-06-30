@@ -586,7 +586,7 @@ mod.factory('n3utils', [
         return svg.append('g').attr('class', 'content');
       },
       createGlass: function(svg, dimensions, handlers, axes, data, options) {
-        var glass, items;
+        var g, g2, glass, items;
         glass = svg.append('g').attr({
           'class': 'glass-container',
           'opacity': 0
@@ -605,7 +605,12 @@ mod.factory('n3utils', [
           'stroke-width': '2px',
           'r': 4
         });
-        items.append('path').attr({
+        g = items.append('g').attr({
+          'class': function(s, i) {
+            return "rightTT";
+          }
+        });
+        g.append('path').attr({
           'class': function(s, i) {
             return "scrubberPath series_" + i;
           },
@@ -614,13 +619,7 @@ mod.factory('n3utils', [
             return s.color;
           }
         });
-        items.append('text').style('text-anchor', function(s) {
-          if (s.axis === 'y') {
-            return 'end';
-          } else {
-            return 'start';
-          }
-        }).attr({
+        g.append('text').style('text-anchor', 'start').attr({
           'class': function(d, i) {
             return "scrubberText series_" + i;
           },
@@ -628,13 +627,34 @@ mod.factory('n3utils', [
           'font-family': 'Courier',
           'font-size': 10,
           'fill': 'white',
-          'transform': function(s) {
-            if (s.axis === 'y') {
-              return 'translate(-7, 3)';
-            } else {
-              return 'translate(7, 3)';
-            }
+          'transform': 'translate(7, 3)',
+          'text-rendering': 'geometric-precision'
+        }).text(function(s) {
+          return s.label || s.y;
+        });
+        g2 = items.append('g').attr({
+          'class': function(s, i) {
+            return "leftTT";
+          }
+        });
+        g2.append('path').attr({
+          'class': function(s, i) {
+            return "scrubberPath series_" + i;
           },
+          'y': '-7px',
+          'fill': function(s) {
+            return s.color;
+          }
+        });
+        g2.append('text').style('text-anchor', 'end').attr({
+          'class': function(d, i) {
+            return "scrubberText series_" + i;
+          },
+          'height': '14px',
+          'font-family': 'Courier',
+          'font-size': 10,
+          'fill': 'white',
+          'transform': 'translate(-7, 3)',
           'text-rendering': 'geometric-precision'
         }).text(function(s) {
           return s.label || s.y;
@@ -1129,22 +1149,40 @@ mod.factory('n3utils', [
         };
         that = this;
         return data.forEach(function(series, index) {
-          var abscissas, item, textElement, v, w;
+          var abs, item, lText, left, rText, right, side, v, w;
           v = getClosest(series.values, axes.xScale.invert(x));
           item = svg.select(".scrubberItem.series_" + index);
           item.transition().duration(50).attr({
             'transform': "translate(" + (axes.xScale(v.x)) + ", " + (axes[v.axis + 'Scale'](v.value)) + ")"
           });
-          textElement = item.select('text');
-          abscissas = v.x;
-          if (options.axes.x.tooltipFormatter) {
-            abscissas = options.axes.x.tooltipFormatter(v.x);
+          right = item.select('.rightTT');
+          rText = right.select('text');
+          rText.text(v.x + ' : ' + v.value);
+          w = that.getTextBBox(rText[0][0]).width + 5;
+          right.select('path').attr('d', that.getY2TooltipPath(w));
+          left = item.select('.leftTT');
+          lText = left.select('text');
+          lText.text(v.x + ' : ' + v.value);
+          w = that.getTextBBox(lText[0][0]).width + 5;
+          left.select('path').attr('d', that.getYTooltipPath(w));
+          side = series.axis === 'y2' ? 'right' : 'left';
+          abs = axes.xScale(v.x);
+          if (side === 'left') {
+            if (abs + that.getTextBBox(lText[0][0]).x < 0) {
+              side = 'right';
+            }
+          } else if (side === 'right') {
+            if (abs + that.getTextBBox(rText[0][0]).width > svg.select('.glass')[0][0].getBBox().width) {
+              side = 'left';
+            }
           }
-          textElement.text(abscissas + ' : ' + v.value);
-          w = that.getTextBBox(textElement[0][0]).width + 5;
-          return item.select('path').attr('d', function(s) {
-            return that["get" + (s.axis.toUpperCase()) + "TooltipPath"](w);
-          });
+          if (side === 'left') {
+            right.transition().duration(50).attr('opacity', 0);
+            return left.transition().duration(50).attr('opacity', 1);
+          } else {
+            right.transition().duration(50).attr('opacity', 1);
+            return left.transition().duration(50).attr('opacity', 0);
+          }
         });
       },
       styleTooltip: function(d3TextElement) {

@@ -46,9 +46,7 @@
           .data(data)
           .enter()
             .append('g')
-              .attr(
-                'class', (s, i) -> "scrubberItem series_#{i}"
-              )
+              .attr('class', (s, i) -> "scrubberItem series_#{i}")
 
         items.append('circle')
           .attr(
@@ -59,23 +57,48 @@
             'r': 4
           )
 
-        items.append('path')
+        g = items.append('g')
+          .attr('class': (s, i) -> "rightTT")
+
+        g.append('path')
           .attr(
             'class': (s, i) -> "scrubberPath series_#{i}"
             'y': '-7px'
             'fill': (s) -> s.color
           )
 
-        items.append('text')
-          .style('text-anchor', (s) -> return if s.axis is 'y' then 'end' else 'start')
+        g.append('text')
+          .style('text-anchor', 'start')
           .attr(
             'class': (d, i) -> "scrubberText series_#{i}"
             'height': '14px'
             'font-family': 'Courier'
             'font-size': 10
             'fill': 'white'
-            'transform': (s) ->
-              return if s.axis is 'y' then 'translate(-7, 3)' else 'translate(7, 3)'
+            'transform': 'translate(7, 3)'
+            'text-rendering': 'geometric-precision'
+          )
+          .text (s) -> s.label || s.y
+
+        g2 = items.append('g')
+          .attr('class': (s, i) -> "leftTT")
+
+        g2.append('path')
+          .attr(
+            'class': (s, i) -> "scrubberPath series_#{i}"
+            'y': '-7px'
+            'fill': (s) -> s.color
+          )
+
+        g2.append('text')
+          .style('text-anchor', 'end')
+          .attr(
+            'class': (d, i) -> "scrubberText series_#{i}"
+            'height': '14px'
+            'font-family': 'Courier'
+            'font-size': 10
+            'fill': 'white'
+            'transform': 'translate(-7, 3)'
             'text-rendering': 'geometric-precision'
           )
           .text (s) -> s.label || s.y
