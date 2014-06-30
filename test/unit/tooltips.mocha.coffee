@@ -19,6 +19,8 @@ describe 'tooltip', ->
       d3.timer.flush()
       Date.now = now
 
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
     checkVisibilityOf = (args) ->
       flushD3()
       args.forEach (axis) ->

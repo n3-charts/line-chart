@@ -67,7 +67,7 @@ describe 'legend', ->
     legendGroup = element.childByClass('legend')
     expect(legendGroup.children().length).to.equal 2
     l_0 = legendGroup.children()[0].domElement
-    expect(l_0.getAttribute('class')).to.equal 'legendItem series_0'
+    expect(l_0.getAttribute('class')).to.equal 'legendItem series_0 y'
     expect(l_0.childNodes[0].nodeName).to.equal 'circle'
     expect(l_0.childNodes[0].getAttribute('fill')).to.equal '#4682b4'
     expect(l_0.childNodes[1].getAttribute('clip-path')).to.equal 'url(#legend-clip)'
@@ -112,26 +112,46 @@ describe 'legend', ->
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('0.2')
 
 
-  describe.skip 'layout computation', ->
+  describe 'layout computation', ->
     n3utils = null
     dim = {top: 20, right: 40, bottom: 30, left: 40, width: 900, height: 500}
 
     beforeEach inject (_n3utils_) ->
       n3utils = _n3utils_
+      sinon.stub(n3utils, 'getLegendItemsWidths', (svg, axis) ->
+        return if axis is 'y' then [99, 123] else [105, 149]
+      )
 
-    it 'should compute for left series', ->
-      series = [
-        {label: 'pouet', axis: 'y'}
-        {label: 'tut', axis: 'y'}
-      ]
 
-      expect(n3utils.computeLegendLayout(series, dim)).to.eql([0, 75])
+    it 'should compute for left and right series', ->
+      series = [{
+        y: "val_0",
+        label: "On the left !",
+        color: "#8c564b",
+        type: "line",
+        thickness: "1px"
+      },
+      {
+        y: "val_1",
+        axis: "y2",
+        label: "On the right !",
+        color: "#d62728",
+        type: "line",
+        thickness: "1px"
+      },
+      {
+        y: "val_2",
+        label: "On the left too !",
+        type: "line",
+        thickness: "1px"
+      },
+      {
+        y: "val_3",
+        axis: "y2",
+        label: "Aaand on the right !",
+        color: "#d62728",
+        type: "line",
+        thickness: "1px"
+      }]
 
-    it 'should compute for right series too', ->
-      series = [
-        {label: 'pouet', axis: 'y'}
-        {label: 'tut', axis: 'y2'}
-        {label: 'bwabwabwa', axis: 'y2'}
-      ]
-
-      expect(n3utils.computeLegendLayout(series, dim)).to.eql([0, 700, 765])
+      expect(n3utils.computeLegendLayout({}, series, dim)).to.eql([[0, 109], [34, 671]])

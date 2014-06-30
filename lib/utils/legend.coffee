@@ -1,34 +1,46 @@
       computeLegendLayout: (svg, series, dimensions) ->
         padding = 10
         that = this
-        bbox = (t) -> that.getTextBBox(t).width
 
-        fn = (s) -> s.label || s.y
+        leftWidths = this.getLegendItemsWidths(svg, 'y')
 
         leftLayout = [0]
-        leftItems = svg.selectAll('.legendItem.y')[0]
-
         i = 1
-        while i < leftItems.length
-          leftLayout.push bbox(leftItems[i-1]) + leftLayout[i - 1] + padding
+        while i < leftWidths.length
+          leftLayout.push(leftWidths[i-1] + leftLayout[i - 1] + padding)
           i++
 
 
-        rightItems = svg.selectAll('.legendItem.y2')[0]
-        return [leftLayout] unless rightItems.length > 0
+        rightWidths = this.getLegendItemsWidths(svg, 'y2')
+        return [leftLayout] unless rightWidths.length > 0
 
         w = dimensions.width - dimensions.right - dimensions.left
 
-        rightLayout = [w - bbox(rightItems[rightItems.length - 1])]
+        rightLayout = [w - rightWidths[rightWidths.length - 1]]
 
-        j = rightItems.length - 2
+        j = rightWidths.length - 2
         while j >= 0
-          rightLayout.push w - bbox(rightItems[j]) - (w - rightLayout[rightLayout.length - 1]) - padding
+          rightLayout.push w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding
           j--
 
         rightLayout.reverse()
 
         return [leftLayout, rightLayout]
+
+      getLegendItemsWidths: (svg, axis) ->
+        that = this
+        bbox = (t) -> that.getTextBBox(t).width
+
+        items = svg.selectAll(".legendItem.#{axis}")
+        return [] unless items.length > 0
+
+        widths = []
+        i = 0
+        while i < items[0].length
+          widths.push(bbox(items[0][i]))
+          i++
+
+        return widths
 
       drawLegend: (svg, series, dimensions, handlers) ->
         that = this

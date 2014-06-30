@@ -88,27 +88,11 @@ describe 'misc', ->
       expect(computed[0][k]).to.eql expected[0][k]
       expect(computed[1][k]).to.eql expected[1][k]
 
-  it.skip 'should compute the widest y value', ->
-    data = [
-      {x: 0, foo: 4.154, value: 4}
-      {x: 1, foo: 8.15485, value: 8}
-      {x: 2, foo: 1.1548578, value: 15}
-      {x: 3, foo: 1.154}
-      {x: 4, foo: 2.45, value: 23}
-      {x: 5, foo: 4, value: 42}
-    ]
-    series = [y: 'value']
-    expect(n3utils.getWidestOrdinate(data, series)).to.equal 15
-    series = [
-      {y: 'value'}
-      {y: 'foo'}
-    ]
-    expect(n3utils.getWidestOrdinate(data, series)).to.equal 1.1548578
-
   describe 'adjustMargins', ->
-    fakeSvg = {}
+    fakeSvg = undefined
 
     beforeEach ->
+      fakeSvg = d3.select('body').append('svg')
       sinon.stub n3utils, 'getDefaultMargins', ->
         top: 20
         right: 50
@@ -118,6 +102,9 @@ describe 'misc', ->
       sinon.stub n3utils, 'getWidestTickWidth', (svg, axisKey) ->
         if axisKey is 'y' then return 30 else return 50
 
+
+    afterEach ->
+      fakeSvg.remove()
 
     it 'should return default margins for no series', ->
       data = [
@@ -132,11 +119,13 @@ describe 'misc', ->
         left: 10
         right: 10
 
-      options = series: []
-      n3utils.adjustMargins fakeSvg, dimensions, options, data
+      options =
+        series: []
+        tooltip: {}
 
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
       expect(dimensions).to.eql
-        left: 30
+        left: 50
         right: 50
         top: 20
         bottom: 30
@@ -155,10 +144,16 @@ describe 'misc', ->
         left: 10
         right: 10
 
-      options = series: [y: 'value']
-      n3utils.adjustMargins dimensions, options, data
+      options =
+        series: [
+          {y: 'value'}
+        ]
+        tooltip: {}
+
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
+
       expect(dimensions).to.eql
-        left: 40
+        left: 33
         right: 50
         top: 20
         bottom: 30
@@ -177,11 +172,15 @@ describe 'misc', ->
         left: 10
         right: 10
 
-      options = series: [
-        {y: 'value'}
-        {y: 'foo'}
-      ]
-      n3utils.adjustMargins dimensions, options, data
+      options =
+        series: [
+          {y: 'value'}
+          {y: 'foo'}
+        ]
+        tooltip: {}
+
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
+
       expect(dimensions).to.eql
         left: 75
         right: 50
@@ -202,13 +201,17 @@ describe 'misc', ->
         left: 10
         right: 10
 
-      options = series: [
-        {y: 'value'}
-        {axis: 'y2', y: 'foo'}
-      ]
-      n3utils.adjustMargins dimensions, options, data
+      options =
+        series: [
+          {y: 'value'}
+          {axis: 'y2', y: 'foo'}
+        ]
+        tooltip: {}
+
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
+
       expect(dimensions).to.eql
-        left: 40
+        left: 33
         right: 75
         top: 20
         bottom: 30
