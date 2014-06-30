@@ -585,9 +585,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .data(data)
           .enter()
             .append('g')
-              .attr(
-                'class', (s, i) -> "scrubberItem series_#{i}"
-              )
+              .attr('class', (s, i) -> "scrubberItem series_#{i}")
 
         items.append('circle')
           .attr(
@@ -598,23 +596,48 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'r': 4
           )
 
-        items.append('path')
+        g = items.append('g')
+          .attr('class': (s, i) -> "rightTT")
+
+        g.append('path')
           .attr(
             'class': (s, i) -> "scrubberPath series_#{i}"
             'y': '-7px'
             'fill': (s) -> s.color
           )
 
-        items.append('text')
-          .style('text-anchor', (s) -> return if s.axis is 'y' then 'end' else 'start')
+        g.append('text')
+          .style('text-anchor', 'start')
           .attr(
             'class': (d, i) -> "scrubberText series_#{i}"
             'height': '14px'
             'font-family': 'Courier'
             'font-size': 10
             'fill': 'white'
-            'transform': (s) ->
-              return if s.axis is 'y' then 'translate(-7, 3)' else 'translate(7, 3)'
+            'transform': 'translate(7, 3)'
+            'text-rendering': 'geometric-precision'
+          )
+          .text (s) -> s.label || s.y
+
+        g2 = items.append('g')
+          .attr('class': (s, i) -> "leftTT")
+
+        g2.append('path')
+          .attr(
+            'class': (s, i) -> "scrubberPath series_#{i}"
+            'y': '-7px'
+            'fill': (s) -> s.color
+          )
+
+        g2.append('text')
+          .style('text-anchor', 'end')
+          .attr(
+            'class': (d, i) -> "scrubberText series_#{i}"
+            'height': '14px'
+            'font-family': 'Courier'
+            'font-size': 10
+            'fill': 'white'
+            'transform': 'translate(-7, 3)'
             'text-rendering': 'geometric-precision'
           )
           .text (s) -> s.label || s.y
@@ -1085,20 +1108,41 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           v = getClosest(series.values, axes.xScale.invert(x))
 
           item = svg.select(".scrubberItem.series_#{index}")
-          item.transition().duration(50)
-            .attr('transform': "translate(#{axes.xScale(v.x)}, #{axes[v.axis + 'Scale'](v.value)})")
+          item.transition().duration(50).attr('transform': "translate(#{axes.xScale(v.x)}, #{axes[v.axis + 'Scale'](v.value)})")
 
-          textElement = item.select('text')
+          right = item.select('.rightTT')
+          rText = right.select('text')
+          rText.text(v.x + ' : ' + v.value)
+          w = that.getTextBBox(rText[0][0]).width + 5
+          right.select('path').attr 'd', that.getY2TooltipPath(w)
 
-          abscissas = v.x
-          if options.axes.x.tooltipFormatter
-            abscissas = options.axes.x.tooltipFormatter(v.x)
+          left = item.select('.leftTT')
+          lText = left.select('text')
+          lText.text(v.x + ' : ' + v.value)
+          w = that.getTextBBox(lText[0][0]).width + 5
+          left.select('path').attr 'd', that.getYTooltipPath(w)
 
-          textElement.text(abscissas + ' : ' + v.value)
-          w = that.getTextBBox(textElement[0][0]).width + 5
 
-          item.select('path')
-            .attr 'd', (s) -> that["get#{s.axis.toUpperCase()}TooltipPath"](w)
+          side = if series.axis is 'y2' then 'right' else 'left'
+
+          abs = axes.xScale(v.x)
+          if side is 'left'
+            if abs + that.getTextBBox(lText[0][0]).x < 0
+              side = 'right'
+          else if side is 'right'
+            if abs + that.getTextBBox(rText[0][0]).width > svg.select('.glass')[0][0].getBBox().width
+              side = 'left'
+
+
+          if side is 'left'
+            right.transition().duration(50).attr('opacity', 0)
+            left.transition().duration(50).attr('opacity', 1)
+          else
+            right.transition().duration(50).attr('opacity', 1)
+            left.transition().duration(50).attr('opacity', 0)
+
+          # if axis is 'y' and axes.xScale(v.x) + bbox.x < 0
+
 
 
       styleTooltip: (d3TextElement) ->
