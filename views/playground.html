@@ -1,39 +1,11 @@
-<div class='pure-u-2-5'>
-  <form class="pure-form pure-form-aligned chart-options">
-    <fieldset>
-      <legend>General options</legend>
-      <div class="pure-control-group">
-        <label>Interpolation</label>
-        <select ng-model="options.lineMode" ng-options="mode for mode in interpolationModes"></select>
-      </div>
-
-      <div class="pure-control-group" ng-show="options.lineMode != 'linear'">
-        <label>Tension</label>
-        <input type="number" step="0.1" ng-model="options.tension" min="0.1" max="1.0" class="width-50"/>
-      </div>
-
-      <div class="pure-control-group">
-        <label>Tooltip mode</label>
-        <select ng-model="options.tooltipMode" ng-options="mode for mode in tooltipModes"></select>
-      </div>
-
-      <div class="pure-control-group">
-        <label>Dots</label>
-        <input type="checkbox" ng-model="options.drawDots">
-      </div>
-
-      <div class="pure-control-group">
-        <label>Legend</label>
-        <input type="checkbox" ng-model="options.drawLegend">
-      </div>
-
-    </fieldset>
-    <fieldset>
-      <legend>Series <span ng-click="toggleAll()" class="small right only-hover">click a series to edit it</span></legend>
-      <series series="series" fields="fields" ng-repeat="series in options.series"></series>
-    </fieldset>
-  </form>
+<div class='pure-u-1-3'>
+  <h3>Options <span class="small right only-hover clickable" ng-click="outputShown = !outputShown">{{outputShown ? 'hide' : 'show'}} output</span></h3>
+  <chart-options-editor data="data" options="options"></chart-options-editor>
 </div>
-<div class='pure-u-3-5' style="height: 500px;">
+<div class='pure-u-2-3' style="height: 500px;">
   <linechart data='data' options='options'></linechart>
+</div>
+<div ng-if="outputShown" class='pure-u-1 modal options-output'>
+  <div drag-parent class="drag-handle">Drag me !<span class="close-handle icon" ng-click="$parent.outputShown = false"><i class="fa fa-times"></i></span></div>
+  <pre class="options-output" ng-bind-html='"$scope.options = " + (generatedOptions | prettyUnsafe:80:"columns") + ";" | safe'></pre>
 </div>

@@ -20,6 +20,11 @@ h3 {
 }
 
 p {
+  line-height: 1.5em;
+}
+
+emphasis {
+  font-style: italic;
 }
 
 /* HEADER */
@@ -102,14 +107,14 @@ figure.comparison > figcaption {
   margin-bottom: 30px;
 }
 
-span.label {
+div.release span.label {
   border: 1px solid lightgrey;
   border-radius: 17px;
   padding: 1px 5px 2px 5px;
   font-size: 11px;
 }
 
-span.label.label-green {
+div.release span.label.label-green {
   background-color: #90af45;
   border: 0px;
   color: white;
@@ -146,53 +151,73 @@ h3.subheading {
   font-size: 12px;
 }
 
-.mini-charts {
-  min-width: 1200px;
-  max-width: 1200px;
-}
-
-.mini-chart {
-  width: 115px;
-  margin: 0 1px;
-  display: inline-block;
-  height: 100px;
+.example {
+  min-width: 600px;
+  margin: 0 auto 50px auto;
+  /*box-shadow: 6px 6px 10px rgba(255, 255, 255, 0);*/
+  /*border: 1px solid rgba(255, 255, 255, 0);*/
   border: 1px solid #CECECE;
 }
 
-.thumbnail {
-  min-width: 1300px;
-  max-width: 1300px;
-  box-shadow: 6px 6px 10px #DDD;
-  border: 1px solid #CECECE;
+.example:hover {
+  /*box-shadow: 6px 6px 10px #DDD;*/
 }
 
-.thumbnail .chart {
-  height: 600px;
+.example .chart {
+  height: 400px;
 }
 
-.thumbnail .settings {
-  height: 600px;
+.example .description, .example .actions {
+  margin-top: 10px;
 }
 
-.thumbnail .settings .options {
-  overflow-y: scroll;
-  max-height: 350px;
-  font-size: 10px;
+.example .hideable {
+  visibility: hidden;
 }
 
-.thumbnail .settings .label {
-  margin-top: 20px;
-  border-bottom: 1px solid lightgrey;
-  padding-bottom: 5px;
+.example:hover .hideable {
+  visibility: visible;
+}
+
+.example .description {
   color: grey;
-  width: 90%;
 }
 
-.thumbnail .settings .data {
-  overflow-y: scroll;
-  max-height: 100px;
-  font-size: 10px;
+.example .description span {
+  padding: 10px 0px 0px 10px;
 }
+
+.example .chart-options {
+  overflow-y: scroll;
+}
+
+.example .action-icon {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+  cursor: pointer;
+  padding-right: 10px;
+  color: lightgrey;
+}
+
+.example .action-icon i {
+  width: 20px;
+  text-align: center;
+}
+
+.example .action-icon .label {
+  visibility: hidden;
+  margin-right: 7px;
+  text-transform: lowercase;
+}
+
+.example .action-icon:hover {
+  color: grey;
+}
+.example .action-icon:hover .label {
+  visibility: visible;
+}
+
 
 /* PLAYGROUND */
 .follow-scroll {
@@ -203,26 +228,72 @@ form.chart-options div {
   font-size: 12px;
 }
 
-legend > span.only-hover {
+* > span.only-hover {
   display: none;
 }
 
-legend:hover > span.only-hover {
+*:hover > span.only-hover {
   display: block;
 }
 
-legend > span.clickable {
+* > span.clickable {
   cursor: pointer;
 }
 
 
-legend > span.small {
+* > span.small {
   font-size: 10px;
   line-height: 2em;
 }
 
-legend > span.right {
+* > span.right {
   float: right;
 }
 
+.modal {
+  position: absolute;
+  margin: 0 auto;
+  left: 33%;
+  width: 400px;
+  background-color: white;
+  box-shadow: 6px 6px 10px #DDD;
+  border: 1px solid #CECECE;
+  max-height: 500px;
+  overflow-y: scroll;
+  z-index: 100;
+}
+
+.modal pre {
+  padding: 10px;
+}
+
+.modal .icon {
+  cursor:pointer;
+  color: lightgrey;
+}
+
+.modal .icon:hover {
+  color: grey;
+}
+
+.modal .close-handle {
+  float: right;
+  font-size: 13px;
+  line-height: 8px;
+  margin-right: 3px;
+}
+
+.modal .drag-handle {
+  height: 14px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 10px;
+  text-transform: lowercase;
+  background-color: rgb(236, 236, 236);
+}
+
+
+pre.options-output {
+  font-size: 10px;
+}
 

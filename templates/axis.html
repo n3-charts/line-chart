@@ -1,0 +1,33 @@
+<div class="axis-renderer">
+  <div class="summary" ng-click="expanded = !expanded">
+    <span class="title">{{key}} axis</span>
+  </div>
+  <div class="detail" ng-show="key != 'x' && expanded">
+    <div class="pure-control-group">
+      <label>Type</label>
+      <select ng-model="axis.type" ng-options="type for type in yTypes"></select>
+    </div>
+
+    <div class="pure-control-group">
+      <label>Min</label>
+      <input ng-model='axis.min'>
+    </div>
+
+    <div class="pure-control-group">
+      <label>Max</label>
+      <input ng-model='axis.max'>
+    </div>
+  </div>
+
+  <div class="detail" ng-show="key == 'x' && expanded">
+    <div class="pure-control-group">
+      <label>Type</label>
+      <select ng-model="axis.type" ng-options="type for type in xTypes"></select>
+    </div>
+
+    <div class="pure-control-group">
+      <label>Key</label>
+      <select ng-model="axis.key" ng-options="field for field in fields"></select>
+    </div>
+  </div>
+</div>

@@ -1,29 +1,11 @@
-<div class='pure-g' ng-repeat='example in examples'>
-  <div class='pure-u-1'>
-    <hgroup>
-      <h3>{{example.label}}</h3>
-      <h3 class='subheading'>{{example.description}}</h3>
-    </hgroup>
+<div class='pure-g example' ng-repeat='example in examples'>
+  <div class="description pure-u-1-2"><span>{{example.label}}</span></div><div class="actions hideable pure-u-1-2">
+    <a ng-href="#/playground?dataType={{example.dataType}}&options={{example.jsonOptions}}"><span class="action-icon"><span class="label">Open in playground</span><i class="fa fa-gear"></i></span></a>
   </div>
-  <div class='pure-g thumbnail'>
-    <div class='pure-u-3-5 chart'>
-      <linechart data='example.data' options='example.options'></linechart>
-    </div>
-    <div class='pure-u-2-5 settings'>
-      <div class='label'></div>
-      <pre class="options" ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:80:"columns") + ";" | safe'></pre>
-      <div class='label'></div>
-      <pre class="data" ng-bind-html='"$scope.data = " + (example.data | prettyUnsafe:1:"levels") + ";" | safe '></pre>
-      <input type="range" min="2" max="{{max}}" ng-model="example.visibleRows" ng-change="crop(example)"/>
-    </div>
+  <div class="chart pure-u-2-3">
+    <linechart data='example.data' options='example.options'></linechart>
+  </div>
+  <div class="chart-options pure-u-1-3">
+    <pre class="options-output" ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:80:"columns") + ";" | safe'></pre>
   </div>
 </div>
-<div class='pure-u-1 mini-charts'>
-  <hgroup>
-    <h3>Thumbnail mode</h3>
-    <h3 class='subheading'>The chart can be configured to display only data (this is called the thumbnail mode). This is convenient for dashboards, sparklines...</h3>
-  </hgroup>
-  <div class="mini-chart" ng-repeat='example in miniExamples'>
-    <linechart data='example.data' options='example.options' mode='thumbnail'></linechart>
-  </div>
-  </div>
