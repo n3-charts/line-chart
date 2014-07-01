@@ -594,17 +594,6 @@ mod.factory('n3utils', [
         items = glass.selectAll('.scrubberItem').data(data).enter().append('g').attr('class', function(s, i) {
           return "scrubberItem series_" + i;
         });
-        items.append('circle').attr({
-          'class': function(s, i) {
-            return "scrubberDot series_" + i;
-          },
-          'fill': 'white',
-          'stroke': function(s) {
-            return s.color;
-          },
-          'stroke-width': '2px',
-          'r': 4
-        });
         g = items.append('g').attr({
           'class': function(s, i) {
             return "rightTT";
@@ -619,17 +608,14 @@ mod.factory('n3utils', [
             return s.color;
           }
         });
-        g.append('text').style('text-anchor', 'start').attr({
+        this.styleTooltip(g.append('text').style('text-anchor', 'start').attr({
           'class': function(d, i) {
             return "scrubberText series_" + i;
           },
           'height': '14px',
-          'font-family': 'Courier',
-          'font-size': 10,
-          'fill': 'white',
           'transform': 'translate(7, 3)',
           'text-rendering': 'geometric-precision'
-        }).text(function(s) {
+        })).text(function(s) {
           return s.label || s.y;
         });
         g2 = items.append('g').attr({
@@ -646,25 +632,33 @@ mod.factory('n3utils', [
             return s.color;
           }
         });
-        g2.append('text').style('text-anchor', 'end').attr({
+        this.styleTooltip(g2.append('text').style('text-anchor', 'end').attr({
           'class': function(d, i) {
             return "scrubberText series_" + i;
           },
           'height': '14px',
-          'font-family': 'Courier',
-          'font-size': 10,
-          'fill': 'white',
-          'transform': 'translate(-7, 3)',
+          'transform': 'translate(-13, 3)',
           'text-rendering': 'geometric-precision'
-        }).text(function(s) {
+        })).text(function(s) {
           return s.label || s.y;
         });
-        return glass.append('rect').attr({
+        glass.append('rect').attr({
           "class": 'glass',
           width: dimensions.width - dimensions.left - dimensions.right,
           height: dimensions.height - dimensions.top - dimensions.bottom
         }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
           return handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options);
+        });
+        return items.append('circle').attr({
+          'class': function(s, i) {
+            return "scrubberDot series_" + i;
+          },
+          'fill': 'white',
+          'stroke': function(s) {
+            return s.color;
+          },
+          'stroke-width': '2px',
+          'r': 4
         });
       },
       getDataPerSeries: function(data, options) {
@@ -1120,70 +1114,176 @@ mod.factory('n3utils', [
           return svg.selectAll('.glass-container').attr('opacity', 0);
         });
       },
-      updateScrubber: function(svg, _arg, axes, data, options) {
-        var getClosest, that, x, y;
-        x = _arg[0], y = _arg[1];
-        getClosest = function(values, value) {
-          var i, left, right;
-          left = 0;
-          right = values.length - 1;
-          i = Math.round((right - left) / 2);
-          while (true) {
-            if (value < values[i].x) {
-              right = i;
-              i = i - Math.ceil((right - left) / 2);
-            } else {
-              left = i;
-              i = i + Math.floor((right - left) / 2);
-            }
-            if (i === left || i === right) {
-              if (Math.abs(value - values[left].x) < Math.abs(value - values[right].x)) {
-                i = left;
-              } else {
-                i = right;
-              }
-              break;
-            }
+      getClosestPoint: function(values, value) {
+        var i, left, right;
+        left = 0;
+        right = values.length - 1;
+        i = Math.round((right - left) / 2);
+        while (true) {
+          if (value < values[i].x) {
+            right = i;
+            i = i - Math.ceil((right - left) / 2);
+          } else {
+            left = i;
+            i = i + Math.floor((right - left) / 2);
           }
-          return values[i];
+          if (i === left || i === right) {
+            if (Math.abs(value - values[left].x) < Math.abs(value - values[right].x)) {
+              i = left;
+            } else {
+              i = right;
+            }
+            break;
+          }
+        }
+        return values[i];
+      },
+      updateScrubber: function(svg, _arg, axes, data, options) {
+        var ease, positions, that, x, y;
+        x = _arg[0], y = _arg[1];
+        ease = function(element) {
+          return element.transition().duration(50);
         };
         that = this;
-        return data.forEach(function(series, index) {
-          var abs, item, lText, left, rText, right, side, v, w;
-          v = getClosest(series.values, axes.xScale.invert(x));
+        positions = [];
+        data.forEach(function(series, index) {
+          var item, lText, left, rText, right, side, sizes, v;
+          v = that.getClosestPoint(series.values, axes.xScale.invert(x));
           item = svg.select(".scrubberItem.series_" + index);
-          item.transition().duration(50).attr({
-            'transform': "translate(" + (axes.xScale(v.x)) + ", " + (axes[v.axis + 'Scale'](v.value)) + ")"
-          });
           right = item.select('.rightTT');
           rText = right.select('text');
           rText.text(v.x + ' : ' + v.value);
-          w = that.getTextBBox(rText[0][0]).width + 5;
-          right.select('path').attr('d', that.getY2TooltipPath(w));
           left = item.select('.leftTT');
           lText = left.select('text');
           lText.text(v.x + ' : ' + v.value);
-          w = that.getTextBBox(lText[0][0]).width + 5;
-          left.select('path').attr('d', that.getYTooltipPath(w));
+          sizes = {
+            right: that.getTextBBox(rText[0][0]).width + 5,
+            left: that.getTextBBox(lText[0][0]).width + 5
+          };
           side = series.axis === 'y2' ? 'right' : 'left';
-          abs = axes.xScale(v.x);
+          x = axes.xScale(v.x);
           if (side === 'left') {
-            if (abs + that.getTextBBox(lText[0][0]).x < 0) {
+            if (x + that.getTextBBox(lText[0][0]).x < 0) {
               side = 'right';
             }
           } else if (side === 'right') {
-            if (abs + that.getTextBBox(rText[0][0]).width > svg.select('.glass')[0][0].getBBox().width) {
+            if (x + sizes.right > svg.select('.glass')[0][0].getBBox().width) {
               side = 'left';
             }
           }
           if (side === 'left') {
-            right.transition().duration(50).attr('opacity', 0);
-            return left.transition().duration(50).attr('opacity', 1);
+            ease(right).attr('opacity', 0);
+            ease(left).attr('opacity', 1);
           } else {
-            right.transition().duration(50).attr('opacity', 1);
-            return left.transition().duration(50).attr('opacity', 0);
+            ease(right).attr('opacity', 1);
+            ease(left).attr('opacity', 0);
           }
+          return positions.push({
+            index: index,
+            x: x,
+            y: axes[v.axis + 'Scale'](v.value),
+            side: side,
+            sizes: sizes
+          });
         });
+        positions = this.preventOverlapping(positions);
+        return data.forEach(function(series, index) {
+          var item, p, tt;
+          p = positions[index];
+          item = svg.select(".scrubberItem.series_" + index);
+          tt = item.select("." + p.side + "TT");
+          tt.select('text').attr('transform', function() {
+            if (p.side === 'left') {
+              return "translate(-13, " + (p.labelOffset + 3) + ")";
+            } else {
+              return "translate(14, " + (p.labelOffset + 3) + ")";
+            }
+          });
+          tt.select('path').attr('d', that.getScrubberPath(p.sizes[p.side] + 1, p.labelOffset, p.side));
+          return ease(item).attr({
+            'transform': "translate(" + positions[index].x + ", " + positions[index].y + ")"
+          });
+        });
+      },
+      getScrubberPath: function(w, yOffset, side) {
+        var h, p, xdir, ydir;
+        h = 18;
+        p = 10;
+        w = w;
+        xdir = side === 'left' ? 1 : -1;
+        ydir = 1;
+        if (yOffset !== 0) {
+          ydir = Math.abs(yOffset) / yOffset;
+        }
+        yOffset || (yOffset = 0);
+        return ["m0 0", "l" + xdir + " 0", "l0 " + (yOffset + ydir), "l" + (-xdir * (p + 1)) + " 0", "l0 " + (-h / 2 - ydir), "l" + (-xdir * w) + " 0", "l0 " + h, "l" + (xdir * w) + " 0", "l0 " + (-h / 2 - ydir), "l" + (xdir * (p - 1)) + " 0", "l0 " + (-yOffset + ydir), "l1 0", "z"].join('');
+      },
+      preventOverlapping: function(positions) {
+        var abscissas, getNeighbours, h, leftNeighbours, offset, rightNeighbours;
+        h = 18;
+        abscissas = {};
+        positions.forEach(function(p) {
+          var _name;
+          abscissas[_name = p.x] || (abscissas[_name] = {
+            left: [],
+            right: []
+          });
+          return abscissas[p.x][p.side].push(p);
+        });
+        getNeighbours = function(side) {
+          var foundNeighbour, neighbourhood, neighbours, neighboursForX, p, sides, x, y, _ref;
+          neighbours = [];
+          for (x in abscissas) {
+            sides = abscissas[x];
+            if (sides[side].length === 0) {
+              continue;
+            }
+            neighboursForX = {};
+            while (sides[side].length > 0) {
+              p = sides[side].pop();
+              foundNeighbour = false;
+              for (y in neighboursForX) {
+                neighbourhood = neighboursForX[y];
+                if ((+y - h <= (_ref = p.y) && _ref <= +y + h)) {
+                  neighbourhood.push(p);
+                  foundNeighbour = true;
+                }
+              }
+              if (!foundNeighbour) {
+                neighboursForX[p.y] = [p];
+              }
+            }
+            neighbours.push(neighboursForX);
+          }
+          return neighbours;
+        };
+        offset = function(neighboursForAbscissas) {
+          var abs, n, neighbours, start, step, xNeighbours, y;
+          step = 20;
+          for (abs in neighboursForAbscissas) {
+            xNeighbours = neighboursForAbscissas[abs];
+            for (y in xNeighbours) {
+              neighbours = xNeighbours[y];
+              n = neighbours.length;
+              if (n === 1) {
+                neighbours[0].labelOffset = 0;
+                continue;
+              }
+              if (n % 2 === 0) {
+                start = -(step / 2) * (n / 2);
+              } else {
+                start = -(n - 1) / 2 * step;
+              }
+              neighbours.forEach(function(neighbour, i) {
+                return neighbour.labelOffset = start + step * i;
+              });
+            }
+          }
+          return neighboursForAbscissas;
+        };
+        leftNeighbours = offset(getNeighbours('left'));
+        rightNeighbours = offset(getNeighbours('right'));
+        return positions;
       },
       styleTooltip: function(d3TextElement) {
         return d3TextElement.attr({
@@ -1285,12 +1385,6 @@ mod.factory('n3utils', [
         });
         return yTooltip.select('path').attr('fill', series.color).attr('d', this.getYTooltipPath(w));
       },
-      getYTooltipPath: function(w) {
-        var h, p;
-        h = 18;
-        p = 5;
-        return 'm0 0' + 'l' + (-p) + ' ' + (-p) + ' ' + 'l0 ' + (-h / 2 + p) + ' ' + 'l' + (-w) + ' 0 ' + 'l0 ' + h + ' ' + 'l' + w + ' 0 ' + 'l0 ' + (-h / 2 + p) + 'l' + (-p) + ' ' + p + 'z';
-      },
       updateY2Tooltip: function(svg, _arg) {
         var datum, label, series, w, y, y2Tooltip;
         y = _arg.y, datum = _arg.datum, series = _arg.series;
@@ -1308,6 +1402,12 @@ mod.factory('n3utils', [
           'd': this.getY2TooltipPath(w),
           'transform': 'translate(0, ' + y + ')'
         });
+      },
+      getYTooltipPath: function(w) {
+        var h, p;
+        h = 18;
+        p = 5;
+        return 'm0 0' + 'l' + (-p) + ' ' + (-p) + ' ' + 'l0 ' + (-h / 2 + p) + ' ' + 'l' + (-w) + ' 0 ' + 'l0 ' + h + ' ' + 'l' + w + ' 0 ' + 'l0 ' + (-h / 2 + p) + 'l' + (-p) + ' ' + p + 'z';
       },
       getY2TooltipPath: function(w) {
         var h, p;

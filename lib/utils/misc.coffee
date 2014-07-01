@@ -48,15 +48,6 @@
             .append('g')
               .attr('class', (s, i) -> "scrubberItem series_#{i}")
 
-        items.append('circle')
-          .attr(
-            'class': (s, i) -> "scrubberDot series_#{i}"
-            'fill': 'white'
-            'stroke': (s) -> s.color
-            'stroke-width': '2px'
-            'r': 4
-          )
-
         g = items.append('g')
           .attr('class': (s, i) -> "rightTT")
 
@@ -67,17 +58,14 @@
             'fill': (s) -> s.color
           )
 
-        g.append('text')
+        this.styleTooltip(g.append('text')
           .style('text-anchor', 'start')
           .attr(
             'class': (d, i) -> "scrubberText series_#{i}"
             'height': '14px'
-            'font-family': 'Courier'
-            'font-size': 10
-            'fill': 'white'
             'transform': 'translate(7, 3)'
             'text-rendering': 'geometric-precision'
-          )
+          ))
           .text (s) -> s.label || s.y
 
         g2 = items.append('g')
@@ -90,17 +78,14 @@
             'fill': (s) -> s.color
           )
 
-        g2.append('text')
+        this.styleTooltip(g2.append('text')
           .style('text-anchor', 'end')
           .attr(
             'class': (d, i) -> "scrubberText series_#{i}"
             'height': '14px'
-            'font-family': 'Courier'
-            'font-size': 10
-            'fill': 'white'
-            'transform': 'translate(-7, 3)'
+            'transform': 'translate(-13, 3)'
             'text-rendering': 'geometric-precision'
-          )
+          ))
           .text (s) -> s.label || s.y
 
         glass.append('rect')
@@ -113,6 +98,15 @@
           .style('fill-opacity', 0.000001)
           .on('mouseover', ->
             handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options)
+          )
+
+        items.append('circle')
+          .attr(
+            'class': (s, i) -> "scrubberDot series_#{i}"
+            'fill': 'white'
+            'stroke': (s) -> s.color
+            'stroke-width': '2px'
+            'r': 4
           )
 
       getDataPerSeries: (data, options) ->

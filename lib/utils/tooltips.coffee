@@ -20,72 +20,173 @@
           svg.selectAll('.glass-container').attr('opacity', 0)
         )
 
-      updateScrubber: (svg, [x, y], axes, data, options) ->
+      getClosestPoint: (values, value) ->
         # Dichotomy FTW
-        getClosest = (values, value) ->
-          left = 0
-          right = values.length - 1
+        left = 0
+        right = values.length - 1
 
-          i = Math.round((right - left)/2)
-          while true
-            if value < values[i].x
-              right = i
-              i = i - Math.ceil((right-left)/2)
+        i = Math.round((right - left)/2)
+        while true
+          if value < values[i].x
+            right = i
+            i = i - Math.ceil((right-left)/2)
+          else
+            left = i
+            i = i + Math.floor((right-left)/2)
+
+          if i in [left, right]
+            if Math.abs(value - values[left].x) < Math.abs(value - values[right].x)
+              i = left
             else
-              left = i
-              i = i + Math.floor((right-left)/2)
+              i = right
+            break
 
+        return values[i]
 
-            if i in [left, right]
-              if Math.abs(value - values[left].x) < Math.abs(value - values[right].x)
-                i = left
-              else
-                i = right
-              break
-
-          return values[i]
-
+      updateScrubber: (svg, [x, y], axes, data, options) ->
+        ease = (element) -> element.transition().duration(50)
         that = this
+        positions = []
         data.forEach (series, index) ->
-          v = getClosest(series.values, axes.xScale.invert(x))
+          v = that.getClosestPoint(series.values, axes.xScale.invert(x))
 
           item = svg.select(".scrubberItem.series_#{index}")
-          item.transition().duration(50).attr('transform': "translate(#{axes.xScale(v.x)}, #{axes[v.axis + 'Scale'](v.value)})")
 
           right = item.select('.rightTT')
           rText = right.select('text')
           rText.text(v.x + ' : ' + v.value)
-          w = that.getTextBBox(rText[0][0]).width + 5
-          right.select('path').attr 'd', that.getY2TooltipPath(w)
 
           left = item.select('.leftTT')
           lText = left.select('text')
           lText.text(v.x + ' : ' + v.value)
-          w = that.getTextBBox(lText[0][0]).width + 5
-          left.select('path').attr 'd', that.getYTooltipPath(w)
 
+          sizes =
+            right: that.getTextBBox(rText[0][0]).width + 5
+            left: that.getTextBBox(lText[0][0]).width + 5
 
           side = if series.axis is 'y2' then 'right' else 'left'
 
-          abs = axes.xScale(v.x)
+          x = axes.xScale(v.x)
           if side is 'left'
-            if abs + that.getTextBBox(lText[0][0]).x < 0
+            if x + that.getTextBBox(lText[0][0]).x < 0
               side = 'right'
           else if side is 'right'
-            if abs + that.getTextBBox(rText[0][0]).width > svg.select('.glass')[0][0].getBBox().width
+            if x + sizes.right > svg.select('.glass')[0][0].getBBox().width
               side = 'left'
 
-
           if side is 'left'
-            right.transition().duration(50).attr('opacity', 0)
-            left.transition().duration(50).attr('opacity', 1)
+            ease(right).attr('opacity', 0)
+            ease(left).attr('opacity', 1)
           else
-            right.transition().duration(50).attr('opacity', 1)
-            left.transition().duration(50).attr('opacity', 0)
+            ease(right).attr('opacity', 1)
+            ease(left).attr('opacity', 0)
 
-          # if axis is 'y' and axes.xScale(v.x) + bbox.x < 0
+          positions.push({index, x, y: axes[v.axis + 'Scale'](v.value), side, sizes})
+
+        positions = this.preventOverlapping(positions)
+
+        data.forEach (series, index) ->
+          p = positions[index]
+          item = svg.select(".scrubberItem.series_#{index}")
+
+          tt = item.select(".#{p.side}TT")
+
+          tt.select('text')
+            .attr('transform', ->
+              if p.side is 'left'
+                return "translate(-13, #{p.labelOffset+3})"
+              else
+                return "translate(14, #{p.labelOffset+3})"
+            )
+
+          tt.select('path')
+            .attr('d', that.getScrubberPath(p.sizes[p.side] + 1, p.labelOffset, p.side))
+          ease(item).attr('transform': "translate(#{positions[index].x}, #{positions[index].y})")
 
 
+      getScrubberPath: (w, yOffset, side) ->
+        h = 18
+        p = 10
+        w = w
+        xdir = if side is 'left' then 1 else -1
+
+        ydir = 1
+        if yOffset isnt 0
+          ydir = Math.abs(yOffset)/yOffset
+
+        yOffset or= 0
+
+        return [
+          "m0 0"
+
+          "l#{xdir} 0"
+          "l0 #{yOffset + ydir}"
+          "l#{-xdir*(p + 1)} 0"
+
+          "l0 #{-h/2 - ydir}"
+          "l#{-xdir*w} 0"
+          "l0 #{h}"
+          "l#{xdir*w} 0"
+          "l0 #{-h/2 - ydir}"
+
+          "l#{xdir*(p - 1)} 0"
+          "l0 #{-yOffset + ydir}"
+          "l1 0"
+
+          "z"
+        ].join('')
+
+
+      preventOverlapping: (positions) ->
+        h = 18
+
+        abscissas = {}
+        positions.forEach (p) ->
+          abscissas[p.x] or= {left: [], right: []}
+          abscissas[p.x][p.side].push(p)
+
+        getNeighbours = (side) ->
+          neighbours = []
+          for x, sides of abscissas
+            if sides[side].length is 0
+              continue
+
+            neighboursForX = {}
+            while sides[side].length > 0
+              p = sides[side].pop()
+              foundNeighbour = false
+              for y, neighbourhood of neighboursForX
+                if +y - h <= p.y <= +y + h
+                  neighbourhood.push(p)
+                  foundNeighbour = true
+
+              neighboursForX[p.y] = [p] unless foundNeighbour
+
+            neighbours.push(neighboursForX)
+          return neighbours
+
+        offset = (neighboursForAbscissas) ->
+          step = 20
+          for abs, xNeighbours of neighboursForAbscissas
+            for y, neighbours of xNeighbours
+              n = neighbours.length
+              if n is 1
+                neighbours[0].labelOffset = 0
+                continue
+
+              if n%2 is 0
+                start = -(step/2)*(n/2)
+              else
+                start = -(n-1)/2*step
+
+              neighbours.forEach (neighbour, i) -> neighbour.labelOffset = start + step*i
+
+          return neighboursForAbscissas
+
+        leftNeighbours = offset(getNeighbours('left'))
+        rightNeighbours = offset(getNeighbours('right'))
+
+        return positions
 
       styleTooltip: (d3TextElement) ->
         return d3TextElement.attr({
@@ -222,19 +323,6 @@
           .attr('fill', series.color)
           .attr('d', this.getYTooltipPath(w))
 
-      getYTooltipPath: (w) ->
-        h = 18
-        p = 5 # Size of the 'arrow' that points towards the axis
-
-        return 'm0 0' +
-          'l' + (-p) + ' ' + (-p) + ' ' +
-          'l0 ' + (-h/2 + p) + ' ' +
-          'l' + (-w) + ' 0 ' +
-          'l0 ' + h + ' ' +
-          'l' + w + ' 0 ' +
-          'l0 ' + (-h/2 + p) +
-          'l' + (-p) + ' ' + p + 'z'
-
       updateY2Tooltip: (svg, {y, datum, series}) ->
         y2Tooltip = svg.select("#y2Tooltip")
         y2Tooltip.transition()
@@ -254,6 +342,19 @@
             'd': this.getY2TooltipPath(w)
             'transform': 'translate(0, ' + y + ')'
           )
+
+      getYTooltipPath: (w) ->
+        h = 18
+        p = 5 # Size of the 'arrow' that points towards the axis
+
+        return 'm0 0' +
+          'l' + (-p) + ' ' + (-p) + ' ' +
+          'l0 ' + (-h/2 + p) + ' ' +
+          'l' + (-w) + ' 0 ' +
+          'l0 ' + h + ' ' +
+          'l' + w + ' 0 ' +
+          'l0 ' + (-h/2 + p) +
+          'l' + (-p) + ' ' + p + 'z'
 
       getY2TooltipPath: (w) ->
         h = 18
