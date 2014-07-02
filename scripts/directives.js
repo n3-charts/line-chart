@@ -70,7 +70,7 @@ angular.module('directives', [])
         "monotone"
       ];
 
-      scope.tooltipModes = ["none", "dots", "lines", "both", "scrubber"];
+      scope.tooltipModes = ["none", "axes", "scrubber"];
       scope.fields = ["x", "val_0", "val_1", "val_2", "val_3"];
 
       scope.addSeries = function() {

@@ -13,7 +13,12 @@
 
     <div class="pure-control-group">
       <label>Tooltip mode</label>
-      <select ng-model="options.tooltipMode" ng-options="mode for mode in tooltipModes"></select>
+      <select ng-model="options.tooltip.mode" ng-options="mode for mode in tooltipModes"></select>
+    </div>
+
+    <div class="pure-control-group" ng-show="options.tooltip.mode == 'axes'">
+      <label>Interpolated tooltip</label>
+      <input type="checkbox" ng-model="options.tooltip.interpolate">
     </div>
 
     <div class="pure-control-group">
