@@ -141,6 +141,7 @@ describe 'misc', ->
         tooltip: {}
 
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
+      console.log JSON.stringify(dimensions, null, 2)
       expect(dimensions).to.eql
         left: 50
         right: 50
@@ -169,6 +170,7 @@ describe 'misc', ->
 
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
 
+      console.log JSON.stringify(dimensions, null, 2)
       expect(dimensions).to.eql
         left: 33
         right: 50
@@ -198,6 +200,7 @@ describe 'misc', ->
 
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
 
+      console.log JSON.stringify(dimensions, null, 2)
       expect(dimensions).to.eql
         left: 75
         right: 50
