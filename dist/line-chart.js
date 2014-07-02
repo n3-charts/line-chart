@@ -1223,7 +1223,7 @@ mod.factory('n3utils', [
         return ["m0 0", "l" + xdir + " 0", "l0 " + (yOffset + ydir), "l" + (-xdir * (p + 1)) + " 0", "l0 " + (-h / 2 - ydir), "l" + (-xdir * w) + " 0", "l0 " + h, "l" + (xdir * w) + " 0", "l0 " + (-h / 2 - ydir), "l" + (xdir * (p - 1)) + " 0", "l0 " + (-yOffset + ydir), "l1 0", "z"].join('');
       },
       preventOverlapping: function(positions) {
-        var abscissas, getNeighbours, h, leftNeighbours, offset, rightNeighbours;
+        var abscissas, getNeighbours, h, offset;
         h = 18;
         abscissas = {};
         positions.forEach(function(p) {
@@ -1283,10 +1283,9 @@ mod.factory('n3utils', [
               });
             }
           }
-          return neighboursForAbscissas;
         };
-        leftNeighbours = offset(getNeighbours('left'));
-        rightNeighbours = offset(getNeighbours('right'));
+        offset(getNeighbours('left'));
+        offset(getNeighbours('right'));
         return positions;
       },
       styleTooltip: function(d3TextElement) {

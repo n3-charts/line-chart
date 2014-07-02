@@ -129,7 +129,16 @@ describe 'tooltip', ->
 
       fakeMouse.hoverIn(glass.domElement)
 
+  it 'should compute the closest abscissa', inject (n3utils) ->
+    v = n3utils.getClosestPoint([
+      {x: 0}
+      {x: 1}
+      {x: 2}
+      {x: 4}
+      {x: 5}
+    ], 3.1)
 
+    expect(v).to.eql({x: 4})
 
   it 'should work when no x-formatter is found', ->
     outerScope.$apply ->
