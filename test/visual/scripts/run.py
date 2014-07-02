@@ -218,6 +218,7 @@ def compare(dirs):
           'computed': os.path.abspath(file)
         }
   errors = 0
+  warnings = 0
   for name in images:
     o = images[name]
 
@@ -228,28 +229,29 @@ def compare(dirs):
 
     if not os.path.isfile(o['expected']):
       o['comment'] = "No expected image"
-      o['success'] = False
+      o['status'] = 'error'
       errors += 1
       croak_and_slam_the_door('No expected image, aborting (please use "run.py -u -o ' + name + '" to init the test case')
     elif not os.path.isfile(o['computed']):
       o['comment'] = "No computed image"
-      o['success'] = False
+      o['status'] = 'error'
       errors += 1
       croak_and_slam_the_door('No computed image, aborting.')
     else:
       sc = histo_diff(o['expected'], o['computed'])
       o['score'] = sc
       if sc > 100:
-        o['success'] = False
-        o['comment'] = "The two images appear to be different (result > 100)"
-        errors += 1
+        o['status'] = 'warning'
+        o['comment'] = "The two images appear to be different (diff > 100)"
+        warnings += 1
       else:
-        o['success'] = True
+        o['status'] = 'success'
+
 
       o['comment'] = None
       pretty_print_result(o, name)
 
-  return images, errors
+  return images, errors, warnings
 
 
 def read_image (source):
@@ -268,11 +270,11 @@ def pretty_print_result(result, name):
     error('[FAIL] ' + name + ' : ' + result['desc'])
     error('       ' + result['comment'])
   else:
-    if result['success']:
+    if result['status'] == 'success' :
       success('[PASS] ' + name + ' : ' + result['desc'])
-    else:
-      error('[FAIL] ' + name + ' : ' + result['desc'])
-      error('       diff too high : ' + str(result['score']))
+    elif result['status'] == 'warning' :
+      warn('[WARN] ' + name + ' : ' + result['desc'])
+      warn('       diff maybe too high : ' + str(result['score']))
 
 
 def bootstrap():
@@ -315,7 +317,7 @@ def prepare_for_git(results):
         "comment": result["comment"],
         "description": result["desc"],
         "score": result["score"],
-        "success": result["success"],
+        "status": result["status"],
         "expected_image": key + '_expected.png',
         "computed_image": key + '_computed.png'
       })
@@ -349,8 +351,11 @@ with cd(visual):
   if args.update:
     copy_computed_to_tests(dirs)
   else:
-    results, errors = compare(dirs)
+    results, errors, warnings = compare(dirs)
     prepare_for_git(results)
+
+    if warnings > 0:
+      warn(str(warnings) + " warning(s)")
 
     if errors > 0:
       croak_and_slam_the_door(str(errors) + " failure(s)")
