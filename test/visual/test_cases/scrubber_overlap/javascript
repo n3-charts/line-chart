@@ -47,6 +47,8 @@ angular.module('example', ['n3-line-chart'])
       },
       lineMode: "linear",
       tension: 0.7,
-      tooltip: {mode: 'scrubber', interpolate: false}
+      tooltip: {mode: 'scrubber', interpolate: false, formatter: function(x, y, series) {
+        return series.label + ' ' + x + ' : ' + y;
+      }}
     };
   });
