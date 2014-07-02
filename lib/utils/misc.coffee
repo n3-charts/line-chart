@@ -88,6 +88,15 @@
           ))
           .text (s) -> s.label || s.y
 
+        items.append('circle')
+          .attr(
+            'class': (s, i) -> "scrubberDot series_#{i}"
+            'fill': 'white'
+            'stroke': (s) -> s.color
+            'stroke-width': '2px'
+            'r': 4
+          )
+
         glass.append('rect')
           .attr(
             class: 'glass'
@@ -100,14 +109,6 @@
             handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options)
           )
 
-        items.append('circle')
-          .attr(
-            'class': (s, i) -> "scrubberDot series_#{i}"
-            'fill': 'white'
-            'stroke': (s) -> s.color
-            'stroke-width': '2px'
-            'r': 4
-          )
 
       getDataPerSeries: (data, options) ->
         series = options.series
