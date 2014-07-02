@@ -7,10 +7,6 @@ describe 'options', ->
     n3utils = _n3utils_
 
   describe 'drawLegend', ->
-    it 'should set drawLegend to true if tooltipMode is scrubber', ->
-      o = n3utils.sanitizeOptions(drawLegend: false, tooltipMode: 'scrubber')
-      expect(o.drawLegend).to.equal true
-
     it 'should set default drawLegend value if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
       expect(o.drawLegend).to.equal true
@@ -29,8 +25,11 @@ describe 'options', ->
       expect(o.drawDots).to.equal false
 
   describe 'tooltip', ->
-    it 'should set default tooltipMode if undefined or invalid', ->
+    it 'should set default tooltip.mode if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
+      expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
+
+      o = n3utils.sanitizeOptions({})
       expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
 
       o = n3utils.sanitizeOptions({tooltip: {interpolate: true}})

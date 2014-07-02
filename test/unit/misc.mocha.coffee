@@ -119,6 +119,8 @@ describe 'misc', ->
       sinon.stub n3utils, 'getWidestTickWidth', (svg, axisKey) ->
         if axisKey is 'y' then return 30 else return 50
 
+      sinon.stub n3utils, 'estimateSideTooltipWidth', (svg, text) ->
+        return {width: ('' + text).length*5}
 
     afterEach ->
       fakeSvg.remove()
@@ -141,7 +143,6 @@ describe 'misc', ->
         tooltip: {}
 
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
-      console.log JSON.stringify(dimensions, null, 2)
       expect(dimensions).to.eql
         left: 50
         right: 50
@@ -170,9 +171,8 @@ describe 'misc', ->
 
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
 
-      console.log JSON.stringify(dimensions, null, 2)
       expect(dimensions).to.eql
-        left: 33
+        left: 30
         right: 50
         top: 20
         bottom: 30
@@ -200,9 +200,8 @@ describe 'misc', ->
 
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
 
-      console.log JSON.stringify(dimensions, null, 2)
       expect(dimensions).to.eql
-        left: 75
+        left: 65
         right: 50
         top: 20
         bottom: 30
@@ -231,7 +230,7 @@ describe 'misc', ->
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
 
       expect(dimensions).to.eql
-        left: 33
-        right: 75
+        left: 30
+        right: 65
         top: 20
         bottom: 30
