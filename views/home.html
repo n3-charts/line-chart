@@ -16,7 +16,7 @@
     <div class="release" ng-repeat='r in releases'>
       <a ng-href="https://github.com/n3-charts/line-chart/releases/tag/{{r.tag}}"><span class='release label' ng-class="{'label-green': $index == 0}">{{r.tag}} ({{r.name}})</span></a>
       <ul class="notes fa-ul">
-        <li ng-repeat="line in r.lines"><i class="fa-li fa fa-paw"></i><span ng-bind-html="line"></span></li>
+        <li ng-repeat="line in r.lines"><i class="fa-li fa fa-angle-right"></i><span ng-bind-html="line"></span></li>
       </ul>
     </div>
 

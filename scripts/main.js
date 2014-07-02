@@ -13,6 +13,13 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
   mixpanel.track("Home");
   $scope.releases = [
     {
+      tag: '1.1.0',
+      name: 'helicoidal-hamster',
+      lines: [
+        'Scrubber tooltip mode is now prod-ready'
+      ]
+    },
+    {
       tag: '1.0.9',
       name: 'gorgeous-glitter',
       lines: [
@@ -122,7 +129,7 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
     {y: 'val_2', label: 'One', type: 'area', striped: true},
     {y: 'y', type: 'area', striped: true, label: 'Two'},
     {y: 'other_y', type: 'area', label: 'Three', striped: true, axis: 'y2'}
-  ], lineMode: 'cardinal', tooltipMode: 'scrubber'};
+  ], lineMode: 'cardinal', tooltip: {mode: 'scrubber'}};
 
 })
 
