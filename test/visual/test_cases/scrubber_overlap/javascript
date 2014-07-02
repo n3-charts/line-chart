@@ -19,13 +19,6 @@ angular.module('example', ['n3-line-chart'])
     $scope.options = {
       series: [
         {
-          y: "val_0",
-          label: "On the left !",
-          color: "#8c564b",
-          type: "line",
-          thickness: "1px"
-        },
-        {
           y: "val_1",
           axis: "y2",
           label: "On the right !",
@@ -36,6 +29,13 @@ angular.module('example', ['n3-line-chart'])
         {
           y: "val_2",
           label: "On the left too !",
+          type: "line",
+          thickness: "1px"
+        },
+        {
+          y: "val_0",
+          label: "On the left !",
+          color: "#8c564b",
           type: "line",
           thickness: "1px"
         }
