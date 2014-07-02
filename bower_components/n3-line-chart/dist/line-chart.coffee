@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.0 - 02 July 2014
+line-chart - v1.1.1 - 02 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -1096,9 +1096,15 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         that = this
         positions = []
         data.forEach (series, index) ->
-          v = that.getClosestPoint(series.values, axes.xScale.invert(x))
-
           item = svg.select(".scrubberItem.series_#{index}")
+
+          if options.series[index].visible is false
+            item.attr('opacity', 0)
+            return
+
+          item.attr('opacity', 1)
+
+          v = that.getClosestPoint(series.values, axes.xScale.invert(x))
 
           text = v.x + ' : ' + v.value
           if options.tooltip.formatter
@@ -1133,11 +1139,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             ease(right).attr('opacity', 1)
             ease(left).attr('opacity', 0)
 
-          positions.push({index, x, y: axes[v.axis + 'Scale'](v.value), side, sizes})
+          positions[index] = {index, x, y: axes[v.axis + 'Scale'](v.value), side, sizes}
 
         positions = this.preventOverlapping(positions)
 
         data.forEach (series, index) ->
+          if options.series[index].visible is false
+            return
+
           p = positions[index]
           item = svg.select(".scrubberItem.series_#{index}")
 
@@ -1225,7 +1234,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               if n is 1
                 neighbours[0].labelOffset = 0
                 continue
-
+              neighbours = neighbours.sort (a, b) -> a.y - b.y
               if n%2 is 0
                 start = -(step/2)*(n/2)
               else
