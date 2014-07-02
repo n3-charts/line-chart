@@ -61,6 +61,10 @@ h1.pure-menu-heading>a>img {
   color: rgba(104, 173, 40, 1);
 }
 
+.not-sure {
+  color: rgba(236, 161, 27, 1);
+}
+
 .bad {
   color: #E9281D;
 }
