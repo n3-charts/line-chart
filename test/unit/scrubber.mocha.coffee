@@ -103,7 +103,6 @@ describe 'scrubber tooltip', ->
 
     it 'should create one tooltip per series', ->
       tooltips = element.childrenByClass('scrubberItem')
-
       expect(tooltips.length).to.equal(2)
 
     it 'should show tooltips', ->
@@ -121,6 +120,27 @@ describe 'scrubber tooltip', ->
 
       expect(tooltips[2].innerHTML()).to.equal('0 : 0')
       expect(tooltips[3].innerHTML()).to.equal('0 : 0')
+
+    it 'should not show tooltips for invisble series', ->
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4', visible: false}
+          ]
+          tooltip: {mode: 'scrubber'}
+
+      glass = element.childByClass('glass')
+
+      fakeMouse.hoverIn(glass)
+      fakeMouse.mouseMove(glass)
+      flushD3()
+
+      tooltips = element.childrenByClass('scrubberItem')
+
+      expect(tooltips[0].getAttribute('opacity')).to.equal('1')
+      expect(tooltips[1].getAttribute('opacity')).to.equal('0')
+
 
     it 'should show tooltips with custom tooltip function', ->
       cb = sinon.spy((x, y, series) -> 'pouet')
