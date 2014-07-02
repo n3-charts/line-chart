@@ -53,8 +53,8 @@
           item = svg.select(".scrubberItem.series_#{index}")
 
           text = v.x + ' : ' + v.value
-          if options.tooltip.callback
-            text = options.tooltip.callback(v.x, v.value, options.series[index])
+          if options.tooltip.formatter
+            text = options.tooltip.formatter(v.x, v.value, options.series[index])
 
           right = item.select('.rightTT')
           rText = right.select('text')
@@ -283,7 +283,7 @@
             'transform': "translate(#{x},0)"
           )
 
-        textX = series.xFormatter?(datum.x) || datum.x
+        textX = datum.x
 
         label = xTooltip.select('text')
         label.text(textX)

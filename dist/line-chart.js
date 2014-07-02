@@ -672,7 +672,6 @@ mod.factory('n3utils', [
         series.forEach(function(s) {
           var seriesData;
           seriesData = {
-            xFormatter: axes.x.tooltipFormatter,
             index: straightenedData.length,
             name: s.y,
             values: [],
@@ -1144,8 +1143,8 @@ mod.factory('n3utils', [
           v = that.getClosestPoint(series.values, axes.xScale.invert(x));
           item = svg.select(".scrubberItem.series_" + index);
           text = v.x + ' : ' + v.value;
-          if (options.tooltip.callback) {
-            text = options.tooltip.callback(v.x, v.value, options.series[index]);
+          if (options.tooltip.formatter) {
+            text = options.tooltip.formatter(v.x, v.value, options.series[index]);
           }
           right = item.select('.rightTT');
           rText = right.select('text');
@@ -1352,7 +1351,7 @@ mod.factory('n3utils', [
           'opacity': 1.0,
           'transform': "translate(" + x + ",0)"
         });
-        textX = (typeof series.xFormatter === "function" ? series.xFormatter(datum.x) : void 0) || datum.x;
+        textX = datum.x;
         label = xTooltip.select('text');
         label.text(textX);
         return xTooltip.select('path').attr('fill', series.color).attr('d', this.getXTooltipPath(label[0][0]));

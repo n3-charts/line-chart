@@ -82,7 +82,6 @@ describe 'scrubber tooltip', ->
           {x: 5, value: 42}
         ]
         outerScope.options =
-          axes: {x: {tooltipFormatter: (v) -> '$' + v}}
           series: [
             {
               y: 'value'
@@ -128,12 +127,11 @@ describe 'scrubber tooltip', ->
 
       outerScope.$apply ->
         outerScope.options =
-          axes: {x: {tooltipFormatter: (v) -> '$' + v}}
           series: [
             {y: 'value', color: '#4682b4'}
             {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
           ]
-          tooltip: {mode: 'scrubber', interpolate: false, callback: cb}
+          tooltip: {mode: 'scrubber', interpolate: false, formatter: cb}
 
       glass = element.childByClass('glass')
 

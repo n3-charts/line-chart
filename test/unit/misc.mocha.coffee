@@ -18,13 +18,10 @@ describe 'misc', ->
       {x: 2, foo: 3.14, value: 8}
     ]
 
-    xFormatter = (text) -> ''
-
     options =
       axes:
         x:
           key: 'x'
-          tooltipFormatter: xFormatter
 
       series: [
         {
@@ -44,7 +41,6 @@ describe 'misc', ->
 
     expected = [
       {
-        xFormatter: xFormatter
         index: 0
         name: 'value'
         values: [
@@ -57,7 +53,6 @@ describe 'misc', ->
         thickness: '1px'
       }
       {
-        xFormatter: xFormatter
         index: 1
         name: 'foo'
         values: [
@@ -74,7 +69,6 @@ describe 'misc', ->
     computed = n3utils.getDataPerSeries(data, options)
 
     keys = [
-      'xFormatter'
       'index'
       'name'
       'values'
