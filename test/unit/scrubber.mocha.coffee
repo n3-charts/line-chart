@@ -61,6 +61,11 @@ describe 'scrubber tooltip', ->
         ]
         tooltip: {mode: 'scrubber', interpolate: false}
 
+    sinon.stub(d3, 'mouse', -> [0, 0])
+
+  afterEach ->
+    d3.mouse.restore()
+
   it 'should create one tooltip per series', ->
     tooltips = element.childrenByClass('scrubberItem')
 
@@ -69,7 +74,32 @@ describe 'scrubber tooltip', ->
   it 'should show tooltips', ->
     glass = element.childByClass('glass')
 
-    sinon.stub(d3, 'mouse', -> [0, 0])
+    fakeMouse.hoverIn(glass)
+    fakeMouse.mouseMove(glass)
+    flushD3()
+    expect(d3.mouse.callCount).to.equal(1)
+
+    tooltips = element.childrenByClass('scrubberText')
+
+    expect(tooltips[0].innerHTML()).to.equal('0 : 4')
+    expect(tooltips[1].innerHTML()).to.equal('0 : 4')
+
+    expect(tooltips[2].innerHTML()).to.equal('0 : 0')
+    expect(tooltips[3].innerHTML()).to.equal('0 : 0')
+
+  it 'should show tooltips with custom tooltip function', ->
+    cb = sinon.spy((x, y, series) -> 'pouet')
+
+    outerScope.$apply ->
+      outerScope.options =
+        axes: {x: {tooltipFormatter: (v) -> '$' + v}}
+        series: [
+          {y: 'value', color: '#4682b4'}
+          {y: 'x', axis: 'y2', type: 'column', color: '#4682b4'}
+        ]
+        tooltip: {mode: 'scrubber', interpolate: false, callback: cb}
+
+    glass = element.childByClass('glass')
 
     fakeMouse.hoverIn(glass)
     fakeMouse.mouseMove(glass)
@@ -78,7 +108,11 @@ describe 'scrubber tooltip', ->
 
     tooltips = element.childrenByClass('scrubberText')
 
-    expect(tooltips[0].innerHTML()).to.equal('$0 : 4')
-    expect(tooltips[1].innerHTML()).to.equal('$0 : 0')
+    expect(tooltips[0].innerHTML()).to.equal('pouet')
+    expect(tooltips[1].innerHTML()).to.equal('pouet')
+    expect(tooltips[2].innerHTML()).to.equal('pouet')
+    expect(tooltips[3].innerHTML()).to.equal('pouet')
 
-    d3.mouse.restore()
+    expect(cb.args[0]).to.eql([0, 4, outerScope.options.series[0]])
+    expect(cb.args[1]).to.eql([0, 0, outerScope.options.series[1]])
+

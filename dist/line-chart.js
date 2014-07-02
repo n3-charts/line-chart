@@ -642,14 +642,7 @@ mod.factory('n3utils', [
         })).text(function(s) {
           return s.label || s.y;
         });
-        glass.append('rect').attr({
-          "class": 'glass',
-          width: dimensions.width - dimensions.left - dimensions.right,
-          height: dimensions.height - dimensions.top - dimensions.bottom
-        }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
-          return handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options);
-        });
-        return items.append('circle').attr({
+        items.append('circle').attr({
           'class': function(s, i) {
             return "scrubberDot series_" + i;
           },
@@ -659,6 +652,13 @@ mod.factory('n3utils', [
           },
           'stroke-width': '2px',
           'r': 4
+        });
+        return glass.append('rect').attr({
+          "class": 'glass',
+          width: dimensions.width - dimensions.left - dimensions.right,
+          height: dimensions.height - dimensions.top - dimensions.bottom
+        }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
+          return handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options);
         });
       },
       getDataPerSeries: function(data, options) {
@@ -1147,15 +1147,19 @@ mod.factory('n3utils', [
         that = this;
         positions = [];
         data.forEach(function(series, index) {
-          var item, lText, left, rText, right, side, sizes, v;
+          var item, lText, left, rText, right, side, sizes, text, v;
           v = that.getClosestPoint(series.values, axes.xScale.invert(x));
           item = svg.select(".scrubberItem.series_" + index);
+          text = v.x + ' : ' + v.value;
+          if (options.tooltip.callback) {
+            text = options.tooltip.callback(v.x, v.value, options.series[index]);
+          }
           right = item.select('.rightTT');
           rText = right.select('text');
-          rText.text(v.x + ' : ' + v.value);
+          rText.text(text);
           left = item.select('.leftTT');
           lText = left.select('text');
-          lText.text(v.x + ' : ' + v.value);
+          lText.text(text);
           sizes = {
             right: that.getTextBBox(rText[0][0]).width + 5,
             left: that.getTextBBox(lText[0][0]).width + 5
@@ -1167,7 +1171,7 @@ mod.factory('n3utils', [
               side = 'right';
             }
           } else if (side === 'right') {
-            if (x + sizes.right > svg.select('.glass')[0][0].getBBox().width) {
+            if (x + sizes.right > that.getTextBBox(svg.select('.glass')[0][0]).width) {
               side = 'left';
             }
           }

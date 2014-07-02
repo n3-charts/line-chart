@@ -627,6 +627,15 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           ))
           .text (s) -> s.label || s.y
 
+        items.append('circle')
+          .attr(
+            'class': (s, i) -> "scrubberDot series_#{i}"
+            'fill': 'white'
+            'stroke': (s) -> s.color
+            'stroke-width': '2px'
+            'r': 4
+          )
+
         glass.append('rect')
           .attr(
             class: 'glass'
@@ -639,14 +648,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options)
           )
 
-        items.append('circle')
-          .attr(
-            'class': (s, i) -> "scrubberDot series_#{i}"
-            'fill': 'white'
-            'stroke': (s) -> s.color
-            'stroke-width': '2px'
-            'r': 4
-          )
 
       getDataPerSeries: (data, options) ->
         series = options.series
@@ -1104,13 +1105,17 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           item = svg.select(".scrubberItem.series_#{index}")
 
+          text = v.x + ' : ' + v.value
+          if options.tooltip.callback
+            text = options.tooltip.callback(v.x, v.value, options.series[index])
+
           right = item.select('.rightTT')
           rText = right.select('text')
-          rText.text(v.x + ' : ' + v.value)
+          rText.text(text)
 
           left = item.select('.leftTT')
           lText = left.select('text')
-          lText.text(v.x + ' : ' + v.value)
+          lText.text(text)
 
           sizes =
             right: that.getTextBBox(rText[0][0]).width + 5
@@ -1123,7 +1128,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             if x + that.getTextBBox(lText[0][0]).x < 0
               side = 'right'
           else if side is 'right'
-            if x + sizes.right > svg.select('.glass')[0][0].getBBox().width
+            if x + sizes.right > that.getTextBBox(svg.select('.glass')[0][0]).width
               side = 'left'
 
           if side is 'left'

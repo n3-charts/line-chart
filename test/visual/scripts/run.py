@@ -143,7 +143,8 @@ def generate_test_files(dirs, project_path, template_path):
   info('Creating test files')
   with cd('.tmp'):
     for test in dirs:
-      name = generate_test_file(test, project_path, template_path)
+      name = generate_test_file(test, project_path, template_path + "/template.html")
+      generate_phantom_file(test, project_path, template_path + "/capture.js")
       debug("  created '" + name + "' test case")
 
   debug('...done')
@@ -165,19 +166,36 @@ def generate_test_file(test, project_path, template_path):
   return name
 
 
+def generate_phantom_file(test, project_path, template_path):
+  name = os.path.basename(test)
+
+  phantomjs = 'function(){}'
+  if os.path.isfile(test + '/phantomjs'):
+    phantomjs = get_content(test + '/phantomjs')
+
+  with open(name + ".js", 'w') as target:
+    with open(template_path, 'r') as src:
+      line = src.read()
+      line = re.sub(r'%phantomjs%', phantomjs, line)
+
+      target.write(line)
+  return name
+
+
 def capture_tests(project_path):
   with cd('.tmp'):
     files = os.listdir('.')
 
-
     info('Capturing images')
+    html_files = [f for f in files if os.path.splitext(f)[1] == '.html']
 
-    for file in files:
+    for file in html_files:
       img = file.split('.')[0] + '.png'
+      js = file.split('.')[0] + '.js'
 
       subprocess.call([
         project_path + 'node_modules/phantomjs/bin/phantomjs',
-        '../scripts/capture.js',
+        js,
         file,
         img
       ])
@@ -324,7 +342,8 @@ with cd(visual):
     dirs = filter(lambda d: os.path.basename(d) == args.only, dirs)
 
   create_temp_dir()
-  generate_test_files(dirs, project_path, os.path.abspath("scripts/template.html"))
+  generate_test_files(dirs, project_path, os.path.abspath("scripts"))
+
   capture_tests(project_path)
 
   if args.update:
