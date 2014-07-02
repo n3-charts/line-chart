@@ -29,11 +29,8 @@
 
         this.sanitizeTooltip(options)
 
-        if options.tooltipMode is 'scrubber'
-          options.drawLegend = true
-
-        options.drawLegend = true unless options.drawLegend is false
-        options.drawDots = true unless options.drawDots is false
+        options.drawLegend = options.drawLegend isnt false
+        options.drawDots = options.drawDots isnt false
 
         return options
 

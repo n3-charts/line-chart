@@ -159,7 +159,6 @@
         dimensions.right = this.getWidestTickWidth(svg, 'y2')
 
         return if options.tooltip.mode is 'scrubber'
-
         series = options.series
 
         leftSeries = series.filter (s) -> s.axis isnt 'y2'

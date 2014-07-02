@@ -817,15 +817,8 @@ mod.factory('n3utils', [
         options.lineMode || (options.lineMode = 'linear');
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
         this.sanitizeTooltip(options);
-        if (options.tooltipMode === 'scrubber') {
-          options.drawLegend = true;
-        }
-        if (options.drawLegend !== false) {
-          options.drawLegend = true;
-        }
-        if (options.drawDots !== false) {
-          options.drawDots = true;
-        }
+        options.drawLegend = options.drawLegend !== false;
+        options.drawDots = options.drawDots !== false;
         return options;
       },
       sanitizeTooltip: function(options) {

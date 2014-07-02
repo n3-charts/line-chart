@@ -53,7 +53,7 @@ $scope.options = {
   ],
   lineMode: 'linear',
   tension: 0.7,
-  tooltipMode: 'dots',
+  tooltip: {mode: 'dots', interpolate: true},
   drawLegend: true,
   drawDots: true
 }
@@ -86,6 +86,11 @@ The `series` key must be an array which contains objects with the following prop
 + `lineMode` : optional, can be `dashed`. Default is undefined. Defines whether the series is rendered as a dashed line. Removed if the series type is not `line` or `area`.
 + `visible` : optional, can be either `true` or `false`. Default is true. Defines whether the series is initially visible. Will be updated if the series gets hidden or shown through a click on the legend.
 
+##### Tooltip
+The `tooltip` must be an object which contains the following properties :
+ + `mode` : can be set to `none`, `axes`, or `scrubber`. It can also be set to `scrubber`, which displays tooltips for all series.
+ + `interpolate` : can be either `true`or `false`. Default is `false`. Will be ignored if the tooltip's mode is not `axes`.
+
 ##### Optional stuff
 Additionally, you can set `lineMode` to a value between these :
 
@@ -104,8 +109,6 @@ Additionally, you can set `lineMode` to a value between these :
 The `tension` can be set, too (default is `0.7`). See [issue #44][2] about that.
 
 > For more information about interpolation, please consult the [D3.js documentation about that][1].
-
-The `tooltipMode` can be set to `none`, `dots`, `lines` or `both`. It can also be set to `scrubber`, which displays tooltips for all series.
 
 The `drawLegend` and `drawDots` are optional. They respectively enable/disable the chart's legend and the lines and areas dots. Default is `true` for both.
 
