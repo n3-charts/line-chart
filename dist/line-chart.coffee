@@ -659,7 +659,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         series.forEach (s) ->
           seriesData =
-            xFormatter: axes.x.tooltipFormatter
             index: straightenedData.length
             name: s.y
             values: []
@@ -1102,8 +1101,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           item = svg.select(".scrubberItem.series_#{index}")
 
           text = v.x + ' : ' + v.value
-          if options.tooltip.callback
-            text = options.tooltip.callback(v.x, v.value, options.series[index])
+          if options.tooltip.formatter
+            text = options.tooltip.formatter(v.x, v.value, options.series[index])
 
           right = item.select('.rightTT')
           rText = right.select('text')
@@ -1332,7 +1331,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'transform': "translate(#{x},0)"
           )
 
-        textX = series.xFormatter?(datum.x) || datum.x
+        textX = datum.x
 
         label = xTooltip.select('text')
         label.text(textX)

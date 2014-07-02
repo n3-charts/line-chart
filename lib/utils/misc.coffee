@@ -120,7 +120,6 @@
 
         series.forEach (s) ->
           seriesData =
-            xFormatter: axes.x.tooltipFormatter
             index: straightenedData.length
             name: s.y
             values: []

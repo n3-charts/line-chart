@@ -5,7 +5,6 @@ describe 'tooltip', ->
 
   fakeMouse = undefined
 
-  tooltipSpy = undefined
   flushD3 = undefined
   checkVisibilityOf = undefined
 
@@ -52,8 +51,6 @@ describe 'tooltip', ->
     """
 
   beforeEach ->
-    tooltipSpy = sinon.spy()
-
     outerScope.$apply ->
       outerScope.data = [
         {x: 0, value: 4}
@@ -64,7 +61,7 @@ describe 'tooltip', ->
         {x: 5, value: 42}
       ]
       outerScope.options =
-        axes: {x: {tooltipFormatter: tooltipSpy}}
+        axes: {}
         series: [
           {
             y: 'value'
