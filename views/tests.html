@@ -16,7 +16,7 @@
     </thead>
     <tbody>
       <tr ng-repeat-start="test in tests" class="actionable" ng-click="test.expanded ? collapse(test, $event) : expand(test, $event)">
-        <td><i class="fa fa-fw" ng-class="{'fa-check': test.success, 'fa-times': !test.success, good: test.success, bad: !test.success}"></i></td>
+        <td><i class="fa fa-fw" ng-class="getTestClass(test)"></i></td>
         <td>{{test.name | firstUp}}</td>
         <td>{{test.description}}</td>
         <td>{{test.comment || '-'}}</td>
@@ -36,7 +36,8 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="5" style="text-align:right;">{{tests.length}} tests ({{(tests | filter:{success:false}).length}} failed)</td>
+        <td colspan="5" style="text-align:right;">
+          {{tests.length}} tests ({{(tests | filter:{status:'warning'}).length}} maybe failed, {{(tests | filter:{status:'error'}).length}} failed)</td>
       </tr>
     </tfoot>
   </table>

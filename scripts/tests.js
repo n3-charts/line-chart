@@ -15,6 +15,20 @@ angular.module('tests', [])
 
 .controller('TestsCtrl', function($scope, appUtils) {
   mixpanel.track("Tests");
+
+  $scope.getTestClass = function(test) {
+    switch (test.status) {
+      case 'success':
+        return 'fa-check good'
+
+      case 'warning':
+        return 'fa-question not-sure'
+
+      case 'error':
+        return 'fa-times bad'
+    }
+  };
+
   d3.json('data/test_results.json', function(error, result) {
     $scope.tests = result.results;
     b = $scope.build = result.build;
