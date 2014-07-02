@@ -36,7 +36,7 @@ angular.module('directives', [])
 
 .directive('chartOptionsEditor', function() {
   return {
-    templateUrl: "../templates/options.html",
+    templateUrl: "/templates/options.html",
     restrict: 'E',
     replace: true,
     scope: {options: '=', data: '='},
@@ -86,7 +86,7 @@ angular.module('directives', [])
 
 .directive('series', function() {
   return {
-    templateUrl: "../templates/series.html",
+    templateUrl: "/templates/series.html",
     restrict: 'E',
     replace: true,
     scope: {series: '=', fields: '=', remove: '&'},
@@ -113,7 +113,7 @@ angular.module('directives', [])
 
 .directive('axis', function() {
   return {
-    templateUrl: "../templates/axis.html",
+    templateUrl: "/templates/axis.html",
     restrict: 'E',
     replace: true,
     scope: {axis: '=', key: '=', fields: '='},
