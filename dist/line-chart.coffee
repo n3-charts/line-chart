@@ -1237,11 +1237,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                 start = -(n-1)/2*step
 
               neighbours.forEach (neighbour, i) -> neighbour.labelOffset = start + step*i
+          return
 
-          return neighboursForAbscissas
 
-        leftNeighbours = offset(getNeighbours('left'))
-        rightNeighbours = offset(getNeighbours('right'))
+        offset(getNeighbours('left'))
+        offset(getNeighbours('right'))
 
         return positions
 

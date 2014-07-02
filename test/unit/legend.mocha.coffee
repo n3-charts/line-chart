@@ -118,12 +118,18 @@ describe 'legend', ->
 
     beforeEach inject (_n3utils_) ->
       n3utils = _n3utils_
+
+    it 'should return an empty array when no legend (what is that even needed ?)', ->
+      svg =
+        selectAll: -> []
+
+      expect(n3utils.getLegendItemsWidths(svg, 'y')).to.eql([])
+
+    it 'should compute for left and right series', ->
       sinon.stub(n3utils, 'getLegendItemsWidths', (svg, axis) ->
         return if axis is 'y' then [99, 123] else [105, 149]
       )
 
-
-    it 'should compute for left and right series', ->
       series = [{
         y: "val_0",
         label: "On the left !",

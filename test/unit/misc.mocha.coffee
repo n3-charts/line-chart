@@ -88,6 +88,23 @@ describe 'misc', ->
       expect(computed[0][k]).to.eql expected[0][k]
       expect(computed[1][k]).to.eql expected[1][k]
 
+  it 'should compute the widest y value', ->
+    data = [
+      {x: 0, foo: 4.154, value: 4}
+      {x: 1, foo: 8.15485, value: 8}
+      {x: 2, foo: 1.1548578, value: 15}
+      {x: 3, foo: 1.154}
+      {x: 4, foo: 2.45, value: 23}
+      {x: 5, foo: 4, value: 42}
+    ]
+    series = [y: 'value']
+    expect(n3utils.getWidestOrdinate(data, series)).to.equal 15
+    series = [
+      {y: 'value'}
+      {y: 'foo'}
+    ]
+    expect(n3utils.getWidestOrdinate(data, series)).to.equal 1.1548578
+
   describe 'adjustMargins', ->
     fakeSvg = undefined
 
