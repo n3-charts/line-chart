@@ -13,7 +13,7 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
   mixpanel.track("Home");
   $scope.releases = [
     {
-      tag: '1.1.0',
+      tag: '1.1.1',
       name: 'helicoidal-hamster',
       lines: [
         'Scrubber tooltip mode is now prod-ready'
