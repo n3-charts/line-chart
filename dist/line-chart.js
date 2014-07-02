@@ -1140,8 +1140,13 @@ mod.factory('n3utils', [
         positions = [];
         data.forEach(function(series, index) {
           var item, lText, left, rText, right, side, sizes, text, v;
-          v = that.getClosestPoint(series.values, axes.xScale.invert(x));
           item = svg.select(".scrubberItem.series_" + index);
+          if (options.series[index].visible === false) {
+            item.attr('opacity', 0);
+            return;
+          }
+          item.attr('opacity', 1);
+          v = that.getClosestPoint(series.values, axes.xScale.invert(x));
           text = v.x + ' : ' + v.value;
           if (options.tooltip.formatter) {
             text = options.tooltip.formatter(v.x, v.value, options.series[index]);
@@ -1174,17 +1179,20 @@ mod.factory('n3utils', [
             ease(right).attr('opacity', 1);
             ease(left).attr('opacity', 0);
           }
-          return positions.push({
+          return positions[index] = {
             index: index,
             x: x,
             y: axes[v.axis + 'Scale'](v.value),
             side: side,
             sizes: sizes
-          });
+          };
         });
         positions = this.preventOverlapping(positions);
         return data.forEach(function(series, index) {
           var item, p, tt;
+          if (options.series[index].visible === false) {
+            return;
+          }
           p = positions[index];
           item = svg.select(".scrubberItem.series_" + index);
           tt = item.select("." + p.side + "TT");
@@ -1265,6 +1273,9 @@ mod.factory('n3utils', [
                 neighbours[0].labelOffset = 0;
                 continue;
               }
+              neighbours = neighbours.sort(function(a, b) {
+                return a.y - b.y;
+              });
               if (n % 2 === 0) {
                 start = -(step / 2) * (n / 2);
               } else {
