@@ -767,6 +767,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           drawDots: true
         }
 
+      getDefaultAxisStyle: ->
+         return {
+            labelSize: '10px',
+            labelFontFamily: 'Courier',
+            labelColor: 'black',
+            lineColor: 'black'
+         }
+
       sanitizeOptions: (options, mode) ->
         return this.getDefaultOptions() unless options?
 
@@ -874,6 +882,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 # lib/utils/scales.coffee
       createAxes: (svg, dimensions, axesOptions) ->
+        getDefaultStyle = this.getDefaultAxisStyle
         drawY2Axis = axesOptions.y2?
 
         width = dimensions.width
@@ -908,15 +917,19 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction)
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat(axesOptions.y2?.labelFunction)
 
-        style = (group) ->
+         
+        style = (group, s) ->
+          safestyle = getDefaultStyle()
+          angular.extend( safestyle, s )
           group.style(
-            'font': '10px Courier'
+            'font': safestyle.labelSize + ' ' + safestyle.labelFontFamily
             'shape-rendering': 'crispEdges'
+            'fill': safestyle.labelColor
           )
 
           group.selectAll('path').style(
             'fill': 'none'
-            'stroke': '#000'
+            'stroke': safestyle.lineColor
           )
 
         that = this
@@ -935,22 +948,19 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                 svg.append('g')
                   .attr('class', 'x axis')
                   .attr('transform', 'translate(0,' + height + ')')
-                  .call(xAxis)
-              )
+                  .call(xAxis), axesOptions.x)
 
               style(
                 svg.append('g')
                   .attr('class', 'y axis')
-                  .call(yAxis)
-              )
+                  .call(yAxis), axesOptions.y)
 
               if drawY2Axis
                 style(
                   svg.append('g')
                     .attr('class', 'y2 axis')
                     .attr('transform', 'translate(' + width + ', 0)')
-                    .call(y2Axis)
-                )
+                    .call(y2Axis), axesOptions.y2)
 
             return {
               xScale: x

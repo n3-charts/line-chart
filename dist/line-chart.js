@@ -799,6 +799,14 @@ mod.factory('n3utils', [
           drawDots: true
         };
       },
+      getDefaultAxisStyle: function() {
+        return {
+          labelSize: '10px',
+          labelFontFamily: 'Courier',
+          labelColor: 'black',
+          lineColor: 'black'
+        };
+      },
       sanitizeOptions: function(options, mode) {
         if (options == null) {
           return this.getDefaultOptions();
@@ -914,7 +922,8 @@ mod.factory('n3utils', [
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
-        var drawY2Axis, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis, _ref;
+        var drawY2Axis, getDefaultStyle, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis, _ref;
+        getDefaultStyle = this.getDefaultAxisStyle;
         drawY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
         height = dimensions.height;
@@ -943,14 +952,18 @@ mod.factory('n3utils', [
         xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction);
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction);
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat((_ref = axesOptions.y2) != null ? _ref.labelFunction : void 0);
-        style = function(group) {
+        style = function(group, s) {
+          var safestyle;
+          safestyle = getDefaultStyle();
+          angular.extend(safestyle, s);
           group.style({
-            'font': '10px Courier',
-            'shape-rendering': 'crispEdges'
+            'font': safestyle.labelSize + ' ' + safestyle.labelFontFamily,
+            'shape-rendering': 'crispEdges',
+            'fill': safestyle.labelColor
           });
           return group.selectAll('path').style({
             'fill': 'none',
-            'stroke': '#000'
+            'stroke': safestyle.lineColor
           });
         };
         that = this;
@@ -963,10 +976,10 @@ mod.factory('n3utils', [
           y2Axis: y2Axis,
           andAddThemIf: function(condition) {
             if (!condition) {
-              style(svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis));
-              style(svg.append('g').attr('class', 'y axis').call(yAxis));
+              style(svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis), axesOptions.x);
+              style(svg.append('g').attr('class', 'y axis').call(yAxis), axesOptions.y);
               if (drawY2Axis) {
-                style(svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis));
+                style(svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis), axesOptions.y2);
               }
             }
             return {

@@ -12,6 +12,14 @@
           drawDots: true
         }
 
+      getDefaultAxisStyle: ->
+         return {
+            labelSize: '10px',
+            labelFontFamily: 'Courier',
+            labelColor: 'black',
+            lineColor: 'black'
+         }
+
       sanitizeOptions: (options, mode) ->
         return this.getDefaultOptions() unless options?
 
