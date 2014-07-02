@@ -1,5 +1,5 @@
 ###
-line-chart - v1.0.9 - 26 June 2014
+line-chart - v1.1.0 - 02 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -57,7 +57,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       if isThumbnail
         _u.adjustMarginsForThumbnail(dimensions, axes)
       else
-        _u.adjustMargins(dimensions, options, scope.data)
+        _u.adjustMargins(svg, dimensions, options, scope.data)
 
       _u.createContent(svg, handlers)
 
@@ -75,9 +75,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       if options.drawLegend
         _u.drawLegend(svg, options.series, dimensions, handlers)
 
-      if options.tooltipMode is 'scrubber'
-        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries)
-      else if options.tooltipMode isnt 'none'
+      if options.tooltip.mode is 'scrubber'
+        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options)
+      else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
 
 
@@ -269,7 +269,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               'stroke': 'white'
               'stroke-width': '2px'
             )
-        if options.tooltipMode in ['dots', 'both', 'scrubber']
+
+        if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
             target.attr('r', 4)
@@ -292,37 +293,51 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # lib/utils/legend.coffee
-      computeLegendLayout: (series, dimensions) ->
-        fn = (s) -> s.label || s.y
+      computeLegendLayout: (svg, series, dimensions) ->
+        padding = 10
+        that = this
 
-        layout = [0]
-        leftSeries = series.filter (s) -> s.axis is 'y'
+        leftWidths = this.getLegendItemsWidths(svg, 'y')
+
+        leftLayout = [0]
         i = 1
-        while i < leftSeries.length
-          layout.push @getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40
+        while i < leftWidths.length
+          leftLayout.push(leftWidths[i-1] + leftLayout[i - 1] + padding)
           i++
 
 
-        rightSeries = series.filter (s) -> s.axis is 'y2'
-        return layout if rightSeries.length is 0
+        rightWidths = this.getLegendItemsWidths(svg, 'y2')
+        return [leftLayout] unless rightWidths.length > 0
 
         w = dimensions.width - dimensions.right - dimensions.left
 
-        rightLayout = [w - @getTextWidth(fn(rightSeries[rightSeries.length - 1]))]
+        rightLayout = [w - rightWidths[rightWidths.length - 1]]
 
-        j = rightSeries.length - 2
+        j = rightWidths.length - 2
         while j >= 0
-          label = fn(rightSeries[j])
-          rightLayout.push w - @getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40
+          rightLayout.push w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding
           j--
 
         rightLayout.reverse()
 
-        return layout.concat(rightLayout)
+        return [leftLayout, rightLayout]
+
+      getLegendItemsWidths: (svg, axis) ->
+        that = this
+        bbox = (t) -> that.getTextBBox(t).width
+
+        items = svg.selectAll(".legendItem.#{axis}")
+        return [] unless items.length > 0
+
+        widths = []
+        i = 0
+        while i < items[0].length
+          widths.push(bbox(items[0][i]))
+          i++
+
+        return widths
 
       drawLegend: (svg, series, dimensions, handlers) ->
-        layout = this.computeLegendLayout(series, dimensions)
-
         that = this
         legend = svg.append('g').attr('class', 'legend')
 
@@ -334,10 +349,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         item = legend.selectAll('.legendItem')
           .data(series)
 
-        item.enter().append('g')
+        items = item.enter().append('g')
             .attr(
-              'class': (s, i) -> "legendItem series_#{i}"
-              'transform': (s, i) -> "translate(#{layout[i]},#{dimensions.height-40})"
+              'class': (s, i) -> "legendItem series_#{i} #{s.axis}"
               'opacity': (s, i) ->
                 if s.visible is false
                   that.toggleSeries(svg, i)
@@ -382,7 +396,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         item.append('text')
           .attr(
-            'class': (d, i) -> "legendItem series_#{i}"
+            'class': (d, i) -> "legendText series_#{i}"
             'font-family': 'Courier'
             'font-size': 10
             'transform': 'translate(13, 4)'
@@ -390,13 +404,23 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           )
           .text (s) -> s.label || s.y
 
+
+        [left, right] = this.computeLegendLayout(svg, series, dimensions)
+        items.attr(
+          'transform': (s, i) ->
+            if s.axis is 'y'
+              return "translate(#{left.shift()},#{dimensions.height-40})"
+            else
+              return "translate(#{right.shift()},#{dimensions.height-40})"
+        )
+
         return this
 
       getLegendItemPath: (series, w, h) ->
         if series.type is 'column'
-          path = 'M-' + w/3 + ' -' + h/8 + ' l0 ' + h + ' '
-          path += 'M0' + ' -' + h/3 + ' l0 ' + h + ' '
-          path += 'M' +w/3 + ' -' + h/10 + ' l0 ' + h + ' '
+          path = 'M' + (-w/3) + ' ' + (-h/8) + ' l0 ' + h + ' '
+          path += 'M0' + ' ' + (-h/3) + ' l0 ' + h + ' '
+          path += 'M' + w/3 + ' ' + (-h/10) + ' l0 ' + h + ' '
 
           return path
 
@@ -447,7 +471,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               return '10,3' if s.lineMode is 'dashed'
               return undefined
           )
-        if options.tooltipMode in ['both', 'lines']
+        if options.tooltip.interpolate
           interpolateData = (series) ->
             target = d3.select(d3.event.target)
             try
@@ -550,7 +574,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       createContent: (svg) ->
         svg.append('g').attr('class', 'content')
 
-      createGlass: (svg, dimensions, handlers, axes, data) ->
+      createGlass: (svg, dimensions, handlers, axes, data, options) ->
         glass = svg.append('g')
           .attr(
             'class': 'glass-container'
@@ -561,9 +585,47 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .data(data)
           .enter()
             .append('g')
-              .attr(
-                'class', (s, i) -> "scrubberItem series_#{i}"
-              )
+              .attr('class', (s, i) -> "scrubberItem series_#{i}")
+
+        g = items.append('g')
+          .attr('class': (s, i) -> "rightTT")
+
+        g.append('path')
+          .attr(
+            'class': (s, i) -> "scrubberPath series_#{i}"
+            'y': '-7px'
+            'fill': (s) -> s.color
+          )
+
+        this.styleTooltip(g.append('text')
+          .style('text-anchor', 'start')
+          .attr(
+            'class': (d, i) -> "scrubberText series_#{i}"
+            'height': '14px'
+            'transform': 'translate(7, 3)'
+            'text-rendering': 'geometric-precision'
+          ))
+          .text (s) -> s.label || s.y
+
+        g2 = items.append('g')
+          .attr('class': (s, i) -> "leftTT")
+
+        g2.append('path')
+          .attr(
+            'class': (s, i) -> "scrubberPath series_#{i}"
+            'y': '-7px'
+            'fill': (s) -> s.color
+          )
+
+        this.styleTooltip(g2.append('text')
+          .style('text-anchor', 'end')
+          .attr(
+            'class': (d, i) -> "scrubberText series_#{i}"
+            'height': '14px'
+            'transform': 'translate(-13, 3)'
+            'text-rendering': 'geometric-precision'
+          ))
+          .text (s) -> s.label || s.y
 
         items.append('circle')
           .attr(
@@ -574,27 +636,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'r': 4
           )
 
-        items.append('path')
-          .attr(
-            'class': (s, i) -> "scrubberPath series_#{i}"
-            'y': '-7px'
-            'fill': (s) -> s.color
-          )
-
-        items.append('text')
-          .style('text-anchor', (s) -> return if s.axis is 'y' then 'end' else 'start')
-          .attr(
-            'class': (d, i) -> "scrubberText series_#{i}"
-            'height': '14px'
-            'font-family': 'Courier'
-            'font-size': 10
-            'fill': 'white'
-            'transform': (s) ->
-              return if s.axis is 'y' then 'translate(-7, 3)' else 'translate(7, 3)'
-            'text-rendering': 'geometric-precision'
-          )
-          .text (s) -> s.label || s.y
-
         glass.append('rect')
           .attr(
             class: 'glass'
@@ -604,8 +645,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .style('fill', 'white')
           .style('fill-opacity', 0.000001)
           .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data)
+            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options)
           )
+
 
       getDataPerSeries: (data, options) ->
         series = options.series
@@ -617,7 +659,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         series.forEach (s) ->
           seriesData =
-            xFormatter: axes.x.tooltipFormatter
             index: straightenedData.length
             name: s.y
             values: []
@@ -647,22 +688,26 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         dimensions.top = defaults.top
         dimensions.bottom = defaults.bottom
 
-      adjustMargins: (dimensions, options, data) ->
+      adjustMargins: (svg, dimensions, options, data) ->
         this.resetMargins(dimensions)
-
         return unless data and data.length
+        return unless options.series.length
 
+        dimensions.left = this.getWidestTickWidth(svg, 'y')
+        dimensions.right = this.getWidestTickWidth(svg, 'y2')
+
+        return if options.tooltip.mode is 'scrubber'
         series = options.series
 
         leftSeries = series.filter (s) -> s.axis isnt 'y2'
         leftWidest = this.getWidestOrdinate(data, leftSeries)
-        dimensions.left = this.getTextWidth('' + leftWidest) + 20
+        dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20
 
         rightSeries = series.filter (s) -> s.axis is 'y2'
         return unless rightSeries.length
 
         rightWidest = this.getWidestOrdinate(data, rightSeries)
-        dimensions.right = this.getTextWidth('' + rightWidest) + 20
+        dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20
 
       adjustMarginsForThumbnail: (dimensions, axes) ->
         dimensions.top = 1
@@ -670,9 +715,27 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         dimensions.left = 0
         dimensions.right = 1
 
-      getTextWidth: (text) ->
-        # return Math.max(25, text.length*6.7);
-        return parseInt(text.length*5) + 10
+      estimateSideTooltipWidth: (svg, text) ->
+        t = svg.append('text')
+        t.text('' + text)
+        this.styleTooltip(t)
+
+        bbox = this.getTextBBox(t[0][0])
+        t.remove()
+
+        return bbox
+
+      getTextBBox: (svgTextElement) ->
+        return svgTextElement.getBBox()
+
+      getWidestTickWidth: (svg, axisKey) ->
+        max = 0
+        bbox = this.getTextBBox
+
+        ticks = svg.select(".#{axisKey}.axis").selectAll('.tick')
+        ticks[0]?.map (t) -> max = Math.max(max, bbox(t).width)
+
+        return max
 
       getWidestOrdinate: (data, series) ->
         widest = ''
@@ -692,7 +755,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # lib/utils/options.coffee
       getDefaultOptions: ->
         return {
-          tooltipMode: 'dots'
+          tooltip: {mode: 'axes', interpolate: false}
           lineMode: 'linear'
           tension: 0.7
           axes: {
@@ -710,7 +773,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         if mode is 'thumbnail'
           options.drawLegend = false
           options.drawDots = false
-          options.tooltipMode = 'none'
+          options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
 
@@ -719,16 +782,25 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.lineMode or= 'linear'
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
 
-        if options.tooltipMode not in ['none', 'dots', 'lines', 'both', 'scrubber']
-          options.tooltipMode = 'dots'
+        this.sanitizeTooltip(options)
 
-        if options.tooltipMode is 'scrubber'
-          options.drawLegend = true
-
-        options.drawLegend = true unless options.drawLegend is false
-        options.drawDots = true unless options.drawDots is false
+        options.drawLegend = options.drawLegend isnt false
+        options.drawDots = options.drawDots isnt false
 
         return options
+
+      sanitizeTooltip: (options) ->
+        if !options.tooltip
+          options.tooltip = {mode: 'axes', interpolate: false}
+          return
+
+        if options.tooltip.mode not in ['none', 'axes', 'scrubber']
+          options.tooltip.mode = 'axes'
+
+        options.tooltip.interpolate = !!options.tooltip.interpolate
+
+        if options.tooltip.mode is 'scrubber' and options.tooltip.interpolate
+          throw new Error('Unable to interpolate tooltip for scrubber mode')
 
       sanitizeSeriesOptions: (options) ->
         return [] unless options?
@@ -975,7 +1047,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 # lib/utils/tooltips.coffee
       getTooltipHandlers: (options) ->
-        if options.tooltipMode is 'scrubber'
+        if options.tooltip.mode is 'scrubber'
           return {
             onChartHover: angular.bind(this, this.showScrubber)
           }
@@ -985,60 +1057,196 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             onMouseOut: angular.bind(this, this.onMouseOut)
           }
 
-      showScrubber: (svg, glass, axes, data) ->
+      showScrubber: (svg, glass, axes, data, options) ->
         that = this
         glass.on('mousemove', ->
           svg.selectAll('.glass-container').attr('opacity', 1)
-          that.updateScrubber(svg, d3.mouse(this), axes, data)
+          that.updateScrubber(svg, d3.mouse(this), axes, data, options)
         )
         glass.on('mouseout', ->
           glass.on('mousemove', null)
           svg.selectAll('.glass-container').attr('opacity', 0)
         )
 
-      updateScrubber: (svg, [x, y], axes, data) ->
+      getClosestPoint: (values, value) ->
         # Dichotomy FTW
-        getClosest = (values, value) ->
-          left = 0
-          right = values.length - 1
+        left = 0
+        right = values.length - 1
 
-          i = Math.round((right - left)/2)
-          while true
-            if value < values[i].x
-              right = i
-              i = i - Math.ceil((right-left)/2)
+        i = Math.round((right - left)/2)
+        while true
+          if value < values[i].x
+            right = i
+            i = i - Math.ceil((right-left)/2)
+          else
+            left = i
+            i = i + Math.floor((right-left)/2)
+
+          if i in [left, right]
+            if Math.abs(value - values[left].x) < Math.abs(value - values[right].x)
+              i = left
             else
-              left = i
-              i = i + Math.floor((right-left)/2)
+              i = right
+            break
 
+        return values[i]
 
-            if i in [left, right]
-              if Math.abs(value - values[left].x) < Math.abs(value - values[right].x)
-                i = left
-              else
-                i = right
-              break
-
-          return values[i]
-
+      updateScrubber: (svg, [x, y], axes, data, options) ->
+        ease = (element) -> element.transition().duration(50)
         that = this
+        positions = []
         data.forEach (series, index) ->
-          v = getClosest(series.values, axes.xScale.invert(x))
+          v = that.getClosestPoint(series.values, axes.xScale.invert(x))
 
           item = svg.select(".scrubberItem.series_#{index}")
-          item.transition().duration(50)
-            .attr('transform': "translate(#{axes.xScale(v.x)}, #{axes[v.axis + 'Scale'](v.value)})")
 
-          item.select('text').text(v.value)
+          text = v.x + ' : ' + v.value
+          if options.tooltip.formatter
+            text = options.tooltip.formatter(v.x, v.value, options.series[index])
 
-          item.select('path')
-            .attr('d', (s) ->
-              if s.axis is 'y2'
-                return that.getY2TooltipPath(that.getTextWidth('' + v.value))
+          right = item.select('.rightTT')
+          rText = right.select('text')
+          rText.text(text)
+
+          left = item.select('.leftTT')
+          lText = left.select('text')
+          lText.text(text)
+
+          sizes =
+            right: that.getTextBBox(rText[0][0]).width + 5
+            left: that.getTextBBox(lText[0][0]).width + 5
+
+          side = if series.axis is 'y2' then 'right' else 'left'
+
+          x = axes.xScale(v.x)
+          if side is 'left'
+            if x + that.getTextBBox(lText[0][0]).x < 0
+              side = 'right'
+          else if side is 'right'
+            if x + sizes.right > that.getTextBBox(svg.select('.glass')[0][0]).width
+              side = 'left'
+
+          if side is 'left'
+            ease(right).attr('opacity', 0)
+            ease(left).attr('opacity', 1)
+          else
+            ease(right).attr('opacity', 1)
+            ease(left).attr('opacity', 0)
+
+          positions.push({index, x, y: axes[v.axis + 'Scale'](v.value), side, sizes})
+
+        positions = this.preventOverlapping(positions)
+
+        data.forEach (series, index) ->
+          p = positions[index]
+          item = svg.select(".scrubberItem.series_#{index}")
+
+          tt = item.select(".#{p.side}TT")
+
+          tt.select('text')
+            .attr('transform', ->
+              if p.side is 'left'
+                return "translate(-13, #{p.labelOffset+3})"
               else
-                return that.getYTooltipPath(that.getTextWidth('' + v.value))
+                return "translate(14, #{p.labelOffset+3})"
             )
 
+          tt.select('path')
+            .attr('d', that.getScrubberPath(p.sizes[p.side] + 1, p.labelOffset, p.side))
+          ease(item).attr('transform': "translate(#{positions[index].x}, #{positions[index].y})")
+
+
+      getScrubberPath: (w, yOffset, side) ->
+        h = 18
+        p = 10
+        w = w
+        xdir = if side is 'left' then 1 else -1
+
+        ydir = 1
+        if yOffset isnt 0
+          ydir = Math.abs(yOffset)/yOffset
+
+        yOffset or= 0
+
+        return [
+          "m0 0"
+
+          "l#{xdir} 0"
+          "l0 #{yOffset + ydir}"
+          "l#{-xdir*(p + 1)} 0"
+
+          "l0 #{-h/2 - ydir}"
+          "l#{-xdir*w} 0"
+          "l0 #{h}"
+          "l#{xdir*w} 0"
+          "l0 #{-h/2 - ydir}"
+
+          "l#{xdir*(p - 1)} 0"
+          "l0 #{-yOffset + ydir}"
+          "l1 0"
+
+          "z"
+        ].join('')
+
+
+      preventOverlapping: (positions) ->
+        h = 18
+
+        abscissas = {}
+        positions.forEach (p) ->
+          abscissas[p.x] or= {left: [], right: []}
+          abscissas[p.x][p.side].push(p)
+
+        getNeighbours = (side) ->
+          neighbours = []
+          for x, sides of abscissas
+            if sides[side].length is 0
+              continue
+
+            neighboursForX = {}
+            while sides[side].length > 0
+              p = sides[side].pop()
+              foundNeighbour = false
+              for y, neighbourhood of neighboursForX
+                if +y - h <= p.y <= +y + h
+                  neighbourhood.push(p)
+                  foundNeighbour = true
+
+              neighboursForX[p.y] = [p] unless foundNeighbour
+
+            neighbours.push(neighboursForX)
+          return neighbours
+
+        offset = (neighboursForAbscissas) ->
+          step = 20
+          for abs, xNeighbours of neighboursForAbscissas
+            for y, neighbours of xNeighbours
+              n = neighbours.length
+              if n is 1
+                neighbours[0].labelOffset = 0
+                continue
+
+              if n%2 is 0
+                start = -(step/2)*(n/2)
+              else
+                start = -(n-1)/2*step
+
+              neighbours.forEach (neighbour, i) -> neighbour.labelOffset = start + step*i
+          return
+
+
+        offset(getNeighbours('left'))
+        offset(getNeighbours('right'))
+
+        return positions
+
+      styleTooltip: (d3TextElement) ->
+        return d3TextElement.attr({
+          'font-family': 'monospace'
+          'font-size': 10
+          'fill': 'white'
+          'text-rendering': 'geometric-precision'
+        })
 
       addTooltips: (svg, dimensions, axesOptions) ->
         width = dimensions.width
@@ -1061,17 +1269,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         xTooltip.append('path')
           .attr('transform', "translate(0,#{(height + 1)})")
 
-        xTooltip.append('text')
+        this.styleTooltip(xTooltip.append('text')
           .style('text-anchor', 'middle')
           .attr(
             'width': w
             'height': h
-            'font-family': 'monospace'
-            'font-size': 10
             'transform': 'translate(0,' + (height + 19) + ')'
-            'fill': 'white'
-            'text-rendering': 'geometric-precision'
           )
+        )
 
         yTooltip = svg.append('g')
           .attr(
@@ -1081,15 +1286,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           )
 
         yTooltip.append('path')
-        yTooltip.append('text')
+        this.styleTooltip(yTooltip.append('text')
           .attr(
             'width': h
             'height': w
-            'font-family': 'monospace'
-            'font-size': 10
-            'fill': 'white'
-            'text-rendering': 'geometric-precision'
           )
+        )
 
         if axesOptions.y2?
           y2Tooltip = svg.append('g')
@@ -1102,15 +1304,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           y2Tooltip.append('path')
 
-          y2Tooltip.append('text')
+          this.styleTooltip(y2Tooltip.append('text')
             .attr(
               'width': h
               'height': w
-              'font-family': 'monospace'
-              'font-size': 10
-              'fill': 'white'
-              'text-rendering': 'geometric-precision'
             )
+          )
 
       onMouseOver: (svg, event) ->
         this.updateXTooltip(svg, event)
@@ -1123,92 +1322,91 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       onMouseOut: (svg) ->
         this.hideTooltips(svg)
 
-      updateXTooltip: (svg, event) ->
+      updateXTooltip: (svg, {x, datum, series}) ->
         xTooltip = svg.select("#xTooltip")
-          .transition()
+
+        xTooltip.transition()
           .attr(
             'opacity': 1.0
-            'transform': 'translate(' + event.x + ',0)'
+            'transform': "translate(#{x},0)"
           )
 
-        textX = undefined
-        if event.series.xFormatter?
-          textX = '' + event.series.xFormatter(event.datum.x)
-        else
-          textX = '' + event.datum.x
+        textX = datum.x
 
-        xTooltip.select('text').text(textX)
+        label = xTooltip.select('text')
+        label.text(textX)
+
         xTooltip.select('path')
-          .attr('fill', event.series.color)
-          .attr('d', this.getXTooltipPath(textX))
+          .attr('fill', series.color)
+          .attr('d', this.getXTooltipPath(label[0][0]))
 
-      getXTooltipPath: (text) ->
-        w = this.getTextWidth(text)
+      getXTooltipPath: (textElement) ->
+        w = Math.max(this.getTextBBox(textElement).width, 15)
         h = 18
         p = 5 # Size of the 'arrow' that points towards the axis
 
         return 'm-' + w/2 + ' ' + p + ' ' +
           'l0 ' + h + ' ' +
           'l' + w + ' 0 ' +
-          'l0 ' + '-' + h +
-          'l-' + (w/2 - p) + ' 0 ' +
-          'l-' + p + ' -' + h/4 + ' ' +
-          'l-' + p + ' ' + h/4 + ' ' +
-          'l-' + (w/2 - p) + ' 0z'
+          'l0 ' + '' + (-h) +
+          'l' + (-w/2 + p) + ' 0 ' +
+          'l' + (-p) + ' -' + h/4 + ' ' +
+          'l' + (-p) + ' ' + h/4 + ' ' +
+          'l' + (-w/2 + p) + ' 0z'
 
-      updateYTooltip: (svg, event) ->
+      updateYTooltip: (svg, {y, datum, series}) ->
         yTooltip = svg.select("#yTooltip")
-          .transition()
+        yTooltip.transition()
           .attr(
             'opacity': 1.0
-            'transform': 'translate(0, ' + event.y + ')'
+            'transform': "translate(0, #{y})"
           )
 
-        textY = '' + event.datum.value
-        w = this.getTextWidth(textY)
-        yTooltipText = yTooltip.select('text').text(textY)
+        label = yTooltip.select('text')
+        label.text(datum.value)
+        w = this.getTextBBox(label[0][0]).width + 5
 
-        yTooltipText.attr(
+        label.attr(
           'transform': 'translate(' + (- w - 2) + ',3)'
           'width': w
         )
 
         yTooltip.select('path')
-          .attr('fill', event.series.color)
+          .attr('fill', series.color)
           .attr('d', this.getYTooltipPath(w))
+
+      updateY2Tooltip: (svg, {y, datum, series}) ->
+        y2Tooltip = svg.select("#y2Tooltip")
+        y2Tooltip.transition()
+          .attr('opacity', 1.0)
+
+        label = y2Tooltip.select('text')
+        label.text(datum.value)
+        w = this.getTextBBox(label[0][0]).width + 5
+        label.attr(
+          'transform': 'translate(7, ' + (parseFloat(y) + 3) + ')'
+          'w': w
+        )
+
+        y2Tooltip.select('path')
+          .attr(
+            'fill': series.color
+            'd': this.getY2TooltipPath(w)
+            'transform': 'translate(0, ' + y + ')'
+          )
 
       getYTooltipPath: (w) ->
         h = 18
         p = 5 # Size of the 'arrow' that points towards the axis
 
         return 'm0 0' +
-          'l-' + p + ' -' + p + ' ' +
-          'l0 -' + (h/2 - p) + ' ' +
-          'l-' + w + ' 0 ' +
+          'l' + (-p) + ' ' + (-p) + ' ' +
+          'l0 ' + (-h/2 + p) + ' ' +
+          'l' + (-w) + ' 0 ' +
           'l0 ' + h + ' ' +
           'l' + w + ' 0 ' +
-          'l0 -' + (h/2 - p) +
-          'l-' + p + ' ' + p + 'z'
-
-      updateY2Tooltip: (svg, event) ->
-        y2Tooltip = svg.select("#y2Tooltip")
-          .transition()
-          .attr('opacity', 1.0)
-
-        textY = '' + event.datum.value
-        w = this.getTextWidth(textY)
-        y2TooltipText = y2Tooltip.select('text').text(textY)
-        y2TooltipText.attr(
-          'transform': 'translate(7, ' + (parseFloat(event.y) + 3) + ')'
-          'w': w
-        )
-
-        y2Tooltip.select('path')
-          .attr(
-            'fill': event.series.color
-            'd': this.getY2TooltipPath(w)
-            'transform': 'translate(0, ' + event.y + ')'
-          )
+          'l0 ' + (-h/2 + p) +
+          'l' + (-p) + ' ' + p + 'z'
 
       getY2TooltipPath: (w) ->
         h = 18
@@ -1218,10 +1416,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           'l' + p + ' ' + p + ' ' +
           'l0 ' + (h/2 - p) + ' ' +
           'l' + w + ' 0 ' +
-          'l0 -' + h + ' ' +
-          'l-' + w + ' 0 ' +
+          'l0 ' + (-h) + ' ' +
+          'l' + (-w) + ' 0 ' +
           'l0 ' + (h/2 - p) + ' ' +
-          'l-' + p + ' ' + p + 'z'
+          'l' + (-p) + ' ' + p + 'z'
 
       hideTooltips: (svg) ->
         svg.select("#xTooltip")

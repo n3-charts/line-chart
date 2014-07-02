@@ -13,6 +13,8 @@ describe 'legend', ->
       bottom: 30
       left: 50
 
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
   beforeEach inject (pepito) ->
     {element, innerScope, outerScope} = pepito.directive """
     <div>
@@ -65,7 +67,7 @@ describe 'legend', ->
     legendGroup = element.childByClass('legend')
     expect(legendGroup.children().length).to.equal 2
     l_0 = legendGroup.children()[0].domElement
-    expect(l_0.getAttribute('class')).to.equal 'legendItem series_0'
+    expect(l_0.getAttribute('class')).to.equal 'legendItem series_0 y'
     expect(l_0.childNodes[0].nodeName).to.equal 'circle'
     expect(l_0.childNodes[0].getAttribute('fill')).to.equal '#4682b4'
     expect(l_0.childNodes[1].getAttribute('clip-path')).to.equal 'url(#legend-clip)'
@@ -117,19 +119,45 @@ describe 'legend', ->
     beforeEach inject (_n3utils_) ->
       n3utils = _n3utils_
 
-    it 'should compute for left series', ->
-      series = [
-        {label: 'pouet', axis: 'y'}
-        {label: 'tut', axis: 'y'}
-      ]
+    it 'should return an empty array when no legend (what is that even needed ?)', ->
+      svg =
+        selectAll: -> []
 
-      expect(n3utils.computeLegendLayout(series, dim)).to.eql([0, 75])
+      expect(n3utils.getLegendItemsWidths(svg, 'y')).to.eql([])
 
-    it 'should compute for right series too', ->
-      series = [
-        {label: 'pouet', axis: 'y'}
-        {label: 'tut', axis: 'y2'}
-        {label: 'bwabwabwa', axis: 'y2'}
-      ]
+    it 'should compute for left and right series', ->
+      sinon.stub(n3utils, 'getLegendItemsWidths', (svg, axis) ->
+        return if axis is 'y' then [99, 123] else [105, 149]
+      )
 
-      expect(n3utils.computeLegendLayout(series, dim)).to.eql([0, 700, 765])
+      series = [{
+        y: "val_0",
+        label: "On the left !",
+        color: "#8c564b",
+        type: "line",
+        thickness: "1px"
+      },
+      {
+        y: "val_1",
+        axis: "y2",
+        label: "On the right !",
+        color: "#d62728",
+        type: "line",
+        thickness: "1px"
+      },
+      {
+        y: "val_2",
+        label: "On the left too !",
+        type: "line",
+        thickness: "1px"
+      },
+      {
+        y: "val_3",
+        axis: "y2",
+        label: "Aaand on the right !",
+        color: "#d62728",
+        type: "line",
+        thickness: "1px"
+      }]
+
+      expect(n3utils.computeLegendLayout({}, series, dim)).to.eql([[0, 109], [34, 671]])

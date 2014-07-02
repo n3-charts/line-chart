@@ -32,6 +32,12 @@ angular.module('example', ['n3-line-chart'])
           color: "#d62728",
           type: "line",
           thickness: "1px"
+        },
+        {
+          y: "val_2",
+          label: "On the left too !",
+          type: "line",
+          thickness: "1px"
         }
       ],
       axes: {
@@ -41,6 +47,6 @@ angular.module('example', ['n3-line-chart'])
       },
       lineMode: "linear",
       tension: 0.7,
-      tooltipMode: "dots"
+      tooltip: {mode: 'axes', interpolate: false}
     };
   });

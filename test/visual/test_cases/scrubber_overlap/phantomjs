@@ -1,0 +1,16 @@
+function() {
+    var glass = d3.selectAll('.glass')[0][0]
+
+    var event = document.createEvent("MouseEvent")
+    event.initMouseEvent('mouseover');
+    glass.dispatchEvent(event);
+
+    var other_event = document.createEvent("MouseEvent")
+    other_event.initMouseEvent('mousemove', true, true, window, 1, 0, 0, 0, 0 );
+    glass.dispatchEvent(other_event);
+
+    var now = Date.now;
+    Date.now = function() {return Infinity;};
+    d3.timer.flush();
+    Date.now = now;
+  }

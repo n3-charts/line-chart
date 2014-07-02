@@ -13,6 +13,8 @@ describe 'lineMode set to cardinal', ->
       bottom: 30
       left: 50
 
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
   beforeEach inject (pepito) ->
     {element, innerScope, outerScope} = pepito.directive """
     <div>
@@ -44,7 +46,7 @@ describe 'lineMode set to cardinal', ->
     expect(areaGroup.getAttribute('style')).to.equal null
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q129.6,381,162,370C210.60000000000002,353.5,275.4,312,324,300S' + '437.4,302,486,290S599.4,259,648,220Q680.4,194,810,30L810,450Q680.4,4' + '50,648,450C599.4,450,534.6,450,486,450S372.6,450,324,450S210.6000000' + '0000002,450,162,450Q129.6,450,0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q136,381,170,370C221,353.5,289,312,340,300S459,302,510,290S629,259,680,220Q714,194,850,30L850,450Q714,450,680,450C629,450,561,450,510,450S391,450,340,450S221,450,170,450Q136,450,0,450Z'
 
   it 'should draw an interpolated area regarding the line tension', ->
     outerScope.$apply ->
@@ -62,12 +64,12 @@ describe 'lineMode set to cardinal', ->
     expect(areaGroup.getAttribute('style')).to.equal null
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q75.60000000000001,399.3333333333333,162,370C291.6,326,194.4,3' + '32,324,300S356.4,322,486,290S518.4,324,648,220Q734.4,150.66666666666' + '669,810,30L810,450Q734.4,450,648,450C518.4,450,615.6,450,486,450S453' + '.6,450,324,450S291.6,450,162,450Q75.60000000000001,450,0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q79.33333333333333,399.3333333333333,170,370C306,326,204,332,340,300S374,322,510,290S544,324,680,220Q770.6666666666666,150.66666666666669,850,30L850,450Q770.6666666666666,450,680,450C544,450,646,450,510,450S476,450,340,450S306,450,170,450Q79.33333333333333,450,0,450Z'
 
   it 'should draw an interpolated line', ->
     linePath = element.childByClass('line')
     expect(linePath.getAttribute('class')).to.equal 'line'
-    expect(linePath.getAttribute('d')).to.equal 'M0,410Q129.6,381,162,370C210.60000000000002,353.5,275.4,312,324,300S' + '437.4,302,486,290S599.4,259,648,220Q680.4,194,810,30'
+    expect(linePath.getAttribute('d')).to.equal 'M0,410Q136,381,170,370C221,353.5,289,312,340,300S459,302,510,290S629,259,680,220Q714,194,850,30'
 
   it 'should create a dots group with coordinates unchanged', ->
     dotsGroup = element.childByClass('dotGroup')
@@ -79,7 +81,7 @@ describe 'lineMode set to cardinal', ->
 
     computedX = Array::reduce.call(dots, fn('cx'), 'X')
     computedY = Array::reduce.call(dots, fn('cy'), 'Y')
-    expect(computedX).to.eql 'X 0 162 324 486 648 810'
+    expect(computedX).to.eql 'X 0 170 340 510 680 850'
     expect(computedY).to.eql 'Y 410 370 300 290 220 30'
     i = 0
 

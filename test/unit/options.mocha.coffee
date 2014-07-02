@@ -7,10 +7,6 @@ describe 'options', ->
     n3utils = _n3utils_
 
   describe 'drawLegend', ->
-    it 'should set drawLegend to true if tooltipMode is scrubber', ->
-      o = n3utils.sanitizeOptions(drawLegend: false, tooltipMode: 'scrubber')
-      expect(o.drawLegend).to.equal true
-
     it 'should set default drawLegend value if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
       expect(o.drawLegend).to.equal true
@@ -28,22 +24,20 @@ describe 'options', ->
       o = n3utils.sanitizeOptions(drawDots: false)
       expect(o.drawDots).to.equal false
 
-  describe 'tooltipMode', ->
-    it 'should preserve the given tooltipMode value if defined and valid', ->
-      o = n3utils.sanitizeOptions(tooltipMode: 'none')
-      expect(o.tooltipMode).to.equal 'none'
-      o = n3utils.sanitizeOptions(tooltipMode: 'dots')
-      expect(o.tooltipMode).to.equal 'dots'
-      o = n3utils.sanitizeOptions(tooltipMode: 'lines')
-      expect(o.tooltipMode).to.equal 'lines'
-      o = n3utils.sanitizeOptions(tooltipMode: 'both')
-      expect(o.tooltipMode).to.equal 'both'
-
-    it 'should set default tooltipMode if undefined or invalid', ->
+  describe 'tooltip', ->
+    it 'should set default tooltip.mode if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
-      expect(o.tooltipMode).to.equal 'dots'
-      o = n3utils.sanitizeOptions(tooltipMode: 'invalidOption')
-      expect(o.tooltipMode).to.equal 'dots'
+      expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
+
+      o = n3utils.sanitizeOptions({})
+      expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
+
+      o = n3utils.sanitizeOptions({tooltip: {interpolate: true}})
+      expect(o.tooltip).to.eql({mode: 'axes', interpolate: true})
+
+      expect(->
+        n3utils.sanitizeOptions({tooltip: {mode: 'scrubber', interpolate: true}})
+      ).to.throw()
 
   describe 'linemode', ->
     it 'should add the default tension', ->
@@ -58,7 +52,7 @@ describe 'options', ->
   describe 'axes', ->
     it 'should return default options when given null or undefined', ->
       expect(n3utils.sanitizeOptions()).to.eql
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true
@@ -103,11 +97,11 @@ describe 'options', ->
 
     it 'should set default x axis', ->
       expect(n3utils.sanitizeOptions(
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         axes: {}
       )).to.eql
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true
@@ -126,13 +120,13 @@ describe 'options', ->
 
     it 'should allow x axis key configuration', ->
       expect(n3utils.sanitizeOptions(
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         axes:
           x:
             key: 'foo'
       )).to.eql
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true
@@ -151,7 +145,7 @@ describe 'options', ->
 
     it 'should allow y axes extrema configuration', ->
       expected =
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true
@@ -170,7 +164,7 @@ describe 'options', ->
         series: []
 
       computed = n3utils.sanitizeOptions(
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         axes:
           y:
@@ -184,7 +178,7 @@ describe 'options', ->
       sinon.stub($log, 'warn', ->)
 
       expected =
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true
@@ -202,7 +196,7 @@ describe 'options', ->
         series: []
 
       computed = n3utils.sanitizeOptions(
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         axes:
           y:
@@ -293,7 +287,7 @@ describe 'options', ->
         {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'}
         {y: 'otherValue', axis: 'y2'}
       ])).to.eql
-        tooltipMode: 'dots'
+        tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true
