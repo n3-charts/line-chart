@@ -5,7 +5,6 @@ describe 'tooltip', ->
 
   fakeMouse = undefined
 
-  tooltipSpy = undefined
   flushD3 = undefined
   checkVisibilityOf = undefined
 
@@ -18,6 +17,8 @@ describe 'tooltip', ->
       Date.now = -> Infinity
       d3.timer.flush()
       Date.now = now
+
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
 
     checkVisibilityOf = (args) ->
       flushD3()
@@ -50,8 +51,6 @@ describe 'tooltip', ->
     """
 
   beforeEach ->
-    tooltipSpy = sinon.spy()
-
     outerScope.$apply ->
       outerScope.data = [
         {x: 0, value: 4}
@@ -62,7 +61,7 @@ describe 'tooltip', ->
         {x: 5, value: 42}
       ]
       outerScope.options =
-        axes: {x: {tooltipFormatter: tooltipSpy}}
+        axes: {}
         series: [
           {
             y: 'value'
@@ -75,7 +74,7 @@ describe 'tooltip', ->
             color: '#4682b4'
           }
         ]
-        tooltipMode: 'both'
+        tooltip: {mode: 'axes', interpolate: true}
 
 
   it 'should show/hide the tooltip when hovering/leaving a left axis dot', ->
@@ -116,7 +115,7 @@ describe 'tooltip', ->
               type: 'column'
             }
           ]
-          tooltipMode: 'scrubber'
+          tooltip: {mode: 'scrubber', interpolate: false}
         }
 
     it 'should create a glass', ->
@@ -127,7 +126,16 @@ describe 'tooltip', ->
 
       fakeMouse.hoverIn(glass.domElement)
 
+  it 'should compute the closest abscissa', inject (n3utils) ->
+    v = n3utils.getClosestPoint([
+      {x: 0}
+      {x: 1}
+      {x: 2}
+      {x: 4}
+      {x: 5}
+    ], 3.1)
 
+    expect(v).to.eql({x: 4})
 
   it 'should work when no x-formatter is found', ->
     outerScope.$apply ->

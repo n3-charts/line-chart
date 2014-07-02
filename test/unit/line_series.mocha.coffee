@@ -13,6 +13,8 @@ describe 'line series', ->
       bottom: 30
       left: 50
 
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
   beforeEach inject (pepito) ->
     {element, innerScope, outerScope} = pepito.directive """
     <div>
@@ -61,7 +63,7 @@ describe 'line series', ->
 
     computedX = Array::reduce.call(dots, fn('cx'), 'X')
     computedY = Array::reduce.call(dots, fn('cy'), 'Y')
-    expect(computedX).to.eql 'X 0 162 324 486 648 810'
+    expect(computedX).to.eql 'X 0 170 340 510 680 850'
     expect(computedY).to.eql 'Y 410 370 300 290 220 30'
     i = 0
 
@@ -75,7 +77,7 @@ describe 'line series', ->
     linePath = content.childByClass('line')
     expect(linePath.getAttribute('class')).to.equal 'line'
     expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px;'
-    expect(linePath.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30'
+    expect(linePath.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30'
 
   it 'should update the chart if the array is changed (but not reassigned)', ->
     outerScope.$apply -> outerScope.data[0].value = 7

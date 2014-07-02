@@ -1,4 +1,4 @@
-describe 'n3utils', ->
+describe 'misc', ->
   beforeEach module 'n3-line-chart'
   beforeEach module 'testUtils'
 
@@ -18,13 +18,10 @@ describe 'n3utils', ->
       {x: 2, foo: 3.14, value: 8}
     ]
 
-    xFormatter = (text) -> ''
-
     options =
       axes:
         x:
           key: 'x'
-          tooltipFormatter: xFormatter
 
       series: [
         {
@@ -44,7 +41,6 @@ describe 'n3utils', ->
 
     expected = [
       {
-        xFormatter: xFormatter
         index: 0
         name: 'value'
         values: [
@@ -57,7 +53,6 @@ describe 'n3utils', ->
         thickness: '1px'
       }
       {
-        xFormatter: xFormatter
         index: 1
         name: 'foo'
         values: [
@@ -74,7 +69,6 @@ describe 'n3utils', ->
     computed = n3utils.getDataPerSeries(data, options)
 
     keys = [
-      'xFormatter'
       'index'
       'name'
       'values'
@@ -106,12 +100,24 @@ describe 'n3utils', ->
     expect(n3utils.getWidestOrdinate(data, series)).to.equal 1.1548578
 
   describe 'adjustMargins', ->
+    fakeSvg = undefined
+
     beforeEach ->
+      fakeSvg = d3.select('body').append('svg')
       sinon.stub n3utils, 'getDefaultMargins', ->
         top: 20
         right: 50
         bottom: 30
         left: 50
+
+      sinon.stub n3utils, 'getWidestTickWidth', (svg, axisKey) ->
+        if axisKey is 'y' then return 30 else return 50
+
+      sinon.stub n3utils, 'estimateSideTooltipWidth', (svg, text) ->
+        return {width: ('' + text).length*5}
+
+    afterEach ->
+      fakeSvg.remove()
 
     it 'should return default margins for no series', ->
       data = [
@@ -126,10 +132,13 @@ describe 'n3utils', ->
         left: 10
         right: 10
 
-      options = series: []
-      n3utils.adjustMargins dimensions, options, data
+      options =
+        series: []
+        tooltip: {}
+
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
       expect(dimensions).to.eql
-        left: 30
+        left: 50
         right: 50
         top: 20
         bottom: 30
@@ -148,10 +157,16 @@ describe 'n3utils', ->
         left: 10
         right: 10
 
-      options = series: [y: 'value']
-      n3utils.adjustMargins dimensions, options, data
+      options =
+        series: [
+          {y: 'value'}
+        ]
+        tooltip: {}
+
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
+
       expect(dimensions).to.eql
-        left: 40
+        left: 30
         right: 50
         top: 20
         bottom: 30
@@ -170,13 +185,17 @@ describe 'n3utils', ->
         left: 10
         right: 10
 
-      options = series: [
-        {y: 'value'}
-        {y: 'foo'}
-      ]
-      n3utils.adjustMargins dimensions, options, data
+      options =
+        series: [
+          {y: 'value'}
+          {y: 'foo'}
+        ]
+        tooltip: {}
+
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
+
       expect(dimensions).to.eql
-        left: 75
+        left: 65
         right: 50
         top: 20
         bottom: 30
@@ -195,13 +214,17 @@ describe 'n3utils', ->
         left: 10
         right: 10
 
-      options = series: [
-        {y: 'value'}
-        {axis: 'y2', y: 'foo'}
-      ]
-      n3utils.adjustMargins dimensions, options, data
+      options =
+        series: [
+          {y: 'value'}
+          {axis: 'y2', y: 'foo'}
+        ]
+        tooltip: {}
+
+      n3utils.adjustMargins(fakeSvg, dimensions, options, data)
+
       expect(dimensions).to.eql
-        left: 40
-        right: 75
+        left: 30
+        right: 65
         top: 20
         bottom: 30

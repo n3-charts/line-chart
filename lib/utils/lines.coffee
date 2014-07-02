@@ -20,7 +20,7 @@
               return '10,3' if s.lineMode is 'dashed'
               return undefined
           )
-        if options.tooltipMode in ['both', 'lines']
+        if options.tooltip.interpolate
           interpolateData = (series) ->
             target = d3.select(d3.event.target)
             try

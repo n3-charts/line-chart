@@ -6,21 +6,21 @@ describe 'chart initialization (old module name)', ->
   beforeEach module 'n3-charts.linechart'
   beforeEach module 'testUtils'
 
-  beforeEach inject (n3utils) ->
+  beforeEach inject (n3utils, pepito) ->
     sinon.stub n3utils, 'getDefaultMargins', ->
       top: 20
       right: 50
       bottom: 30
       left: 50
 
-  beforeEach inject (pepito) ->
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
     {element, innerScope, outerScope} = pepito.directive """
     <div>
       <linechart data="data" options="options"></linechart>
     </div>
     """
 
-  beforeEach ->
     outerScope.$apply ->
       outerScope.data = [
         {x: 0, value: 4}

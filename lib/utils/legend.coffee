@@ -1,34 +1,48 @@
-      computeLegendLayout: (series, dimensions) ->
-        fn = (s) -> s.label || s.y
+      computeLegendLayout: (svg, series, dimensions) ->
+        padding = 10
+        that = this
 
-        layout = [0]
-        leftSeries = series.filter (s) -> s.axis is 'y'
+        leftWidths = this.getLegendItemsWidths(svg, 'y')
+
+        leftLayout = [0]
         i = 1
-        while i < leftSeries.length
-          layout.push @getTextWidth(fn(leftSeries[i - 1])) + layout[i - 1] + 40
+        while i < leftWidths.length
+          leftLayout.push(leftWidths[i-1] + leftLayout[i - 1] + padding)
           i++
 
 
-        rightSeries = series.filter (s) -> s.axis is 'y2'
-        return layout if rightSeries.length is 0
+        rightWidths = this.getLegendItemsWidths(svg, 'y2')
+        return [leftLayout] unless rightWidths.length > 0
 
         w = dimensions.width - dimensions.right - dimensions.left
 
-        rightLayout = [w - @getTextWidth(fn(rightSeries[rightSeries.length - 1]))]
+        rightLayout = [w - rightWidths[rightWidths.length - 1]]
 
-        j = rightSeries.length - 2
+        j = rightWidths.length - 2
         while j >= 0
-          label = fn(rightSeries[j])
-          rightLayout.push w - @getTextWidth(label) - (w - rightLayout[rightLayout.length - 1]) - 40
+          rightLayout.push w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding
           j--
 
         rightLayout.reverse()
 
-        return layout.concat(rightLayout)
+        return [leftLayout, rightLayout]
+
+      getLegendItemsWidths: (svg, axis) ->
+        that = this
+        bbox = (t) -> that.getTextBBox(t).width
+
+        items = svg.selectAll(".legendItem.#{axis}")
+        return [] unless items.length > 0
+
+        widths = []
+        i = 0
+        while i < items[0].length
+          widths.push(bbox(items[0][i]))
+          i++
+
+        return widths
 
       drawLegend: (svg, series, dimensions, handlers) ->
-        layout = this.computeLegendLayout(series, dimensions)
-
         that = this
         legend = svg.append('g').attr('class', 'legend')
 
@@ -40,10 +54,9 @@
         item = legend.selectAll('.legendItem')
           .data(series)
 
-        item.enter().append('g')
+        items = item.enter().append('g')
             .attr(
-              'class': (s, i) -> "legendItem series_#{i}"
-              'transform': (s, i) -> "translate(#{layout[i]},#{dimensions.height-40})"
+              'class': (s, i) -> "legendItem series_#{i} #{s.axis}"
               'opacity': (s, i) ->
                 if s.visible is false
                   that.toggleSeries(svg, i)
@@ -88,7 +101,7 @@
 
         item.append('text')
           .attr(
-            'class': (d, i) -> "legendItem series_#{i}"
+            'class': (d, i) -> "legendText series_#{i}"
             'font-family': 'Courier'
             'font-size': 10
             'transform': 'translate(13, 4)'
@@ -96,13 +109,23 @@
           )
           .text (s) -> s.label || s.y
 
+
+        [left, right] = this.computeLegendLayout(svg, series, dimensions)
+        items.attr(
+          'transform': (s, i) ->
+            if s.axis is 'y'
+              return "translate(#{left.shift()},#{dimensions.height-40})"
+            else
+              return "translate(#{right.shift()},#{dimensions.height-40})"
+        )
+
         return this
 
       getLegendItemPath: (series, w, h) ->
         if series.type is 'column'
-          path = 'M-' + w/3 + ' -' + h/8 + ' l0 ' + h + ' '
-          path += 'M0' + ' -' + h/3 + ' l0 ' + h + ' '
-          path += 'M' +w/3 + ' -' + h/10 + ' l0 ' + h + ' '
+          path = 'M' + (-w/3) + ' ' + (-h/8) + ' l0 ' + h + ' '
+          path += 'M0' + ' ' + (-h/3) + ' l0 ' + h + ' '
+          path += 'M' + w/3 + ' ' + (-h/10) + ' l0 ' + h + ' '
 
           return path
 
