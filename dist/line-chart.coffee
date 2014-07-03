@@ -699,6 +699,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         dimensions.left = this.getWidestTickWidth(svg, 'y')
         dimensions.right = this.getWidestTickWidth(svg, 'y2')
 
+        if dimensions.right is 0 then dimensions.right = 20
+
         return if options.tooltip.mode is 'scrubber'
         series = options.series
 

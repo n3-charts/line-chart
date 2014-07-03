@@ -718,6 +718,9 @@ mod.factory('n3utils', [
         }
         dimensions.left = this.getWidestTickWidth(svg, 'y');
         dimensions.right = this.getWidestTickWidth(svg, 'y2');
+        if (dimensions.right === 0) {
+          dimensions.right = 20;
+        }
         if (options.tooltip.mode === 'scrubber') {
           return;
         }
