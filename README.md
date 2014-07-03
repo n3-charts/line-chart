@@ -71,6 +71,12 @@ It can also contain, according to your series configuration, a `y` and a `y2` ke
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
 
+It can also be optionally styled with the following properties:
++ `labelColor` : optional, the color of the axis labels
++ `labelSize` : optional, the size of the axis labels
++ `labelFontFamily`: optional, the font-family of the axis labels
++ `lineColor`: optional, the color of the axis line
+
 
 ##### Series
 The `series` key must be an array which contains objects with the following properties :

@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.1 - 02 July 2014
+line-chart - v1.1.1 - 03 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -759,13 +759,21 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           lineMode: 'linear'
           tension: 0.7
           axes: {
-            x: {type: 'linear', key: 'x'}
-            y: {type: 'linear'}
+            x: angular.extend( this.getDefaultAxisStyle(), {type: 'linear', key: 'x'})
+            y: angular.extend( this.getDefaultAxisStyle(), {type: 'linear'} )
           }
           series: []
           drawLegend: true
           drawDots: true
         }
+
+      getDefaultAxisStyle: ->
+         return {
+            labelSize: '10px',
+            labelFontFamily: 'Courier',
+            labelColor: 'black',
+            lineColor: 'black'
+         }
 
       sanitizeOptions: (options, mode) ->
         return this.getDefaultOptions() unless options?
@@ -863,9 +871,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
       sanitizeAxisOptions: (options) ->
-        return {type: 'linear'} unless options?
+        return angular.extend(this.getDefaultAxisStyle(), {type: 'linear'}) unless options?
 
         options.type or= 'linear'
+        for k,v  of this.getDefaultAxisStyle()
+           options[k] or= v
 
         return options
 
@@ -908,15 +918,17 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction)
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat(axesOptions.y2?.labelFunction)
 
-        style = (group) ->
+         
+        style = (group, options) ->
           group.style(
-            'font': '10px Courier'
+            'font': options.labelSize + ' ' + options.labelFontFamily
             'shape-rendering': 'crispEdges'
+            'fill': options.labelColor
           )
 
           group.selectAll('path').style(
             'fill': 'none'
-            'stroke': '#000'
+            'stroke': options.lineColor
           )
 
         that = this
@@ -935,22 +947,19 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                 svg.append('g')
                   .attr('class', 'x axis')
                   .attr('transform', 'translate(0,' + height + ')')
-                  .call(xAxis)
-              )
+                  .call(xAxis), axesOptions.x)
 
               style(
                 svg.append('g')
                   .attr('class', 'y axis')
-                  .call(yAxis)
-              )
+                  .call(yAxis), axesOptions.y)
 
               if drawY2Axis
                 style(
                   svg.append('g')
                     .attr('class', 'y2 axis')
                     .attr('transform', 'translate(' + width + ', 0)')
-                    .call(y2Axis)
-                )
+                    .call(y2Axis), axesOptions.y2)
 
             return {
               xScale: x

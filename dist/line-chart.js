@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.1 - 02 July 2014
+line-chart - v1.1.1 - 03 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -786,17 +786,25 @@ mod.factory('n3utils', [
           lineMode: 'linear',
           tension: 0.7,
           axes: {
-            x: {
+            x: angular.extend(this.getDefaultAxisStyle(), {
               type: 'linear',
               key: 'x'
-            },
-            y: {
+            }),
+            y: angular.extend(this.getDefaultAxisStyle(), {
               type: 'linear'
-            }
+            })
           },
           series: [],
           drawLegend: true,
           drawDots: true
+        };
+      },
+      getDefaultAxisStyle: function() {
+        return {
+          labelSize: '10px',
+          labelFontFamily: 'Courier',
+          labelColor: 'black',
+          lineColor: 'black'
         };
       },
       sanitizeOptions: function(options, mode) {
@@ -905,12 +913,18 @@ mod.factory('n3utils', [
         return number;
       },
       sanitizeAxisOptions: function(options) {
+        var k, v, _ref;
         if (options == null) {
-          return {
+          return angular.extend(this.getDefaultAxisStyle(), {
             type: 'linear'
-          };
+          });
         }
         options.type || (options.type = 'linear');
+        _ref = this.getDefaultAxisStyle();
+        for (k in _ref) {
+          v = _ref[k];
+          options[k] || (options[k] = v);
+        }
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
@@ -943,14 +957,15 @@ mod.factory('n3utils', [
         xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction);
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction);
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat((_ref = axesOptions.y2) != null ? _ref.labelFunction : void 0);
-        style = function(group) {
+        style = function(group, options) {
           group.style({
-            'font': '10px Courier',
-            'shape-rendering': 'crispEdges'
+            'font': options.labelSize + ' ' + options.labelFontFamily,
+            'shape-rendering': 'crispEdges',
+            'fill': options.labelColor
           });
           return group.selectAll('path').style({
             'fill': 'none',
-            'stroke': '#000'
+            'stroke': options.lineColor
           });
         };
         that = this;
@@ -963,10 +978,10 @@ mod.factory('n3utils', [
           y2Axis: y2Axis,
           andAddThemIf: function(condition) {
             if (!condition) {
-              style(svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis));
-              style(svg.append('g').attr('class', 'y axis').call(yAxis));
+              style(svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis), axesOptions.x);
+              style(svg.append('g').attr('class', 'y axis').call(yAxis), axesOptions.y);
               if (drawY2Axis) {
-                style(svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis));
+                style(svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis), axesOptions.y2);
               }
             }
             return {

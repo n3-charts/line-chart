@@ -4,13 +4,21 @@
           lineMode: 'linear'
           tension: 0.7
           axes: {
-            x: {type: 'linear', key: 'x'}
-            y: {type: 'linear'}
+            x: angular.extend( this.getDefaultAxisStyle(), {type: 'linear', key: 'x'})
+            y: angular.extend( this.getDefaultAxisStyle(), {type: 'linear'} )
           }
           series: []
           drawLegend: true
           drawDots: true
         }
+
+      getDefaultAxisStyle: ->
+         return {
+            labelSize: '10px',
+            labelFontFamily: 'Courier',
+            labelColor: 'black',
+            lineColor: 'black'
+         }
 
       sanitizeOptions: (options, mode) ->
         return this.getDefaultOptions() unless options?
@@ -108,8 +116,10 @@
 
 
       sanitizeAxisOptions: (options) ->
-        return {type: 'linear'} unless options?
+        return angular.extend(this.getDefaultAxisStyle(), {type: 'linear'}) unless options?
 
         options.type or= 'linear'
+        for k,v  of this.getDefaultAxisStyle()
+           options[k] or= v
 
         return options
