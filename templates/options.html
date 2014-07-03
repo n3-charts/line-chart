@@ -33,12 +33,12 @@
 
   </fieldset>
   <fieldset>
-    <legend>Series <span ng-click="addSeries()" class="small right only-hover clickable"><i class="fa fa-plus"></i></span></legend>
+    <legend>Series <span ng-click="addSeries()" class="small right only-hover clickable">create</span></legend>
     <series remove="removeSeries(series)" series="series" fields="fields" ng-repeat="series in options.series" remove="removeSeries(series)"></series>
   </fieldset>
 
   <fieldset>
-    <legend>Axes <span ng-click="toggleAll()" class="small right only-hover">click an axis to edit it</span></legend>
+    <legend>Axes</legend>
     <axis axis="axis" key="key" fields="fields" ng-repeat="(key, axis) in options.axes"></axes>
   </fieldset>
 </form>
