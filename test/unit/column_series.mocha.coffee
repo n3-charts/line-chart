@@ -77,7 +77,7 @@ describe 'column series', ->
     computedX = Array::reduce.call(columns, fn('x'), 'X')
     computedY = Array::reduce.call(columns, fn('y'), 'Y')
     computedH = Array::reduce.call(columns, fn('height'), 'H')
-    expect(computedX).to.eql 'X 121 243 364 486 607 729'
+    expect(computedX).to.eql 'X 119 237 356 474 593 711'
     expect(computedY).to.eql 'Y 410 370 300 290 220 30'
     expect(computedH).to.eql 'H 40 80 150 160 230 420'
     i = 0
@@ -124,7 +124,7 @@ describe 'column series', ->
     computedX = Array::reduce.call(columns, fn('x'), 'X')
     computedY = Array::reduce.call(columns, fn('y'), 'Y')
     computedH = Array::reduce.call(columns, fn('height'), 'H')
-    expect(computedX).to.eql 'X 121 243 364 486 607 729'
+    expect(computedX).to.eql 'X 119 237 356 474 593 711'
     expect(computedY).to.eql 'Y 0 370 300 290 220 30'
     expect(computedH).to.eql 'H 450 80 150 160 230 420'
     i = 0
