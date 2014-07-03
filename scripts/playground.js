@@ -1,6 +1,7 @@
 angular.module('playground', ['apojop', 'utils', 'directives'])
 
 .controller('PlaygroundCtrl', function($scope, $location, appUtils, $shorten) {
+  mixpanel.track("Playground");
   $scope.shareUrl = function() {
     $shorten(escape($location.absUrl())).then(function(data) {
       $scope.url = data;
