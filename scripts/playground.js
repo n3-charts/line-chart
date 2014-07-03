@@ -1,6 +1,12 @@
 angular.module('playground', ['apojop', 'utils', 'directives'])
 
-.controller('PlaygroundCtrl', function($scope, $location, appUtils) {
+.controller('PlaygroundCtrl', function($scope, $location, appUtils, $shorten) {
+  $scope.shareUrl = function() {
+    $shorten(escape($location.absUrl())).then(function(data) {
+      $scope.url = data;
+    });
+  };
+
   if ($location.search().options) {
     try {
       $scope.options = angular.fromJson($location.search().options);
@@ -54,8 +60,20 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
 
   $scope.data = appUtils[$scope.dataType.slice('0, 3') + 'Data'](30, 4);
 
-  $scope.$watch('options+dataType', function() {
-    $location.search('options', angular.toJson(angular.copy($scope.options)));
-    $location.search('dataType', $scope.dataType);
+  $scope.$watch('dataType', function(v) {
+    $scope.url = null;
+    if (!v) {
+      return;
+    }
+    $location.search('dataType', v);
+  });
+
+  $scope.$watch('options', function(v) {
+    $scope.url = null;
+    if (!v) {
+      return;
+    }
+    $scope.generatedOptions = angular.copy(v);
+    $location.search('options', angular.toJson(angular.copy(v)));
   }, true);
 });

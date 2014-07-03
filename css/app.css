@@ -158,13 +158,7 @@ h3.subheading {
 .example {
   min-width: 600px;
   margin: 0 auto 50px auto;
-  /*box-shadow: 6px 6px 10px rgba(255, 255, 255, 0);*/
-  /*border: 1px solid rgba(255, 255, 255, 0);*/
   border: 1px solid #CECECE;
-}
-
-.example:hover {
-  /*box-shadow: 6px 6px 10px #DDD;*/
 }
 
 .example .chart {
@@ -224,6 +218,30 @@ h3.subheading {
 
 
 /* PLAYGROUND */
+.playground h3 {
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+.playground .subactions {
+  text-align: center;
+}
+
+.playground .subactions span {
+  margin: 0px 2px;
+}
+
+.playground .url {
+  text-align: center;
+}
+
+.playground .url input {
+  outline: none;
+  border: 1px solid #d3d3da;
+  font-weight: 100;
+  font-size: 14px;
+}
+
 .follow-scroll {
   position: fixed;
 }
@@ -232,26 +250,31 @@ form.chart-options div {
   font-size: 12px;
 }
 
-* > span.only-hover {
-  display: none;
+span.only-hover {
+  visibility: hidden;
+  display: inline-block;
 }
 
-*:hover > span.only-hover {
-  display: block;
+.playground:hover span.only-hover {
+  visibility: visible;
 }
 
 * > span.clickable {
   cursor: pointer;
 }
 
+* > span.clickable:hover {
+  color: #48AB4D;
+}
+
 
 * > span.small {
   font-size: 10px;
-  line-height: 2em;
 }
 
 * > span.right {
-  float: right;
+  margin-left: 15px;
+  height: 15px;
 }
 
 .modal {
@@ -301,3 +324,7 @@ pre.options-output {
   font-size: 10px;
 }
 
+/* DIRECTIVES : OPTIONS */
+.chart-options legend {
+  /*height: 20px;*/
+}
