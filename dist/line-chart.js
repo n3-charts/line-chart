@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.1 - 02 July 2014
+line-chart - v1.1.1 - 03 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -786,13 +786,13 @@ mod.factory('n3utils', [
           lineMode: 'linear',
           tension: 0.7,
           axes: {
-            x: {
+            x: angular.extend(this.getDefaultAxisStyle(), {
               type: 'linear',
               key: 'x'
-            },
-            y: {
+            }),
+            y: angular.extend(this.getDefaultAxisStyle(), {
               type: 'linear'
-            }
+            })
           },
           series: [],
           drawLegend: true,
@@ -913,17 +913,22 @@ mod.factory('n3utils', [
         return number;
       },
       sanitizeAxisOptions: function(options) {
+        var k, v, _ref;
         if (options == null) {
-          return {
+          return angular.extend(this.getDefaultAxisStyle(), {
             type: 'linear'
-          };
+          });
         }
         options.type || (options.type = 'linear');
+        _ref = this.getDefaultAxisStyle();
+        for (k in _ref) {
+          v = _ref[k];
+          options[k] || (options[k] = v);
+        }
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
-        var drawY2Axis, getDefaultStyle, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis, _ref;
-        getDefaultStyle = this.getDefaultAxisStyle;
+        var drawY2Axis, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis, _ref;
         drawY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
         height = dimensions.height;
@@ -952,18 +957,15 @@ mod.factory('n3utils', [
         xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction);
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction);
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat((_ref = axesOptions.y2) != null ? _ref.labelFunction : void 0);
-        style = function(group, s) {
-          var safestyle;
-          safestyle = getDefaultStyle();
-          angular.extend(safestyle, s);
+        style = function(group, options) {
           group.style({
-            'font': safestyle.labelSize + ' ' + safestyle.labelFontFamily,
+            'font': options.labelSize + ' ' + options.labelFontFamily,
             'shape-rendering': 'crispEdges',
-            'fill': safestyle.labelColor
+            'fill': options.labelColor
           });
           return group.selectAll('path').style({
             'fill': 'none',
-            'stroke': safestyle.lineColor
+            'stroke': options.lineColor
           });
         };
         that = this;

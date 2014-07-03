@@ -1,5 +1,4 @@
       createAxes: (svg, dimensions, axesOptions) ->
-        getDefaultStyle = this.getDefaultAxisStyle
         drawY2Axis = axesOptions.y2?
 
         width = dimensions.width
@@ -35,18 +34,16 @@
         y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat(axesOptions.y2?.labelFunction)
 
          
-        style = (group, s) ->
-          safestyle = getDefaultStyle()
-          angular.extend( safestyle, s )
+        style = (group, options) ->
           group.style(
-            'font': safestyle.labelSize + ' ' + safestyle.labelFontFamily
+            'font': options.labelSize + ' ' + options.labelFontFamily
             'shape-rendering': 'crispEdges'
-            'fill': safestyle.labelColor
+            'fill': options.labelColor
           )
 
           group.selectAll('path').style(
             'fill': 'none'
-            'stroke': safestyle.lineColor
+            'stroke': options.lineColor
           )
 
         that = this

@@ -62,9 +62,16 @@ describe 'options', ->
           x:
             type: 'linear'
             key: 'x'
-
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
           y:
             type: 'linear'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
         series: []
 
@@ -75,9 +82,16 @@ describe 'options', ->
         x:
           type: 'linear'
           key: 'x'
-
+          labelSize: '10px'
+          labelFontFamily: 'Courier'
+          labelColor: 'black'
+          lineColor: 'black'
         y:
           type: 'linear'
+          labelSize: '10px'
+          labelFontFamily: 'Courier'
+          labelColor: 'black'
+          lineColor: 'black'
 
       expect(o.series).to.eql []
 
@@ -93,7 +107,7 @@ describe 'options', ->
       o = n3utils.sanitizeOptions(axes:
         x: {}
       )
-      expect(o.axes.y).to.eql type: 'linear'
+      expect(o.axes.y?.type).to.eql 'linear'
 
     it 'should set default x axis', ->
       expect(n3utils.sanitizeOptions(
@@ -111,10 +125,18 @@ describe 'options', ->
           x:
             type: 'linear'
             key: 'x'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
+ 
 
           y:
             type: 'linear'
-
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
         series: []
 
 
@@ -136,9 +158,17 @@ describe 'options', ->
           x:
             type: 'linear'
             key: 'foo'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
           y:
             type: 'linear'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
         series: []
 
@@ -155,11 +185,20 @@ describe 'options', ->
           x:
             type: 'linear'
             key: 'x'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
           y:
             type: 'linear'
             min: 5
             max: 15
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
+
 
         series: []
 
@@ -170,6 +209,7 @@ describe 'options', ->
           y:
             min: '5'
             max: 15
+
       )
 
       expect(computed).to.eql(expected)
@@ -188,10 +228,18 @@ describe 'options', ->
           x:
             type: 'linear'
             key: 'x'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
           y:
             type: 'linear'
             max: 15
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
         series: []
 
@@ -297,12 +345,25 @@ describe 'options', ->
           x:
             type: 'linear'
             key: 'x'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
           y:
             type: 'linear'
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
           y2:
             type: 'linear'
+
+            labelSize: '10px'
+            labelFontFamily: 'Courier'
+            labelColor: 'black'
+            lineColor: 'black'
 
         series: [
           {
