@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.1 - 02 July 2014
+line-chart - v1.1.1 - 03 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -114,33 +114,37 @@ mod = angular.module('n3charts.utils', []);
 mod.factory('n3utils', [
   '$window', '$log', '$rootScope', function($window, $log, $rootScope) {
     return {
-      addPattern: function(svg, series) {
-        var group;
-        group = svg.select('defs').append('pattern').attr({
-          id: series.type + 'Pattern_' + series.index,
+      addPatterns: function(svg, series) {
+        var pattern;
+        pattern = svg.select('defs').selectAll('pattern').data(series.filter(function(s) {
+          return s.striped;
+        })).enter().append('pattern').attr({
+          id: function(s) {
+            return s.type + 'Pattern_' + s.index;
+          },
           patternUnits: "userSpaceOnUse",
           x: 0,
           y: 0,
           width: 60,
           height: 60
         }).append('g').style({
-          'fill': series.color,
+          'fill': function(s) {
+            return s.color;
+          },
           'fill-opacity': 0.3
         });
-        group.append('rect').style('fill-opacity', 0.3).attr('width', 60).attr('height', 60);
-        group.append('path').attr('d', "M 10 0 l10 0 l -20 20 l 0 -10 z");
-        group.append('path').attr('d', "M40 0 l10 0 l-50 50 l0 -10 z");
-        group.append('path').attr('d', "M60 10 l0 10 l-40 40 l-10 0 z");
-        return group.append('path').attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
+        pattern.append('rect').style('fill-opacity', 0.3).attr('width', 60).attr('height', 60);
+        pattern.append('path').attr('d', "M 10 0 l10 0 l -20 20 l 0 -10 z");
+        pattern.append('path').attr('d', "M40 0 l10 0 l-50 50 l0 -10 z");
+        pattern.append('path').attr('d', "M60 10 l0 10 l-40 40 l-10 0 z");
+        return pattern.append('path').attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
       },
       drawArea: function(svg, scales, data, options) {
         var areaSeries, drawers;
         areaSeries = data.filter(function(series) {
           return series.type === 'area';
         });
-        areaSeries.forEach((function(series) {
-          return this.addPattern(svg, series);
-        }), this);
+        this.addPatterns(svg, areaSeries);
         drawers = {
           y: this.createLeftAreaDrawer(scales, options.lineMode, options.tension),
           y2: this.createRightAreaDrawer(scales, options.lineMode, options.tension)
