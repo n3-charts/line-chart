@@ -91,13 +91,38 @@ describe 'misc', ->
       {x: 4, foo: 2.45, value: 23}
       {x: 5, foo: 4, value: 42}
     ]
+
+    options =
+      axes:
+        x: {}
+        y: {}
+
     series = [y: 'value']
-    expect(n3utils.getWidestOrdinate(data, series)).to.equal 15
-    series = [
-      {y: 'value'}
-      {y: 'foo'}
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 15
+
+    series = [{y: 'value'}, {y: 'foo'}]
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 1.1548578
+
+  it 'should compute the widest y value - with a labelFunction', ->
+    data = [
+      {x: 0, foo: 4.154, value: 4}
+      {x: 1, foo: 8.15485, value: 8}
+      {x: 2, foo: 1.1548578, value: 15}
+      {x: 3, foo: 1.154}
+      {x: 4, foo: 2.45, value: 23}
+      {x: 5, foo: 4, value: 42}
     ]
-    expect(n3utils.getWidestOrdinate(data, series)).to.equal 1.1548578
+    options =
+      axes:
+        x: {}
+        y: {}
+        y2: {labelFunction: (v) -> 'huehuehuehuehue'}
+
+    series = [y: 'value']
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 15
+
+    series = [{y: 'value'}, {y: 'foo', axis: 'y2'}]
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 'huehuehuehuehue'
 
   describe 'adjustMargins', ->
     fakeSvg = undefined
@@ -133,6 +158,7 @@ describe 'misc', ->
         right: 10
 
       options =
+        axes: {}
         series: []
         tooltip: {}
 
@@ -158,9 +184,8 @@ describe 'misc', ->
         right: 10
 
       options =
-        series: [
-          {y: 'value'}
-        ]
+        axes: {}
+        series: [{y: 'value'}]
         tooltip: {}
 
       n3utils.adjustMargins(fakeSvg, dimensions, options, data)
@@ -186,6 +211,7 @@ describe 'misc', ->
         right: 10
 
       options =
+        axes: {}
         series: [
           {y: 'value'}
           {y: 'foo'}
@@ -215,6 +241,7 @@ describe 'misc', ->
         right: 10
 
       options =
+        axes: {}
         series: [
           {y: 'value'}
           {axis: 'y2', y: 'foo'}

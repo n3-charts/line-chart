@@ -728,7 +728,7 @@ mod.factory('n3utils', [
         leftSeries = series.filter(function(s) {
           return s.axis !== 'y2';
         });
-        leftWidest = this.getWidestOrdinate(data, leftSeries);
+        leftWidest = this.getWidestOrdinate(data, leftSeries, options);
         dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20;
         rightSeries = series.filter(function(s) {
           return s.axis === 'y2';
@@ -736,7 +736,7 @@ mod.factory('n3utils', [
         if (!rightSeries.length) {
           return;
         }
-        rightWidest = this.getWidestOrdinate(data, rightSeries);
+        rightWidest = this.getWidestOrdinate(data, rightSeries, options);
         return dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20;
       },
       adjustMarginsForThumbnail: function(dimensions, axes) {
@@ -769,16 +769,21 @@ mod.factory('n3utils', [
         }
         return max;
       },
-      getWidestOrdinate: function(data, series) {
+      getWidestOrdinate: function(data, series, options) {
         var widest;
         widest = '';
         data.forEach(function(row) {
           return series.forEach(function(series) {
-            if (row[series.y] == null) {
+            var v, _ref;
+            v = row[series.y];
+            if ((series.axis != null) && ((_ref = options.axes[series.axis]) != null ? _ref.labelFunction : void 0)) {
+              v = options.axes[series.axis].labelFunction(v);
+            }
+            if (v == null) {
               return;
             }
-            if (('' + row[series.y]).length > ('' + widest).length) {
-              return widest = row[series.y];
+            if (('' + v).length > ('' + widest).length) {
+              return widest = v;
             }
           });
         });
