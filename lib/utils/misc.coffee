@@ -157,17 +157,19 @@
         dimensions.left = this.getWidestTickWidth(svg, 'y')
         dimensions.right = this.getWidestTickWidth(svg, 'y2')
 
+        if dimensions.right is 0 then dimensions.right = 20
+
         return if options.tooltip.mode is 'scrubber'
         series = options.series
 
         leftSeries = series.filter (s) -> s.axis isnt 'y2'
-        leftWidest = this.getWidestOrdinate(data, leftSeries)
+        leftWidest = this.getWidestOrdinate(data, leftSeries, options)
         dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20
 
         rightSeries = series.filter (s) -> s.axis is 'y2'
         return unless rightSeries.length
 
-        rightWidest = this.getWidestOrdinate(data, rightSeries)
+        rightWidest = this.getWidestOrdinate(data, rightSeries, options)
         dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20
 
       adjustMarginsForThumbnail: (dimensions, axes) ->
@@ -198,14 +200,18 @@
 
         return max
 
-      getWidestOrdinate: (data, series) ->
+      getWidestOrdinate: (data, series, options) ->
         widest = ''
 
         data.forEach (row) ->
           series.forEach (series) ->
-            return unless row[series.y]?
+            v = row[series.y]
+            if series.axis? and options.axes[series.axis]?.labelFunction
+              v = options.axes[series.axis].labelFunction(v)
 
-            if ('' + row[series.y]).length > ('' + widest).length
-              widest = row[series.y]
+            return unless v?
+
+            if ('' + v).length > ('' + widest).length
+              widest = v
 
         return widest

@@ -54,7 +54,7 @@ describe "abscissas", ->
       linePath = element.childByClass('line')
 
       expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30'
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30'
 
 
   describe 'default key', ->
@@ -84,7 +84,7 @@ describe "abscissas", ->
       linePath = element.childByClass('line')
 
       expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30'
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30'
 
 
   describe 'custom key', ->
@@ -119,4 +119,4 @@ describe "abscissas", ->
       linePath = element.childByClass('line')
 
       expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30'
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30'
