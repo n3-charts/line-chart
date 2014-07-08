@@ -32,7 +32,7 @@
             # find min/max coords and values
             for datum, i in valuesData
               x = scales.xScale(datum.x)
-              y = scales.yScale(datum.value)
+              y = scales.yScale(datum.y)
               if !minXPos? or x < minXPos
                 minXPos = x
                 minXValue = datum.x
@@ -43,17 +43,17 @@
                 minYPos = y
               if !maxYPos? or y > maxYPos
                 maxYPos = y
-              if !minYValue? or datum.value < minYValue
-                minYValue = datum.value
-              if !maxYValue? or datum.value > maxYValue
-                maxYValue = datum.value
+              if !minYValue? or datum.y < minYValue
+                minYValue = datum.y
+              if !maxYValue? or datum.y > maxYValue
+                maxYValue = datum.y
 
             xPercentage = (mousePos[0] - minXPos) / (maxXPos - minXPos)
             yPercentage = (mousePos[1] - minYPos) / (maxYPos - minYPos)
             xVal = Math.round(xPercentage * (maxXValue - minXValue) + minXValue)
             yVal = Math.round((1 - yPercentage) * (maxYValue - minYValue) + minYValue)
 
-            interpDatum = x: xVal, value: yVal
+            interpDatum = x: xVal, y: yVal
 
             handlers.onMouseOver?(svg, {
               series: series
@@ -71,13 +71,13 @@
       createLeftLineDrawer: (scales, mode, tension) ->
         return d3.svg.line()
           .x (d) -> scales.xScale(d.x)
-          .y (d) -> scales.yScale(d.value)
+          .y (d) -> scales.yScale(d.y + d.y0)
           .interpolate(mode)
           .tension(tension)
 
       createRightLineDrawer: (scales, mode, tension) ->
         return d3.svg.line()
           .x (d) -> scales.xScale(d.x)
-          .y (d) -> scales.y2Scale(d.value)
+          .y (d) -> scales.y2Scale(d.y + d.y0)
           .interpolate(mode)
           .tension(tension)

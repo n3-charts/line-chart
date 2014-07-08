@@ -35,7 +35,7 @@
       createContent: (svg) ->
         svg.append('g').attr('class', 'content')
 
-      createGlass: (svg, dimensions, handlers, axes, data, options) ->
+      createGlass: (svg, dimensions, handlers, axes, data, options, columnWidth) ->
         glass = svg.append('g')
           .attr(
             'class': 'glass-container'
@@ -106,7 +106,7 @@
           .style('fill', 'white')
           .style('fill-opacity', 0.000001)
           .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options)
+            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options, columnWidth)
           )
 
 
@@ -116,31 +116,48 @@
 
         return [] unless series and series.length and data and data.length
 
-        straightenedData = []
-
-        series.forEach (s) ->
+        straightened = series.map (s, i) ->
           seriesData =
-            index: straightenedData.length
+            index: i
             name: s.y
             values: []
-            striped: if s.striped is true then true else undefined
             color: s.color
             axis: s.axis || 'y'
+            xOffset: 0
             type: s.type
             thickness: s.thickness
-            lineMode: s.lineMode
             drawDots: s.drawDots isnt false
+
+          if s.striped is true
+            seriesData.striped = true
+
+          if s.lineMode?
+            seriesData.lineMode = s.lineMode
+
+          if s.id
+            seriesData.id = s.id
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(
               x: row[options.axes.x.key]
-              value: row[s.y]
+              y: row[s.y]
+              y0: 0
               axis: s.axis || 'y'
             )
 
-          straightenedData.push(seriesData)
+          return seriesData
 
-        return straightenedData
+        if !options.stacks? or options.stacks.length is 0
+          return straightened
+
+        layout = d3.layout.stack()
+          .values (s) -> s.values
+
+        options.stacks.forEach (stack) ->
+          layers = straightened.filter (s, i) -> s.id? and s.id in stack.series
+          layout(layers)
+
+        return straightened
 
       resetMargins: (dimensions) ->
         defaults = this.getDefaultMargins()
