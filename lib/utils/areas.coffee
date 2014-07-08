@@ -59,15 +59,15 @@
       createLeftAreaDrawer: (scales, mode, tension) ->
         return d3.svg.area()
           .x (d) -> return scales.xScale(d.x)
-          .y0 (d) -> return scales.yScale(0)
-          .y1 (d) -> return scales.yScale(d.value)
+          .y0 (d) -> return scales.yScale(d.y0)
+          .y1 (d) -> return scales.yScale(d.y0 + d.y)
           .interpolate(mode)
           .tension(tension)
 
       createRightAreaDrawer: (scales, mode, tension) ->
         return d3.svg.area()
           .x (d) -> return scales.xScale(d.x)
-          .y0 (d) -> return scales.y2Scale(0)
-          .y1 (d) -> return scales.y2Scale(d.value)
+          .y0 (d) -> return scales.y2Scale(d.y0)
+          .y1 (d) -> return scales.y2Scale(d.y0 + d.y)
           .interpolate(mode)
           .tension(tension)

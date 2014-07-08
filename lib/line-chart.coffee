@@ -46,7 +46,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         .andAddThemIf(isThumbnail)
 
       if dataPerSeries.length
-        _u.setScalesDomain(axes, scope.data, options.series, svg, options.axes)
+        _u.setScalesDomain(axes, scope.data, options.series, svg, options)
 
       if isThumbnail
         _u.adjustMarginsForThumbnail(dimensions, axes)
@@ -56,11 +56,11 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       _u.createContent(svg, handlers)
 
       if dataPerSeries.length
-        columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries)
+        columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options)
 
         _u
           .drawArea(svg, axes, dataPerSeries, options, handlers)
-          .drawColumns(svg, axes, dataPerSeries, columnWidth, handlers)
+          .drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers)
           .drawLines(svg, axes, dataPerSeries, options, handlers)
 
         if options.drawDots
@@ -70,11 +70,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.drawLegend(svg, options.series, dimensions, handlers)
 
       if options.tooltip.mode is 'scrubber'
-        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options)
+        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, columnWidth)
       else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
-
-
 
 
     promise = undefined

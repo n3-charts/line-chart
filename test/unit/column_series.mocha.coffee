@@ -61,7 +61,7 @@ describe 'column series', ->
     expect(content.children().length).to.equal 1
     columnGroup = content.children()[0]
     expect(columnGroup.getAttribute('class')).to.equal 'columnGroup series_0'
-    expect(columnGroup.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); fill-opacity: 0.8;'
+    expect(columnGroup.getAttribute('style').trim()).to.equal 'stroke: rgb(70, 130, 180); fill: rgb(70, 130, 180); fill-opacity: 0.8;'
 
   it 'should draw columns', ->
     content = element.childByClass('content')
@@ -86,7 +86,7 @@ describe 'column series', ->
       expect(columns[i].domElement.nodeName).to.equal 'rect'
 
       # BAH PUTAIN.
-      expect(window.getComputedStyle(columns[i].domElement).getPropertyValue('fill-opacity')).to.equal '1'
+      expect(window.getComputedStyle(columns[i].domElement).getPropertyValue('fill-opacity')).to.equal '0.7'
       i++
 
   it 'should draw zero value columns with full height and opacity to zero', ->
@@ -111,11 +111,11 @@ describe 'column series', ->
     expect(columns.length).to.equal 6
     expectedOpacities = [
       '0'
-      '1'
-      '1'
-      '1'
-      '1'
-      '1'
+      '0.7'
+      '0.7'
+      '0.7'
+      '0.7'
+      '0.7'
     ]
     fn = (att) ->
       (a, b) ->

@@ -10,6 +10,7 @@
           series: []
           drawLegend: true
           drawDots: true
+          stacks: []
         }
 
       sanitizeOptions: (options, mode) ->
@@ -21,6 +22,7 @@
           options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
+        options.stacks = this.sanitizeSeriesStacks(options.stacks)
 
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
 
@@ -33,6 +35,11 @@
         options.drawDots = options.drawDots isnt false
 
         return options
+
+      sanitizeSeriesStacks: (stacks) ->
+        return [] unless stacks?
+
+        return stacks
 
       sanitizeTooltip: (options) ->
         if !options.tooltip

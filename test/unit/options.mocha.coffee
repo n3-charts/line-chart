@@ -6,6 +6,14 @@ describe 'options', ->
   beforeEach inject (_n3utils_) ->
     n3utils = _n3utils_
 
+  describe 'stack', ->
+    it 'should create an empty array of none found', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.stacks).to.eql([])
+
+      o = n3utils.sanitizeOptions({})
+      expect(o.stacks).to.eql([])
+
   describe 'drawLegend', ->
     it 'should set default drawLegend value if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
@@ -57,7 +65,7 @@ describe 'options', ->
         tension: 0.7
         drawLegend: true
         drawDots: true
-
+        stacks: []
         axes:
           x:
             type: 'linear'
@@ -106,7 +114,7 @@ describe 'options', ->
         tension: 0.7
         drawLegend: true
         drawDots: true
-
+        stacks: []
         axes:
           x:
             type: 'linear'
@@ -131,7 +139,7 @@ describe 'options', ->
         tension: 0.7
         drawLegend: true
         drawDots: true
-
+        stacks: []
         axes:
           x:
             type: 'linear'
@@ -150,7 +158,7 @@ describe 'options', ->
         tension: 0.7
         drawLegend: true
         drawDots: true
-
+        stacks: []
         axes:
           x:
             type: 'linear'
@@ -183,7 +191,7 @@ describe 'options', ->
         tension: 0.7
         drawLegend: true
         drawDots: true
-
+        stacks: []
         axes:
           x:
             type: 'linear'
@@ -306,7 +314,7 @@ describe 'options', ->
         tension: 0.7
         drawLegend: true
         drawDots: true
-
+        stacks: []
         axes:
           x:
             type: 'linear'
