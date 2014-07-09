@@ -49,7 +49,7 @@ $scope.options = {
   },
   series: [
     {y: 'value', color: 'steelblue', thickness: '2px', type: 'area', striped: true, label: 'Pouet'},
-    {y: 'otherValue', axis: 'y2', color: 'lightsteelblue', visible: false}
+    {y: 'otherValue', axis: 'y2', color: 'lightsteelblue', visible: false, drawDots: true}
   ],
   lineMode: 'linear',
   tension: 0.7,
@@ -83,7 +83,7 @@ The `series` key must be an array which contains objects with the following prop
 + `striped` : optional, can be either `true` or `false`. Default is `false`. Will be ignored if the series type is not 'area'.
 + `thickness` : optional, can be `{n}px`. Default is `1px`. Will be ignored if the series type is not 'area' or 'line'.
 + `lineMode` : optional, can be `dashed`. Default is undefined. Defines whether the series is rendered as a dashed line. Removed if the series type is not `line` or `area`.
-+ `drawDots` : optional, can be either `true` or `false`. Default is true. Defines whether the series is rendered with dots on a per `series` basis. 
++ `drawDots` : optional, can be either `true` or `false`. Default is true. Defines whether the series is rendered with dots on a per `series` basis. Overrides the global setting.
 + `visible` : optional, can be either `true` or `false`. Default is true. Defines whether the series is initially visible. Will be updated if the series gets hidden or shown through a click on the legend.
 
 ##### Tooltip
