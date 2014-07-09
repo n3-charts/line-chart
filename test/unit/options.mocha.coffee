@@ -218,7 +218,50 @@ describe 'options', ->
 
 
   describe 'series', ->
-    it 'should preserve/rmeove the drawDots setting', ->
+    it 'should give an id to series if none has been found', ->
+      o = n3utils.sanitizeSeriesOptions([
+        {type: 'line', drawDots: false, id: 'pouet'}
+        {type: 'line', drawDots: true}
+        {type: 'column', drawDots: true, id: 'tut'}
+        {type: 'area', drawDots: false}
+      ])
+
+      expected = [
+        {
+          type: "line"
+          drawDots: false
+          id: "pouet"
+          axis: "y"
+          color: "#1f77b4"
+          thickness: "1px"
+        }
+        {
+          type: "line"
+          id: 'series_0'
+          drawDots: true
+          axis: "y"
+          color: "#ff7f0e"
+          thickness: "1px"
+        }
+        {
+          type: "column"
+          id: "tut"
+          axis: "y"
+          color: "#2ca02c"
+        }
+        {
+          type: "area"
+          id: 'series_1'
+          drawDots: false
+          axis: "y"
+          color: "#d62728"
+          thickness: "1px"
+        }
+      ]
+
+      expect(o).to.eql(expected)
+
+    it 'should preserve/remove the drawDots setting', ->
       o = n3utils.sanitizeSeriesOptions([
         {type: 'line', drawDots: false}
         {type: 'line', drawDots: true}
@@ -244,6 +287,7 @@ describe 'options', ->
       ])).to.eql [
         {
           type: "line",
+          id: 'series_0'
           lineMode: "dashed",
           axis: "y",
           color: "#1f77b4",
@@ -251,12 +295,14 @@ describe 'options', ->
         },
         {
           type: "line",
+          id: 'series_1'
           axis: "y",
           color: "#ff7f0e",
           thickness: "1px"
         },
         {
           type: "area",
+          id: 'series_2'
           lineMode: "dashed",
           axis: "y",
           color: "#2ca02c",
@@ -264,11 +310,13 @@ describe 'options', ->
         },
         {
           type: "column",
+          id: 'series_3'
           axis: "y",
           color: "#d62728"
         },
         {
           type: "column",
+          id: 'series_4'
           axis: "y",
           color: "#9467bd"
         }
@@ -283,10 +331,10 @@ describe 'options', ->
         {type: 'area', color: 'red', thickness: 'dans ton ***'}
         {type: 'column', axis: 'y2'}
       ])).to.eql [
-        {type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
-        {type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
-        {type: 'area', color: 'red', thickness: '1px', axis: 'y'}
-        {type: 'column', color: '#2ca02c', axis: 'y2'}
+        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
+        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
+        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y'}
+        {id: 'series_3', type: 'column', color: '#2ca02c', axis: 'y2'}
       ]
 
     it 'should set line or area\'s line thickness', ->
@@ -298,10 +346,10 @@ describe 'options', ->
         {type: 'area', color: 'red', thickness: 'dans ton ***'}
         {type: 'column'}
       ])).to.eql [
-        {type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
-        {type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
-        {type: 'area', color: 'red', thickness: '1px', axis: 'y'}
-        {type: 'column', color: '#2ca02c', axis: 'y'}
+        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
+        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
+        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y'}
+        {id: 'series_3', type: 'column', color: '#2ca02c', axis: 'y'}
       ]
 
     it 'should set series colors if none found', ->
@@ -329,6 +377,7 @@ describe 'options', ->
         series: [
           {
             y: 'value'
+            id: 'series_0'
             axis: 'y'
             color: 'steelblue'
             type: 'area'
@@ -337,6 +386,7 @@ describe 'options', ->
           }
           {
             y: 'otherValue'
+            id: 'series_1'
             axis: 'y2'
             color: '#1f77b4'
             type: 'line'

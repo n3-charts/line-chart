@@ -24,7 +24,7 @@ describe 'misc', ->
 
       series: [
         {y: 'value', axis: 'y2', color: 'steelblue', type: 'line', thickness: '1px'}
-        {y: 'foo', color: 'red', type: 'area', thickness: '3px'}
+        {id: 'id_1', y: 'foo', color: 'red', type: 'area', thickness: '3px'}
       ]
 
     expected = [
@@ -37,8 +37,10 @@ describe 'misc', ->
         type: 'line'
         xOffset: 0
         thickness: '1px'
+        drawDots: true
       }
       {
+        id: 'id_1'
         index: 1
         name: 'foo'
         values: [{x: 0, y0: 0, y: 4.154, axis: 'y'}, {x: 1, y0: 0, y: 8.15485, axis: 'y'}, {x: 2, y0: 0, y: 3.14, axis: 'y'} ]
@@ -47,6 +49,7 @@ describe 'misc', ->
         type: 'area'
         xOffset: 0
         thickness: '3px'
+        drawDots: true
       }
     ]
     computed = n3utils.getDataPerSeries(data, options)
@@ -83,6 +86,7 @@ describe 'misc', ->
         type: 'line'
         xOffset: 0
         thickness: '1px'
+        drawDots: true
       }
       {
         index: 1
@@ -94,6 +98,7 @@ describe 'misc', ->
         type: 'area'
         xOffset: 0
         thickness: '3px'
+        drawDots: true
       }
     ]
     computed = n3utils.getDataPerSeries(data, options)

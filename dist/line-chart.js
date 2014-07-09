@@ -1,14 +1,6 @@
 
 /*
-<<<<<<< HEAD
-<<<<<<< HEAD
 line-chart - v1.1.1 - 09 July 2014
-=======
-line-chart - v1.1.1 - 08 July 2014
->>>>>>> Stacked series FTW
-=======
-line-chart - v1.1.1 - 09 July 2014
->>>>>>> Added test cases
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -287,13 +279,14 @@ mod.factory('n3utils', [
         colGroup.selectAll("rect").data(function(d) {
           return d.values;
         }).enter().append("rect").style({
-          'stroke-width': function(d) {
+          'stroke-opacity': function(d) {
             if (d.y === 0) {
-              return '0px';
+              return '0';
             } else {
-              return '1px';
+              return '1';
             }
           },
+          'stroke-width': '1px',
           'fill-opacity': function(d) {
             if (d.y === 0) {
               return 0;
@@ -754,13 +747,8 @@ mod.factory('n3utils', [
             axis: s.axis || 'y',
             xOffset: 0,
             type: s.type,
-<<<<<<< HEAD
             thickness: s.thickness,
-            lineMode: s.lineMode,
             drawDots: s.drawDots !== false
-=======
-            thickness: s.thickness
->>>>>>> Stacked series FTW
           };
           if (s.striped === true) {
             seriesData.striped = true;
@@ -958,11 +946,12 @@ mod.factory('n3utils', [
         }
       },
       sanitizeSeriesOptions: function(options) {
-        var colors;
+        var anonymous, colors;
         if (options == null) {
           return [];
         }
         colors = d3.scale.category10();
+        anonymous = 0;
         options.forEach(function(s, i) {
           var _ref, _ref1, _ref2, _ref3;
           s.axis = ((_ref = s.axis) != null ? _ref.toLowerCase() : void 0) !== 'y2' ? 'y' : 'y2';
@@ -976,7 +965,10 @@ mod.factory('n3utils', [
             s.thickness = '1px';
           }
           if (((_ref2 = s.type) === 'line' || _ref2 === 'area') && ((_ref3 = s.lineMode) !== 'dashed')) {
-            return delete s.lineMode;
+            delete s.lineMode;
+          }
+          if (s.id == null) {
+            return s.id = "series_" + (anonymous++);
           }
         });
         return options;

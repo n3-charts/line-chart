@@ -1,13 +1,5 @@
 ###
-<<<<<<< HEAD
-<<<<<<< HEAD
 line-chart - v1.1.1 - 09 July 2014
-=======
-line-chart - v1.1.1 - 08 July 2014
->>>>>>> Stacked series FTW
-=======
-line-chart - v1.1.1 - 09 July 2014
->>>>>>> Added test cases
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -278,7 +270,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .data (d) -> d.values
           .enter().append("rect")
             .style({
-              'stroke-width': (d) -> if d.y is 0 then '0px' else '1px'
+              'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
+              'stroke-width': '1px'
               'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
             })
 
@@ -715,10 +708,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             xOffset: 0
             type: s.type
             thickness: s.thickness
-<<<<<<< HEAD
-            lineMode: s.lineMode
             drawDots: s.drawDots isnt false
-=======
 
           if s.striped is true
             seriesData.striped = true
@@ -728,7 +718,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           if s.id
             seriesData.id = s.id
->>>>>>> Stacked series FTW
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(
@@ -891,6 +880,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return [] unless options?
 
         colors = d3.scale.category10()
+        anonymous = 0
         options.forEach (s, i) ->
           s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
@@ -905,6 +895,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
             delete s.lineMode
+
+          s.id = "series_#{anonymous++}" unless s.id?
 
         return options
 
