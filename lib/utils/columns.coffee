@@ -79,7 +79,8 @@
           .data (d) -> d.values
           .enter().append("rect")
             .style({
-              'stroke-width': (d) -> if d.y is 0 then '0px' else '1px'
+              'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
+              'stroke-width': '1px'
               'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
             })
 

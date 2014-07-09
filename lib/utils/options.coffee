@@ -58,6 +58,7 @@
         return [] unless options?
 
         colors = d3.scale.category10()
+        anonymous = 0
         options.forEach (s, i) ->
           s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
@@ -72,6 +73,8 @@
 
           if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
             delete s.lineMode
+
+          s.id = "series_#{anonymous++}" unless s.id?
 
         return options
 
