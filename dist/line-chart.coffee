@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.1 - 03 July 2014
+line-chart - v1.1.1 - 09 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -254,7 +254,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # lib/utils/dots.coffee
       drawDots: (svg, axes, data, options, handlers) ->
         dotGroup = svg.select('.content').selectAll('.dotGroup')
-          .data data.filter (s) -> s.type in ['line', 'area']
+          .data data.filter (s) -> s.type in ['line', 'area'] and s.drawDots
           .enter().append('g')
         dotGroup.attr(
             class: (s) -> "dotGroup series_#{s.index}"
@@ -671,6 +671,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             type: s.type
             thickness: s.thickness
             lineMode: s.lineMode
+            drawDots: s.drawDots isnt false
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
             seriesData.values.push(
@@ -823,6 +824,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           if s.type is 'column'
             delete s.thickness
             delete s.lineMode
+            delete s.drawDots
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 
