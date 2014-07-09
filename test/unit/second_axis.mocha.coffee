@@ -13,6 +13,8 @@ describe 'with a second axis', ->
       bottom: 30
       left: 50
 
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
   beforeEach inject (pepito) ->
     {element, innerScope, outerScope} = pepito.directive """
     <div>
@@ -62,8 +64,8 @@ describe 'with a second axis', ->
     lines = element.childByClass('content').childrenByClass('line')
     expect(lines.length).to.equal(2)
 
-    expect(lines[0].getAttribute('d')).to.equal 'M0,410L164,370L328,300L492,290L656,220L820,30'
-    expect(lines[1].getAttribute('d')).to.equal 'M0,415L164,0L328,398L492,381L656,433L820,450'
+    expect(lines[0].getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30'
+    expect(lines[1].getAttribute('d')).to.equal 'M0,415L160,0L320,398L480,381L640,433L800,450'
 
   it 'should draw y area', ->
     areaGroup = element.childByClass('areaGroup series_0')
@@ -71,7 +73,7 @@ describe 'with a second axis', ->
 
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L164,370L328,300L492,290L656,220L820,30L820,450L656,450L49' + '2,450L328,450L164,450L0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z'
 
   it 'should draw y2 area', ->
     areaGroup = element.childByClass('areaGroup series_1')
@@ -79,7 +81,7 @@ describe 'with a second axis', ->
 
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: steelblue; opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,415L164,0L328,398L492,381L656,433L820,450L820,381L656,' + '381L492,381L328,381L164,381L0,381Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,415L160,0L320,398L480,381L640,433L800,450L800,381L640,381L480,381L320,381L160,381L0,381Z'
 
   it 'should draw y axis dots', ->
     leftDotsGroup = element.childByClass('dotGroup series_0')
@@ -93,7 +95,7 @@ describe 'with a second axis', ->
 
     computedX = Array::reduce.call(dots, fn('cx'), 'X')
     computedY = Array::reduce.call(dots, fn('cy'), 'Y')
-    expect(computedX).to.equal 'X 0 164 328 492 656 820'
+    expect(computedX).to.equal 'X 0 160 320 480 640 800'
     expect(computedY).to.equal 'Y 410 370 300 290 220 30'
     i = 0
 
@@ -109,11 +111,11 @@ describe 'with a second axis', ->
     expect(dots.length).to.equal 6
     expectedCoordinates = [
       {x: '0', y: '415'}
-      {x: '164', y: '0'}
-      {x: '328', y: '398'}
-      {x: '492', y: '381'}
-      {x: '656', y: '433'}
-      {x: '820', y: '450'}
+      {x: '160', y: '0'}
+      {x: '320', y: '398'}
+      {x: '480', y: '381'}
+      {x: '640', y: '433'}
+      {x: '800', y: '450'}
     ]
     i = 0
 

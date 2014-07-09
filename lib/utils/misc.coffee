@@ -35,7 +35,7 @@
       createContent: (svg) ->
         svg.append('g').attr('class', 'content')
 
-      createGlass: (svg, dimensions, handlers, axes, data) ->
+      createGlass: (svg, dimensions, handlers, axes, data, options) ->
         glass = svg.append('g')
           .attr(
             'class': 'glass-container'
@@ -46,9 +46,47 @@
           .data(data)
           .enter()
             .append('g')
-              .attr(
-                'class', (s, i) -> "scrubberItem series_#{i}"
-              )
+              .attr('class', (s, i) -> "scrubberItem series_#{i}")
+
+        g = items.append('g')
+          .attr('class': (s, i) -> "rightTT")
+
+        g.append('path')
+          .attr(
+            'class': (s, i) -> "scrubberPath series_#{i}"
+            'y': '-7px'
+            'fill': (s) -> s.color
+          )
+
+        this.styleTooltip(g.append('text')
+          .style('text-anchor', 'start')
+          .attr(
+            'class': (d, i) -> "scrubberText series_#{i}"
+            'height': '14px'
+            'transform': 'translate(7, 3)'
+            'text-rendering': 'geometric-precision'
+          ))
+          .text (s) -> s.label || s.y
+
+        g2 = items.append('g')
+          .attr('class': (s, i) -> "leftTT")
+
+        g2.append('path')
+          .attr(
+            'class': (s, i) -> "scrubberPath series_#{i}"
+            'y': '-7px'
+            'fill': (s) -> s.color
+          )
+
+        this.styleTooltip(g2.append('text')
+          .style('text-anchor', 'end')
+          .attr(
+            'class': (d, i) -> "scrubberText series_#{i}"
+            'height': '14px'
+            'transform': 'translate(-13, 3)'
+            'text-rendering': 'geometric-precision'
+          ))
+          .text (s) -> s.label || s.y
 
         items.append('circle')
           .attr(
@@ -59,27 +97,6 @@
             'r': 4
           )
 
-        items.append('path')
-          .attr(
-            'class': (s, i) -> "scrubberPath series_#{i}"
-            'y': '-7px'
-            'fill': (s) -> s.color
-          )
-
-        items.append('text')
-          .style('text-anchor', (s) -> return if s.axis is 'y' then 'end' else 'start')
-          .attr(
-            'class': (d, i) -> "scrubberText series_#{i}"
-            'height': '14px'
-            'font-family': 'Courier'
-            'font-size': 10
-            'fill': 'white'
-            'transform': (s) ->
-              return if s.axis is 'y' then 'translate(-7, 3)' else 'translate(7, 3)'
-            'text-rendering': 'geometric-precision'
-          )
-          .text (s) -> s.label || s.y
-
         glass.append('rect')
           .attr(
             class: 'glass'
@@ -89,8 +106,9 @@
           .style('fill', 'white')
           .style('fill-opacity', 0.000001)
           .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data)
+            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options)
           )
+
 
       getDataPerSeries: (data, options) ->
         series = options.series
@@ -102,7 +120,6 @@
 
         series.forEach (s) ->
           seriesData =
-            xFormatter: axes.x.tooltipFormatter
             index: straightenedData.length
             name: s.y
             values: []
@@ -133,22 +150,28 @@
         dimensions.top = defaults.top
         dimensions.bottom = defaults.bottom
 
-      adjustMargins: (dimensions, options, data) ->
+      adjustMargins: (svg, dimensions, options, data) ->
         this.resetMargins(dimensions)
-
         return unless data and data.length
+        return unless options.series.length
 
+        dimensions.left = this.getWidestTickWidth(svg, 'y')
+        dimensions.right = this.getWidestTickWidth(svg, 'y2')
+
+        if dimensions.right is 0 then dimensions.right = 20
+
+        return if options.tooltip.mode is 'scrubber'
         series = options.series
 
         leftSeries = series.filter (s) -> s.axis isnt 'y2'
-        leftWidest = this.getWidestOrdinate(data, leftSeries)
-        dimensions.left = this.getTextWidth('' + leftWidest) + 20
+        leftWidest = this.getWidestOrdinate(data, leftSeries, options)
+        dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20
 
         rightSeries = series.filter (s) -> s.axis is 'y2'
         return unless rightSeries.length
 
-        rightWidest = this.getWidestOrdinate(data, rightSeries)
-        dimensions.right = this.getTextWidth('' + rightWidest) + 20
+        rightWidest = this.getWidestOrdinate(data, rightSeries, options)
+        dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20
 
       adjustMarginsForThumbnail: (dimensions, axes) ->
         dimensions.top = 1
@@ -156,18 +179,40 @@
         dimensions.left = 0
         dimensions.right = 1
 
-      getTextWidth: (text) ->
-        # return Math.max(25, text.length*6.7);
-        return parseInt(text.length*5) + 10
+      estimateSideTooltipWidth: (svg, text) ->
+        t = svg.append('text')
+        t.text('' + text)
+        this.styleTooltip(t)
 
-      getWidestOrdinate: (data, series) ->
+        bbox = this.getTextBBox(t[0][0])
+        t.remove()
+
+        return bbox
+
+      getTextBBox: (svgTextElement) ->
+        return svgTextElement.getBBox()
+
+      getWidestTickWidth: (svg, axisKey) ->
+        max = 0
+        bbox = this.getTextBBox
+
+        ticks = svg.select(".#{axisKey}.axis").selectAll('.tick')
+        ticks[0]?.map (t) -> max = Math.max(max, bbox(t).width)
+
+        return max
+
+      getWidestOrdinate: (data, series, options) ->
         widest = ''
 
         data.forEach (row) ->
           series.forEach (series) ->
-            return unless row[series.y]?
+            v = row[series.y]
+            if series.axis? and options.axes[series.axis]?.labelFunction
+              v = options.axes[series.axis].labelFunction(v)
 
-            if ('' + row[series.y]).length > ('' + widest).length
-              widest = row[series.y]
+            return unless v?
+
+            if ('' + v).length > ('' + widest).length
+              widest = v
 
         return widest
