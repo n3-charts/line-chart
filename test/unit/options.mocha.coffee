@@ -210,6 +210,20 @@ describe 'options', ->
 
 
   describe 'series', ->
+    it 'should preserve/rmeove the drawDots setting', ->
+      o = n3utils.sanitizeSeriesOptions([
+        {type: 'line', drawDots: false}
+        {type: 'line', drawDots: true}
+        {type: 'column', drawDots: true}
+        {type: 'area', drawDots: false}
+      ])
+
+      expect(o[0].drawDots).to.equal(false)
+      expect(o[1].drawDots).to.equal(true)
+      expect(o[2].drawDots).to.equal(undefined)
+      expect(o[3].drawDots).to.equal(false)
+
+
     it 'should sanitize lineMode', ->
       f = n3utils.sanitizeSeriesOptions
 
