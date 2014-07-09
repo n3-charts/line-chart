@@ -13,6 +13,8 @@ describe "abscissas", ->
       bottom: 30
       left: 50
 
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
   beforeEach inject (pepito) ->
     {element, innerScope, outerScope} = pepito.directive """
     <div>
@@ -52,7 +54,7 @@ describe "abscissas", ->
       linePath = element.childByClass('line')
 
       expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30'
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30'
 
 
   describe 'default key', ->
@@ -82,7 +84,7 @@ describe "abscissas", ->
       linePath = element.childByClass('line')
 
       expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30'
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30'
 
 
   describe 'custom key', ->
@@ -117,4 +119,4 @@ describe "abscissas", ->
       linePath = element.childByClass('line')
 
       expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30'
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30'

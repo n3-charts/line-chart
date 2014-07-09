@@ -43,7 +43,7 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear', tooltipFormatter: function(x) {return x;}},
+    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear'},
     y: {type: 'linear', min: 0, max: 1},
     y2: {type: 'linear', min: 0, max: 1}
   },
@@ -53,7 +53,7 @@ $scope.options = {
   ],
   lineMode: 'linear',
   tension: 0.7,
-  tooltipMode: 'dots',
+  tooltip: {mode: 'dots', interpolate: true, formatter: function(x, y, series) {return 'pouet';}},
   drawLegend: true,
   drawDots: true
 }
@@ -62,7 +62,6 @@ $scope.options = {
 The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with the following properties :
 
  + `key` : optional, defines where the chart will look for abscissas values in the data (default is 'x').
- + `tooltipFormatter` : optional, allows to format the tooltip. Must be a function that accepts a single argument, the x value. It should return something that will be converted into a string and put in the x tooltip.
  + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
  + `labelFunction` : optional, allows to format the axis' ticklabels. Must be a function that accepts a single argument and returns a string.
 
@@ -87,6 +86,12 @@ The `series` key must be an array which contains objects with the following prop
 + `drawDots` : optional, can be either `true` or `false`. Default is true. Defines whether the series is rendered with dots on a per `series` basis. 
 + `visible` : optional, can be either `true` or `false`. Default is true. Defines whether the series is initially visible. Will be updated if the series gets hidden or shown through a click on the legend.
 
+##### Tooltip
+The `tooltip` must be an object which contains the following properties :
+ + `mode` : can be set to `none`, `axes`, or `scrubber`. It can also be set to `scrubber`, which displays tooltips for all series.
+ + `interpolate` : can be either `true`or `false`. Default is `false`. Will be ignored if the tooltip's mode is not `axes`.
+ + `formatter` : optional, allows to catch the tooltip before it gets rendered. Must be a function that takes `x`, `y` and `series` as arguments and returns a string. Ignored when mode is not `scrubber`.
+
 ##### Optional stuff
 Additionally, you can set `lineMode` to a value between these :
 
@@ -105,8 +110,6 @@ Additionally, you can set `lineMode` to a value between these :
 The `tension` can be set, too (default is `0.7`). See [issue #44][2] about that.
 
 > For more information about interpolation, please consult the [D3.js documentation about that][1].
-
-The `tooltipMode` can be set to `none`, `dots`, `lines` or `both`. It can also be set to `scrubber`, which displays tooltips for all series.
 
 The `drawLegend` and `drawDots` are optional. They respectively enable/disable the chart's legend and the lines and areas dots. Default is `true` for both.
 

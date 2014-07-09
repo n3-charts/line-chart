@@ -15,6 +15,6 @@ angular.module('example', ['n3-line-chart'])
         {y: "val_0", label: "area", type: "area", thickness: "1px", axis: 'y2'}
       ],
       axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
-      tooltipMode: "dots"
+      tooltip: {mode: 'axes', interpolate: false}
     };
   });

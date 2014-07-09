@@ -13,6 +13,8 @@ describe 'area series', ->
       bottom: 30
       left: 50
 
+    sinon.stub n3utils, 'getTextBBox', -> {width: 30}
+
   beforeEach inject (pepito) ->
     {element, innerScope, outerScope} = pepito.directive """
     <div>
@@ -58,7 +60,7 @@ describe 'area series', ->
     areaPath = areaGroup.domElement.childNodes[0]
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
     expect(areaPath.getAttribute('class')).to.equal 'area'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30L810,450L648,450L486,450L324,450L162,450L0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30L830,450L664,450L498,450L332,450L166,450L0,450Z'
 
   it 'should create stripes pattern when told so', ->
     outerScope.$apply ->
@@ -90,7 +92,7 @@ describe 'area series', ->
     areaPath = areaGroup.child('path')
     expect(areaPath.getStyle().trim()).to.equal 'fill: url("#areaPattern_0") none; opacity: 1;'
     expect(areaPath.hasClass('area')).to.equal true
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L162,370L324,300L486,290L648,220L810,30L810,450L648,450L486,450L324,450L162,450L0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30L830,450L664,450L498,450L332,450L166,450L0,450Z'
 
   it 'should create a line group', ->
     lineGroup = element.childByClass('lineGroup series_0')
@@ -102,7 +104,7 @@ describe 'area series', ->
     expect(dotsGroup.domElement.nodeName).to.equal 'g'
     dots = dotsGroup.domElement.childNodes
     expect(dots.length).to.equal 6
-    expectedX = 'X 0 162 324 486 648 810'
+    expectedX = 'X 0 166 332 498 664 830'
     expectedY = 'Y 410 370 300 290 220 30'
     computedX = Array::reduce.call(dots, (a, b) ->
       a + ' ' + b.getAttribute('cx')
