@@ -282,7 +282,7 @@ def bootstrap():
 
     parser.add_argument('-v', '--verbose', action="store_true")
     parser.add_argument('-o', '--only')
-    parser.add_argument('--dry', action="store_true")
+    parser.add_argument('-n', '--no-capture', action="store_true")
     parser.add_argument('-u', '--update', action="store_true")
 
     return parser
@@ -347,7 +347,7 @@ with cd(visual):
   create_temp_dir()
   generate_test_files(dirs, project_path, os.path.abspath("scripts"))
 
-  if args.dry:
+  if args.no_capture:
     sys.exit(0)
 
   capture_tests(project_path)

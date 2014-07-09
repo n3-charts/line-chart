@@ -16,11 +16,12 @@
 
         w = dimensions.width - dimensions.right - dimensions.left
 
-        rightLayout = [w - rightWidths[rightWidths.length - 1]]
-
-        j = rightWidths.length - 2
+        cumul = 0
+        rightLayout = []
+        j = rightWidths.length - 1
         while j >= 0
-          rightLayout.push w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding
+          rightLayout.push w  - cumul - rightWidths[j]
+          cumul += rightWidths[j] + padding
           j--
 
         rightLayout.reverse()
