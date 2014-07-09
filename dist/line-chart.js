@@ -1,10 +1,14 @@
 
 /*
 <<<<<<< HEAD
+<<<<<<< HEAD
 line-chart - v1.1.1 - 09 July 2014
 =======
 line-chart - v1.1.1 - 08 July 2014
 >>>>>>> Stacked series FTW
+=======
+line-chart - v1.1.1 - 09 July 2014
+>>>>>>> Added test cases
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -203,7 +207,7 @@ mod.factory('n3utils', [
           options.stacks.forEach(function(stack, index) {
             var _ref;
             if ((series.id != null) && (_ref = series.id, __indexOf.call(stack.series, _ref) >= 0)) {
-              pseudoColumns[series.name + series.index] = index;
+              pseudoColumns[series.id] = index;
               if (__indexOf.call(keys, index) < 0) {
                 keys.push(index);
               }
@@ -211,7 +215,7 @@ mod.factory('n3utils', [
             }
           });
           if (inAStack === false) {
-            i = pseudoColumns[series.name + series.index] = index = keys.length;
+            i = pseudoColumns[series.id] = index = keys.length;
             return keys.push(i);
           }
         });
@@ -225,6 +229,11 @@ mod.factory('n3utils', [
         if (!(seriesData && seriesData.length !== 0)) {
           return 10;
         }
+        if ((seriesData.filter(function(s) {
+          return s.type === 'column';
+        })).length === 0) {
+          return 10;
+        }
         _ref = this.getPseudoColumns(seriesData, options), pseudoColumns = _ref.pseudoColumns, keys = _ref.keys;
         n = seriesData[0].values.length + 2;
         seriesCount = keys.length;
@@ -232,24 +241,17 @@ mod.factory('n3utils', [
         avWidth = dimensions.width - dimensions.left - dimensions.right;
         return parseInt(Math.max((avWidth - (n - 1) * gap) / (n * seriesCount), 5));
       },
-      getColumnAxis: function(data, columnWidth, options, hAlign) {
-        var delta, keys, pseudoColumns, x1, _ref;
+      getColumnAxis: function(data, columnWidth, options) {
+        var keys, pseudoColumns, x1, _ref;
         _ref = this.getPseudoColumns(data, options), pseudoColumns = _ref.pseudoColumns, keys = _ref.keys;
         x1 = d3.scale.ordinal().domain(keys).rangeBands([0, keys.length * columnWidth], 0);
-        delta = function(index) {
-          if (hAlign === 'left') {
-            return 0;
-          } else if (hAlign === 'center') {
-            return columnWidth / 2;
-          }
-        };
         return function(s) {
           var index;
-          if (pseudoColumns[s.name + s.index] == null) {
+          if (pseudoColumns[s.id] == null) {
             return 0;
           }
-          index = pseudoColumns[s.name + s.index];
-          return x1(index) - keys.length * columnWidth / 2 + delta(index);
+          index = pseudoColumns[s.id];
+          return x1(index) - keys.length * columnWidth / 2;
         };
       },
       drawColumns: function(svg, axes, data, columnWidth, options, handlers) {
@@ -257,7 +259,7 @@ mod.factory('n3utils', [
         data = data.filter(function(s) {
           return s.type === 'column';
         });
-        x1 = this.getColumnAxis(data, columnWidth, options, 'left');
+        x1 = this.getColumnAxis(data, columnWidth, options);
         data.forEach(function(s) {
           return s.xOffset = x1(s) + columnWidth * .5;
         });
@@ -367,7 +369,7 @@ mod.factory('n3utils', [
         return this;
       },
       computeLegendLayout: function(svg, series, dimensions) {
-        var i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
+        var cumul, i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
         padding = 10;
         that = this;
         leftWidths = this.getLegendItemsWidths(svg, 'y');
@@ -382,10 +384,12 @@ mod.factory('n3utils', [
           return [leftLayout];
         }
         w = dimensions.width - dimensions.right - dimensions.left;
-        rightLayout = [w - rightWidths[rightWidths.length - 1]];
-        j = rightWidths.length - 2;
+        cumul = 0;
+        rightLayout = [];
+        j = rightWidths.length - 1;
         while (j >= 0) {
-          rightLayout.push(w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding);
+          rightLayout.push(w - cumul - rightWidths[j]);
+          cumul += rightWidths[j] + padding;
           j--;
         }
         rightLayout.reverse();
@@ -1263,7 +1267,7 @@ mod.factory('n3utils', [
         return values[i];
       },
       updateScrubber: function(svg, _arg, axes, data, options, columnWidth) {
-        var ease, positions, that, x, y;
+        var ease, positions, that, tickLength, x, y;
         x = _arg[0], y = _arg[1];
         ease = function(element) {
           return element.transition().duration(50);
@@ -1320,6 +1324,7 @@ mod.factory('n3utils', [
           };
         });
         positions = this.preventOverlapping(positions);
+        tickLength = Math.max(15, 100 / columnWidth);
         return data.forEach(function(series, index) {
           var item, p, tt, xOffset;
           if (options.series[index].visible === false) {
@@ -1331,12 +1336,12 @@ mod.factory('n3utils', [
           xOffset = (p.side === 'left' ? series.xOffset : -series.xOffset);
           tt.select('text').attr('transform', function() {
             if (p.side === 'left') {
-              return "translate(" + (-33 - xOffset) + ", " + (p.labelOffset + 3) + ")";
+              return "translate(" + (-3 - tickLength - xOffset) + ", " + (p.labelOffset + 3) + ")";
             } else {
-              return "translate(" + (34 + xOffset) + ", " + (p.labelOffset + 3) + ")";
+              return "translate(" + (4 + tickLength + xOffset) + ", " + (p.labelOffset + 3) + ")";
             }
           });
-          tt.select('path').attr('d', that.getScrubberPath(p.sizes[p.side] + 1, p.labelOffset, p.side, 30 + xOffset));
+          tt.select('path').attr('d', that.getScrubberPath(p.sizes[p.side] + 1, p.labelOffset, p.side, tickLength + xOffset));
           return ease(item).attr({
             'transform': "translate(" + (positions[index].x + series.xOffset) + ", " + positions[index].y + ")"
           });

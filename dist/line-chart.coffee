@@ -1,9 +1,13 @@
 ###
 <<<<<<< HEAD
+<<<<<<< HEAD
 line-chart - v1.1.1 - 09 July 2014
 =======
 line-chart - v1.1.1 - 08 July 2014
 >>>>>>> Stacked series FTW
+=======
+line-chart - v1.1.1 - 09 July 2014
+>>>>>>> Added test cases
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -202,18 +206,20 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           inAStack = false
           options.stacks.forEach (stack, index) ->
             if series.id? and series.id in stack.series
-              pseudoColumns[series.name + series.index] = index
+              pseudoColumns[series.id] = index
               keys.push(index) unless index in keys
               inAStack = true
 
           if inAStack is false
-            i = pseudoColumns[series.name + series.index] = index = keys.length
+            i = pseudoColumns[series.id] = index = keys.length
             keys.push(i)
 
         return {pseudoColumns, keys}
 
       getBestColumnWidth: (dimensions, seriesData, options) ->
         return 10 unless seriesData and seriesData.length isnt 0
+
+        return 10 if (seriesData.filter (s) -> s.type is 'column').length is 0
 
         {pseudoColumns, keys} = this.getPseudoColumns(seriesData, options)
 
@@ -225,30 +231,23 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return parseInt(Math.max((avWidth - (n - 1)*gap) / (n*seriesCount), 5))
 
-      getColumnAxis: (data, columnWidth, options, hAlign) ->
+      getColumnAxis: (data, columnWidth, options) ->
         {pseudoColumns, keys} = this.getPseudoColumns(data, options)
 
         x1 = d3.scale.ordinal()
           .domain(keys)
           .rangeBands([0, keys.length * columnWidth], 0)
 
-        delta = (index) ->
-          if hAlign is 'left'
-            return 0
-          else if hAlign is 'center'
-            return columnWidth/2
-
-
         return (s) ->
-          return 0 unless pseudoColumns[s.name + s.index]?
-          index = pseudoColumns[s.name + s.index]
-          return x1(index) - keys.length*columnWidth/2 + delta(index)
+          return 0 unless pseudoColumns[s.id]?
+          index = pseudoColumns[s.id]
+          return x1(index) - keys.length*columnWidth/2
 
 
       drawColumns: (svg, axes, data, columnWidth, options, handlers) ->
         data = data.filter (s) -> s.type is 'column'
 
-        x1 = this.getColumnAxis(data, columnWidth, options, 'left')
+        x1 = this.getColumnAxis(data, columnWidth, options)
 
         data.forEach (s) -> s.xOffset = x1(s) + columnWidth*.5
 
@@ -361,11 +360,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         w = dimensions.width - dimensions.right - dimensions.left
 
-        rightLayout = [w - rightWidths[rightWidths.length - 1]]
-
-        j = rightWidths.length - 2
+        cumul = 0
+        rightLayout = []
+        j = rightWidths.length - 1
         while j >= 0
-          rightLayout.push w - rightWidths[j] - (w - rightWidths[rightWidths.length - 1]) - padding
+          rightLayout.push w  - cumul - rightWidths[j]
+          cumul += rightWidths[j] + padding
           j--
 
         rightLayout.reverse()
@@ -1238,6 +1238,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         positions = this.preventOverlapping(positions)
 
+        tickLength = Math.max(15, 100/columnWidth)
+
         data.forEach (series, index) ->
           if options.series[index].visible is false
             return
@@ -1252,9 +1254,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           tt.select('text')
             .attr('transform', ->
               if p.side is 'left'
-                return "translate(#{-33 - xOffset}, #{p.labelOffset+3})"
+                return "translate(#{-3 - tickLength - xOffset}, #{p.labelOffset+3})"
               else
-                return "translate(#{34 + xOffset}, #{p.labelOffset+3})"
+                return "translate(#{4 + tickLength + xOffset}, #{p.labelOffset+3})"
             )
 
           tt.select('path')
@@ -1264,7 +1266,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                 p.sizes[p.side] + 1,
                 p.labelOffset,
                 p.side,
-                30 + xOffset
+                tickLength + xOffset
               )
             )
 

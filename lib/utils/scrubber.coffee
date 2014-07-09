@@ -83,6 +83,8 @@
 
         positions = this.preventOverlapping(positions)
 
+        tickLength = Math.max(15, 100/columnWidth)
+
         data.forEach (series, index) ->
           if options.series[index].visible is false
             return
@@ -97,9 +99,9 @@
           tt.select('text')
             .attr('transform', ->
               if p.side is 'left'
-                return "translate(#{-33 - xOffset}, #{p.labelOffset+3})"
+                return "translate(#{-3 - tickLength - xOffset}, #{p.labelOffset+3})"
               else
-                return "translate(#{34 + xOffset}, #{p.labelOffset+3})"
+                return "translate(#{4 + tickLength + xOffset}, #{p.labelOffset+3})"
             )
 
           tt.select('path')
@@ -109,7 +111,7 @@
                 p.sizes[p.side] + 1,
                 p.labelOffset,
                 p.side,
-                30 + xOffset
+                tickLength + xOffset
               )
             )
 

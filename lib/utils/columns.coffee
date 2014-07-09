@@ -7,18 +7,20 @@
           inAStack = false
           options.stacks.forEach (stack, index) ->
             if series.id? and series.id in stack.series
-              pseudoColumns[series.name + series.index] = index
+              pseudoColumns[series.id] = index
               keys.push(index) unless index in keys
               inAStack = true
 
           if inAStack is false
-            i = pseudoColumns[series.name + series.index] = index = keys.length
+            i = pseudoColumns[series.id] = index = keys.length
             keys.push(i)
 
         return {pseudoColumns, keys}
 
       getBestColumnWidth: (dimensions, seriesData, options) ->
         return 10 unless seriesData and seriesData.length isnt 0
+
+        return 10 if (seriesData.filter (s) -> s.type is 'column').length is 0
 
         {pseudoColumns, keys} = this.getPseudoColumns(seriesData, options)
 
@@ -30,30 +32,23 @@
 
         return parseInt(Math.max((avWidth - (n - 1)*gap) / (n*seriesCount), 5))
 
-      getColumnAxis: (data, columnWidth, options, hAlign) ->
+      getColumnAxis: (data, columnWidth, options) ->
         {pseudoColumns, keys} = this.getPseudoColumns(data, options)
 
         x1 = d3.scale.ordinal()
           .domain(keys)
           .rangeBands([0, keys.length * columnWidth], 0)
 
-        delta = (index) ->
-          if hAlign is 'left'
-            return 0
-          else if hAlign is 'center'
-            return columnWidth/2
-
-
         return (s) ->
-          return 0 unless pseudoColumns[s.name + s.index]?
-          index = pseudoColumns[s.name + s.index]
-          return x1(index) - keys.length*columnWidth/2 + delta(index)
+          return 0 unless pseudoColumns[s.id]?
+          index = pseudoColumns[s.id]
+          return x1(index) - keys.length*columnWidth/2
 
 
       drawColumns: (svg, axes, data, columnWidth, options, handlers) ->
         data = data.filter (s) -> s.type is 'column'
 
-        x1 = this.getColumnAxis(data, columnWidth, options, 'left')
+        x1 = this.getColumnAxis(data, columnWidth, options)
 
         data.forEach (s) -> s.xOffset = x1(s) + columnWidth*.5
 

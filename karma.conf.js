@@ -38,8 +38,8 @@ module.exports = function(config) {
     },
 
     coverageReporter: {
-      type : 'text-summary',
-      // type : 'html',
+      // type : 'text-summary',
+      type : 'html',
       dir : 'coverage/'
     },
 

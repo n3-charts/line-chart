@@ -125,6 +125,54 @@ describe 'legend', ->
 
       expect(n3utils.getLegendItemsWidths(svg, 'y')).to.eql([])
 
+    it 'should compute legend', ->
+      dim =
+        bottom: 60
+        height: 504
+        left: 27
+        right: 21
+        top: 20
+        width: 600
+
+      sinon.stub(n3utils, 'getLegendItemsWidths', (svg, axis) ->
+        return [51, 57]
+      )
+
+      series = [
+        {
+          id: 'series_0',
+          y: "val_0",
+          label: "First",
+          type: "column",
+          thickness: "1px"
+        },
+        {
+          id: 'series_1',
+          y: "val_1",
+          label: "Second",
+          type: "column",
+          thickness: "1px"
+        },
+        {
+          id: 'series_2',
+          y: "val_2",
+          label: "Third",
+          type: "column",
+          thickness: "1px",
+          axis: 'y2'
+        },
+        {
+          id: 'series_3',
+          y: "val_2",
+          label: "Fourth",
+          type: "column",
+          thickness: "1px",
+          axis: 'y2'
+        }
+      ]
+
+      expect(n3utils.computeLegendLayout({}, series, dim)).to.eql([[0, 61], [434, 495]])
+
     it 'should compute for left and right series', ->
       sinon.stub(n3utils, 'getLegendItemsWidths', (svg, axis) ->
         return if axis is 'y' then [99, 123] else [105, 149]
@@ -160,4 +208,4 @@ describe 'legend', ->
         thickness: "1px"
       }]
 
-      expect(n3utils.computeLegendLayout({}, series, dim)).to.eql([[0, 109], [34, 671]])
+      expect(n3utils.computeLegendLayout({}, series, dim)).to.eql([[0, 109], [288, 403]])

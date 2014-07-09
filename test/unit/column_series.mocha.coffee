@@ -1,3 +1,5 @@
+
+
 describe 'column series', ->
   element = undefined
   innerScope = undefined
@@ -43,6 +45,33 @@ describe 'column series', ->
           type: 'column'
         ]
 
+  describe 'utils', ->
+    describe 'getPseudoColumns', ->
+      it 'should group column series by stacks', inject (n3utils) ->
+        options =
+          stacks: [
+            {series: ['series_0', 'series_1', 'series_2'], axis:'y'},
+            {series: ['series_4', 'series_5'], axis:'y2'}
+          ]
+
+        data = [
+          {id: 'series_0', values: [], type: "column"}
+          {id: 'series_1', values: [], type: "column"}
+          {id: 'series_2', values: [], type: "column"}
+          {id: 'series_4', values: [], type: "column"}
+          {id: 'series_5', values: [], type: "column"}
+          {id: 'series_6', values: [], type: "line"}
+        ]
+
+        expect(n3utils.getPseudoColumns(data, options)).to.eql({
+          pseudoColumns:
+            series_0: 0
+            series_1: 0
+            series_2: 0
+            series_4: 1
+            series_5: 1
+          keys: [0, 1]
+        })
 
   it 'should properly configure y axis', ->
     ticks = element.childByClass('y axis').children('text')
