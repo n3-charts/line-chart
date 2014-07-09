@@ -59,6 +59,7 @@
           if s.type is 'column'
             delete s.thickness
             delete s.lineMode
+            delete s.drawDots
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 

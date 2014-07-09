@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.1 - 03 July 2014
+line-chart - v1.1.1 - 09 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -256,7 +256,7 @@ mod.factory('n3utils', [
         var dotGroup;
         dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
           var _ref;
-          return (_ref = s.type) === 'line' || _ref === 'area';
+          return ((_ref = s.type) === 'line' || _ref === 'area') && s.drawDots;
         })).enter().append('g');
         dotGroup.attr({
           "class": function(s) {
@@ -684,7 +684,8 @@ mod.factory('n3utils', [
             axis: s.axis || 'y',
             type: s.type,
             thickness: s.thickness,
-            lineMode: s.lineMode
+            lineMode: s.lineMode,
+            drawDots: s.drawDots !== false
           };
           data.filter(function(row) {
             return row[s.y] != null;
@@ -863,6 +864,7 @@ mod.factory('n3utils', [
           if (s.type === 'column') {
             delete s.thickness;
             delete s.lineMode;
+            delete s.drawDots;
           } else if (!/^\d+px$/.test(s.thickness)) {
             s.thickness = '1px';
           }

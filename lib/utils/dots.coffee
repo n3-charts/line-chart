@@ -1,6 +1,6 @@
       drawDots: (svg, axes, data, options, handlers) ->
         dotGroup = svg.select('.content').selectAll('.dotGroup')
-          .data data.filter (s) -> s.type in ['line', 'area']
+          .data data.filter (s) -> s.type in ['line', 'area'] and s.drawDots
           .enter().append('g')
         dotGroup.attr(
             class: (s) -> "dotGroup series_#{s.index}"
