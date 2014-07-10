@@ -54,17 +54,17 @@ describe 'options', ->
   describe 'tooltip', ->
     it 'should set default tooltip.mode if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
-      expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
+      expect(o.tooltip).to.eql({mode: 'scrubber'})
 
       o = n3utils.sanitizeOptions({})
-      expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
+      expect(o.tooltip).to.eql({mode: 'scrubber'})
 
       o = n3utils.sanitizeOptions({tooltip: {interpolate: true}})
-      expect(o.tooltip).to.eql({mode: 'axes', interpolate: true})
+      expect(o.tooltip).to.eql({mode: 'scrubber'})
 
-      expect(->
-        n3utils.sanitizeOptions({tooltip: {mode: 'scrubber', interpolate: true}})
-      ).to.throw()
+      # expect(->
+      #   n3utils.sanitizeOptions({tooltip: {mode: 'scrubber', interpolate: true}})
+      # ).to.throw()
 
   describe 'linemode', ->
     it 'should add the default tension', ->
@@ -79,7 +79,7 @@ describe 'options', ->
   describe 'axes', ->
     it 'should return default options when given null or undefined', ->
       expect(n3utils.sanitizeOptions()).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
+        tooltip: {mode: 'scrubber'}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true
@@ -382,7 +382,7 @@ describe 'options', ->
         {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'}
         {y: 'otherValue', axis: 'y2'}
       ])).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
+        tooltip: {mode: 'scrubber'}
         lineMode: 'linear'
         tension: 0.7
         drawLegend: true

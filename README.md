@@ -53,7 +53,7 @@ $scope.options = {
   ],
   lineMode: 'linear',
   tension: 0.7,
-  tooltip: {mode: 'dots', interpolate: true, formatter: function(x, y, series) {return 'pouet';}},
+  tooltip: {mode: 'scrubber', formatter: function(x, y, series) {return 'pouet';}},
   drawLegend: true,
   drawDots: true
 }
@@ -88,7 +88,7 @@ The `series` key must be an array which contains objects with the following prop
 
 ##### Tooltip
 The `tooltip` must be an object which contains the following properties :
- + `mode` : can be set to `none`, `axes`, or `scrubber`. It can also be set to `scrubber`, which displays tooltips for all series.
+ + `mode` : can be set to `none`, `axes`, or `scrubber`. It can also be set to `scrubber`, which displays tooltips for all series. Default is `scrubber`.
  + `interpolate` : can be either `true`or `false`. Default is `false`. Will be ignored if the tooltip's mode is not `axes`.
  + `formatter` : optional, allows to catch the tooltip before it gets rendered. Must be a function that takes `x`, `y` and `series` as arguments and returns a string. Ignored when mode is not `scrubber`.
 

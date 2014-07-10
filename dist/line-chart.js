@@ -880,8 +880,7 @@ mod.factory('n3utils', [
       getDefaultOptions: function() {
         return {
           tooltip: {
-            mode: 'axes',
-            interpolate: false
+            mode: 'scrubber'
           },
           lineMode: 'linear',
           tension: 0.7,
@@ -952,17 +951,20 @@ mod.factory('n3utils', [
         var _ref;
         if (!options.tooltip) {
           options.tooltip = {
-            mode: 'axes',
-            interpolate: false
+            mode: 'scrubber'
           };
           return;
         }
         if ((_ref = options.tooltip.mode) !== 'none' && _ref !== 'axes' && _ref !== 'scrubber') {
-          options.tooltip.mode = 'axes';
+          options.tooltip.mode = 'scrubber';
         }
-        options.tooltip.interpolate = !!options.tooltip.interpolate;
+        if (options.tooltip.mode === 'scrubber') {
+          delete options.tooltip.interpolate;
+        } else {
+          options.tooltip.interpolate = !!options.tooltip.interpolate;
+        }
         if (options.tooltip.mode === 'scrubber' && options.tooltip.interpolate) {
-          throw new Error('Unable to interpolate tooltip for scrubber mode');
+          throw new Error('Interpolation is not supported for scrubber tooltip mode.');
         }
       },
       sanitizeSeriesOptions: function(options) {
