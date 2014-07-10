@@ -822,7 +822,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # lib/utils/options.coffee
       getDefaultOptions: ->
         return {
-          tooltip: {mode: 'axes', interpolate: false}
+          tooltip: {mode: 'scrubber'}
           lineMode: 'linear'
           tension: 0.7
           axes: {
@@ -876,16 +876,19 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
       sanitizeTooltip: (options) ->
         if !options.tooltip
-          options.tooltip = {mode: 'axes', interpolate: false}
+          options.tooltip = {mode: 'scrubber'}
           return
 
         if options.tooltip.mode not in ['none', 'axes', 'scrubber']
-          options.tooltip.mode = 'axes'
+          options.tooltip.mode = 'scrubber'
 
-        options.tooltip.interpolate = !!options.tooltip.interpolate
+        if options.tooltip.mode is 'scrubber'
+          delete options.tooltip.interpolate
+        else
+          options.tooltip.interpolate = !!options.tooltip.interpolate
 
         if options.tooltip.mode is 'scrubber' and options.tooltip.interpolate
-          throw new Error('Unable to interpolate tooltip for scrubber mode')
+          throw new Error('Interpolation is not supported for scrubber tooltip mode.')
 
       sanitizeSeriesOptions: (options) ->
         return [] unless options?
