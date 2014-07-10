@@ -6,13 +6,32 @@ describe 'options', ->
   beforeEach inject (_n3utils_) ->
     n3utils = _n3utils_
 
-  describe 'stack', ->
+  describe 'stacks', ->
     it 'should create an empty array of none found', ->
       o = n3utils.sanitizeOptions()
       expect(o.stacks).to.eql([])
 
       o = n3utils.sanitizeOptions({})
       expect(o.stacks).to.eql([])
+
+    it 'should complain if non-existent series are stacked', inject ($log) ->
+      sinon.stub($log, 'warn', ->)
+
+      n3utils.sanitizeOptions({
+        stacks: [{series: ['series_0']}]
+      })
+
+      expect($log.warn.callCount).to.equal(1)
+
+    it 'should complain if series are not on the same axis', inject ($log) ->
+      sinon.stub($log, 'warn', ->)
+
+      n3utils.sanitizeOptions({
+        stacks: [{series: ['series_0'], axis: 'y'}]
+        series: [{id: 'series_0', axis: 'y2'}]
+      })
+
+      expect($log.warn.callCount).to.equal(1)
 
   describe 'drawLegend', ->
     it 'should set default drawLegend value if undefined or invalid', ->
@@ -218,6 +237,12 @@ describe 'options', ->
 
 
   describe 'series', ->
+    it 'should throw an error if twice the same id is found', ->
+      expect(->n3utils.sanitizeSeriesOptions([
+        {id: 'pouet'}
+        {id: 'pouet'}
+      ])).to.throw()
+
     it 'should give an id to series if none has been found', ->
       o = n3utils.sanitizeSeriesOptions([
         {type: 'line', drawDots: false, id: 'pouet'}

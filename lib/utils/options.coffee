@@ -22,7 +22,7 @@
           options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
-        options.stacks = this.sanitizeSeriesStacks(options.stacks)
+        options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series)
 
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
 
@@ -36,8 +36,19 @@
 
         return options
 
-      sanitizeSeriesStacks: (stacks) ->
+      sanitizeSeriesStacks: (stacks, series) ->
         return [] unless stacks?
+
+        seriesKeys = {}
+        series.forEach (s) -> seriesKeys[s.id] = s
+
+        stacks.forEach (stack) ->
+          stack.series.forEach (id) ->
+            s = seriesKeys[id]
+            if s?
+              $log.warn "Series #{id} is not on the same axis as its stack" unless s.axis is stack.axis
+            else
+              $log.warn "Unknown series found in stack : #{id}" unless s
 
         return stacks
 
@@ -59,6 +70,7 @@
 
         colors = d3.scale.category10()
         anonymous = 0
+        knownIds = {}
         options.forEach (s, i) ->
           s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
@@ -74,7 +86,13 @@
           if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
             delete s.lineMode
 
-          s.id = "series_#{anonymous++}" unless s.id?
+          if s.id?
+            if knownIds[s.id]?
+              throw new Error("Twice the same ID (#{s.id}) ? Really ?")
+            else
+              knownIds[s.id] = s
+          else
+            s.id = "series_#{anonymous++}"
 
         return options
 
@@ -104,8 +122,6 @@
         else
           delete options.max
 
-
-
       getSanitizedExtremum: (value) ->
         return undefined unless value?
 
@@ -116,7 +132,6 @@
           return undefined
 
         return number
-
 
       sanitizeAxisOptions: (options) ->
         return {type: 'linear'} unless options?
