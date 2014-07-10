@@ -218,7 +218,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         # +2 because abscissas will be extended to one more row at each end
         n = seriesData[0].values.length + 2
         seriesCount = keys.length
-        gap = 0 # space between two rows
+        gap = options.columnsHGap # space between two rows
         avWidth = dimensions.width - dimensions.left - dimensions.right
 
         return parseInt(Math.max((avWidth - (n - 1)*gap) / (n*seriesCount), 5))
@@ -833,6 +833,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           drawLegend: true
           drawDots: true
           stacks: []
+          columnsHGap: 5
         }
 
       sanitizeOptions: (options, mode) ->
@@ -855,6 +856,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
+
+        options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
 
         return options
 
