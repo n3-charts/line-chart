@@ -55,7 +55,8 @@ $scope.options = {
   tension: 0.7,
   tooltip: {mode: 'scrubber', formatter: function(x, y, series) {return 'pouet';}},
   drawLegend: true,
-  drawDots: true
+  drawDots: true,
+  columnsHGap: 5
 }
 ```
 ##### Axes
@@ -112,6 +113,8 @@ The `tension` can be set, too (default is `0.7`). See [issue #44][2] about that.
 > For more information about interpolation, please consult the [D3.js documentation about that][1].
 
 The `drawLegend` and `drawDots` are optional. They respectively enable/disable the chart's legend and the lines and areas dots. Default is `true` for both.
+
+The `columnsHGap` is optional (default is `5`). Sets the space between two columns. If you haven't any column series on your chart but are wondering why this option doesn't do anything, please don't send me an email.
 
 #### Mode
 The mode can be set to 'thumbnail' (default is empty string). If so, the chart will take as much space as it can, and it will only display the series. No axes, no legend, no tooltips. Furthermore, the lines or areas will be drawn without dots. This is convenient for sparklines.

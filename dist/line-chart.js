@@ -229,7 +229,7 @@ mod.factory('n3utils', [
         _ref = this.getPseudoColumns(seriesData, options), pseudoColumns = _ref.pseudoColumns, keys = _ref.keys;
         n = seriesData[0].values.length + 2;
         seriesCount = keys.length;
-        gap = 0;
+        gap = options.columnsHGap;
         avWidth = dimensions.width - dimensions.left - dimensions.right;
         return parseInt(Math.max((avWidth - (n - 1) * gap) / (n * seriesCount), 5));
       },
@@ -896,7 +896,8 @@ mod.factory('n3utils', [
           series: [],
           drawLegend: true,
           drawDots: true,
-          stacks: []
+          stacks: [],
+          columnsHGap: 5
         };
       },
       sanitizeOptions: function(options, mode) {
@@ -919,6 +920,9 @@ mod.factory('n3utils', [
         this.sanitizeTooltip(options);
         options.drawLegend = options.drawLegend !== false;
         options.drawDots = options.drawDots !== false;
+        if (!angular.isNumber(options.columnsHGap)) {
+          options.columnsHGap = 5;
+        }
         return options;
       },
       sanitizeSeriesStacks: function(stacks, series) {

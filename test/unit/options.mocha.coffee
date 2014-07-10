@@ -6,6 +6,13 @@ describe 'options', ->
   beforeEach inject (_n3utils_) ->
     n3utils = _n3utils_
 
+  it 'should set the default column gap to 5', ->
+    o = n3utils.sanitizeOptions()
+    expect(o.columnsHGap).to.equal(5)
+
+    o = n3utils.sanitizeOptions({})
+    expect(o.columnsHGap).to.equal(5)
+
   describe 'stacks', ->
     it 'should create an empty array of none found', ->
       o = n3utils.sanitizeOptions()
@@ -78,22 +85,13 @@ describe 'options', ->
 
   describe 'axes', ->
     it 'should return default options when given null or undefined', ->
-      expect(n3utils.sanitizeOptions()).to.eql
-        tooltip: {mode: 'scrubber'}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-        stacks: []
-        axes:
+      expect(n3utils.sanitizeOptions().axes).to.eql
           x:
             type: 'linear'
             key: 'x'
 
           y:
             type: 'linear'
-
-        series: []
 
 
     it 'should set default axes and empty series', ->
@@ -127,22 +125,12 @@ describe 'options', ->
         tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         axes: {}
-      )).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-        stacks: []
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-
-        series: []
+      ).axes).to.eql
+        x:
+          type: 'linear'
+          key: 'x'
+        y:
+          type: 'linear'
 
 
     it 'should allow x axis key configuration', ->
@@ -152,43 +140,23 @@ describe 'options', ->
         axes:
           x:
             key: 'foo'
-      )).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-        stacks: []
-        axes:
-          x:
-            type: 'linear'
-            key: 'foo'
-
-          y:
-            type: 'linear'
-
-        series: []
+      ).axes).to.eql
+        x:
+          type: 'linear'
+          key: 'foo'
+        y:
+          type: 'linear'
 
 
     it 'should allow y axes extrema configuration', ->
       expected =
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-        stacks: []
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-            min: 5
-            max: 15
-
-        series: []
+        x:
+          type: 'linear'
+          key: 'x'
+        y:
+          type: 'linear'
+          min: 5
+          max: 15
 
       computed = n3utils.sanitizeOptions(
         tooltip: {mode: 'axes', interpolate: false}
@@ -197,7 +165,7 @@ describe 'options', ->
           y:
             min: '5'
             max: 15
-      )
+      ).axes
 
       expect(computed).to.eql(expected)
 
@@ -205,22 +173,12 @@ describe 'options', ->
       sinon.stub($log, 'warn', ->)
 
       expected =
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-        stacks: []
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-            max: 15
-
-        series: []
+        x:
+          type: 'linear'
+          key: 'x'
+        y:
+          type: 'linear'
+          max: 15
 
       computed = n3utils.sanitizeOptions(
         tooltip: {mode: 'axes', interpolate: false}
@@ -229,12 +187,10 @@ describe 'options', ->
           y:
             min: 'pouet'
             max: 15
-      )
+      ).axes
 
       expect(computed).to.eql(expected)
       expect($log.warn.callCount).to.equal(1)
-
-
 
   describe 'series', ->
     it 'should throw an error if twice the same id is found', ->
@@ -381,40 +337,22 @@ describe 'options', ->
       expect(n3utils.sanitizeOptions(series: [
         {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'}
         {y: 'otherValue', axis: 'y2'}
-      ])).to.eql
-        tooltip: {mode: 'scrubber'}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-        stacks: []
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-
-          y2:
-            type: 'linear'
-
-        series: [
-          {
-            y: 'value'
-            id: 'series_0'
-            axis: 'y'
-            color: 'steelblue'
-            type: 'area'
-            label: 'Pouet'
-            thickness: '1px'
-          }
-          {
-            y: 'otherValue'
-            id: 'series_1'
-            axis: 'y2'
-            color: '#1f77b4'
-            type: 'line'
-            thickness: '1px'
-          }
-        ]
+      ]).series).to.eql [
+        {
+          y: 'value'
+          id: 'series_0'
+          axis: 'y'
+          color: 'steelblue'
+          type: 'area'
+          label: 'Pouet'
+          thickness: '1px'
+        }
+        {
+          y: 'otherValue'
+          id: 'series_1'
+          axis: 'y2'
+          color: '#1f77b4'
+          type: 'line'
+          thickness: '1px'
+        }
+      ]
