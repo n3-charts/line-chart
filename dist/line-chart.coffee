@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.1 - 09 July 2014
+line-chart - v1.1.1 - 10 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -844,7 +844,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
-        options.stacks = this.sanitizeSeriesStacks(options.stacks)
+        options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series)
 
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
 
@@ -858,8 +858,19 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return options
 
-      sanitizeSeriesStacks: (stacks) ->
+      sanitizeSeriesStacks: (stacks, series) ->
         return [] unless stacks?
+
+        seriesKeys = {}
+        series.forEach (s) -> seriesKeys[s.id] = s
+
+        stacks.forEach (stack) ->
+          stack.series.forEach (id) ->
+            s = seriesKeys[id]
+            if s?
+              $log.warn "Series #{id} is not on the same axis as its stack" unless s.axis is stack.axis
+            else
+              $log.warn "Unknown series found in stack : #{id}" unless s
 
         return stacks
 
@@ -881,6 +892,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         colors = d3.scale.category10()
         anonymous = 0
+        knownIds = {}
         options.forEach (s, i) ->
           s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
@@ -896,7 +908,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
             delete s.lineMode
 
-          s.id = "series_#{anonymous++}" unless s.id?
+          if s.id?
+            if knownIds[s.id]?
+              throw new Error("Twice the same ID (#{s.id}) ? Really ?")
+            else
+              knownIds[s.id] = s
+          else
+            s.id = "series_#{anonymous++}"
 
         return options
 
@@ -926,8 +944,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         else
           delete options.max
 
-
-
       getSanitizedExtremum: (value) ->
         return undefined unless value?
 
@@ -938,7 +954,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           return undefined
 
         return number
-
 
       sanitizeAxisOptions: (options) ->
         return {type: 'linear'} unless options?
@@ -1367,8 +1382,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             onMouseOver: angular.bind(this, this.onMouseOver)
             onMouseOut: angular.bind(this, this.onMouseOut)
           }
-
-
 
       styleTooltip: (d3TextElement) ->
         return d3TextElement.attr({

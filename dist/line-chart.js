@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.1 - 09 July 2014
+line-chart - v1.1.1 - 10 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -913,7 +913,7 @@ mod.factory('n3utils', [
           };
         }
         options.series = this.sanitizeSeriesOptions(options.series);
-        options.stacks = this.sanitizeSeriesStacks(options.stacks);
+        options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series);
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
         options.lineMode || (options.lineMode = 'linear');
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
@@ -922,10 +922,30 @@ mod.factory('n3utils', [
         options.drawDots = options.drawDots !== false;
         return options;
       },
-      sanitizeSeriesStacks: function(stacks) {
+      sanitizeSeriesStacks: function(stacks, series) {
+        var seriesKeys;
         if (stacks == null) {
           return [];
         }
+        seriesKeys = {};
+        series.forEach(function(s) {
+          return seriesKeys[s.id] = s;
+        });
+        stacks.forEach(function(stack) {
+          return stack.series.forEach(function(id) {
+            var s;
+            s = seriesKeys[id];
+            if (s != null) {
+              if (s.axis !== stack.axis) {
+                return $log.warn("Series " + id + " is not on the same axis as its stack");
+              }
+            } else {
+              if (!s) {
+                return $log.warn("Unknown series found in stack : " + id);
+              }
+            }
+          });
+        });
         return stacks;
       },
       sanitizeTooltip: function(options) {
@@ -946,12 +966,13 @@ mod.factory('n3utils', [
         }
       },
       sanitizeSeriesOptions: function(options) {
-        var anonymous, colors;
+        var anonymous, colors, knownIds;
         if (options == null) {
           return [];
         }
         colors = d3.scale.category10();
         anonymous = 0;
+        knownIds = {};
         options.forEach(function(s, i) {
           var _ref, _ref1, _ref2, _ref3;
           s.axis = ((_ref = s.axis) != null ? _ref.toLowerCase() : void 0) !== 'y2' ? 'y' : 'y2';
@@ -967,7 +988,13 @@ mod.factory('n3utils', [
           if (((_ref2 = s.type) === 'line' || _ref2 === 'area') && ((_ref3 = s.lineMode) !== 'dashed')) {
             delete s.lineMode;
           }
-          if (s.id == null) {
+          if (s.id != null) {
+            if (knownIds[s.id] != null) {
+              throw new Error("Twice the same ID (" + s.id + ") ? Really ?");
+            } else {
+              return knownIds[s.id] = s;
+            }
+          } else {
             return s.id = "series_" + (anonymous++);
           }
         });

@@ -11,6 +11,13 @@ describe 'misc', ->
     it 'should handle no data', ->
       expect(n3utils.getBestColumnWidth({}, [])).to.equal 10
 
+  it 'should call getBBox() when asked to measure a svg text element\'s width', ->
+    elm = {getBBox: sinon.spy()}
+
+    n3utils.getTextBBox(elm)
+
+    expect(elm.getBBox.callCount).to.equal(1)
+
   it 'should compute data per series', ->
     data = [
       {x: 0, foo: 4.154, value: 4}
