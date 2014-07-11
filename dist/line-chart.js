@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.1 - 10 July 2014
+line-chart - v1.1.1 - 11 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -217,7 +217,7 @@ mod.factory('n3utils', [
         };
       },
       getBestColumnWidth: function(dimensions, seriesData, options) {
-        var avWidth, gap, keys, n, pseudoColumns, seriesCount, _ref;
+        var avWidth, keys, n, pseudoColumns, seriesCount, _ref;
         if (!(seriesData && seriesData.length !== 0)) {
           return 10;
         }
@@ -229,9 +229,8 @@ mod.factory('n3utils', [
         _ref = this.getPseudoColumns(seriesData, options), pseudoColumns = _ref.pseudoColumns, keys = _ref.keys;
         n = seriesData[0].values.length + 2;
         seriesCount = keys.length;
-        gap = options.columnsHGap;
         avWidth = dimensions.width - dimensions.left - dimensions.right;
-        return parseInt(Math.max((avWidth - (n - 1) * gap) / (n * seriesCount), 5));
+        return parseInt(Math.max((avWidth - (n - 1) * options.columnsHGap) / (n * seriesCount), 5));
       },
       getColumnAxis: function(data, columnWidth, options) {
         var keys, pseudoColumns, x1, _ref;
@@ -779,6 +778,9 @@ mod.factory('n3utils', [
         });
         options.stacks.forEach(function(stack) {
           var layers;
+          if (!(stack.series.length > 0)) {
+            return;
+          }
           layers = straightened.filter(function(s, i) {
             var _ref;
             return (s.id != null) && (_ref = s.id, __indexOf.call(stack.series, _ref) >= 0);
@@ -972,15 +974,22 @@ mod.factory('n3utils', [
         }
       },
       sanitizeSeriesOptions: function(options) {
-        var anonymous, colors, knownIds;
+        var colors, knownIds;
         if (options == null) {
           return [];
         }
         colors = d3.scale.category10();
-        anonymous = 0;
         knownIds = {};
         options.forEach(function(s, i) {
-          var _ref, _ref1, _ref2, _ref3;
+          if (knownIds[s.id] != null) {
+            throw new Error("Twice the same ID (" + s.id + ") ? Really ?");
+          }
+          if (s.id != null) {
+            return knownIds[s.id] = s;
+          }
+        });
+        options.forEach(function(s, i) {
+          var cnt, _ref, _ref1, _ref2, _ref3;
           s.axis = ((_ref = s.axis) != null ? _ref.toLowerCase() : void 0) !== 'y2' ? 'y' : 'y2';
           s.color || (s.color = colors(i));
           s.type = (_ref1 = s.type) === 'line' || _ref1 === 'area' || _ref1 === 'column' ? s.type : "line";
@@ -994,14 +1003,13 @@ mod.factory('n3utils', [
           if (((_ref2 = s.type) === 'line' || _ref2 === 'area') && ((_ref3 = s.lineMode) !== 'dashed')) {
             delete s.lineMode;
           }
-          if (s.id != null) {
-            if (knownIds[s.id] != null) {
-              throw new Error("Twice the same ID (" + s.id + ") ? Really ?");
-            } else {
-              return knownIds[s.id] = s;
+          if (s.id == null) {
+            cnt = 0;
+            while (knownIds["series_" + cnt] != null) {
+              cnt++;
             }
-          } else {
-            return s.id = "series_" + (anonymous++);
+            s.id = "series_" + cnt;
+            return knownIds[s.id] = s;
           }
         });
         return options;

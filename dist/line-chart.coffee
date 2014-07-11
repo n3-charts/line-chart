@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.1 - 10 July 2014
+line-chart - v1.1.1 - 11 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -218,10 +218,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         # +2 because abscissas will be extended to one more row at each end
         n = seriesData[0].values.length + 2
         seriesCount = keys.length
-        gap = options.columnsHGap # space between two rows
         avWidth = dimensions.width - dimensions.left - dimensions.right
 
-        return parseInt(Math.max((avWidth - (n - 1)*gap) / (n*seriesCount), 5))
+        return parseInt(Math.max((avWidth - (n - 1)*options.columnsHGap) / (n*seriesCount), 5))
 
       getColumnAxis: (data, columnWidth, options) ->
         {pseudoColumns, keys} = this.getPseudoColumns(data, options)
@@ -736,6 +735,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .values (s) -> s.values
 
         options.stacks.forEach (stack) ->
+          return unless stack.series.length > 0
           layers = straightened.filter (s, i) -> s.id? and s.id in stack.series
           layout(layers)
 
@@ -897,8 +897,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return [] unless options?
 
         colors = d3.scale.category10()
-        anonymous = 0
         knownIds = {}
+        options.forEach (s, i) ->
+          if knownIds[s.id]?
+            throw new Error("Twice the same ID (#{s.id}) ? Really ?")
+          knownIds[s.id] = s if s.id?
+
         options.forEach (s, i) ->
           s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
@@ -914,13 +918,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
             delete s.lineMode
 
-          if s.id?
-            if knownIds[s.id]?
-              throw new Error("Twice the same ID (#{s.id}) ? Really ?")
-            else
-              knownIds[s.id] = s
-          else
-            s.id = "series_#{anonymous++}"
+          if !s.id?
+            cnt = 0
+            while knownIds["series_#{cnt}"]?
+              cnt++
+            s.id = "series_#{cnt}"
+            knownIds[s.id] = s
 
         return options
 

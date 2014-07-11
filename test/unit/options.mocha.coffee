@@ -201,8 +201,8 @@ describe 'options', ->
 
     it 'should give an id to series if none has been found', ->
       o = n3utils.sanitizeSeriesOptions([
-        {type: 'line', drawDots: false, id: 'pouet'}
-        {type: 'line', drawDots: true}
+        {type: 'line', drawDots: false}
+        {type: 'line', drawDots: true, id: 'series_0'}
         {type: 'column', drawDots: true, id: 'tut'}
         {type: 'area', drawDots: false}
       ])
@@ -211,7 +211,7 @@ describe 'options', ->
         {
           type: "line"
           drawDots: false
-          id: "pouet"
+          id: 'series_1'
           axis: "y"
           color: "#1f77b4"
           thickness: "1px"
@@ -232,7 +232,7 @@ describe 'options', ->
         }
         {
           type: "area"
-          id: 'series_1'
+          id: 'series_2'
           drawDots: false
           axis: "y"
           color: "#d62728"
