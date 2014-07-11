@@ -31,10 +31,20 @@
       <input type="checkbox" ng-model="options.drawLegend">
     </div>
 
+    <div class="pure-control-group">
+      <label>Columns gap</label>
+      <input type="number" step="1" ng-model="options.columnsHGap" min="1" max="100" class="width-50"/>
+    </div>
+
   </fieldset>
   <fieldset>
     <legend>Series <span ng-click="addSeries()" class="small right only-hover clickable">create</span></legend>
-    <series remove="removeSeries(series)" series="series" fields="fields" ng-repeat="series in options.series" remove="removeSeries(series)"></series>
+    <series remove="removeSeries(series)" series="series" fields="fields" ng-repeat="series in options.series"></series>
+  </fieldset>
+
+  <fieldset>
+    <legend>Stacks <span ng-click="addStack()" class="small right only-hover clickable">create</span></legend>
+    <stack remove="removeStack(stack)" all-series="options.series" stack="stack" stacks='options.stacks' ng-repeat="stack in options.stacks"></stack>
   </fieldset>
 
   <fieldset>

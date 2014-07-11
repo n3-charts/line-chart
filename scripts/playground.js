@@ -8,18 +8,7 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
     });
   };
 
-  if ($location.search().options) {
-    try {
-      $scope.options = angular.fromJson($location.search().options);
-      $scope.dataType = $location.search().dataType;
-    } catch (e) {
-      console.warn("Unable to parse JSON. Reason :");
-      console.warn(e);
-    }
-  }
-
-  if (!$scope.options || !$scope.dataType || ['linear', 'log', 'timed'].indexOf($scope.dataType) === -1) {
-    console.warn('Falling back to default data and options');
+  $scope.reset = function() {
     $scope.dataType = 'linear';
     $scope.options = {
       lineMode: "cardinal",
@@ -28,6 +17,7 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
       tooltipMode: "dots",
       drawLegend: true,
       drawDots: true,
+      stacks: [],
       series: [
         {
           y: "val_0",
@@ -57,6 +47,21 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
         }
       ]
     };
+  };
+
+  if ($location.search().options) {
+    try {
+      $scope.options = angular.fromJson($location.search().options);
+      $scope.dataType = $location.search().dataType;
+    } catch (e) {
+      console.warn("Unable to parse JSON. Reason :");
+      console.warn(e);
+    }
+  }
+
+  if (!$scope.options || !$scope.dataType || ['linear', 'log', 'timed'].indexOf($scope.dataType) === -1) {
+    console.warn('Falling back to default data and options');
+    $scope.reset();
   }
 
   $scope.data = appUtils[$scope.dataType.slice('0, 3') + 'Data'](30, 4);

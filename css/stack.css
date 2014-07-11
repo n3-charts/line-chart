@@ -1,0 +1,23 @@
+.stack-renderer {
+  margin-bottom: 10px;
+}
+
+.stack-renderer .summary {
+  cursor: pointer;
+}
+
+.stack-renderer .summary .title {
+  background-color: white;
+  padding: 0px 12px 0px 8px;
+}
+
+.stack-renderer .detail {
+  margin-bottom: 10px;
+  border: 1px solid lightgrey;
+  padding: 8px 0px 5px 0px;
+  margin-top: -7px;
+}
+
+.stack-renderer .detail * {
+  font-size: 10px;
+}
