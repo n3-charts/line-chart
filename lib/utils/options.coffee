@@ -75,8 +75,12 @@
         return [] unless options?
 
         colors = d3.scale.category10()
-        anonymous = 0
         knownIds = {}
+        options.forEach (s, i) ->
+          if knownIds[s.id]?
+            throw new Error("Twice the same ID (#{s.id}) ? Really ?")
+          knownIds[s.id] = s if s.id?
+
         options.forEach (s, i) ->
           s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
@@ -92,13 +96,12 @@
           if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
             delete s.lineMode
 
-          if s.id?
-            if knownIds[s.id]?
-              throw new Error("Twice the same ID (#{s.id}) ? Really ?")
-            else
-              knownIds[s.id] = s
-          else
-            s.id = "series_#{anonymous++}"
+          if !s.id?
+            cnt = 0
+            while knownIds["series_#{cnt}"]?
+              cnt++
+            s.id = "series_#{cnt}"
+            knownIds[s.id] = s
 
         return options
 

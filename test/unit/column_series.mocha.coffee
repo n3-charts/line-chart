@@ -45,6 +45,7 @@ describe 'column series', ->
           type: 'column'
         ]
 
+
   describe 'utils', ->
     describe 'getPseudoColumns', ->
       it 'should group column series by stacks', inject (n3utils) ->
@@ -91,6 +92,25 @@ describe 'column series', ->
     columnGroup = content.children()[0]
     expect(columnGroup.getAttribute('class')).to.equal 'columnGroup series_0'
     expect(columnGroup.getAttribute('style').trim()).to.equal 'stroke: rgb(70, 130, 180); fill: rgb(70, 130, 180); fill-opacity: 0.8;'
+
+  describe 'stack', ->
+    it 'should work with an empty stack', ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, value: 4}
+          {x: 1, value: 8}
+          {x: 2, value: 15}
+          {x: 3, value: 16}
+          {x: 4, value: 23}
+          {x: 5, value: 42}
+        ]
+        outerScope.options =
+          stacks: [{series: []}]
+          series: [
+            y: 'value'
+            color: '#4682b4'
+            type: 'column'
+          ]
 
   it 'should draw columns', ->
     content = element.childByClass('content')

@@ -154,6 +154,7 @@
           .values (s) -> s.values
 
         options.stacks.forEach (stack) ->
+          return unless stack.series.length > 0
           layers = straightened.filter (s, i) -> s.id? and s.id in stack.series
           layout(layers)
 
