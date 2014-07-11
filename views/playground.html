@@ -1,7 +1,7 @@
 <div class='pure-u-1-3 playground'>
   <h3 ng-show="!url">Options</h3>
   <h3 ng-show="url"><div class="url"><input ng-model="url"></div></h3>
-  <div class="subactions"><span class="small only-hover clickable" ng-click="outputShown = !outputShown">{{outputShown ? 'hide' : 'view'}}</span><span class="small only-hover clickable" ng-hide="url" ng-click="shareUrl()">share</span></div>
+  <div class="subactions"><span class="small only-hover clickable" ng-click="reset()">reset</span><span class="small only-hover clickable" ng-click="outputShown = !outputShown">{{outputShown ? 'hide' : 'view'}}</span><span class="small only-hover clickable" ng-hide="url" ng-click="shareUrl()">share</span></div>
   <chart-options-editor data="data" options="options"></chart-options-editor>
 </div>
 <div class='pure-u-2-3' style="height: 500px;">

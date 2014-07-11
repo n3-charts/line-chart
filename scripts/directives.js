@@ -77,6 +77,10 @@ angular.module('directives', [])
         scope.options.series.unshift({y: scope.fields[scope.fields.length - 1]});
       };
 
+      scope.addStack = function() {
+        scope.options.stacks.unshift({axis: 'y', series: [scope.options.series[0].id]});
+      };
+
       scope.removeSeries = function(series) {
         scope.options.series.splice(scope.options.series.indexOf(series), 1);
       };
@@ -107,6 +111,72 @@ angular.module('directives', [])
       scope.$watch('thickness', function(v) {
         scope.series.thickness = v + 'px';
       });
+    }
+  }
+})
+
+.directive('stack', function($timeout) {
+  return {
+    templateUrl: "templates/stack.html",
+    restrict: 'E',
+    replace: true,
+    scope: {series: '=allSeries', stacks: '=', stack: '=', remove: '&'},
+    link: function(scope, element, attrs) {
+      scope.axes = ["y", "y2"];
+
+      scope.toggleSeries = function(series) {
+        index = scope.stack.series.indexOf(series.id);
+
+        if (index > -1) {
+          scope.stack.series.splice(index, 1);
+        } else {
+          scope.stack.series.push(series.id);
+        }
+      };
+
+      scope.getSeries = function(id) {
+        return scope.series.filter(function(s) {return s.id === id;})[0];
+      };
+
+      scope.availableSeries = {y: [], y2: []};
+
+      updateAvailableSeries = function() {
+        scope.availableSeries.y = [];
+        scope.availableSeries.y2 = [];
+
+        stacks = scope.stacks;
+
+        if (!stacks || !scope.series || scope.series.length === 0) {
+          return;
+        }
+
+        scope.series.forEach(function(s) {
+          s = angular.copy(s)
+
+          s.disabled = false;
+
+          if (scope.stack.series.indexOf(s.id) > -1) {
+            s.selected = true;
+          } else {
+            s.selected = false;
+
+            for (var i = 0; i < scope.stacks.length ; i++) {
+              index = scope.stacks[i].series.indexOf(s.id);
+
+              if (index > -1) {
+                s.disabled = true;
+                break;
+              }
+            }
+          }
+
+          scope.availableSeries[s.axis].push(s);
+
+        });
+      };
+
+      scope.$watch('stacks', updateAvailableSeries, true);
+      scope.$watch('series', updateAvailableSeries, true);
     }
   }
 })
