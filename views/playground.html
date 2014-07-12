@@ -5,7 +5,7 @@
       <h3 class="clickable centered" ng-click="dataShown = !dataShown">Data</h3>
       <div class="subactions"><span class="small only-hover clickable" ng-click="outputDataShown = !outputDataShown">{{outputDataShown ? 'hide' : 'view'}}</span></div>
       <form class="pure-form pure-form-aligned chart-options" ng-show="dataShown">
-        <div class="warning">Changing this will reset the chart's configuration.</div>
+        <div class="warning">Changing this may cause errors due to inconsistency between data and options. Be warned.</div>
         <fieldset>
           <div class="pure-control-group">
             <label>Type</label>
