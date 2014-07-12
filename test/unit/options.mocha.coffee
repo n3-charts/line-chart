@@ -6,6 +6,40 @@ describe 'options', ->
   beforeEach inject (_n3utils_) ->
     n3utils = _n3utils_
 
+  it 'should set the default column gap to 5', ->
+    o = n3utils.sanitizeOptions()
+    expect(o.columnsHGap).to.equal(5)
+
+    o = n3utils.sanitizeOptions({})
+    expect(o.columnsHGap).to.equal(5)
+
+  describe 'stacks', ->
+    it 'should create an empty array of none found', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.stacks).to.eql([])
+
+      o = n3utils.sanitizeOptions({})
+      expect(o.stacks).to.eql([])
+
+    it 'should complain if non-existent series are stacked', inject ($log) ->
+      sinon.stub($log, 'warn', ->)
+
+      n3utils.sanitizeOptions({
+        stacks: [{series: ['series_0']}]
+      })
+
+      expect($log.warn.callCount).to.equal(1)
+
+    it 'should complain if series are not on the same axis', inject ($log) ->
+      sinon.stub($log, 'warn', ->)
+
+      n3utils.sanitizeOptions({
+        stacks: [{series: ['series_0'], axis: 'y'}]
+        series: [{id: 'series_0', axis: 'y2'}]
+      })
+
+      expect($log.warn.callCount).to.equal(1)
+
   describe 'drawLegend', ->
     it 'should set default drawLegend value if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
@@ -27,17 +61,17 @@ describe 'options', ->
   describe 'tooltip', ->
     it 'should set default tooltip.mode if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
-      expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
+      expect(o.tooltip).to.eql({mode: 'scrubber'})
 
       o = n3utils.sanitizeOptions({})
-      expect(o.tooltip).to.eql({mode: 'axes', interpolate: false})
+      expect(o.tooltip).to.eql({mode: 'scrubber'})
 
       o = n3utils.sanitizeOptions({tooltip: {interpolate: true}})
-      expect(o.tooltip).to.eql({mode: 'axes', interpolate: true})
+      expect(o.tooltip).to.eql({mode: 'scrubber'})
 
-      expect(->
-        n3utils.sanitizeOptions({tooltip: {mode: 'scrubber', interpolate: true}})
-      ).to.throw()
+      # expect(->
+      #   n3utils.sanitizeOptions({tooltip: {mode: 'scrubber', interpolate: true}})
+      # ).to.throw()
 
   describe 'linemode', ->
     it 'should add the default tension', ->
@@ -51,22 +85,13 @@ describe 'options', ->
 
   describe 'axes', ->
     it 'should return default options when given null or undefined', ->
-      expect(n3utils.sanitizeOptions()).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-
-        axes:
+      expect(n3utils.sanitizeOptions().axes).to.eql
           x:
             type: 'linear'
             key: 'x'
 
           y:
             type: 'linear'
-
-        series: []
 
 
     it 'should set default axes and empty series', ->
@@ -100,22 +125,12 @@ describe 'options', ->
         tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
         axes: {}
-      )).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-
-        series: []
+      ).axes).to.eql
+        x:
+          type: 'linear'
+          key: 'x'
+        y:
+          type: 'linear'
 
 
     it 'should allow x axis key configuration', ->
@@ -125,43 +140,23 @@ describe 'options', ->
         axes:
           x:
             key: 'foo'
-      )).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-
-        axes:
-          x:
-            type: 'linear'
-            key: 'foo'
-
-          y:
-            type: 'linear'
-
-        series: []
+      ).axes).to.eql
+        x:
+          type: 'linear'
+          key: 'foo'
+        y:
+          type: 'linear'
 
 
     it 'should allow y axes extrema configuration', ->
       expected =
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-            min: 5
-            max: 15
-
-        series: []
+        x:
+          type: 'linear'
+          key: 'x'
+        y:
+          type: 'linear'
+          min: 5
+          max: 15
 
       computed = n3utils.sanitizeOptions(
         tooltip: {mode: 'axes', interpolate: false}
@@ -170,7 +165,7 @@ describe 'options', ->
           y:
             min: '5'
             max: 15
-      )
+      ).axes
 
       expect(computed).to.eql(expected)
 
@@ -178,22 +173,12 @@ describe 'options', ->
       sinon.stub($log, 'warn', ->)
 
       expected =
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-            max: 15
-
-        series: []
+        x:
+          type: 'linear'
+          key: 'x'
+        y:
+          type: 'linear'
+          max: 15
 
       computed = n3utils.sanitizeOptions(
         tooltip: {mode: 'axes', interpolate: false}
@@ -202,15 +187,62 @@ describe 'options', ->
           y:
             min: 'pouet'
             max: 15
-      )
+      ).axes
 
       expect(computed).to.eql(expected)
       expect($log.warn.callCount).to.equal(1)
 
-
-
   describe 'series', ->
-    it 'should preserve/rmeove the drawDots setting', ->
+    it 'should throw an error if twice the same id is found', ->
+      expect(->n3utils.sanitizeSeriesOptions([
+        {id: 'pouet'}
+        {id: 'pouet'}
+      ])).to.throw()
+
+    it 'should give an id to series if none has been found', ->
+      o = n3utils.sanitizeSeriesOptions([
+        {type: 'line', drawDots: false}
+        {type: 'line', drawDots: true, id: 'series_0'}
+        {type: 'column', drawDots: true, id: 'tut'}
+        {type: 'area', drawDots: false}
+      ])
+
+      expected = [
+        {
+          type: "line"
+          drawDots: false
+          id: 'series_1'
+          axis: "y"
+          color: "#1f77b4"
+          thickness: "1px"
+        }
+        {
+          type: "line"
+          id: 'series_0'
+          drawDots: true
+          axis: "y"
+          color: "#ff7f0e"
+          thickness: "1px"
+        }
+        {
+          type: "column"
+          id: "tut"
+          axis: "y"
+          color: "#2ca02c"
+        }
+        {
+          type: "area"
+          id: 'series_2'
+          drawDots: false
+          axis: "y"
+          color: "#d62728"
+          thickness: "1px"
+        }
+      ]
+
+      expect(o).to.eql(expected)
+
+    it 'should preserve/remove the drawDots setting', ->
       o = n3utils.sanitizeSeriesOptions([
         {type: 'line', drawDots: false}
         {type: 'line', drawDots: true}
@@ -236,6 +268,7 @@ describe 'options', ->
       ])).to.eql [
         {
           type: "line",
+          id: 'series_0'
           lineMode: "dashed",
           axis: "y",
           color: "#1f77b4",
@@ -243,12 +276,14 @@ describe 'options', ->
         },
         {
           type: "line",
+          id: 'series_1'
           axis: "y",
           color: "#ff7f0e",
           thickness: "1px"
         },
         {
           type: "area",
+          id: 'series_2'
           lineMode: "dashed",
           axis: "y",
           color: "#2ca02c",
@@ -256,11 +291,13 @@ describe 'options', ->
         },
         {
           type: "column",
+          id: 'series_3'
           axis: "y",
           color: "#d62728"
         },
         {
           type: "column",
+          id: 'series_4'
           axis: "y",
           color: "#9467bd"
         }
@@ -275,10 +312,10 @@ describe 'options', ->
         {type: 'area', color: 'red', thickness: 'dans ton ***'}
         {type: 'column', axis: 'y2'}
       ])).to.eql [
-        {type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
-        {type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
-        {type: 'area', color: 'red', thickness: '1px', axis: 'y'}
-        {type: 'column', color: '#2ca02c', axis: 'y2'}
+        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
+        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
+        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y'}
+        {id: 'series_3', type: 'column', color: '#2ca02c', axis: 'y2'}
       ]
 
     it 'should set line or area\'s line thickness', ->
@@ -290,48 +327,32 @@ describe 'options', ->
         {type: 'area', color: 'red', thickness: 'dans ton ***'}
         {type: 'column'}
       ])).to.eql [
-        {type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
-        {type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
-        {type: 'area', color: 'red', thickness: '1px', axis: 'y'}
-        {type: 'column', color: '#2ca02c', axis: 'y'}
+        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
+        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
+        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y'}
+        {id: 'series_3', type: 'column', color: '#2ca02c', axis: 'y'}
       ]
 
     it 'should set series colors if none found', ->
       expect(n3utils.sanitizeOptions(series: [
         {y: 'value', color: 'steelblue', type: 'area', label: 'Pouet'}
         {y: 'otherValue', axis: 'y2'}
-      ])).to.eql
-        tooltip: {mode: 'axes', interpolate: false}
-        lineMode: 'linear'
-        tension: 0.7
-        drawLegend: true
-        drawDots: true
-
-        axes:
-          x:
-            type: 'linear'
-            key: 'x'
-
-          y:
-            type: 'linear'
-
-          y2:
-            type: 'linear'
-
-        series: [
-          {
-            y: 'value'
-            axis: 'y'
-            color: 'steelblue'
-            type: 'area'
-            label: 'Pouet'
-            thickness: '1px'
-          }
-          {
-            y: 'otherValue'
-            axis: 'y2'
-            color: '#1f77b4'
-            type: 'line'
-            thickness: '1px'
-          }
-        ]
+      ]).series).to.eql [
+        {
+          y: 'value'
+          id: 'series_0'
+          axis: 'y'
+          color: 'steelblue'
+          type: 'area'
+          label: 'Pouet'
+          thickness: '1px'
+        }
+        {
+          y: 'otherValue'
+          id: 'series_1'
+          axis: 'y2'
+          color: '#1f77b4'
+          type: 'line'
+          thickness: '1px'
+        }
+      ]

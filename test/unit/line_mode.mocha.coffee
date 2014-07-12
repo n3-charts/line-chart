@@ -46,7 +46,7 @@ describe 'lineMode set to cardinal', ->
     expect(areaGroup.getAttribute('style')).to.equal null
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q132.8,381,166,370C215.8,353.5,282.2,312,332,300S448.2,302,498,290S614.2,259,664,220Q697.2,194,830,30L830,450Q697.2,450,664,450C614.2,450,547.8,450,498,450S381.8,450,332,450S215.8,450,166,450Q132.8,450,0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q136,381,170,370C221,353.5,289,312,340,300S459,302,510,290S629,259,680,220Q714,194,850,30L850,450Q714,450,680,450C629,450,561,450,510,450S391,450,340,450S221,450,170,450Q136,450,0,450Z'
 
   it 'should draw an interpolated area regarding the line tension', ->
     outerScope.$apply ->
@@ -64,12 +64,12 @@ describe 'lineMode set to cardinal', ->
     expect(areaGroup.getAttribute('style')).to.equal null
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q77.46666666666665,399.3333333333333,166,370C298.8,326,199.2,332,332,300S365.2,322,498,290S531.2,324,664,220Q752.5333333333333,150.66666666666669,830,30L830,450Q752.5333333333333,450,664,450C531.2,450,630.8,450,498,450S464.8,450,332,450S298.8,450,166,450Q77.46666666666665,450,0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410Q79.33333333333333,399.3333333333333,170,370C306,326,204,332,340,300S374,322,510,290S544,324,680,220Q770.6666666666666,150.66666666666669,850,30L850,450Q770.6666666666666,450,680,450C544,450,646,450,510,450S476,450,340,450S306,450,170,450Q79.33333333333333,450,0,450Z'
 
   it 'should draw an interpolated line', ->
     linePath = element.childByClass('line')
     expect(linePath.getAttribute('class')).to.equal 'line'
-    expect(linePath.getAttribute('d')).to.equal 'M0,410Q132.8,381,166,370C215.8,353.5,282.2,312,332,300S448.2,302,498,290S614.2,259,664,220Q697.2,194,830,30'
+    expect(linePath.getAttribute('d')).to.equal 'M0,410Q136,381,170,370C221,353.5,289,312,340,300S459,302,510,290S629,259,680,220Q714,194,850,30'
 
   it 'should create a dots group with coordinates unchanged', ->
     dotsGroup = element.childByClass('dotGroup')
@@ -81,7 +81,7 @@ describe 'lineMode set to cardinal', ->
 
     computedX = Array::reduce.call(dots, fn('cx'), 'X')
     computedY = Array::reduce.call(dots, fn('cy'), 'Y')
-    expect(computedX).to.eql 'X 0 166 332 498 664 830'
+    expect(computedX).to.eql 'X 0 170 340 510 680 850'
     expect(computedY).to.eql 'Y 410 370 300 290 220 30'
     i = 0
 

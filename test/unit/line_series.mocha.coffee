@@ -63,7 +63,7 @@ describe 'line series', ->
 
     computedX = Array::reduce.call(dots, fn('cx'), 'X')
     computedY = Array::reduce.call(dots, fn('cy'), 'Y')
-    expect(computedX).to.eql 'X 0 166 332 498 664 830'
+    expect(computedX).to.eql 'X 0 170 340 510 680 850'
     expect(computedY).to.eql 'Y 410 370 300 290 220 30'
     i = 0
 
@@ -77,7 +77,22 @@ describe 'line series', ->
     linePath = content.childByClass('line')
     expect(linePath.getAttribute('class')).to.equal 'line'
     expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px;'
-    expect(linePath.getAttribute('d')).to.equal 'M0,410L166,370L332,300L498,290L664,220L830,30'
+    expect(linePath.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30'
+
+  it 'should draw a dashed line', ->
+    outerScope.$apply ->
+      outerScope.options = series: [
+        y: 'value'
+        lineMode: 'dashed'
+        color: '#4682b4'
+        thickness: '3px'
+      ]
+
+    content = element.childByClass('content')
+    linePath = content.childByClass('line')
+    expect(linePath.getAttribute('class')).to.equal 'line'
+    expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px; stroke-dasharray: 10, 3;'
+    expect(linePath.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30'
 
   it 'should update the chart if the array is changed (but not reassigned)', ->
     outerScope.$apply -> outerScope.data[0].value = 7

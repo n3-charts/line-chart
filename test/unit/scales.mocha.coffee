@@ -31,14 +31,28 @@ describe 'scales', ->
         expect(n3utils.getAverageStep([{x: 1}], 'x')).to.equal(0)
 
     describe 'xExtent', ->
-      it 'should work event with one datum', ->
+      it 'should work even with one datum', ->
         expect(n3utils.xExtent([{x: 1}], 'x')).to.eql([0, 2])
         expect(n3utils.xExtent([{x: -1}], 'x')).to.eql([-2, 0])
 
     describe 'yExtent', ->
       it 'should work even with one datum', ->
-        expect(n3utils.yExtent([{y: 'val'}], [{val: 0.6}])).to.eql([0, 1.2])
-        expect(n3utils.yExtent([{y: 'val'}], [{val: -0.6}])).to.eql([-1.2, 0])
+        expect(n3utils.yExtent([{y: 'val'}], [{val: 0.6}], [])).to.eql([0, 1.2])
+        expect(n3utils.yExtent([{y: 'val'}], [{val: -0.6}], [])).to.eql([-1.2, 0])
+
+      it 'should work with stacks', ->
+        series = [
+          {y: 'val_0', id: 'id0'}
+          {y: 'val_1', id: 'id1'}
+        ]
+
+        data = [
+          {val_0: 1, val_1: 2}
+          {val_0: 1, val_1: 20}
+        ]
+
+        expect(n3utils.yExtent(series, data, [{series: ['id0', 'id1']}])).to.eql([1, 21])
+
 
   describe 'min and max', ->
     beforeEach ->
