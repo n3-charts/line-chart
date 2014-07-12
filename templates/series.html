@@ -31,6 +31,16 @@
       <select ng-model="series.axis" ng-options="axis for axis in axes"></select>
     </div>
 
+    <div class="pure-control-group" ng-show="series.type != 'column'">
+      <label>Dots</label>
+      <input type="checkbox" ng-model="series.drawDots">
+    </div>
+
+    <div class="pure-control-group" ng-show="series.type != 'column'">
+      <label>Dashed</label>
+      <input type="checkbox" ng-model="isDashed">
+    </div>
+
     <div class="pure-control-group">
       <label>Visible</label>
       <input type="checkbox" ng-model="series.visible">

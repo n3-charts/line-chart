@@ -8,8 +8,15 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
     });
   };
 
+  $scope.optionsShown = true;
+
+  $scope.dataTypes = ['linear', 'logarithmic', 'timed', 'positive'];
+
   $scope.reset = function() {
-    $scope.dataType = 'linear';
+    if ($scope.dataTypes.indexOf($scope.dataType) === -1) {
+      $scope.dataType = $scope.dataTypes[0];
+    }
+
     $scope.options = {
       lineMode: "cardinal",
       tension: 0.7,
@@ -59,19 +66,21 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
     }
   }
 
-  if (!$scope.options || !$scope.dataType || ['linear', 'log', 'timed'].indexOf($scope.dataType) === -1) {
+  if (!$scope.options || !$scope.dataType || $scope.dataTypes.indexOf($scope.dataType) === -1) {
     console.warn('Falling back to default data and options');
     $scope.reset();
   }
-
-  $scope.data = appUtils[$scope.dataType.slice('0, 3') + 'Data'](30, 4);
 
   $scope.$watch('dataType', function(v) {
     $scope.url = null;
     if (!v) {
       return;
     }
-    $location.search('dataType', v);
+
+    if(appUtils[$scope.dataType + 'Data'] !== undefined) {
+      $location.search('dataType', v);
+      $scope.data = appUtils[$scope.dataType + 'Data'](30, 4);
+    }
   });
 
   $scope.$watch('options', function(v) {

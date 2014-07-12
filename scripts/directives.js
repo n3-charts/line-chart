@@ -78,7 +78,7 @@ angular.module('directives', [])
       };
 
       scope.addStack = function() {
-        scope.options.stacks.unshift({axis: 'y', series: [scope.options.series[0].id]});
+        scope.options.stacks.unshift({axis: 'y', series: []});
       };
 
       scope.removeSeries = function(series) {
@@ -106,10 +106,20 @@ angular.module('directives', [])
         }
 
         scope.thickness = +v.thickness.replace('px', '');
+
+        scope.isDashed = v.lineMode === 'dashed';
+
+        if (scope.series.type !== 'column') {
+          scope.series.drawDots = scope.series.drawDots !== false;
+        }
       }, true);
 
       scope.$watch('thickness', function(v) {
         scope.series.thickness = v + 'px';
+      });
+
+      scope.$watch('isDashed', function(v) {
+        scope.series.lineMode = v ? 'dashed' : undefined;
       });
     }
   }
