@@ -13,6 +13,18 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
   mixpanel.track("Home");
   $scope.releases = [
     {
+      tag: '1.1.2',
+      name: 'immediate-idiocracy',
+      lines: [
+        'Stacked series FTW',
+        'Scrubber tooltip mode is now the default mode',
+        '<code>drawDots</code> is now a per-series options (thanks <a href="https://github.com/andygray"><i class="fa fa-github"></i> andygray</a>)',
+        '<code>columnsHGap</code> options allows to pimp a little bit dem columns yo.',
+        'Fixed a bunch of issues (#64, #85, #111)',
+        'A better playground !'
+      ]
+    },
+    {
       tag: '1.1.1',
       name: 'helicoidal-hamster',
       lines: [
@@ -46,8 +58,8 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
     {
       tag: '1.0.6', name: 'extreme-estimation',
       lines: [
-        'Bower package renamed to <i>n3-line-chart</i>',
-        'Module can now be injected as <i>n3-line-chart</i>'
+        'Bower package renamed to <code>n3-line-chart</code>',
+        'Module can now be injected as <code>n3-line-chart</code>'
       ]
     },
     {

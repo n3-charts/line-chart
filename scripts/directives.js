@@ -84,6 +84,10 @@ angular.module('directives', [])
       scope.removeSeries = function(series) {
         scope.options.series.splice(scope.options.series.indexOf(series), 1);
       };
+
+      scope.removeStack = function(stack) {
+        scope.options.stacks.splice(scope.options.stacks.indexOf(stack), 1);
+      };
     }
   }
 })
