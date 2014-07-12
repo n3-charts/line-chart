@@ -18,6 +18,19 @@ angular.module('utils', [])
 
 .factory('appUtils', function() {
   return {
+    positiveData: function(rowCount, seriesCount) {
+      var data = [];
+
+      for (var i = 0; i < seriesCount; i++) {
+        for (var j = 0; j < rowCount; j++) {
+          var row = data[j] || {x: j};
+          row['val_' + i] = Math.abs(Math.round(Math.sin((i+1)*j/5)*(5*(i+1))*1000)/1000);
+          data[j] = row;
+        }
+      }
+      return data;
+    },
+
     linearData: function(rowCount, seriesCount) {
       var data = [];
 
@@ -32,7 +45,7 @@ angular.module('utils', [])
       return data;
     },
 
-    logData: function(rowCount, seriesCount) {
+    logarithmicData: function(rowCount, seriesCount) {
       var data = [];
 
       for (var i = 0; i < seriesCount; i++) {
@@ -72,11 +85,12 @@ angular.module('examples', ['apojop', 'utils'])
 .controller('ExamplesCtrl', function($scope, appUtils) {
   mixpanel.track("Examples");
   var colors = d3.scale.category10();
-  $scope.max = 100;
+  $scope.max = 30;
 
   var linData = appUtils.linearData($scope.max, 4);
   var timData = appUtils.timedData($scope.max, 4);
-  var logData = appUtils.logData($scope.max, 4);
+  var logData = appUtils.logarithmicData($scope.max, 4);
+  var posData = appUtils.positiveData($scope.max, 4);
 
   $scope.crop = function(example) {
     example.data = example.originData.slice(0, example.visibleRows);
@@ -85,11 +99,8 @@ angular.module('examples', ['apojop', 'utils'])
   $scope.examples = [
     {
       label: 'Linear series',
-      description: 'Standard linear data is fully supported and can be displayed as lines, columns and areas.',
-      originData: linData,
       dataType: 'linear',
-      visibleRows: 20,
-      data: linData.slice(0, 20),
+      data: linData,
       options: {series: [
         {y: 'val_0', label: 'A line sinusoid', color: colors(0)},
         {y: 'val_0', label: 'A column sinusoid', color: colors(1), type: 'column'},
@@ -99,11 +110,8 @@ angular.module('examples', ['apojop', 'utils'])
 
     {
       label: 'Log series',
-      description: 'Vertical axes can be configured as logarithmic axes. This is convenient to display wide-range data.',
-      originData: logData,
       dataType: 'log',
-      visibleRows: 20,
-      data: logData.slice(0, 20),
+      data: logData,
       options: {axes: {x: {key: 'foo', labelFunction: function(v) {return 'Na';}}, y: {type: 'log'}},
         series: [{y: 'val_0', label: 'Batmaaan', color: colors(4)}]
       }
@@ -111,11 +119,8 @@ angular.module('examples', ['apojop', 'utils'])
 
     {
       label: 'Time series',
-      description: 'Date objects ? Check.',
-      originData: timData,
       dataType: 'timed',
-      visibleRows: 20,
-      data: timData.slice(0, 20),
+      data: timData,
       options: {axes: {
         x: {type: 'date', tooltipFormatter: function(d) {return moment(d).fromNow();}}
       },
@@ -124,31 +129,22 @@ angular.module('examples', ['apojop', 'utils'])
 
     {
       label: 'Area series',
-      originData: linData,
       dataType: 'linear',
-      visibleRows: 20,
-      data: linData.slice(0, 20),
-      description: 'Area series are fully supported.',
+      data: linData,
       options: {series: [{y: 'val_0', label: 'A colorful area series', color: colors(1), type: 'area'}]}
     },
 
     {
       label: 'Column series',
-      originData: linData,
       dataType: 'linear',
-      visibleRows: 20,
-      data: linData.slice(0, 20),
-      description: 'Column series are fully supported too. The chart adjusts its x-axis so that columns are never cropped.',
+      data: linData,
       options: {series: [{y: 'val_0', label: 'The best column series ever', color: colors(2), type: 'column'}]}
     },
 
     {
       label: 'Two axes',
-      originData: linData,
       dataType: 'linear',
-      visibleRows: 20,
-      data: linData.slice(0, 20),
-      description: 'Series can be represented on another axis, just say it in the options !',
+      data: linData,
       options: {series: [
         {y: 'val_0', label: 'On the left !', color: colors(3)},
         {y: 'val_1', axis: 'y2', label: 'On the right !', color: colors(4)}
@@ -157,11 +153,8 @@ angular.module('examples', ['apojop', 'utils'])
 
     {
       label: 'Interpolation',
-      originData: linData,
       dataType: 'linear',
-      visibleRows: 20,
-      data: linData.slice(0, 20),
-      description: 'D3.js adds some eye-candy when asked, and it is awesome.',
+      data: linData,
       options: {lineMode: 'bundle', series: [
       {y: 'val_0', label: 'Ping', color: colors(5)},
       {y: 'val_2', label: 'Pong', axis: 'y2', color: colors(6)}
@@ -170,11 +163,8 @@ angular.module('examples', ['apojop', 'utils'])
 
     {
       label: 'Several series',
-      originData: linData,
       dataType: 'linear',
-      visibleRows: 20,
-      data: linData.slice(0, 20),
-      description: 'You can mix series types, n3-charts handles it. Yeah, baby.',
+      data: linData,
       options: {lineMode: 'cardinal', series: [
       {y: 'val_0', label: 'This', type: 'area', color: colors(7)},
       {y: 'val_1', label: 'Is', type: 'column', color: colors(8)},
@@ -184,11 +174,8 @@ angular.module('examples', ['apojop', 'utils'])
 
     {
       label: 'Striped areas',
-      originData: linData,
       dataType: 'linear',
-      visibleRows: 10,
-      data: linData.slice(0, 10),
-      description: 'Stripes are useless. But they\'re also awesome. Because, you know... stripes.',
+      data: linData,
       options: {lineMode: 'cardinal', series: [
       {y: 'val_0', label: 'Stripes', type: 'area', striped: true, color: colors(10)},
       {y: 'val_1', label: 'Are', type: 'area', striped: true, color: colors(14)},
@@ -197,15 +184,24 @@ angular.module('examples', ['apojop', 'utils'])
     },
 
     {
-      label: 'Scrubber mode',
-      originData: linData,
-      dataType: 'linear',
-      visibleRows: 10,
-      data: linData.slice(0, 10),
-      description: 'Tooltip can also be set to scrubber mode.',
-      options: {tooltip: {mode: 'scrubber'}, lineMode: 'cardinal', series: [
-      {y: 'val_0', label: 'Rowdy', type: 'area', striped: true, color: colors(10)},
-      {y: 'val_1', label: 'Eagle', type: 'area', striped: true, color: colors(14)},
+      label: 'Stacked column series',
+      dataType: 'positive',
+      data: posData,
+      options: {stacks: [{axis: 'y', series: ['id_0', 'id_1', 'id_2']}], lineMode: 'cardinal', series: [
+      {id: 'id_0', y: 'val_0', label: 'Foo', type: 'column', color: colors(10)},
+      {id: 'id_1', y: 'val_1', label: 'Bar', type: 'column', color: colors(14)},
+      {id: 'id_2', y: 'val_2', label: 'Baz', type: 'column', color: colors(16)},
+      ]}
+    },
+
+    {
+      label: 'Stacked areas series',
+      dataType: 'positive',
+      data: posData,
+      options: {stacks: [{axis: 'y', series: ['id_0', 'id_1', 'id_2']}], lineMode: 'cardinal', series: [
+      {id: 'id_0', y: 'val_0', label: 'Foo', type: 'area', color: colors(10)},
+      {id: 'id_1', y: 'val_1', label: 'Bar', type: 'area', color: colors(14)},
+      {id: 'id_2', y: 'val_2', label: 'Baz', type: 'area', color: colors(16)},
       ]}
     }
   ];

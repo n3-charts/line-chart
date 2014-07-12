@@ -19,12 +19,36 @@ h3 {
   margin-top: 2em;
 }
 
+h3.centered {
+  text-align: center;
+}
+
 p {
   line-height: 1.5em;
 }
 
 emphasis {
   font-style: italic;
+}
+
+.pure-g > div {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+div.section {
+  padding: 10px;
+  border-top: 3px solid #48AB4D;
+  margin-bottom: 25px;
+
+  -webkit-box-shadow: 0px 0px 5px 2px rgba(125,125,125,0.15);
+  -moz-box-shadow: 0px 0px 5px 2px rgba(125,125,125,0.15);
+  box-shadow: 0px 0px 5px 2px rgba(125,125,125,0.15);
+}
+
+div.section > h3 {
+  margin-top: 5px;
 }
 
 /* HEADER */
@@ -159,10 +183,11 @@ h3.subheading {
   min-width: 600px;
   margin: 0 auto 50px auto;
   border: 1px solid #CECECE;
+  padding-left: 10px;
 }
 
 .example .chart {
-  height: 400px;
+  height: 500px;
 }
 
 .example .description, .example .actions {
@@ -218,32 +243,55 @@ h3.subheading {
 
 
 /* PLAYGROUND */
+.playground {
+  left: 50px;
+  right: 50px;
+  position: absolute;
+}
+
+.playground-form {
+  width: 320px;
+}
+
+.playground-chart {
+  top: 53px;
+  position: fixed;
+  left: 400px;
+  right: 70px;
+}
+
+.playground-chart > .chart {
+  height: 500px;
+  width: 800px;
+}
+
+.playground-credits {
+  position: fixed;
+  top: 550px;
+  left: 190px;
+}
+
 .playground h3 {
   margin-bottom: 0px;
+}
+
+.playground-form .subactions {
   text-align: center;
 }
 
-.playground .subactions {
-  text-align: center;
-}
-
-.playground .subactions span {
+.playground-form .subactions span {
   margin: 0px 2px;
 }
 
-.playground .url {
+.playground-form .url {
   text-align: center;
 }
 
-.playground .url input {
+.playground-form .url input {
   outline: none;
   border: 1px solid #d3d3da;
   font-weight: 100;
   font-size: 14px;
-}
-
-.follow-scroll {
-  position: fixed;
 }
 
 form.chart-options div {
@@ -255,15 +303,15 @@ span.only-hover {
   display: inline-block;
 }
 
-.playground:hover span.only-hover {
+.playground-form:hover span.only-hover {
   visibility: visible;
 }
 
-* > span.clickable {
+.clickable {
   cursor: pointer;
 }
 
-* > span.clickable:hover {
+.clickable:hover {
   color: #48AB4D;
 }
 
@@ -275,6 +323,27 @@ span.only-hover {
 * > span.right {
   margin-left: 15px;
   height: 15px;
+}
+
+div.warning {
+  font-style: italic;
+  text-align: center;
+  background-color: lightgoldenrodyellow;
+  color: rgb(173, 147, 61);
+  padding: 10px 0;
+}
+
+.floating {
+  position: absolute;
+  margin: 0 auto;
+  left: 33%;
+  width: 400px;
+  background-color: white;
+  box-shadow: 6px 6px 10px #DDD;
+  border: 1px solid #CECECE;
+  max-height: 500px;
+  overflow-y: scroll;
+  z-index: 100;
 }
 
 .modal {
@@ -290,27 +359,27 @@ span.only-hover {
   z-index: 100;
 }
 
-.modal pre {
+.floating pre {
   padding: 10px;
 }
 
-.modal .icon {
+.floating .icon, .modal .icon:hover {
   cursor:pointer;
   color: lightgrey;
 }
 
-.modal .icon:hover {
+.floating .icon:hover, .modal .icon:hover {
   color: grey;
 }
 
-.modal .close-handle {
+.floating .close-handle, .modal .close-handle {
   float: right;
   font-size: 13px;
   line-height: 8px;
   margin-right: 3px;
 }
 
-.modal .drag-handle {
+.floating .drag-handle, .modal .drag-handle {
   height: 14px;
   cursor: pointer;
   text-align: center;
@@ -319,8 +388,13 @@ span.only-hover {
   background-color: rgb(236, 236, 236);
 }
 
+.floating > .scrollable {
+  overflow-y: scroll;
+  height: 400px;
+}
 
-pre.options-output {
+
+pre.options-output, pre.data-output {
   font-size: 10px;
 }
 
