@@ -9,6 +9,7 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
   };
 
   $scope.optionsShown = true;
+  $scope.dataShown = true;
 
   $scope.dataTypes = ['linear', 'logarithmic', 'timed', 'positive'];
 
@@ -20,7 +21,7 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
     $scope.options = {
       lineMode: "cardinal",
       tension: 0.7,
-      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
+      axes: {x: {type: "linear", key: 'x'}, y: {type: "linear"}},
       tooltipMode: "dots",
       drawLegend: true,
       drawDots: true,

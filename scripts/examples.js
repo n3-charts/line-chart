@@ -50,13 +50,11 @@ angular.module('utils', [])
 
       for (var i = 0; i < seriesCount; i++) {
         for (var j = 0; j < rowCount; j++) {
-          var row = data[j] || {foo: j};
-          row['val_' + i] = (j+1)*100000 + parseInt(Math.cos(j)*200000);
+          var row = data[j] || {x: j};
+          row['val_' + i] = Math.abs((i+1)*100000 + parseInt(Math.cos(j)*200000));
           data[j] = row;
-
         }
       }
-
       return data;
     },
 
@@ -110,9 +108,9 @@ angular.module('examples', ['apojop', 'utils'])
 
     {
       label: 'Log series',
-      dataType: 'log',
+      dataType: 'logarithmic',
       data: logData,
-      options: {axes: {x: {key: 'foo', labelFunction: function(v) {return 'Na';}}, y: {type: 'log'}},
+      options: {axes: {x: {key: 'x', labelFunction: function(v) {return 'Na';}}, y: {type: 'log'}},
         series: [{y: 'val_0', label: 'Batmaaan', color: colors(4)}]
       }
     },
