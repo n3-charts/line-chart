@@ -1,6 +1,7 @@
 <div class="stack-renderer">
   <div class="summary" ng-click="expanded = !expanded">
     <span class="title">Stack ({{stack.series.length}} series)</span>
+    <span class="remove" ng-click="remove()"><i class="fa fa-times-circle"></i></span>
   </div>
   <div class="detail" ng-show="expanded">
     <div class="pure-control-group">

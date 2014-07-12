@@ -268,7 +268,8 @@ h3.subheading {
 .playground-credits {
   position: fixed;
   top: 550px;
-  left: 190px;
+  left: 400px;
+  right: 70px;
 }
 
 .playground h3 {
