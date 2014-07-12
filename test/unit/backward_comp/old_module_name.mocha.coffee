@@ -30,11 +30,13 @@ describe 'chart initialization (old module name)', ->
         {x: 4, value: 23}
         {x: 5, value: 42}
       ]
-      outerScope.options = series: [
-        y: 'value'
-        color: '#4682b4'
-        type: 'area'
-      ]
+      outerScope.options =
+        series: [
+          y: 'value'
+          color: '#4682b4'
+          type: 'area'
+        ]
+        tooltip: {mode: 'axes'}
 
   it 'should create one svg element', ->
     # this is the template's div
@@ -57,18 +59,20 @@ describe 'chart initialization (old module name)', ->
 
   it 'should generate properly the main elements', ->
     outerScope.$apply ->
-      outerScope.options = series: [
-        {
-          axis: 'y'
-          y: 'value'
-          color: '#4682b4'
-        }
-        {
-          axis: 'y2'
-          y: 'value'
-          color: '#4682b4'
-        }
-      ]
+      outerScope.options =
+        series: [
+          {
+            axis: 'y'
+            y: 'value'
+            color: '#4682b4'
+          }
+          {
+            axis: 'y2'
+            y: 'value'
+            color: '#4682b4'
+          }
+        ]
+        tooltip: {mode: 'axes'}
 
     chart = element.childByClass('chart')
     content = chart.child('svg').children()[0].children()

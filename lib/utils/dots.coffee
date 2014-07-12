@@ -12,7 +12,7 @@
               'class': 'dot'
               'r': 2
               'cx': (d) -> axes.xScale(d.x)
-              'cy': (d) -> axes[d.axis + 'Scale'](d.value)
+              'cy': (d) -> axes[d.axis + 'Scale'](d.y + d.y0)
             )
             .style(
               'stroke': 'white'

@@ -1,0 +1,3 @@
+<div ng-controller='ExampleCtrl' style="width:600px;">
+  <linechart data="data" options="options"></linechart>
+</div>

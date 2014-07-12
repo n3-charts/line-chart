@@ -1,6 +1,6 @@
       getDefaultOptions: ->
         return {
-          tooltip: {mode: 'axes', interpolate: false}
+          tooltip: {mode: 'scrubber'}
           lineMode: 'linear'
           tension: 0.7
           axes: {
@@ -10,6 +10,8 @@
           series: []
           drawLegend: true
           drawDots: true
+          stacks: []
+          columnsHGap: 5
         }
 
       sanitizeOptions: (options, mode) ->
@@ -21,6 +23,7 @@
           options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
+        options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series)
 
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
 
@@ -32,25 +35,52 @@
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
 
+        options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
+
         return options
+
+      sanitizeSeriesStacks: (stacks, series) ->
+        return [] unless stacks?
+
+        seriesKeys = {}
+        series.forEach (s) -> seriesKeys[s.id] = s
+
+        stacks.forEach (stack) ->
+          stack.series.forEach (id) ->
+            s = seriesKeys[id]
+            if s?
+              $log.warn "Series #{id} is not on the same axis as its stack" unless s.axis is stack.axis
+            else
+              $log.warn "Unknown series found in stack : #{id}" unless s
+
+        return stacks
 
       sanitizeTooltip: (options) ->
         if !options.tooltip
-          options.tooltip = {mode: 'axes', interpolate: false}
+          options.tooltip = {mode: 'scrubber'}
           return
 
         if options.tooltip.mode not in ['none', 'axes', 'scrubber']
-          options.tooltip.mode = 'axes'
+          options.tooltip.mode = 'scrubber'
 
-        options.tooltip.interpolate = !!options.tooltip.interpolate
+        if options.tooltip.mode is 'scrubber'
+          delete options.tooltip.interpolate
+        else
+          options.tooltip.interpolate = !!options.tooltip.interpolate
 
         if options.tooltip.mode is 'scrubber' and options.tooltip.interpolate
-          throw new Error('Unable to interpolate tooltip for scrubber mode')
+          throw new Error('Interpolation is not supported for scrubber tooltip mode.')
 
       sanitizeSeriesOptions: (options) ->
         return [] unless options?
 
         colors = d3.scale.category10()
+        knownIds = {}
+        options.forEach (s, i) ->
+          if knownIds[s.id]?
+            throw new Error("Twice the same ID (#{s.id}) ? Really ?")
+          knownIds[s.id] = s if s.id?
+
         options.forEach (s, i) ->
           s.axis = if s.axis?.toLowerCase() isnt 'y2' then 'y' else 'y2'
           s.color or= colors(i)
@@ -65,6 +95,13 @@
 
           if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
             delete s.lineMode
+
+          if !s.id?
+            cnt = 0
+            while knownIds["series_#{cnt}"]?
+              cnt++
+            s.id = "series_#{cnt}"
+            knownIds[s.id] = s
 
         return options
 
@@ -94,8 +131,6 @@
         else
           delete options.max
 
-
-
       getSanitizedExtremum: (value) ->
         return undefined unless value?
 
@@ -106,7 +141,6 @@
           return undefined
 
         return number
-
 
       sanitizeAxisOptions: (options) ->
         return {type: 'linear'} unless options?

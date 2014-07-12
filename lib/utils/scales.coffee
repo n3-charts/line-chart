@@ -87,11 +87,11 @@
             }
           }
 
-      setScalesDomain: (scales, data, series, svg, axesOptions) ->
-        this.setXScale(scales.xScale, data, series, axesOptions)
+      setScalesDomain: (scales, data, series, svg, options) ->
+        this.setXScale(scales.xScale, data, series, options.axes)
 
-        yDomain = this.getVerticalDomain(axesOptions, data, series, 'y')
-        y2Domain = this.getVerticalDomain(axesOptions, data, series, 'y2')
+        yDomain = this.getVerticalDomain(options, data, series, 'y')
+        y2Domain = this.getVerticalDomain(options, data, series, 'y2')
 
         scales.yScale.domain(yDomain).nice()
         scales.y2Scale.domain(y2Domain).nice()
@@ -100,10 +100,14 @@
         svg.selectAll('.y.axis').call(scales.yAxis)
         svg.selectAll('.y2.axis').call(scales.y2Axis)
 
-      getVerticalDomain: (axesOptions, data, series, key) ->
-        return [] unless o = axesOptions[key]
+      getVerticalDomain: (options, data, series, key) ->
+        return [] unless o = options.axes[key]
 
-        domain = this.yExtent((series.filter (s) -> s.axis is key), data)
+        domain = this.yExtent(
+          series.filter (s) -> s.axis is key
+          data
+          options.stacks.filter (stack) -> stack.axis is key
+        )
         if o.type is 'log'
           domain[0] = if domain[0] is 0 then 0.001 else domain[0]
 
@@ -112,13 +116,30 @@
 
         return domain
 
-      yExtent: (series, data) ->
+      yExtent: (series, data, stacks) ->
         minY = Number.POSITIVE_INFINITY
         maxY = Number.NEGATIVE_INFINITY
 
-        series.forEach (s) ->
-          minY = Math.min(minY, d3.min(data, (d) -> d[s.y]))
-          maxY = Math.max(maxY, d3.max(data, (d) -> d[s.y]))
+        groups = []
+        stacks.forEach (stack) ->
+          groups.push stack.series.map (id) -> (series.filter (s) -> s.id is id)[0]
+
+        series.forEach (series, i) ->
+          isInStack = false
+
+          stacks.forEach (stack) ->
+            if series.id in stack.series
+              isInStack = true
+
+          groups.push([series]) unless isInStack
+
+        groups.forEach (group) ->
+          minY = Math.min(minY, d3.min(data, (d) ->
+            group.reduce ((a, s) -> Math.min(a, d[s.y]) ), Number.POSITIVE_INFINITY
+          ))
+          maxY = Math.max(maxY, d3.max(data, (d) ->
+            group.reduce ((a, s) -> a + d[s.y]), 0
+          ))
 
         if minY is maxY
           if minY > 0
