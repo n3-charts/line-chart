@@ -9,6 +9,7 @@
   background-color: rgb(188, 189, 34);
   padding: 0 7px;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .series-renderer .summary .pre-title {

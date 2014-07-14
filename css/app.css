@@ -281,7 +281,7 @@ h3.subheading {
 }
 
 .playground-form .subactions span {
-  margin: 0px 2px;
+  margin: 0px 4px;
 }
 
 .playground-form .url {
@@ -323,7 +323,8 @@ span.only-hover {
 
 * > span.right {
   margin-left: 15px;
-  height: 15px;
+  line-height: 25px;
+  float: right;
 }
 
 div.warning {
@@ -335,7 +336,7 @@ div.warning {
 }
 
 .floating {
-  position: absolute;
+  position: fixed;
   margin: 0 auto;
   left: 33%;
   width: 400px;
@@ -343,7 +344,6 @@ div.warning {
   box-shadow: 6px 6px 10px #DDD;
   border: 1px solid #CECECE;
   max-height: 500px;
-  overflow-y: scroll;
   z-index: 100;
 }
 
