@@ -114,24 +114,24 @@ angular.module('examples', ['apojop', 'utils'])
         series: [{y: 'val_0', label: 'Batmaaan', color: colors(4)}]
       }
     },
-
     {
       label: 'Time series',
       dataType: 'timed',
       data: timData,
-      options: {axes: {
-        x: {type: 'date', tooltipFormatter: function(d) {return moment(d).fromNow();}}
-      },
-      series: [{y: 'val_0', label: 'A time series', color: colors(9)}]}
+      options: {
+        axes: {x: {type: 'date'}},
+        series: [{y: 'val_0', label: 'A time series', color: colors(9)}],
+        tooltip: {mode: 'scrubber', formatter: function(x, y, series) {
+      return moment(x).fromNow() + ' : ' + y;
+    }}
+      }
     },
-
     {
       label: 'Area series',
       dataType: 'linear',
       data: linData,
       options: {series: [{y: 'val_0', label: 'A colorful area series', color: colors(1), type: 'area'}]}
     },
-
     {
       label: 'Column series',
       dataType: 'linear',
@@ -206,12 +206,5 @@ angular.module('examples', ['apojop', 'utils'])
 
   $scope.examples.forEach(function(e) {
     e.jsonOptions = escape(angular.toJson(e.options));
-  });
-
-  $scope.miniExamples = $scope.examples.map(function(e) {
-    return {
-      options: angular.copy(e.options),
-      data: e.data.slice(0, 10)
-    };
   });
 });
