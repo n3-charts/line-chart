@@ -1,5 +1,82 @@
 angular.module('directives', [])
 
+.factory('windowManager', function() {
+  var groundValue = 100;
+  var scopes = [];
+
+  update = function() {
+    scopes.forEach(function(item, index) {
+      item.zIndexSetter(index + groundValue);
+    });
+  };
+
+  getScopeIndex = function(scope) {
+    var i = -1;
+    scopes.forEach(function(item, index) {
+      if (item.scope.$id === scope.$id) {
+        i = index;
+        return;
+      }
+    });
+
+    return i;
+  };
+
+  return {
+    open: function(scope, zIndexSetter) {
+      scopes.push({scope: scope, zIndexSetter: zIndexSetter});
+      update();
+    },
+
+    close: function(scope) {
+      scopes.splice(getScopeIndex(scope), 1);
+      update();
+    },
+
+    bringToFront: function(scope) {
+      var item = scopes.splice(getScopeIndex(scope), 1);
+      scopes.push(item[0]);
+      update();
+    }
+  }
+})
+
+.directive('floatingWindow', ['windowManager', function(windowManager) {
+  return {
+    restrict: 'E',
+    scope: {open: '='},
+    link: function(scope, element, attrs) {
+      scope.zIndex = 0;
+
+      scope.setZIndex = function(value) {
+        scope.zIndex = value;
+      };
+
+      scope.$watch('open', function(value) {
+        if (!!value) {
+          windowManager.open(scope, scope.setZIndex);
+        } else {
+          windowManager.close(scope, scope.setZIndex);
+        }
+      });
+
+      scope.close = function() {
+        scope.open = false;
+      };
+
+      scope.bringMeToFront = function() {
+        windowManager.bringToFront(scope);
+      }
+    },
+    transclude: true,
+    replace: true,
+    template: '<div ng-mousedown="bringMeToFront()" ng-style="{\'z-index\': zIndex}" ng-show="open" class="pure-u-1 floating">' +
+    '<div drag-parent class="drag-handle">Drag me !<span class="close-handle icon" ng-click="close()"><i class="fa fa-times"></i></span></div>' +
+    '<div class="scrollable" ng-transclude></div>' +
+    '</div>'
+  }
+}])
+
 .directive('dragParent', ['$document', function($document) {
   return function(scope, element, attr) {
     var startX = 0, startY = 0, x = 0, y = 0;

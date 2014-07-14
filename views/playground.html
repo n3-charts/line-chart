@@ -2,9 +2,9 @@
   <div class='pure-u playground-form'>
 
     <div class="pure-u-1 section">
-      <h3 class="clickable centered" ng-click="dataShown = !dataShown">Data</h3>
-      <div class="subactions"><span class="small only-hover clickable" ng-click="outputDataShown = !outputDataShown">{{outputDataShown ? 'hide' : 'view'}}</span></div>
-      <form class="pure-form pure-form-aligned chart-options" ng-show="dataShown">
+      <h3 class="clickable centered" ng-click="dataExpanded = !dataExpanded">Data</h3>
+      <div class="subactions"><span class="small only-hover clickable" ng-click="dataShown = !dataShown">{{dataShown ? 'hide' : 'view'}}</span></div>
+      <form class="pure-form pure-form-aligned chart-options" ng-show="dataExpanded">
         <div class="warning">Changing this may cause errors due to inconsistency between data and options. Be warned.</div>
         <fieldset>
           <div class="pure-control-group">
@@ -16,10 +16,10 @@
     </div>
 
     <div class="pure-u-1 section">
-      <h3 class="clickable centered" ng-show="!url" ng-click="optionsShown = !optionsShown">Options</h3>
+      <h3 class="clickable centered" ng-show="!url" ng-click="optionsExpanded = !optionsExpanded">Options</h3>
       <h3 ng-show="url"><div class="url"><input ng-model="url"></div></h3>
-      <div class="subactions"><span class="small only-hover clickable" ng-click="reset()">reset</span><span class="small only-hover clickable" ng-click="outputShown = !outputShown">{{outputShown ? 'hide' : 'view'}}</span><span class="small only-hover clickable" ng-hide="url" ng-click="shareUrl()">share</span></div>
-      <chart-options-editor data="data" options="options" ng-show="optionsShown"></chart-options-editor>
+      <div class="subactions"><span class="small only-hover clickable" ng-click="reset()">reset</span><span class="small only-hover clickable" ng-click="optionsShown = !optionsShown">{{optionsShown ? 'hide' : 'view'}}</span><span class="small only-hover clickable" ng-hide="url" ng-click="shareUrl()">share</span></div>
+      <chart-options-editor data="data" options="options" ng-show="optionsExpanded"></chart-options-editor>
     </div>
 
     </div>
@@ -28,19 +28,15 @@
     <linechart data='data' options='options'></linechart>
   </div>
 </div>
-<div ng-if="outputShown" class='pure-u-1 floating options-output'>
-  <div drag-parent class="drag-handle">Drag me !<span class="close-handle icon" ng-click="$parent.outputShown = false"><i class="fa fa-times"></i></span></div>
-  <div class="scrollable">
-    <pre class="options-output" ng-bind-html='"$scope.options = " + (generatedOptions | prettyUnsafe:80:"columns") + ";" | safe'></pre>
-  </div>
-</div>
 
-<div ng-if="outputDataShown" class='pure-u-1 floating'>
-  <div drag-parent class="drag-handle">Drag me !<span class="close-handle icon" ng-click="$parent.outputDataShown = false"><i class="fa fa-times"></i></span></div>
-  <div class="scrollable">
-    <pre class="data-output" ng-bind-html='"$scope.data = " + (data | prettyUnsafe:2:"levels") + ";" | safe'></pre>
-  </div>
-</div>
+<floating-window name="options" open="optionsShown">
+  <pre class="options-output" ng-bind-html='"$scope.options = " + (generatedOptions | prettyUnsafe:80:"columns") + ";" | safe'></pre>
+</floating-window>
+
+<floating-window name="data" open="dataShown">
+  <pre class="data-output" ng-bind-html='"$scope.data = " + (data | prettyUnsafe:2:"levels") + ";" | safe'></pre>
+</floating-window>
+
 <div class="pure-u playground-credits">
   <div class="credits">Made with love and care by <a href="https://github.com/lorem--ipsum"><i class='fa fa-github'></i> S&eacute;bastien Fragnaud</a>.</div>
 </div>

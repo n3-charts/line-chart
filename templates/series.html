@@ -1,7 +1,7 @@
 <div class="series-renderer">
   <div class="summary">
     <span class="pre-title"></span>
-    <span class="color-preview" ng-style="{'background-color': series.color}"></span>
+    <span class="color-preview" ng-click="expanded = !expanded" ng-style="{'background-color': series.color}"></span>
     <span class="title" ng-click="expanded = !expanded">{{series.label || series.y}}</span>
     <span class="remove" ng-click="remove()"><i class="fa fa-times-circle"></i></span>
   </div>

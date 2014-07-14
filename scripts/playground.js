@@ -8,8 +8,8 @@ angular.module('playground', ['apojop', 'utils', 'directives'])
     });
   };
 
-  $scope.optionsShown = true;
-  $scope.dataShown = true;
+  $scope.optionsExpanded = true;
+  $scope.dataExpanded = true;
 
   $scope.dataTypes = ['linear', 'logarithmic', 'timed', 'positive'];
 
