@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.2 - 12 July 2014
+line-chart - v1.1.2 - 21 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -832,6 +832,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           series: []
           drawLegend: true
           drawDots: true
+          drawScrubber: true
           stacks: []
           columnsHGap: 5
         }
@@ -842,6 +843,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         if mode is 'thumbnail'
           options.drawLegend = false
           options.drawDots = false
+          options.drawScrubber = false
           options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
@@ -856,6 +858,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
+        options.drawScrubber = options.drawScrubber isnt false
 
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
 
@@ -912,6 +915,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             delete s.thickness
             delete s.lineMode
             delete s.drawDots
+            delete s.drawScrubber
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 
@@ -1211,7 +1215,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         data.forEach (series, index) ->
           item = svg.select(".scrubberItem.series_#{index}")
 
-          if options.series[index].visible is false
+          if options.series[index].visible is false || options.series[index].drawScrubber is false
             item.attr('opacity', 0)
             return
 
