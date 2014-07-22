@@ -85,6 +85,7 @@ The `series` key must be an array which contains objects with the following prop
 + `thickness` : optional, can be `{n}px`. Default is `1px`. Will be ignored if the series type is not 'area' or 'line'.
 + `lineMode` : optional, can be `dashed`. Default is undefined. Defines whether the series is rendered as a dashed line. Removed if the series type is not `line` or `area`.
 + `drawDots` : optional, can be either `true` or `false`. Default is true. Defines whether the series is rendered with dots on a per `series` basis. Overrides the global setting.
++ `drawScrubber` : optional, can be either `true` or `false`. Default is true. Defines whether the series is rendered with a scrubber on a per `series` basis. Only applicable when tooltip mode is `scrubber`.
 + `visible` : optional, can be either `true` or `false`. Default is true. Defines whether the series is initially visible. Will be updated if the series gets hidden or shown through a click on the legend.
 
 ##### Tooltip
