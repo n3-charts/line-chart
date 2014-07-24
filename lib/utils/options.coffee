@@ -10,6 +10,7 @@
           series: []
           drawLegend: true
           drawDots: true
+          drawScrubber: true
           stacks: []
           columnsHGap: 5
         }
@@ -20,6 +21,7 @@
         if mode is 'thumbnail'
           options.drawLegend = false
           options.drawDots = false
+          options.drawScrubber = false
           options.tooltip = {mode: 'none', interpolate: false}
 
         options.series = this.sanitizeSeriesOptions(options.series)
@@ -34,6 +36,7 @@
 
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
+        options.drawScrubber = options.drawScrubber isnt false
 
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
 
@@ -90,6 +93,7 @@
             delete s.thickness
             delete s.lineMode
             delete s.drawDots
+            delete s.drawScrubber
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 
