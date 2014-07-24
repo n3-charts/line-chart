@@ -141,6 +141,25 @@ describe 'scrubber tooltip', ->
       expect(tooltips[0].getAttribute('opacity')).to.equal('1')
       expect(tooltips[1].getAttribute('opacity')).to.equal('0')
 
+    it 'should not show tooltips if drawScrubber is false', ->
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', type: 'line', color: '#4682b4', drawScrubber: false}
+          ]
+          tooltip: {mode: 'scrubber'}
+
+      glass = element.childByClass('glass')
+
+      fakeMouse.hoverIn(glass)
+      fakeMouse.mouseMove(glass)
+      flushD3()
+
+      tooltips = element.childrenByClass('scrubberItem')
+
+      expect(tooltips[0].getAttribute('opacity')).to.equal('1')
+      expect(tooltips[1].getAttribute('opacity')).to.equal('0')
 
     it 'should show tooltips with custom tooltip function', ->
       cb = sinon.spy((x, y, series) -> 'pouet')

@@ -255,6 +255,18 @@ describe 'options', ->
       expect(o[2].drawDots).to.equal(undefined)
       expect(o[3].drawDots).to.equal(false)
 
+    it 'should preserve/remove the drawSrubber setting', ->
+      o = n3utils.sanitizeSeriesOptions([
+        {type: 'line', drawScrubber: false}
+        {type: 'line', drawScrubber: true}
+        {type: 'column', drawScrubber: true}
+        {type: 'area', drawScrubber: false}
+      ])
+
+      expect(o[0].drawScrubber).to.equal(false)
+      expect(o[1].drawScrubber).to.equal(true)
+      expect(o[2].drawScrubber).to.equal(undefined)
+      expect(o[3].drawScrubber).to.equal(false)
 
     it 'should sanitize lineMode', ->
       f = n3utils.sanitizeSeriesOptions

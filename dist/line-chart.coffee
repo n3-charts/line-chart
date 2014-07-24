@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.2 - 21 July 2014
+line-chart - v1.1.2 - 24 July 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
