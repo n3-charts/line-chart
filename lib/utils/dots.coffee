@@ -10,7 +10,7 @@
             .enter().append('circle')
             .attr(
               'class': 'dot'
-              'r': 2
+              'r': (d) -> d.dotSize
               'cx': (d) -> axes.xScale(d.x)
               'cy': (d) -> axes[d.axis + 'Scale'](d.y + d.y0)
             )
@@ -22,7 +22,7 @@
         if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
-            target.attr('r', 4)
+            target.attr('r', (s) -> s.dotSize + 2)
 
             handlers.onMouseOver?(svg, {
               series: series
@@ -32,7 +32,7 @@
             })
           )
           .on('mouseout', (d) ->
-            d3.select(d3.event.target).attr('r', 2)
+            d3.select(d3.event.target).attr('r', (s) -> s.dotSize)
             handlers.onMouseOut?(svg)
           )
 

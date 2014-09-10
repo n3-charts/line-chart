@@ -240,6 +240,7 @@ describe 'options', ->
           axis: "y"
           color: "#ff7f0e"
           thickness: "1px"
+          dotSize: 2
         }
         {
           type: "column"
@@ -272,6 +273,19 @@ describe 'options', ->
       expect(o[2].drawDots).to.equal(undefined)
       expect(o[3].drawDots).to.equal(false)
 
+    it 'should preserve/remove the dotSize setting', ->
+      o = n3utils.sanitizeSeriesOptions([
+        {type: 'line', drawDots: false, dotSize: 10}
+        {type: 'line', drawDots: true, dotSize: 5}
+        {type: 'column', drawDots: true, dotSize: 2}
+        {type: 'area'}
+      ])
+
+      expect(o[0].dotSize).to.equal(undefined)
+      expect(o[1].dotSize).to.equal(5)
+      expect(o[2].dotSize).to.equal(undefined)
+      expect(o[3].dotSize).to.equal(2)
+
 
     it 'should sanitize lineMode', ->
       f = n3utils.sanitizeSeriesOptions
@@ -290,6 +304,7 @@ describe 'options', ->
           axis: "y",
           color: "#1f77b4",
           thickness: "1px"
+          dotSize: 2
         },
         {
           type: "line",
@@ -297,6 +312,7 @@ describe 'options', ->
           axis: "y",
           color: "#ff7f0e",
           thickness: "1px"
+          dotSize: 2
         },
         {
           type: "area",
@@ -305,6 +321,7 @@ describe 'options', ->
           axis: "y",
           color: "#2ca02c",
           thickness: "1px"
+          dotSize: 2
         },
         {
           type: "column",
@@ -329,9 +346,9 @@ describe 'options', ->
         {type: 'area', color: 'red', thickness: 'dans ton ***'}
         {type: 'column', axis: 'y2'}
       ])).to.eql [
-        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
-        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
-        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y'}
+        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y', dotSize: 2}
+        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y', dotSize: 2}
+        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y', dotSize: 2}
         {id: 'series_3', type: 'column', color: '#2ca02c', axis: 'y2'}
       ]
 
@@ -344,9 +361,9 @@ describe 'options', ->
         {type: 'area', color: 'red', thickness: 'dans ton ***'}
         {type: 'column'}
       ])).to.eql [
-        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y'}
-        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y'}
-        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y'}
+        {id: 'series_0', type: 'line', color: '#1f77b4', thickness: '1px', axis: 'y', dotSize: 2}
+        {id: 'series_1', type: 'area', color: '#ff7f0e', thickness: '2px', axis: 'y', dotSize: 2}
+        {id: 'series_2', type: 'area', color: 'red', thickness: '1px', axis: 'y', dotSize: 2}
         {id: 'series_3', type: 'column', color: '#2ca02c', axis: 'y'}
       ]
 
@@ -363,6 +380,7 @@ describe 'options', ->
           type: 'area'
           label: 'Pouet'
           thickness: '1px'
+          dotSize: 2
         }
         {
           y: 'otherValue'
@@ -371,5 +389,6 @@ describe 'options', ->
           color: '#1f77b4'
           type: 'line'
           thickness: '1px'
+          dotSize: 2
         }
       ]
