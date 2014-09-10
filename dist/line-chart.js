@@ -331,7 +331,9 @@ mod.factory('n3utils', [
           return d.values;
         }).enter().append('circle').attr({
           'class': 'dot',
-          'r': 2,
+          'r': function(d) {
+            return d.dotSize;
+          },
           'cx': function(d) {
             return axes.xScale(d.x);
           },
@@ -346,7 +348,9 @@ mod.factory('n3utils', [
           dotGroup.on('mouseover', function(series) {
             var target;
             target = d3.select(d3.event.target);
-            target.attr('r', 4);
+            target.attr('r', function(s) {
+              return s.dotSize + 2;
+            });
             return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
               series: series,
               x: target.attr('cx'),
@@ -354,7 +358,9 @@ mod.factory('n3utils', [
               datum: target.datum()
             }) : void 0;
           }).on('mouseout', function(d) {
-            d3.select(d3.event.target).attr('r', 2);
+            d3.select(d3.event.target).attr('r', function(s) {
+              return s.dotSize;
+            });
             return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
           });
         }
@@ -749,6 +755,9 @@ mod.factory('n3utils', [
             thickness: s.thickness,
             drawDots: s.drawDots !== false
           };
+          if (s.dotSize != null) {
+            seriesData.dotSize = s.dotSize;
+          }
           if (s.striped === true) {
             seriesData.striped = true;
           }
@@ -761,12 +770,17 @@ mod.factory('n3utils', [
           data.filter(function(row) {
             return row[s.y] != null;
           }).forEach(function(row) {
-            return seriesData.values.push({
+            var d;
+            d = {
               x: row[options.axes.x.key],
               y: row[s.y],
               y0: 0,
               axis: s.axis || 'y'
-            });
+            };
+            if (s.dotSize != null) {
+              d.dotSize = s.dotSize;
+            }
+            return seriesData.values.push(d);
           });
           return seriesData;
         });
@@ -997,11 +1011,17 @@ mod.factory('n3utils', [
             delete s.thickness;
             delete s.lineMode;
             delete s.drawDots;
+            delete s.dotSize;
           } else if (!/^\d+px$/.test(s.thickness)) {
             s.thickness = '1px';
           }
-          if (((_ref2 = s.type) === 'line' || _ref2 === 'area') && ((_ref3 = s.lineMode) !== 'dashed')) {
-            delete s.lineMode;
+          if ((_ref2 = s.type) === 'line' || _ref2 === 'area') {
+            if ((_ref3 = s.lineMode) !== 'dashed') {
+              delete s.lineMode;
+            }
+            if (s.drawDots !== false && (s.dotSize == null)) {
+              s.dotSize = 2;
+            }
           }
           if (s.id == null) {
             cnt = 0;
@@ -1009,7 +1029,10 @@ mod.factory('n3utils', [
               cnt++;
             }
             s.id = "series_" + cnt;
-            return knownIds[s.id] = s;
+            knownIds[s.id] = s;
+          }
+          if (s.drawDots === false) {
+            return delete s.dotSize;
           }
         });
         return options;

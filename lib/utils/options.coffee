@@ -90,11 +90,16 @@
             delete s.thickness
             delete s.lineMode
             delete s.drawDots
+            delete s.dotSize
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 
-          if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
-            delete s.lineMode
+          if s.type in ['line', 'area']
+            if s.lineMode not in ['dashed']
+              delete s.lineMode
+
+            if s.drawDots isnt false and !s.dotSize?
+              s.dotSize = 2
 
           if !s.id?
             cnt = 0
@@ -102,6 +107,9 @@
               cnt++
             s.id = "series_#{cnt}"
             knownIds[s.id] = s
+
+          if s.drawDots is false
+            delete s.dotSize
 
         return options
 
