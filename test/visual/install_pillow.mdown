@@ -20,9 +20,24 @@ sudo -E pip install pillow
 
 The first two lines and the `-E` flag are there to prevent some obscure `gcc` error/warning I really don't give a flying fart about.
 
+## On Mac OS 10.9.4
+```
+sudo ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
+```
+
+```
+sudo xcode-select --install
+```
+
+```
+sudo pip install pillow
+```
+
+http://stackoverflow.com/questions/19532125/cant-install-pil-after-mac-os-x-10-9
+
 ## On Linux
 Come on. I figured out to install that on a Mac, don't tell me you got here without knowing how to use `apt`.
 
 
 ## On Windows
-I'll pretend you didn't ask that.
+Let's pretend you didn't ask that.

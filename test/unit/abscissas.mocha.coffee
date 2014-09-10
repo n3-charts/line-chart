@@ -87,6 +87,42 @@ describe "abscissas", ->
       expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30'
 
 
+  describe 'min, max', ->
+    beforeEach ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {foo: 0, value: 4}
+          {foo: 1, value: 8}
+          {foo: 2, value: 15}
+          {foo: 3, value: 16}
+          {foo: 4, value: 23}
+          {foo: 5, value: 42}
+        ]
+        outerScope.options =
+          axes:
+            x:
+              key: 'foo'
+              min: 10
+              max: 50
+
+          series: [
+            y: 'value'
+            color: '#4682b4'
+          ]
+
+    it 'should properly configure x axis', ->
+      ticks = element.childByClass('x axis').children('text')
+
+      expect(ticks.length).to.equal 9
+      expect(ticks[0].domElement.textContent).to.equal '10'
+      expect(ticks[8].domElement.textContent).to.equal '50'
+
+    it 'should draw a line', ->
+      linePath = element.childByClass('line')
+
+      expect(linePath.hasClass('line')).to.equal true
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M-212,410L-191,370L-170,300L-149,290L-128,220L-106,30'
+
   describe 'custom key', ->
     beforeEach ->
       outerScope.$apply ->
