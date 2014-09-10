@@ -302,7 +302,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .enter().append('circle')
             .attr(
               'class': 'dot'
-              'r': 2
+              'r': (d) -> d.dotSize
               'cx': (d) -> axes.xScale(d.x)
               'cy': (d) -> axes[d.axis + 'Scale'](d.y + d.y0)
             )
@@ -314,7 +314,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
-            target.attr('r', 4)
+            target.attr('r', (s) -> s.dotSize + 2)
 
             handlers.onMouseOver?(svg, {
               series: series
@@ -324,7 +324,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             })
           )
           .on('mouseout', (d) ->
-            d3.select(d3.event.target).attr('r', 2)
+            d3.select(d3.event.target).attr('r', (s) -> s.dotSize)
             handlers.onMouseOut?(svg)
           )
 
@@ -709,6 +709,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             thickness: s.thickness
             drawDots: s.drawDots isnt false
 
+
+          if s.dotSize?
+            seriesData.dotSize = s.dotSize
+
           if s.striped is true
             seriesData.striped = true
 
@@ -719,12 +723,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             seriesData.id = s.id
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
-            seriesData.values.push(
+            d =
               x: row[options.axes.x.key]
               y: row[s.y]
               y0: 0
               axis: s.axis || 'y'
-            )
+
+            d.dotSize = s.dotSize if s.dotSize?
+            seriesData.values.push(d)
 
           return seriesData
 
@@ -912,11 +918,16 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             delete s.thickness
             delete s.lineMode
             delete s.drawDots
+            delete s.dotSize
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 
-          if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
-            delete s.lineMode
+          if s.type in ['line', 'area']
+            if s.lineMode not in ['dashed']
+              delete s.lineMode
+
+            if s.drawDots isnt false and !s.dotSize?
+              s.dotSize = 2
 
           if !s.id?
             cnt = 0
@@ -924,6 +935,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               cnt++
             s.id = "series_#{cnt}"
             knownIds[s.id] = s
+
+          if s.drawDots is false
+            delete s.dotSize
 
         return options
 

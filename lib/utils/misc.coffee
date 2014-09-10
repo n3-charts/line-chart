@@ -128,6 +128,10 @@
             thickness: s.thickness
             drawDots: s.drawDots isnt false
 
+
+          if s.dotSize?
+            seriesData.dotSize = s.dotSize
+
           if s.striped is true
             seriesData.striped = true
 
@@ -138,12 +142,14 @@
             seriesData.id = s.id
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
-            seriesData.values.push(
+            d =
               x: row[options.axes.x.key]
               y: row[s.y]
               y0: 0
               axis: s.axis || 'y'
-            )
+
+            d.dotSize = s.dotSize if s.dotSize?
+            seriesData.values.push(d)
 
           return seriesData
 
