@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.2 - 12 July 2014
+line-chart - v1.1.3 - 10 September 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -1025,28 +1025,24 @@ mod.factory('n3utils', [
         if (secondAxis) {
           axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2);
         }
-        this.sanitizeExtrema(axesOptions.y);
-        if (secondAxis) {
-          this.sanitizeExtrema(axesOptions.y2);
-        }
         return axesOptions;
       },
       sanitizeExtrema: function(options) {
         var max, min;
-        min = this.getSanitizedExtremum(options.min);
+        min = this.getSanitizedNumber(options.min);
         if (min != null) {
           options.min = min;
         } else {
           delete options.min;
         }
-        max = this.getSanitizedExtremum(options.max);
+        max = this.getSanitizedNumber(options.max);
         if (max != null) {
           return options.max = max;
         } else {
           return delete options.max;
         }
       },
-      getSanitizedExtremum: function(value) {
+      getSanitizedNumber: function(value) {
         var number;
         if (value == null) {
           return void 0;
@@ -1065,6 +1061,7 @@ mod.factory('n3utils', [
           };
         }
         options.type || (options.type = 'linear');
+        this.sanitizeExtrema(options);
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
@@ -1213,12 +1210,21 @@ mod.factory('n3utils', [
         return [minY, maxY];
       },
       setXScale: function(xScale, data, series, axesOptions) {
-        xScale.domain(this.xExtent(data, axesOptions.x.key));
+        var domain, o;
+        domain = this.xExtent(data, axesOptions.x.key);
         if (series.filter(function(s) {
           return s.type === 'column';
         }).length) {
-          return this.adjustXScaleForColumns(xScale, data, axesOptions.x.key);
+          this.adjustXDomainForColumns(domain, data, axesOptions.x.key);
         }
+        o = axesOptions.x;
+        if (o.min != null) {
+          domain[0] = o.min;
+        }
+        if (o.max != null) {
+          domain[1] = o.max;
+        }
+        return xScale.domain(domain);
       },
       xExtent: function(data, key) {
         var from, to, _ref;
@@ -1234,14 +1240,15 @@ mod.factory('n3utils', [
         }
         return [from, to];
       },
-      adjustXScaleForColumns: function(xScale, data, field) {
-        var d, step;
+      adjustXDomainForColumns: function(domain, data, field) {
+        var step;
         step = this.getAverageStep(data, field);
-        d = xScale.domain();
-        if (angular.isDate(d[0])) {
-          return xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)]);
+        if (angular.isDate(domain[0])) {
+          domain[0] = new Date(domain[0].getTime() - step);
+          return domain[1] = new Date(domain[1].getTime() + step);
         } else {
-          return xScale.domain([d[0] - step, d[1] + step]);
+          domain[0] = domain[0] - step;
+          return domain[1] = domain[1] + step;
         }
       },
       getAverageStep: function(data, field) {
