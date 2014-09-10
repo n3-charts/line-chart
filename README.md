@@ -43,7 +43,7 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear'},
+    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear', min: 0, max: 10},
     y: {type: 'linear', min: 0, max: 1},
     y2: {type: 'linear', min: 0, max: 1}
   },
@@ -65,6 +65,8 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
  + `key` : optional, defines where the chart will look for abscissas values in the data (default is 'x').
  + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
  + `labelFunction` : optional, allows to format the axis' ticklabels. Must be a function that accepts a single argument and returns a string.
+ + `min` : optional, forces the axis minimum value (default is computed from data)
+ + `max` : optional, forces the axis maximum value (default is computed from data)
 
 It can also contain, according to your series configuration, a `y` and a `y2` key with the following properties :
 

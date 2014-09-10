@@ -69,10 +69,6 @@ describe 'options', ->
       o = n3utils.sanitizeOptions({tooltip: {interpolate: true}})
       expect(o.tooltip).to.eql({mode: 'scrubber'})
 
-      # expect(->
-      #   n3utils.sanitizeOptions({tooltip: {mode: 'scrubber', interpolate: true}})
-      # ).to.throw()
-
   describe 'linemode', ->
     it 'should add the default tension', ->
       o = n3utils.sanitizeOptions()
@@ -133,7 +129,7 @@ describe 'options', ->
           type: 'linear'
 
 
-    it 'should allow x axis key configuration', ->
+    it 'should allow x axis configuration', ->
       expect(n3utils.sanitizeOptions(
         tooltip: {mode: 'axes', interpolate: false}
         lineMode: 'linear'
@@ -146,6 +142,27 @@ describe 'options', ->
           key: 'foo'
         y:
           type: 'linear'
+
+    it 'should allow x axes extrema configuration', ->
+      expected =
+        x:
+          type: 'linear'
+          key: 'x'
+          min: 5
+          max: 15
+        y:
+          type: 'linear'
+
+      computed = n3utils.sanitizeOptions(
+        tooltip: {mode: 'axes', interpolate: false}
+        lineMode: 'linear'
+        axes:
+          x:
+            min: '5'
+            max: 15
+      ).axes
+
+      expect(computed).to.eql(expected)
 
 
     it 'should allow y axes extrema configuration', ->
