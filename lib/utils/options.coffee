@@ -110,28 +110,26 @@
 
         axesOptions.x = this.sanitizeAxisOptions(axesOptions.x)
         axesOptions.x.key or= "x"
+
         axesOptions.y = this.sanitizeAxisOptions(axesOptions.y)
         axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2) if secondAxis
-
-        this.sanitizeExtrema(axesOptions.y)
-        this.sanitizeExtrema(axesOptions.y2) if secondAxis
 
         return axesOptions
 
       sanitizeExtrema: (options) ->
-        min = this.getSanitizedExtremum(options.min)
+        min = this.getSanitizedNumber(options.min)
         if min?
           options.min = min
         else
           delete options.min
 
-        max = this.getSanitizedExtremum(options.max)
+        max = this.getSanitizedNumber(options.max)
         if max?
           options.max = max
         else
           delete options.max
 
-      getSanitizedExtremum: (value) ->
+      getSanitizedNumber: (value) ->
         return undefined unless value?
 
         number = parseInt(value, 10)
@@ -146,5 +144,7 @@
         return {type: 'linear'} unless options?
 
         options.type or= 'linear'
+
+        this.sanitizeExtrema(options)
 
         return options

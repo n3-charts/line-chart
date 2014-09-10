@@ -34,6 +34,6 @@ angular.module('example', ['n3-line-chart'])
           axis: 'y2'
         }
       ],
-      axes: {x: {type: "linear", key: "x"}, y: {type: "linear", min: 0, max:100}},
+      axes: {x: {type: "linear", key: "x", min: 2, max: "5"}, y: {type: "linear", min: 0, max:100}},
     };
   });

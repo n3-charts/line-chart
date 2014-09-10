@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.2 - 12 July 2014
+line-chart - v1.1.3 - 10 September 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -932,28 +932,26 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         axesOptions.x = this.sanitizeAxisOptions(axesOptions.x)
         axesOptions.x.key or= "x"
+
         axesOptions.y = this.sanitizeAxisOptions(axesOptions.y)
         axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2) if secondAxis
-
-        this.sanitizeExtrema(axesOptions.y)
-        this.sanitizeExtrema(axesOptions.y2) if secondAxis
 
         return axesOptions
 
       sanitizeExtrema: (options) ->
-        min = this.getSanitizedExtremum(options.min)
+        min = this.getSanitizedNumber(options.min)
         if min?
           options.min = min
         else
           delete options.min
 
-        max = this.getSanitizedExtremum(options.max)
+        max = this.getSanitizedNumber(options.max)
         if max?
           options.max = max
         else
           delete options.max
 
-      getSanitizedExtremum: (value) ->
+      getSanitizedNumber: (value) ->
         return undefined unless value?
 
         number = parseInt(value, 10)
@@ -968,6 +966,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return {type: 'linear'} unless options?
 
         options.type or= 'linear'
+
+        this.sanitizeExtrema(options)
 
         return options
 
@@ -1127,10 +1127,15 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return [minY, maxY]
 
       setXScale: (xScale, data, series, axesOptions) ->
-        xScale.domain(this.xExtent(data, axesOptions.x.key))
-
+        domain = this.xExtent(data, axesOptions.x.key)
         if series.filter((s) -> s.type is 'column').length
-          this.adjustXScaleForColumns(xScale, data, axesOptions.x.key)
+          this.adjustXDomainForColumns(domain, data, axesOptions.x.key)
+
+        o = axesOptions.x
+        domain[0] = o.min if o.min?
+        domain[1] = o.max if o.max?
+
+        xScale.domain(domain)
 
       xExtent: (data, key) ->
         [from, to] = d3.extent(data, (d) -> d[key])
@@ -1143,13 +1148,15 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return [from, to]
 
-      adjustXScaleForColumns: (xScale, data, field) ->
+      adjustXDomainForColumns: (domain, data, field) ->
         step = this.getAverageStep(data, field)
-        d = xScale.domain()
-        if angular.isDate(d[0])
-          xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)])
+
+        if angular.isDate(domain[0])
+          domain[0] = new Date(domain[0].getTime() - step)
+          domain[1] = new Date(domain[1].getTime() + step)
         else
-          xScale.domain([d[0] - step, d[1] + step])
+          domain[0] = domain[0] - step
+          domain[1] = domain[1] + step
 
       getAverageStep: (data, field) ->
         return 0 unless data.length > 1
