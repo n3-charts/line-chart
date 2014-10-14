@@ -23,6 +23,7 @@ directive('linechart', [
       var dim, initialHandlers, isUpdatingOptions, promise, window_resize, _u;
       _u = n3utils;
       dim = _u.getDefaultMargins();
+      element[0].style['font-size'] = 0;
       scope.updateDimensions = function(dimensions) {
         var bottom, left, right, top;
         top = _u.getPixelCssProp(element[0].parentElement, 'padding-top');
@@ -32,22 +33,20 @@ directive('linechart', [
         dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right;
         return dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom;
       };
-      scope.update = function() {
+      scope.redraw = function() {
         scope.updateDimensions(dim);
-        return scope.redraw(dim);
+        return scope.update(dim);
       };
       isUpdatingOptions = false;
       initialHandlers = {
         onSeriesVisibilityChange: function(_arg) {
           var index, newVisibility, series;
           series = _arg.series, index = _arg.index, newVisibility = _arg.newVisibility;
-          isUpdatingOptions = true;
           scope.options.series[index].visible = newVisibility;
-          scope.$apply();
-          return isUpdatingOptions = false;
+          return scope.$apply();
         }
       };
-      scope.redraw = function(dimensions) {
+      scope.update = function(dimensions) {
         var axes, columnWidth, dataPerSeries, handlers, isThumbnail, options, svg;
         options = _u.sanitizeOptions(scope.options, attrs.mode);
         handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options));
@@ -86,17 +85,11 @@ directive('linechart', [
         if (promise != null) {
           $timeout.cancel(promise);
         }
-        return promise = $timeout(scope.update, 1);
+        return promise = $timeout(scope.redraw, 1);
       };
       $window.addEventListener('resize', window_resize);
-      scope.$watch('data', scope.update, true);
-      return scope.$watch('options', function(v) {
-        if (isUpdatingOptions) {
-          return scope.redraw(dim);
-        } else {
-          return scope.update();
-        }
-      }, true);
+      scope.$watch('data', scope.redraw, true);
+      return scope.$watch('options', scope.redraw, true);
     };
     return {
       replace: true,
