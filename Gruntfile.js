@@ -32,7 +32,6 @@ module.exports = function(grunt) {
       files: ['lib/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
       tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified', 'uglify', 'karma:minified'],
       // tasks: ['concat', 'coffee', 'uglify']
-
     },
 
     karma: {

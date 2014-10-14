@@ -67,10 +67,11 @@
             )
 
         item.on('click', (s, i) ->
-          isNowVisible = that.toggleSeries(svg, i)
-
-          d3.select(this).attr('opacity', if isNowVisible then '1' else '0.2')
-          handlers.onSeriesVisibilityChange?({series: s, index: i, newVisibility: isNowVisible})
+          handlers.onSeriesVisibilityChange?({
+            series: s,
+            index: i,
+            newVisibility: !(s.visible isnt false)
+          })
         )
 
         item.append('circle')

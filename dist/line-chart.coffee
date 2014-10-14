@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.3 - 10 September 2014
+line-chart - v1.1.3 - 14 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -90,8 +90,10 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     scope.$watch('data', scope.update, true)
     scope.$watch('options', (v) ->
-      return if isUpdatingOptions
-      scope.update()
+      if isUpdatingOptions
+        scope.redraw(dim)
+      else
+        scope.update()
     , true)
 
   return {
@@ -403,10 +405,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             )
 
         item.on('click', (s, i) ->
-          isNowVisible = that.toggleSeries(svg, i)
-
-          d3.select(this).attr('opacity', if isNowVisible then '1' else '0.2')
-          handlers.onSeriesVisibilityChange?({series: s, index: i, newVisibility: isNowVisible})
+          handlers.onSeriesVisibilityChange?({
+            series: s,
+            index: i,
+            newVisibility: !(s.visible isnt false)
+          })
         )
 
         item.append('circle')
@@ -1095,7 +1098,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return [] unless o = options.axes[key]
 
         domain = this.yExtent(
-          series.filter (s) -> s.axis is key
+          series.filter (s) -> s.axis is key and s.visible isnt false
           data
           options.stacks.filter (stack) -> stack.axis is key
         )

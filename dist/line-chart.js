@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.3 - 10 September 2014
+line-chart - v1.1.3 - 14 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -92,9 +92,10 @@ directive('linechart', [
       scope.$watch('data', scope.update, true);
       return scope.$watch('options', function(v) {
         if (isUpdatingOptions) {
-          return;
+          return scope.redraw(dim);
+        } else {
+          return scope.update();
         }
-        return scope.update();
       }, true);
     };
     return {
@@ -431,13 +432,10 @@ mod.factory('n3utils', [
           }
         });
         item.on('click', function(s, i) {
-          var isNowVisible;
-          isNowVisible = that.toggleSeries(svg, i);
-          d3.select(this).attr('opacity', isNowVisible ? '1' : '0.2');
           return typeof handlers.onSeriesVisibilityChange === "function" ? handlers.onSeriesVisibilityChange({
             series: s,
             index: i,
-            newVisibility: isNowVisible
+            newVisibility: !(s.visible !== false)
           }) : void 0;
         });
         item.append('circle').attr({
@@ -1171,7 +1169,7 @@ mod.factory('n3utils', [
           return [];
         }
         domain = this.yExtent(series.filter(function(s) {
-          return s.axis === key;
+          return s.axis === key && s.visible !== false;
         }), data, options.stacks.filter(function(stack) {
           return stack.axis === key;
         }));

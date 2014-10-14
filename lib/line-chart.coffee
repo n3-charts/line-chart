@@ -84,8 +84,10 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     scope.$watch('data', scope.update, true)
     scope.$watch('options', (v) ->
-      return if isUpdatingOptions
-      scope.update()
+      if isUpdatingOptions
+        scope.redraw(dim)
+      else
+        scope.update()
     , true)
 
   return {
