@@ -13,15 +13,15 @@ describe 'size', ->
     </div>
     """
     innerScope = element.childByClass('chart').aElement.isolateScope()
-    sinon.stub(innerScope, 'redraw', ->)
-    sinon.spy(innerScope, 'update')
+    sinon.stub(innerScope, 'update', ->)
+    sinon.spy(innerScope, 'redraw')
 
-  it 'should update when $window resize', inject ($window) ->
+  it 'should redraw when $window resize', inject ($window) ->
     e = document.createEvent('HTMLEvents')
     e.initEvent 'resize', true, false
     $window.dispatchEvent e
 
-  it 'should pass the new dimensions to redraw when $window is resized ', inject ($window) ->
+  it 'should pass the new dimensions to update when $window is resized ', inject ($window) ->
     sinon.stub innerScope, 'updateDimensions', (d) ->
       d.width = 120
       d.height = 50
@@ -31,7 +31,7 @@ describe 'size', ->
     e.initEvent 'resize', true, false
     $window.dispatchEvent e
 
-  describe 'size computation method', ->
+  describe 'computation method', ->
     it 'should have default size', inject (pepito) ->
       {element, outerScope} = pepito.directive("""
       <div>
@@ -40,12 +40,12 @@ describe 'size', ->
       """,
       (element) ->
         innerScope = element.children()[0].aElement.isolateScope()
-        sinon.spy innerScope, 'redraw'
         sinon.spy innerScope, 'update'
+        sinon.spy innerScope, 'redraw'
       )
 
       innerScope = element.childByClass('chart').aElement.isolateScope()
-      expect(innerScope.redraw.args[0][0]).to.eql
+      expect(innerScope.update.args[0][0]).to.eql
         top: 20
         right: 50
         bottom: 60
@@ -61,8 +61,8 @@ describe 'size', ->
       """,
       (element) ->
         innerScope = element.children()[0].aElement.isolateScope()
-        sinon.stub innerScope, 'redraw', ->
-        sinon.spy innerScope, 'update'
+        sinon.stub innerScope, 'update', ->
+        sinon.spy innerScope, 'redraw'
 
         sinon.stub n3utils, 'getPixelCssProp', (element, property) ->
           throw new Error('Invalid id given to getPixelCssProp function') if element.id isnt 'toto'
@@ -83,7 +83,7 @@ describe 'size', ->
       innerScope = element.children()[0].aElement.isolateScope()
 
       outerScope.$digest()
-      expect(innerScope.redraw.args[1][0]).to.eql
+      expect(innerScope.update.args[1][0]).to.eql
         top: 20
         right: 50
         bottom: 60
