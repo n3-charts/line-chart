@@ -104,7 +104,7 @@
         return [] unless o = options.axes[key]
 
         domain = this.yExtent(
-          series.filter (s) -> s.axis is key
+          series.filter (s) -> s.axis is key and s.visible isnt false
           data
           options.stacks.filter (stack) -> stack.axis is key
         )

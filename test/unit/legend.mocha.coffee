@@ -81,8 +81,8 @@ describe 'legend', ->
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('0.2')
 
     fakeMouse.clickOn(l_0.childNodes[0])
-    expect(fn('lineGroup series_0')).to.equal('initial')
-    expect(fn('dotGroup series_0')).to.equal('initial')
+    expect(fn('lineGroup series_0')).to.equal('')
+    expect(fn('dotGroup series_0')).to.equal('')
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('1')
 
   it 'should be able to hide a series at startup', ->
