@@ -279,8 +279,166 @@ angular.module('directives', [])
     replace: true,
     scope: {axis: '=', key: '=', fields: '='},
     link: function(scope, element, attrs) {
+      scope.expanded = true;
       scope.xTypes = ['linear', 'date'];
       scope.yTypes = ['linear', 'log'];
+
+      // scope.$watch('axis', function(axis) {
+      //   var ticks = axis.ticks;
+
+      //   var numeric = parseInt(ticks, 10);
+
+      //   if (isNaN(numeric)) {
+      //     console.log('isNaN');
+      //     try {
+      //       ticks = JSON.parse(ticks)
+      //       console.log('parsed')
+      //     } catch (e) {
+      //       ticks = undefined
+      //       console.log('error');
+      //     }
+      //   }
+
+      //   console.log('ticks : ', ticks);
+      //   axis.ticks = ticks;
+      // }, true);
+    }
+  }
+})
+
+.directive('arrayInput', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      value: '='
+    },
+    link: function(scope, elm, attrs) {
+      scope.$watch('value', function(v) {
+        if (v === undefined) {
+          return;
+        }
+
+        v = v == '' ? undefined : v;
+
+        scope.myModel = v.toString();
+      });
+
+      scope.$watch('myModel', function(v) {
+        if (v === undefined) {
+          return;
+        }
+
+        try {
+          scope.value = eval(v);
+        }
+        catch (e) {}
+      });
+      // var bound = false;
+
+      // scope.$watch('value', function(v) {
+      //   console.log(v);
+      //   if (v === undefined) {
+      //     return;
+      //   }
+
+      //   if (isNaN(parseInt(v, 10))) {
+      //     scope.myModel = JSON.stringify(v);
+      //   } else {
+      //     scope.myModel = '' + v;
+      //   }
+
+      //   console.log(scope.myModel);
+      // });
+
+      // var focusCb = function() {
+      //   console.log('binding to blur');
+      //   elm.unbind('focus', focusCb);
+      //   elm.bind('blur', blurCb);
+      // };
+
+      // var blurCb = function() {
+      //   console.log('unbinding focus');
+      //   elm.unbind('blur', blurCb);
+      //   bound = false;
+
+      //   if (scope.myModel === '') {
+      //     scope.value = undefined;
+      //     return;
+      //   }
+
+      //   var value;
+      //   try {
+      //     console.log('parsing ', scope.myModel);
+      //     value = JSON.parse(scope.myModel);
+      //     console.log('parsed ', value);
+      //   } catch (e) {
+      //     console.log(e);
+      //   }
+
+      //   scope.value = value;
+      //   console.log(value, scope.value);
+      //   scope.$apply();
+      // };
+
+      // scope.$watch('myModel', function(v) {
+      //   var numeric = parseInt(v, 10);
+
+      //   if (!isNaN(numeric)) {
+      //     console.log('is numeric');
+      //     scope.value = numeric;
+      //   } else if (bound == false) {
+      //     console.log('binding to focus');
+      //     elm.bind('focus', focusCb);
+      //     bound = true;
+      //   }
+      // });
+    },
+    template: '<input ng-model="myModel">'
+  }
+})
+
+.directive('upDown', ['$document', '$parse', function($document, $parse) {
+  return {
+    link: function(scope, element, attributes) {
+      if (attributes.ngModel === undefined) {
+        return
+      }
+
+      var getter = $parse(attributes.ngModel);
+      var setter = getter.assign || angular.noop;
+
+
+      var onKeyDown = function(event) {
+        if (event.keyIdentifier === 'Up') {
+          setter(scope, +getter(scope) + 1);
+        } else if (event.keyIdentifier === 'Down') {
+          setter(scope, +getter(scope) - 1);
+        }
+
+        scope.$apply();
+      }
+
+      element.bind('focus', function() {
+        $document.bind('keydown', onKeyDown);
+      });
+
+      element.bind('blur', function() {
+        $document.unbind('keydown', onKeyDown);
+      });
+    }
+  }
+}])
+
+.directive('linkIssues', function() {
+  return {
+    link: function(scope, element, attributes) {
+      scope.$watch(function() {
+        element[0].innerHTML = element[0].innerHTML.replace(
+          /\[#(\d+)\]/g,
+          '<a href="https://github.com/n3-charts/line-chart/issues/$1">#$1</a>'
+        );
+      });
     }
   }
 })

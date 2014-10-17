@@ -13,6 +13,16 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
   mixpanel.track("Home");
   $scope.releases = [
     {
+      tag: '1.1.3',
+      name: 'jealous-jeopardy',
+      lines: [
+        'Added the <code>ticks</code> option for axes ([#121])',
+        'Chart now updates when a series is shown/hidden ([#125])',
+        'People can now pimp dem charts with the new dotSize option yo ([#129])',
+        'Added <code>min</code> and <code>max</code> option for axes'
+      ]
+    },
+    {
       tag: '1.1.2',
       name: 'immediate-idiocracy',
       lines: [
@@ -20,7 +30,7 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
         'Scrubber tooltip mode is now the default mode',
         '<code>drawDots</code> is now a per-series options (thanks <a href="https://github.com/andygray"><i class="fa fa-github"></i> andygray</a>)',
         '<code>columnsHGap</code> options allows to pimp a little bit dem columns yo.',
-        'Fixed a bunch of issues (#64, #85, #111)',
+        'Fixed a bunch of issues ([#64], [#85], [#111])',
         'A better playground !'
       ]
     },
@@ -41,7 +51,7 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
     {
       tag: '1.0.8', name: 'edible-elephant',
       lines: [
-        'Fixed update issue (#86)',
+        'Fixed update issue ([#86])',
         'Added super cool new tooltip mode (called \'scrubber\')'
       ]
     },
@@ -78,7 +88,7 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
         'Legend icons are now clipped',
         'Demo page now uses <a href="http://lorem--ipsum.github.io/apojop/#/">APOJOP</a> for pretty printing.',
         'Upgraded to latest AngularJS (1.2.15) and D3 (3.4.3)',
-        'Minor bug fixes (#54, #55)'
+        'Minor bug fixes ([#54], [#55])'
       ]
     },
     {
@@ -118,7 +128,11 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
       ]
     }
   ];
-  $scope.releases.forEach(function(r) {r.lines = r.lines.map(function(line) {return $sce.trustAsHtml(line);})});
+  $scope.releases.forEach(function(r) {
+    r.lines = r.lines.map(function(line) {
+      return $sce.trustAsHtml(line);
+    })
+  });
 
   $scope.data = [
     {x: 0, y: 0, other_y: 0, val_2: 0, val_3: 0},

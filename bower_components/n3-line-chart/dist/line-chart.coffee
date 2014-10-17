@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.2 - 12 July 2014
+line-chart - v1.1.3 - 17 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -16,6 +16,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     _u = n3utils
     dim = _u.getDefaultMargins()
 
+    # Hacky hack so the chart doesn't grow in height when resizing...
+    element[0].style['font-size'] = 0
+
     scope.updateDimensions = (dimensions) ->
       top = _u.getPixelCssProp(element[0].parentElement, 'padding-top')
       bottom = _u.getPixelCssProp(element[0].parentElement, 'padding-bottom')
@@ -24,20 +27,18 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right
       dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom
 
-    scope.update = ->
+    scope.redraw = ->
       scope.updateDimensions(dim)
-      scope.redraw(dim)
+      scope.update(dim)
 
 
     isUpdatingOptions = false
     initialHandlers =
       onSeriesVisibilityChange: ({series, index, newVisibility}) ->
-        isUpdatingOptions = true
         scope.options.series[index].visible = newVisibility
         scope.$apply()
-        isUpdatingOptions = false
 
-    scope.redraw = (dimensions) ->
+    scope.update = (dimensions) ->
       options = _u.sanitizeOptions(scope.options, attrs.mode)
       handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options))
       dataPerSeries = _u.getDataPerSeries(scope.data, options)
@@ -84,15 +85,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     promise = undefined
     window_resize = ->
       $timeout.cancel(promise) if promise?
-      promise = $timeout(scope.update, 1)
+      promise = $timeout(scope.redraw, 1)
 
     $window.addEventListener('resize', window_resize)
 
-    scope.$watch('data', scope.update, true)
-    scope.$watch('options', (v) ->
-      return if isUpdatingOptions
-      scope.update()
-    , true)
+    scope.$watch('data', scope.redraw, true)
+    scope.$watch('options', scope.redraw, true)
 
   return {
     replace: true
@@ -302,7 +300,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .enter().append('circle')
             .attr(
               'class': 'dot'
-              'r': 2
+              'r': (d) -> d.dotSize
               'cx': (d) -> axes.xScale(d.x)
               'cy': (d) -> axes[d.axis + 'Scale'](d.y + d.y0)
             )
@@ -314,7 +312,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
-            target.attr('r', 4)
+            target.attr('r', (s) -> s.dotSize + 2)
 
             handlers.onMouseOver?(svg, {
               series: series
@@ -324,7 +322,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             })
           )
           .on('mouseout', (d) ->
-            d3.select(d3.event.target).attr('r', 2)
+            d3.select(d3.event.target).attr('r', (s) -> s.dotSize)
             handlers.onMouseOut?(svg)
           )
 
@@ -403,10 +401,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             )
 
         item.on('click', (s, i) ->
-          isNowVisible = that.toggleSeries(svg, i)
-
-          d3.select(this).attr('opacity', if isNowVisible then '1' else '0.2')
-          handlers.onSeriesVisibilityChange?({series: s, index: i, newVisibility: isNowVisible})
+          handlers.onSeriesVisibilityChange?({
+            series: s,
+            index: i,
+            newVisibility: !(s.visible isnt false)
+          })
         )
 
         item.append('circle')
@@ -709,6 +708,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             thickness: s.thickness
             drawDots: s.drawDots isnt false
 
+
+          if s.dotSize?
+            seriesData.dotSize = s.dotSize
+
           if s.striped is true
             seriesData.striped = true
 
@@ -719,12 +722,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             seriesData.id = s.id
 
           data.filter((row) -> row[s.y]?).forEach (row) ->
-            seriesData.values.push(
+            d =
               x: row[options.axes.x.key]
               y: row[s.y]
               y0: 0
               axis: s.axis || 'y'
-            )
+
+            d.dotSize = s.dotSize if s.dotSize?
+            seriesData.values.push(d)
 
           return seriesData
 
@@ -912,11 +917,16 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             delete s.thickness
             delete s.lineMode
             delete s.drawDots
+            delete s.dotSize
           else if not /^\d+px$/.test(s.thickness)
             s.thickness = '1px'
 
-          if s.type in ['line', 'area'] and s.lineMode not in ['dashed']
-            delete s.lineMode
+          if s.type in ['line', 'area']
+            if s.lineMode not in ['dashed']
+              delete s.lineMode
+
+            if s.drawDots isnt false and !s.dotSize?
+              s.dotSize = 2
 
           if !s.id?
             cnt = 0
@@ -925,6 +935,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             s.id = "series_#{cnt}"
             knownIds[s.id] = s
 
+          if s.drawDots is false
+            delete s.dotSize
+
         return options
 
       sanitizeAxes: (axesOptions, secondAxis) ->
@@ -932,28 +945,26 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         axesOptions.x = this.sanitizeAxisOptions(axesOptions.x)
         axesOptions.x.key or= "x"
+
         axesOptions.y = this.sanitizeAxisOptions(axesOptions.y)
         axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2) if secondAxis
-
-        this.sanitizeExtrema(axesOptions.y)
-        this.sanitizeExtrema(axesOptions.y2) if secondAxis
 
         return axesOptions
 
       sanitizeExtrema: (options) ->
-        min = this.getSanitizedExtremum(options.min)
+        min = this.getSanitizedNumber(options.min)
         if min?
           options.min = min
         else
           delete options.min
 
-        max = this.getSanitizedExtremum(options.max)
+        max = this.getSanitizedNumber(options.max)
         if max?
           options.max = max
         else
           delete options.max
 
-      getSanitizedExtremum: (value) ->
+      getSanitizedNumber: (value) ->
         return undefined unless value?
 
         number = parseInt(value, 10)
@@ -968,6 +979,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return {type: 'linear'} unless options?
 
         options.type or= 'linear'
+
+        this.sanitizeExtrema(options)
+
+        if options.ticks and options.ticks instanceof Array
+          options.tickValues = options.ticks
+          delete options.ticks
 
         return options
 
@@ -1006,9 +1023,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         y.clamp(true)
         y2.clamp(true)
 
-        xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction)
-        yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction)
-        y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat(axesOptions.y2?.labelFunction)
+        xAxis = this.createAxis(x, 'x', axesOptions)
+        yAxis = this.createAxis(y, 'y', axesOptions)
+        y2Axis = this.createAxis(y2, 'y2', axesOptions)
 
         style = (group) ->
           group.style(
@@ -1064,6 +1081,24 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             }
           }
 
+      createAxis: (scale, key, options) ->
+        sides =
+          x: 'bottom'
+          y: 'left'
+          y2: 'right'
+
+        o = options[key]
+
+        axis = d3.svg.axis()
+          .scale(scale)
+          .orient(sides[key])
+          .tickFormat(o?.labelFunction)
+
+        axis.ticks(o?.ticks) if o?.ticks?
+        axis.tickValues(o?.tickValues) if o?.tickValues?
+
+        return axis
+
       setScalesDomain: (scales, data, series, svg, options) ->
         this.setXScale(scales.xScale, data, series, options.axes)
 
@@ -1080,8 +1115,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]
 
+        if o?.tickValues?
+          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]]
+
         domain = this.yExtent(
-          series.filter (s) -> s.axis is key
+          series.filter (s) -> s.axis is key and s.visible isnt false
           data
           options.stacks.filter (stack) -> stack.axis is key
         )
@@ -1127,10 +1165,15 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return [minY, maxY]
 
       setXScale: (xScale, data, series, axesOptions) ->
-        xScale.domain(this.xExtent(data, axesOptions.x.key))
-
+        domain = this.xExtent(data, axesOptions.x.key)
         if series.filter((s) -> s.type is 'column').length
-          this.adjustXScaleForColumns(xScale, data, axesOptions.x.key)
+          this.adjustXDomainForColumns(domain, data, axesOptions.x.key)
+
+        o = axesOptions.x
+        domain[0] = o.min if o.min?
+        domain[1] = o.max if o.max?
+
+        xScale.domain(domain)
 
       xExtent: (data, key) ->
         [from, to] = d3.extent(data, (d) -> d[key])
@@ -1143,13 +1186,15 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return [from, to]
 
-      adjustXScaleForColumns: (xScale, data, field) ->
+      adjustXDomainForColumns: (domain, data, field) ->
         step = this.getAverageStep(data, field)
-        d = xScale.domain()
-        if angular.isDate(d[0])
-          xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)])
+
+        if angular.isDate(domain[0])
+          domain[0] = new Date(domain[0].getTime() - step)
+          domain[1] = new Date(domain[1].getTime() + step)
         else
-          xScale.domain([d[0] - step, d[1] + step])
+          domain[0] = domain[0] - step
+          domain[1] = domain[1] + step
 
       getAverageStep: (data, field) ->
         return 0 unless data.length > 1
