@@ -1,0 +1,28 @@
+angular.module('example', ['n3-line-chart'])
+  .controller('ExampleCtrl', function($scope) {
+    $scope.data = [
+      {x: 1, val_0: 0.993, val_1: 3.894, val_2: 8.47, val_3: 14.347},
+      {x: 2, val_0: 1.947, val_1: 7.174, val_2: 13.981, val_3: 19.991},
+      {x: 3, val_0: 2.823, val_1: 9.32, val_2: 14.608, val_3: 13.509},
+      {x: 4, val_0: 3.587, val_1: 9.996, val_2: 10.132, val_3: -1.167}
+    ];
+
+    $scope.options = {
+      series: [
+        {
+          y: "val_0",
+          label: "My super series",
+          color: "#ff7f0e",
+          type: "column"
+        },
+        {
+          y: "val_0",
+          label: "My also super series",
+          color: "steelblue",
+          type: "column",
+          axis: 'y2'
+        }
+      ],
+      axes: {x: {type: "linear", key: "x", min: -1, max: 5, ticks: 2}, y: {type: "linear", min: 0, max:100, ticks: 3}},
+    };
+  });

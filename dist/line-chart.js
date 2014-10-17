@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.3 - 14 October 2014
+line-chart - v1.1.3 - 17 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -1076,10 +1076,14 @@ mod.factory('n3utils', [
         }
         options.type || (options.type = 'linear');
         this.sanitizeExtrema(options);
+        if (options.ticks && options.ticks instanceof Array) {
+          options.tickValues = options.ticks;
+          delete options.ticks;
+        }
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
-        var drawY2Axis, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis, _ref;
+        var drawY2Axis, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis;
         drawY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
         height = dimensions.height;
@@ -1105,9 +1109,9 @@ mod.factory('n3utils', [
         }
         y.clamp(true);
         y2.clamp(true);
-        xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction);
-        yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction);
-        y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat((_ref = axesOptions.y2) != null ? _ref.labelFunction : void 0);
+        xAxis = this.createAxis(x, 'x', axesOptions);
+        yAxis = this.createAxis(y, 'y', axesOptions);
+        y2Axis = this.createAxis(y2, 'y2', axesOptions);
         style = function(group) {
           group.style({
             'font': '10px Courier',
@@ -1145,6 +1149,23 @@ mod.factory('n3utils', [
           }
         };
       },
+      createAxis: function(scale, key, options) {
+        var axis, o, sides;
+        sides = {
+          x: 'bottom',
+          y: 'left',
+          y2: 'right'
+        };
+        o = options[key];
+        axis = d3.svg.axis().scale(scale).orient(sides[key]).tickFormat(o != null ? o.labelFunction : void 0);
+        if ((o != null ? o.ticks : void 0) != null) {
+          axis.ticks(o != null ? o.ticks : void 0);
+        }
+        if ((o != null ? o.tickValues : void 0) != null) {
+          axis.tickValues(o != null ? o.tickValues : void 0);
+        }
+        return axis;
+      },
       setScalesDomain: function(scales, data, series, svg, options) {
         var y2Domain, yDomain;
         this.setXScale(scales.xScale, data, series, options.axes);
@@ -1160,6 +1181,9 @@ mod.factory('n3utils', [
         var domain, o;
         if (!(o = options.axes[key])) {
           return [];
+        }
+        if ((o != null ? o.tickValues : void 0) != null) {
+          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]];
         }
         domain = this.yExtent(series.filter(function(s) {
           return s.axis === key && s.visible !== false;
