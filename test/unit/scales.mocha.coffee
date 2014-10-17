@@ -53,6 +53,60 @@ describe 'scales', ->
 
         expect(n3utils.yExtent(series, data, [{series: ['id0', 'id1']}])).to.eql([1, 21])
 
+  describe 'tick count', ->
+    beforeEach ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, value: 4}
+          {x: 1, value: 8}
+        ]
+        outerScope.options =
+          axes:
+            x: {ticks: 2}
+            y: {ticks: 3}
+          series: [
+            {y: 'value', color: '#4682b4', label: 'toto'}
+            {y: 'value', axis: 'y2', color: '#4682b4', type: 'column'}
+          ]
+
+    it 'should work for vertical axes', ->
+      yticks = element.childByClass('y axis').children('text')
+      computedYTicks = yticks.map (t) -> t.domElement.textContent
+
+      expect(computedYTicks).to.eql(['4', '6', '8'])
+
+    it 'should work for horizontal axis', ->
+      xticks = element.childByClass('x axis').children('text')
+      computedXTicks = xticks.map (t) -> t.domElement.textContent
+      expect(computedXTicks).to.eql(['0', '2'])
+
+  describe 'tick values', ->
+    beforeEach ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, value: 4}
+          {x: 1, value: 8}
+        ]
+        outerScope.options =
+          axes:
+            x: {ticks: [-1, 0, 1]}
+            y: {ticks: [1, 2, 3]}
+          series: [
+            {y: 'value', color: '#4682b4', label: 'toto'}
+            {y: 'value', axis: 'y2', color: '#4682b4', type: 'column'}
+          ]
+
+    it 'should work for horizontal axis', ->
+      xticks = element.childByClass('x axis').children('text')
+      computedXTicks = xticks.map (t) -> t.domElement.textContent
+
+      expect(computedXTicks).to.eql(['-1.0', '0.0', '1.0'])
+
+    it 'should work for vertical axes', ->
+      yticks = element.childByClass('y axis').children('text')
+      computedYTicks = yticks.map (t) -> t.domElement.textContent
+
+      expect(computedYTicks).to.eql(['1.0', '2.0', '3.0'])
 
   describe 'min and max', ->
     beforeEach ->
@@ -63,6 +117,7 @@ describe 'scales', ->
         ]
         outerScope.options =
           axes:
+            x: {min: -5, max: 6}
             y: {min: 5, max: 6}
           series: [
             {y: 'value', color: '#4682b4', label: 'toto'}
@@ -74,6 +129,15 @@ describe 'scales', ->
       computedYTicks = yticks.map (t) -> t.domElement.textContent
       expect(computedYTicks).to.eql(
         ['5.0', '5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '6.0']
+      )
+
+    it 'should work for horizontal axis', ->
+      xticks = element.childByClass('x axis').children('text')
+      computedXTicks = xticks.map (t) -> t.domElement.textContent
+
+      # for some reason this is not sorted...
+      expect(computedXTicks).to.eql(
+        ['0', '1', '-5', '-4', '-3', '-2', '-1', '2', '3', '4', '5', '6']
       )
 
   describe 'logarithmic y axes', ->

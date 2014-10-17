@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.3 - 14 October 2014
+line-chart - v1.1.3 - 17 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -982,6 +982,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         this.sanitizeExtrema(options)
 
+        if options.ticks and options.ticks instanceof Array
+          options.tickValues = options.ticks
+          delete options.ticks
+
         return options
 
 # ----
@@ -1019,9 +1023,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         y.clamp(true)
         y2.clamp(true)
 
-        xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction)
-        yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction)
-        y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat(axesOptions.y2?.labelFunction)
+        xAxis = this.createAxis(x, 'x', axesOptions)
+        yAxis = this.createAxis(y, 'y', axesOptions)
+        y2Axis = this.createAxis(y2, 'y2', axesOptions)
 
         style = (group) ->
           group.style(
@@ -1077,6 +1081,24 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             }
           }
 
+      createAxis: (scale, key, options) ->
+        sides =
+          x: 'bottom'
+          y: 'left'
+          y2: 'right'
+
+        o = options[key]
+
+        axis = d3.svg.axis()
+          .scale(scale)
+          .orient(sides[key])
+          .tickFormat(o?.labelFunction)
+
+        axis.ticks(o?.ticks) if o?.ticks?
+        axis.tickValues(o?.tickValues) if o?.tickValues?
+
+        return axis
+
       setScalesDomain: (scales, data, series, svg, options) ->
         this.setXScale(scales.xScale, data, series, options.axes)
 
@@ -1092,6 +1114,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]
+
+        if o?.tickValues?
+          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]]
 
         domain = this.yExtent(
           series.filter (s) -> s.axis is key and s.visible isnt false
