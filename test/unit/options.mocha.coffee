@@ -89,7 +89,6 @@ describe 'options', ->
           y:
             type: 'linear'
 
-
     it 'should set default axes and empty series', ->
       o = n3utils.sanitizeOptions({})
       expect(o.axes).to.eql
@@ -128,7 +127,6 @@ describe 'options', ->
         y:
           type: 'linear'
 
-
     it 'should allow x axis configuration', ->
       expect(n3utils.sanitizeOptions(
         tooltip: {mode: 'axes', interpolate: false}
@@ -164,6 +162,45 @@ describe 'options', ->
 
       expect(computed).to.eql(expected)
 
+    it 'should pass the ticks property, whatever it is', ->
+      expected =
+        x:
+          type: 'linear'
+          key: 'x'
+          ticks: 2
+        y:
+          type: 'linear'
+          ticks: 5
+
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            ticks: 2
+          y:
+            ticks: 5
+      ).axes
+
+      expect(computed).to.eql(expected)
+
+    it 'should pass the tick values property, whatever it is', ->
+      expected =
+        x:
+          type: 'linear'
+          key: 'x'
+          tickValues: [2]
+        y:
+          type: 'linear'
+          tickValues: [5]
+
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            ticks: [2]
+          y:
+            ticks: [5]
+      ).axes
+
+      expect(computed).to.eql(expected)
 
     it 'should allow y axes extrema configuration', ->
       expected =
@@ -336,7 +373,6 @@ describe 'options', ->
           color: "#9467bd"
         }
       ]
-
 
     it 'should set y as the default axis', ->
       f = n3utils.sanitizeSeriesOptions

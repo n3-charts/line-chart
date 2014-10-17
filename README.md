@@ -45,9 +45,9 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear', min: 0, max: 10},
-    y: {type: 'linear', min: 0, max: 1},
-    y2: {type: 'linear', min: 0, max: 1}
+    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear', min: 0, max: 10, ticks: 2},
+    y: {type: 'linear', min: 0, max: 1, ticks: 5},
+    y2: {type: 'linear', min: 0, max: 1, ticks: [1, 2, 3, 4]}
   },
   series: [
     {y: 'value', color: 'steelblue', thickness: '2px', type: 'area', striped: true, label: 'Pouet'},
@@ -69,6 +69,7 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
  + `labelFunction` : optional, allows to format the axis' ticklabels. Must be a function that accepts a single argument and returns a string.
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
+ + `ticks` : optional, configures the axis' ticks (can be either a number or an array, more on this [here][3])
 
 It can also contain, according to your series configuration, a `y` and a `y2` key with the following properties :
 
@@ -162,3 +163,4 @@ It has a good coverage rate (above 95%), let's keep it this way.
 
   [1]: https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
   [2]: https://github.com/n3-charts/line-chart/issues/44
+  [3]: http://stackoverflow.com/a/11661725
