@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.3 - 10 September 2014
+line-chart - v1.1.3 - 14 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -16,6 +16,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     _u = n3utils
     dim = _u.getDefaultMargins()
 
+    # Hacky hack so the chart doesn't grow in height when resizing...
+    element[0].style['font-size'] = 0
+
     scope.updateDimensions = (dimensions) ->
       top = _u.getPixelCssProp(element[0].parentElement, 'padding-top')
       bottom = _u.getPixelCssProp(element[0].parentElement, 'padding-bottom')
@@ -24,20 +27,18 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right
       dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom
 
-    scope.update = ->
+    scope.redraw = ->
       scope.updateDimensions(dim)
-      scope.redraw(dim)
+      scope.update(dim)
 
 
     isUpdatingOptions = false
     initialHandlers =
       onSeriesVisibilityChange: ({series, index, newVisibility}) ->
-        isUpdatingOptions = true
         scope.options.series[index].visible = newVisibility
         scope.$apply()
-        isUpdatingOptions = false
 
-    scope.redraw = (dimensions) ->
+    scope.update = (dimensions) ->
       options = _u.sanitizeOptions(scope.options, attrs.mode)
       handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options))
       dataPerSeries = _u.getDataPerSeries(scope.data, options)
@@ -84,15 +85,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     promise = undefined
     window_resize = ->
       $timeout.cancel(promise) if promise?
-      promise = $timeout(scope.update, 1)
+      promise = $timeout(scope.redraw, 1)
 
     $window.addEventListener('resize', window_resize)
 
-    scope.$watch('data', scope.update, true)
-    scope.$watch('options', (v) ->
-      return if isUpdatingOptions
-      scope.update()
-    , true)
+    scope.$watch('data', scope.redraw, true)
+    scope.$watch('options', scope.redraw, true)
 
   return {
     replace: true
@@ -403,10 +401,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             )
 
         item.on('click', (s, i) ->
-          isNowVisible = that.toggleSeries(svg, i)
-
-          d3.select(this).attr('opacity', if isNowVisible then '1' else '0.2')
-          handlers.onSeriesVisibilityChange?({series: s, index: i, newVisibility: isNowVisible})
+          handlers.onSeriesVisibilityChange?({
+            series: s,
+            index: i,
+            newVisibility: !(s.visible isnt false)
+          })
         )
 
         item.append('circle')
@@ -1095,7 +1094,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return [] unless o = options.axes[key]
 
         domain = this.yExtent(
-          series.filter (s) -> s.axis is key
+          series.filter (s) -> s.axis is key and s.visible isnt false
           data
           options.stacks.filter (stack) -> stack.axis is key
         )

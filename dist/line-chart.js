@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.3 - 10 September 2014
+line-chart - v1.1.3 - 14 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -23,6 +23,7 @@ directive('linechart', [
       var dim, initialHandlers, isUpdatingOptions, promise, window_resize, _u;
       _u = n3utils;
       dim = _u.getDefaultMargins();
+      element[0].style['font-size'] = 0;
       scope.updateDimensions = function(dimensions) {
         var bottom, left, right, top;
         top = _u.getPixelCssProp(element[0].parentElement, 'padding-top');
@@ -32,22 +33,20 @@ directive('linechart', [
         dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right;
         return dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom;
       };
-      scope.update = function() {
+      scope.redraw = function() {
         scope.updateDimensions(dim);
-        return scope.redraw(dim);
+        return scope.update(dim);
       };
       isUpdatingOptions = false;
       initialHandlers = {
         onSeriesVisibilityChange: function(_arg) {
           var index, newVisibility, series;
           series = _arg.series, index = _arg.index, newVisibility = _arg.newVisibility;
-          isUpdatingOptions = true;
           scope.options.series[index].visible = newVisibility;
-          scope.$apply();
-          return isUpdatingOptions = false;
+          return scope.$apply();
         }
       };
-      scope.redraw = function(dimensions) {
+      scope.update = function(dimensions) {
         var axes, columnWidth, dataPerSeries, handlers, isThumbnail, options, svg;
         options = _u.sanitizeOptions(scope.options, attrs.mode);
         handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options));
@@ -86,16 +85,11 @@ directive('linechart', [
         if (promise != null) {
           $timeout.cancel(promise);
         }
-        return promise = $timeout(scope.update, 1);
+        return promise = $timeout(scope.redraw, 1);
       };
       $window.addEventListener('resize', window_resize);
-      scope.$watch('data', scope.update, true);
-      return scope.$watch('options', function(v) {
-        if (isUpdatingOptions) {
-          return;
-        }
-        return scope.update();
-      }, true);
+      scope.$watch('data', scope.redraw, true);
+      return scope.$watch('options', scope.redraw, true);
     };
     return {
       replace: true,
@@ -431,13 +425,10 @@ mod.factory('n3utils', [
           }
         });
         item.on('click', function(s, i) {
-          var isNowVisible;
-          isNowVisible = that.toggleSeries(svg, i);
-          d3.select(this).attr('opacity', isNowVisible ? '1' : '0.2');
           return typeof handlers.onSeriesVisibilityChange === "function" ? handlers.onSeriesVisibilityChange({
             series: s,
             index: i,
-            newVisibility: isNowVisible
+            newVisibility: !(s.visible !== false)
           }) : void 0;
         });
         item.append('circle').attr({
@@ -1171,7 +1162,7 @@ mod.factory('n3utils', [
           return [];
         }
         domain = this.yExtent(series.filter(function(s) {
-          return s.axis === key;
+          return s.axis === key && s.visible !== false;
         }), data, options.stacks.filter(function(stack) {
           return stack.axis === key;
         }));
