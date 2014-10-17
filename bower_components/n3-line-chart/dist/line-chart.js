@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.2 - 12 July 2014
+line-chart - v1.1.3 - 17 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -23,6 +23,7 @@ directive('linechart', [
       var dim, initialHandlers, isUpdatingOptions, promise, window_resize, _u;
       _u = n3utils;
       dim = _u.getDefaultMargins();
+      element[0].style['font-size'] = 0;
       scope.updateDimensions = function(dimensions) {
         var bottom, left, right, top;
         top = _u.getPixelCssProp(element[0].parentElement, 'padding-top');
@@ -32,22 +33,20 @@ directive('linechart', [
         dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right;
         return dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom;
       };
-      scope.update = function() {
+      scope.redraw = function() {
         scope.updateDimensions(dim);
-        return scope.redraw(dim);
+        return scope.update(dim);
       };
       isUpdatingOptions = false;
       initialHandlers = {
         onSeriesVisibilityChange: function(_arg) {
           var index, newVisibility, series;
           series = _arg.series, index = _arg.index, newVisibility = _arg.newVisibility;
-          isUpdatingOptions = true;
           scope.options.series[index].visible = newVisibility;
-          scope.$apply();
-          return isUpdatingOptions = false;
+          return scope.$apply();
         }
       };
-      scope.redraw = function(dimensions) {
+      scope.update = function(dimensions) {
         var axes, columnWidth, dataPerSeries, handlers, isThumbnail, options, svg;
         options = _u.sanitizeOptions(scope.options, attrs.mode);
         handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options));
@@ -86,16 +85,11 @@ directive('linechart', [
         if (promise != null) {
           $timeout.cancel(promise);
         }
-        return promise = $timeout(scope.update, 1);
+        return promise = $timeout(scope.redraw, 1);
       };
       $window.addEventListener('resize', window_resize);
-      scope.$watch('data', scope.update, true);
-      return scope.$watch('options', function(v) {
-        if (isUpdatingOptions) {
-          return;
-        }
-        return scope.update();
-      }, true);
+      scope.$watch('data', scope.redraw, true);
+      return scope.$watch('options', scope.redraw, true);
     };
     return {
       replace: true,
@@ -331,7 +325,9 @@ mod.factory('n3utils', [
           return d.values;
         }).enter().append('circle').attr({
           'class': 'dot',
-          'r': 2,
+          'r': function(d) {
+            return d.dotSize;
+          },
           'cx': function(d) {
             return axes.xScale(d.x);
           },
@@ -346,7 +342,9 @@ mod.factory('n3utils', [
           dotGroup.on('mouseover', function(series) {
             var target;
             target = d3.select(d3.event.target);
-            target.attr('r', 4);
+            target.attr('r', function(s) {
+              return s.dotSize + 2;
+            });
             return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
               series: series,
               x: target.attr('cx'),
@@ -354,7 +352,9 @@ mod.factory('n3utils', [
               datum: target.datum()
             }) : void 0;
           }).on('mouseout', function(d) {
-            d3.select(d3.event.target).attr('r', 2);
+            d3.select(d3.event.target).attr('r', function(s) {
+              return s.dotSize;
+            });
             return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
           });
         }
@@ -425,13 +425,10 @@ mod.factory('n3utils', [
           }
         });
         item.on('click', function(s, i) {
-          var isNowVisible;
-          isNowVisible = that.toggleSeries(svg, i);
-          d3.select(this).attr('opacity', isNowVisible ? '1' : '0.2');
           return typeof handlers.onSeriesVisibilityChange === "function" ? handlers.onSeriesVisibilityChange({
             series: s,
             index: i,
-            newVisibility: isNowVisible
+            newVisibility: !(s.visible !== false)
           }) : void 0;
         });
         item.append('circle').attr({
@@ -749,6 +746,9 @@ mod.factory('n3utils', [
             thickness: s.thickness,
             drawDots: s.drawDots !== false
           };
+          if (s.dotSize != null) {
+            seriesData.dotSize = s.dotSize;
+          }
           if (s.striped === true) {
             seriesData.striped = true;
           }
@@ -761,12 +761,17 @@ mod.factory('n3utils', [
           data.filter(function(row) {
             return row[s.y] != null;
           }).forEach(function(row) {
-            return seriesData.values.push({
+            var d;
+            d = {
               x: row[options.axes.x.key],
               y: row[s.y],
               y0: 0,
               axis: s.axis || 'y'
-            });
+            };
+            if (s.dotSize != null) {
+              d.dotSize = s.dotSize;
+            }
+            return seriesData.values.push(d);
           });
           return seriesData;
         });
@@ -997,11 +1002,17 @@ mod.factory('n3utils', [
             delete s.thickness;
             delete s.lineMode;
             delete s.drawDots;
+            delete s.dotSize;
           } else if (!/^\d+px$/.test(s.thickness)) {
             s.thickness = '1px';
           }
-          if (((_ref2 = s.type) === 'line' || _ref2 === 'area') && ((_ref3 = s.lineMode) !== 'dashed')) {
-            delete s.lineMode;
+          if ((_ref2 = s.type) === 'line' || _ref2 === 'area') {
+            if ((_ref3 = s.lineMode) !== 'dashed') {
+              delete s.lineMode;
+            }
+            if (s.drawDots !== false && (s.dotSize == null)) {
+              s.dotSize = 2;
+            }
           }
           if (s.id == null) {
             cnt = 0;
@@ -1009,7 +1020,10 @@ mod.factory('n3utils', [
               cnt++;
             }
             s.id = "series_" + cnt;
-            return knownIds[s.id] = s;
+            knownIds[s.id] = s;
+          }
+          if (s.drawDots === false) {
+            return delete s.dotSize;
           }
         });
         return options;
@@ -1025,28 +1039,24 @@ mod.factory('n3utils', [
         if (secondAxis) {
           axesOptions.y2 = this.sanitizeAxisOptions(axesOptions.y2);
         }
-        this.sanitizeExtrema(axesOptions.y);
-        if (secondAxis) {
-          this.sanitizeExtrema(axesOptions.y2);
-        }
         return axesOptions;
       },
       sanitizeExtrema: function(options) {
         var max, min;
-        min = this.getSanitizedExtremum(options.min);
+        min = this.getSanitizedNumber(options.min);
         if (min != null) {
           options.min = min;
         } else {
           delete options.min;
         }
-        max = this.getSanitizedExtremum(options.max);
+        max = this.getSanitizedNumber(options.max);
         if (max != null) {
           return options.max = max;
         } else {
           return delete options.max;
         }
       },
-      getSanitizedExtremum: function(value) {
+      getSanitizedNumber: function(value) {
         var number;
         if (value == null) {
           return void 0;
@@ -1065,10 +1075,15 @@ mod.factory('n3utils', [
           };
         }
         options.type || (options.type = 'linear');
+        this.sanitizeExtrema(options);
+        if (options.ticks && options.ticks instanceof Array) {
+          options.tickValues = options.ticks;
+          delete options.ticks;
+        }
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
-        var drawY2Axis, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis, _ref;
+        var drawY2Axis, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis;
         drawY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
         height = dimensions.height;
@@ -1094,9 +1109,9 @@ mod.factory('n3utils', [
         }
         y.clamp(true);
         y2.clamp(true);
-        xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(axesOptions.x.labelFunction);
-        yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(axesOptions.y.labelFunction);
-        y2Axis = d3.svg.axis().scale(y2).orient('right').tickFormat((_ref = axesOptions.y2) != null ? _ref.labelFunction : void 0);
+        xAxis = this.createAxis(x, 'x', axesOptions);
+        yAxis = this.createAxis(y, 'y', axesOptions);
+        y2Axis = this.createAxis(y2, 'y2', axesOptions);
         style = function(group) {
           group.style({
             'font': '10px Courier',
@@ -1134,6 +1149,23 @@ mod.factory('n3utils', [
           }
         };
       },
+      createAxis: function(scale, key, options) {
+        var axis, o, sides;
+        sides = {
+          x: 'bottom',
+          y: 'left',
+          y2: 'right'
+        };
+        o = options[key];
+        axis = d3.svg.axis().scale(scale).orient(sides[key]).tickFormat(o != null ? o.labelFunction : void 0);
+        if ((o != null ? o.ticks : void 0) != null) {
+          axis.ticks(o != null ? o.ticks : void 0);
+        }
+        if ((o != null ? o.tickValues : void 0) != null) {
+          axis.tickValues(o != null ? o.tickValues : void 0);
+        }
+        return axis;
+      },
       setScalesDomain: function(scales, data, series, svg, options) {
         var y2Domain, yDomain;
         this.setXScale(scales.xScale, data, series, options.axes);
@@ -1150,8 +1182,11 @@ mod.factory('n3utils', [
         if (!(o = options.axes[key])) {
           return [];
         }
+        if ((o != null ? o.tickValues : void 0) != null) {
+          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]];
+        }
         domain = this.yExtent(series.filter(function(s) {
-          return s.axis === key;
+          return s.axis === key && s.visible !== false;
         }), data, options.stacks.filter(function(stack) {
           return stack.axis === key;
         }));
@@ -1213,12 +1248,21 @@ mod.factory('n3utils', [
         return [minY, maxY];
       },
       setXScale: function(xScale, data, series, axesOptions) {
-        xScale.domain(this.xExtent(data, axesOptions.x.key));
+        var domain, o;
+        domain = this.xExtent(data, axesOptions.x.key);
         if (series.filter(function(s) {
           return s.type === 'column';
         }).length) {
-          return this.adjustXScaleForColumns(xScale, data, axesOptions.x.key);
+          this.adjustXDomainForColumns(domain, data, axesOptions.x.key);
         }
+        o = axesOptions.x;
+        if (o.min != null) {
+          domain[0] = o.min;
+        }
+        if (o.max != null) {
+          domain[1] = o.max;
+        }
+        return xScale.domain(domain);
       },
       xExtent: function(data, key) {
         var from, to, _ref;
@@ -1234,14 +1278,15 @@ mod.factory('n3utils', [
         }
         return [from, to];
       },
-      adjustXScaleForColumns: function(xScale, data, field) {
-        var d, step;
+      adjustXDomainForColumns: function(domain, data, field) {
+        var step;
         step = this.getAverageStep(data, field);
-        d = xScale.domain();
-        if (angular.isDate(d[0])) {
-          return xScale.domain([new Date(d[0].getTime() - step), new Date(d[1].getTime() + step)]);
+        if (angular.isDate(domain[0])) {
+          domain[0] = new Date(domain[0].getTime() - step);
+          return domain[1] = new Date(domain[1].getTime() + step);
         } else {
-          return xScale.domain([d[0] - step, d[1] + step]);
+          domain[0] = domain[0] - step;
+          return domain[1] = domain[1] + step;
         }
       },
       getAverageStep: function(data, field) {

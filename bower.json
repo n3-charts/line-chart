@@ -19,5 +19,8 @@
     "angular-mocks": "*",
     "moment": "*",
     "n3-line-chart": "*"
+  },
+  "resolutions": {
+    "angular": "1.3.0"
   }
 }

@@ -1,5 +1,7 @@
 # n3-line-chart [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart)
 
+![](https://raw.githubusercontent.com/n3-charts/line-chart/gh-pages/assets/images/n3-charts.png)
+
 n3-line-chart makes creating beautiful charts for [AngularJS](http://angularjs.org/) applications easy and semantic. It is built on top of [D3.js](http://d3js.org/).
 
 You can find examples on the [demo page](http://n3-charts.github.io/line-chart/).
@@ -43,13 +45,13 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear'},
-    y: {type: 'linear', min: 0, max: 1},
-    y2: {type: 'linear', min: 0, max: 1}
+    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear', min: 0, max: 10, ticks: 2},
+    y: {type: 'linear', min: 0, max: 1, ticks: 5},
+    y2: {type: 'linear', min: 0, max: 1, ticks: [1, 2, 3, 4]}
   },
   series: [
     {y: 'value', color: 'steelblue', thickness: '2px', type: 'area', striped: true, label: 'Pouet'},
-    {y: 'otherValue', axis: 'y2', color: 'lightsteelblue', visible: false, drawDots: true}
+    {y: 'otherValue', axis: 'y2', color: 'lightsteelblue', visible: false, drawDots: true, dotSize: 2}
   ],
   lineMode: 'linear',
   tension: 0.7,
@@ -65,6 +67,9 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
  + `key` : optional, defines where the chart will look for abscissas values in the data (default is 'x').
  + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
  + `labelFunction` : optional, allows to format the axis' ticklabels. Must be a function that accepts a single argument and returns a string.
+ + `min` : optional, forces the axis minimum value (default is computed from data)
+ + `max` : optional, forces the axis maximum value (default is computed from data)
+ + `ticks` : optional, configures the axis' ticks (can be either a number or an array, more on this [here][3])
 
 It can also contain, according to your series configuration, a `y` and a `y2` key with the following properties :
 
@@ -86,6 +91,7 @@ The `series` key must be an array which contains objects with the following prop
 + `lineMode` : optional, can be `dashed`. Default is undefined. Defines whether the series is rendered as a dashed line. Removed if the series type is not `line` or `area`.
 + `drawDots` : optional, can be either `true` or `false`. Default is true. Defines whether the series is rendered with dots on a per `series` basis. Overrides the global setting.
 + `visible` : optional, can be either `true` or `false`. Default is true. Defines whether the series is initially visible. Will be updated if the series gets hidden or shown through a click on the legend.
++ `dotSize` : optional, must be an numerical value. Default is `2`. Will be ignored if the series type is not `area` or `line`, or if `drawDots` is set to `false`.
 
 ##### Tooltip
 The `tooltip` must be an object which contains the following properties :
@@ -157,3 +163,4 @@ It has a good coverage rate (above 95%), let's keep it this way.
 
   [1]: https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
   [2]: https://github.com/n3-charts/line-chart/issues/44
+  [3]: http://stackoverflow.com/a/11661725
