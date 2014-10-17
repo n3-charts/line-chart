@@ -155,8 +155,11 @@
 
         this.sanitizeExtrema(options)
 
+        delete options.tickValues
+
         if options.ticks and options.ticks instanceof Array
           options.tickValues = options.ticks
           delete options.ticks
+
 
         return options
