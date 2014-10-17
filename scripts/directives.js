@@ -315,13 +315,14 @@ angular.module('directives', [])
     },
     link: function(scope, elm, attrs) {
       scope.$watch('value', function(v) {
-        if (v === undefined) {
+        if (!v) {
           return;
         }
-
-        v = v == '' ? undefined : v;
-
-        scope.myModel = v.toString();
+        if (v instanceof Array) {
+          scope.myModel = '[' + v.toString() + ']';
+        } else {
+          scope.myModel = v.toString();
+        }
       });
 
       scope.$watch('myModel', function(v) {
@@ -329,70 +330,24 @@ angular.module('directives', [])
           return;
         }
 
-        try {
-          scope.value = eval(v);
+        if (v === '') {
+          scope.value = undefined;
+          return;
         }
-        catch (e) {}
+
+        try {
+          value = eval(v);
+          console.log(scope.value, v);
+          if (scope.value === undefined || scope.value === null) {
+            scope.value = value;
+          } else if (scope.value.toString() != value.toString()) {
+            scope.value = value;
+          }
+        }
+        catch (e) {
+          console.log(e);
+        }
       });
-      // var bound = false;
-
-      // scope.$watch('value', function(v) {
-      //   console.log(v);
-      //   if (v === undefined) {
-      //     return;
-      //   }
-
-      //   if (isNaN(parseInt(v, 10))) {
-      //     scope.myModel = JSON.stringify(v);
-      //   } else {
-      //     scope.myModel = '' + v;
-      //   }
-
-      //   console.log(scope.myModel);
-      // });
-
-      // var focusCb = function() {
-      //   console.log('binding to blur');
-      //   elm.unbind('focus', focusCb);
-      //   elm.bind('blur', blurCb);
-      // };
-
-      // var blurCb = function() {
-      //   console.log('unbinding focus');
-      //   elm.unbind('blur', blurCb);
-      //   bound = false;
-
-      //   if (scope.myModel === '') {
-      //     scope.value = undefined;
-      //     return;
-      //   }
-
-      //   var value;
-      //   try {
-      //     console.log('parsing ', scope.myModel);
-      //     value = JSON.parse(scope.myModel);
-      //     console.log('parsed ', value);
-      //   } catch (e) {
-      //     console.log(e);
-      //   }
-
-      //   scope.value = value;
-      //   console.log(value, scope.value);
-      //   scope.$apply();
-      // };
-
-      // scope.$watch('myModel', function(v) {
-      //   var numeric = parseInt(v, 10);
-
-      //   if (!isNaN(numeric)) {
-      //     console.log('is numeric');
-      //     scope.value = numeric;
-      //   } else if (bound == false) {
-      //     console.log('binding to focus');
-      //     elm.bind('focus', focusCb);
-      //     bound = true;
-      //   }
-      // });
     },
     template: '<input ng-model="myModel">'
   }
