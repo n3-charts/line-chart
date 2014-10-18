@@ -100,8 +100,10 @@
           .orient(sides[key])
           .tickFormat(o?.labelFunction)
 
-        axis.ticks(o?.ticks) if o?.ticks?
-        axis.tickValues(o?.tickValues) if o?.tickValues?
+        return axis unless o?
+
+        axis.ticks(o.ticks) if angular.isNumber(o.ticks)
+        axis.tickValues(o.ticks) if angular.isArray(o.ticks)
 
         return axis
 
@@ -121,8 +123,8 @@
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]
 
-        if o?.tickValues?
-          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]]
+        if o.ticks? and angular.isArray(o.ticks)
+          return [o.ticks[0], o.ticks[o.ticks.length - 1]]
 
         domain = this.yExtent(
           series.filter (s) -> s.axis is key and s.visible isnt false

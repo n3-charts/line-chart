@@ -170,32 +170,12 @@ describe 'options', ->
           ticks: 2
         y:
           type: 'linear'
-          ticks: 5
+          ticks: [5]
 
       computed = n3utils.sanitizeOptions(
         axes:
           x:
             ticks: 2
-          y:
-            ticks: 5
-      ).axes
-
-      expect(computed).to.eql(expected)
-
-    it 'should pass the tick values property, whatever it is', ->
-      expected =
-        x:
-          type: 'linear'
-          key: 'x'
-          tickValues: [2]
-        y:
-          type: 'linear'
-          tickValues: [5]
-
-      computed = n3utils.sanitizeOptions(
-        axes:
-          x:
-            ticks: [2]
           y:
             ticks: [5]
       ).axes

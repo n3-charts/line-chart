@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.3 - 17 October 2014
+line-chart - v1.1.3 - 18 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
  */
@@ -1076,10 +1076,6 @@ mod.factory('n3utils', [
         }
         options.type || (options.type = 'linear');
         this.sanitizeExtrema(options);
-        if (options.ticks && options.ticks instanceof Array) {
-          options.tickValues = options.ticks;
-          delete options.ticks;
-        }
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
@@ -1158,11 +1154,14 @@ mod.factory('n3utils', [
         };
         o = options[key];
         axis = d3.svg.axis().scale(scale).orient(sides[key]).tickFormat(o != null ? o.labelFunction : void 0);
-        if ((o != null ? o.ticks : void 0) != null) {
-          axis.ticks(o != null ? o.ticks : void 0);
+        if (o == null) {
+          return axis;
         }
-        if ((o != null ? o.tickValues : void 0) != null) {
-          axis.tickValues(o != null ? o.tickValues : void 0);
+        if (angular.isNumber(o.ticks)) {
+          axis.ticks(o.ticks);
+        }
+        if (angular.isArray(o.ticks)) {
+          axis.tickValues(o.ticks);
         }
         return axis;
       },
@@ -1182,8 +1181,8 @@ mod.factory('n3utils', [
         if (!(o = options.axes[key])) {
           return [];
         }
-        if ((o != null ? o.tickValues : void 0) != null) {
-          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]];
+        if ((o.ticks != null) && angular.isArray(o.ticks)) {
+          return [o.ticks[0], o.ticks[o.ticks.length - 1]];
         }
         domain = this.yExtent(series.filter(function(s) {
           return s.axis === key && s.visible !== false;

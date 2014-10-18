@@ -121,7 +121,7 @@ describe "abscissas", ->
       linePath = element.childByClass('line')
 
       expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M-212,410L-191,370L-170,300L-149,290L-128,220L-106,30'
+      expect(linePath.domElement.getAttribute('d')).to.equal 'M-212,410L-191,370L-170,300L-149,290L-127,220L-106,30'
 
   describe 'custom key', ->
     beforeEach ->

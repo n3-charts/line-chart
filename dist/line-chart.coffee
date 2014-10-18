@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.3 - 17 October 2014
+line-chart - v1.1.3 - 18 October 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -982,10 +982,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         this.sanitizeExtrema(options)
 
-        if options.ticks and options.ticks instanceof Array
-          options.tickValues = options.ticks
-          delete options.ticks
-
         return options
 
 # ----
@@ -1094,8 +1090,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .orient(sides[key])
           .tickFormat(o?.labelFunction)
 
-        axis.ticks(o?.ticks) if o?.ticks?
-        axis.tickValues(o?.tickValues) if o?.tickValues?
+        return axis unless o?
+
+        axis.ticks(o.ticks) if angular.isNumber(o.ticks)
+        axis.tickValues(o.ticks) if angular.isArray(o.ticks)
 
         return axis
 
@@ -1115,8 +1113,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]
 
-        if o?.tickValues?
-          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]]
+        if o.ticks? and angular.isArray(o.ticks)
+          return [o.ticks[0], o.ticks[o.ticks.length - 1]]
 
         domain = this.yExtent(
           series.filter (s) -> s.axis is key and s.visible isnt false

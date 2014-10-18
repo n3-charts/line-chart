@@ -56,8 +56,10 @@ describe 'with a second axis', ->
   it 'should properly configure y2 axis', ->
     ticks = element.childByClass('y2 axis').children('text')
     expect(ticks.length).to.equal 14
-    expect(ticks[0].domElement.textContent).to.equal '0'
-    expect(ticks[10].domElement.textContent).to.equal '16'
+    computedTicks = ticks.map (t) -> t.domElement.textContent
+    expect(computedTicks).to.eql([
+      '-4', '-2', '0', '2', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22'
+    ])
 
   it 'should draw two lines', ->
     content = element.childByClass('content')
