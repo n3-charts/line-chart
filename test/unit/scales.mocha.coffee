@@ -124,20 +124,20 @@ describe 'scales', ->
             {y: 'value', axis: 'y2', color: '#4682b4', type: 'column'}
           ]
 
-    it 'should work for vertical axes', ->
-      yticks = element.childByClass('y axis').children('text')
-      computedYTicks = yticks.map (t) -> t.domElement.textContent
-      expect(computedYTicks).to.eql(
-        ['5.0', '5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '6.0']
-      )
-
     it 'should work for horizontal axis', ->
       xticks = element.childByClass('x axis').children('text')
       computedXTicks = xticks.map (t) -> t.domElement.textContent
 
       # for some reason this is not sorted...
       expect(computedXTicks).to.eql(
-        ['0', '1', '-5', '-4', '-3', '-2', '-1', '2', '3', '4', '5', '6']
+        ["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6"]
+      )
+
+    it 'should work for vertical axes', ->
+      yticks = element.childByClass('y axis').children('text')
+      computedYTicks = yticks.map (t) -> t.domElement.textContent
+      expect(computedYTicks).to.eql(
+        ['5.0', '5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '6.0']
       )
 
   describe 'logarithmic y axes', ->
@@ -175,8 +175,7 @@ describe 'scales', ->
             {y: 'value', axis: 'y2', color: '#4682b4', type: 'column'}
           ]
 
-      expectedTicks = '1e+0         1e+1 1e-3         1e-2         1e-1      ' +
-      '           1e+2         1e+3         1e+4         1e+5'
+      expectedTicks = "1e-3         1e-2         1e-1         1e+0         1e+1         1e+2         1e+3         1e+4         1e+5"
 
       yticks = element.childByClass('y axis').children('text')
       computedYTicks = yticks.map (t) -> t.domElement.textContent

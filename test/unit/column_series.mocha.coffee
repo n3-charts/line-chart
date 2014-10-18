@@ -81,10 +81,8 @@ describe 'column series', ->
     expect(ticks[9].domElement.textContent).to.equal '45'
 
   it 'should configure x axis with extra space', ->
-    ticks = element.childByClass('x axis').children('text')
-    expect(ticks.length).to.equal 8
-    expect(ticks[0].domElement.textContent).to.equal '0'
-    expect(ticks[7].domElement.textContent).to.equal '6'
+    ticks = element.childByClass('x axis').children('text').map (t) -> t.domElement.textContent
+    expect(ticks).to.eql(["-1", "0", "1", "2", "3", "4", "5", "6"])
 
   it 'should create a group', ->
     content = element.childByClass('content')
