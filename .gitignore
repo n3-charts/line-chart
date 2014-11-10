@@ -1,6 +1,6 @@
 line-chart.sublime-workspace
 line-chart.sublime-project
 
-components/
+bower_components/
 node_modules/
 coverage/
