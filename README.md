@@ -20,7 +20,7 @@ You can find examples on the [demo page](http://n3-charts.github.io/line-chart/)
 A line chart is called using this syntax :
 
 ```html
-<linechart data="data" options="options" mode=""></linechart>
+<linechart data="data" options="options" mode="" width="" height=""></linechart>
 ```
 
 The line chart directives needs two attributes : `data` and `options`. If one is missing, nothing happens.
@@ -124,6 +124,13 @@ The `columnsHGap` is optional (default is `5`). Sets the space between two colum
 
 #### Mode
 The mode can be set to 'thumbnail' (default is empty string). If so, the chart will take as much space as it can, and it will only display the series. No axes, no legend, no tooltips. Furthermore, the lines or areas will be drawn without dots. This is convenient for sparklines.
+
+#### Width and height
+This is more a hack. The chart usually tries to infer its own dimensions regarding its parent, but sometimes it fails like a noob. That's why these two attributes can be set. The should look like this :
+
+```html
+<linechart width="150" height="100"></linechart>
+```
 
 ### Building
 Fetch the repo :
