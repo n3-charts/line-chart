@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.3 - 18 October 2014
+line-chart - v1.1.4 - 10 November 2014
 https://github.com/n3-charts/line-chart
 Copyright (c) 2014 n3-charts
 ###
@@ -20,12 +20,15 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     element[0].style['font-size'] = 0
 
     scope.updateDimensions = (dimensions) ->
-      top = _u.getPixelCssProp(element[0].parentElement, 'padding-top')
-      bottom = _u.getPixelCssProp(element[0].parentElement, 'padding-bottom')
-      left = _u.getPixelCssProp(element[0].parentElement, 'padding-left')
-      right = _u.getPixelCssProp(element[0].parentElement, 'padding-right')
-      dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right
-      dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom
+      parent = element[0].parentElement
+
+      top = _u.getPixelCssProp(parent, 'padding-top')
+      bottom = _u.getPixelCssProp(parent, 'padding-bottom')
+      left = _u.getPixelCssProp(parent, 'padding-left')
+      right = _u.getPixelCssProp(parent, 'padding-right')
+
+      dimensions.width = +(attrs.width || parent.offsetWidth || 900) - left - right
+      dimensions.height = +(attrs.height || parent.offsetHeight || 500) - top - bottom
 
     scope.redraw = ->
       scope.updateDimensions(dim)
