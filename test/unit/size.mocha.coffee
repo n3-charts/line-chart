@@ -53,6 +53,46 @@ describe 'size', ->
         width: 900
         height: 500
 
+    it 'should consider forced dimensions', inject (pepito, n3utils) ->
+      {element, outerScope, innerScope} = pepito.directive("""
+        <div id="toto">
+          <linechart width="234" height="556" data='data' options='options'></linechart>
+        </div>
+      """,
+      (element) ->
+        innerScope = element.children()[0].aElement.isolateScope()
+        sinon.stub innerScope, 'update', ->
+        sinon.spy innerScope, 'redraw'
+
+        sinon.stub n3utils, 'getPixelCssProp', (element, property) ->
+          throw new Error('Invalid id given to getPixelCssProp function') if element.id isnt 'toto'
+          throw new Error('Invalid property given to getPixelCssProp function') if [
+            'padding-top'
+            'padding-bottom'
+            'padding-left'
+            'padding-right'
+          ].indexOf(property) is -1
+          return {
+            'padding-top': 50
+            'padding-bottom': 10
+            'padding-left': 20
+            'padding-right': 40
+          }[property]
+      )
+
+      innerScope = element.children()[0].aElement.isolateScope()
+
+      outerScope.$digest()
+
+      expect(innerScope.update.args[1][0]).to.eql
+        top: 20
+        right: 50
+        bottom: 60
+        left: 50
+        width: 174
+        height: 496
+
+
     it 'should detect parent\'s top padding', inject (pepito, n3utils) ->
       {element, outerScope} = pepito.directive("""
       <div id="toto">
