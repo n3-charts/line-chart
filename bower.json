@@ -16,7 +16,9 @@
   "dependencies": {
     "d3": "*",
     "angular": "*",
-    "angular-mocks": "*",
     "moment": "*"
+  },
+  "devDependencies": {
+    "angular-mocks": "*"
   }
 }
