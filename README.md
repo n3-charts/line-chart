@@ -39,6 +39,8 @@ $scope.data = [
 ];
 ```
 
+**Please make sure it's sorted by abscissa.**
+
 #### Options
 Options must be an object with a series array. It should look like this :
 
