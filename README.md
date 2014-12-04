@@ -165,6 +165,12 @@ Or run the visual tests, too :
 $ grunt travis
 ```
 
+### Contributing
+You're welcome to submit issues and PRs. However, please make sure :
+
+- to link a plunker with your issue ([here's one to start from](http://plnkr.co/edit/C9fHwXzo90LlRSkt6cjI?p=preview))
+- to add tests to your pull requests
+
 
 ### Testing
 AngularJS is designed to build testable apps, so is this project.
