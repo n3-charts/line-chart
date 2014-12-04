@@ -29,7 +29,7 @@ module.exports = function(grunt) {
       '\n*/\n',
 
     watch: {
-      files: ['lib/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
+      files: ['src/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
       tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified', 'uglify', 'karma:minified'],
       // tasks: ['concat', 'coffee', 'uglify']
     },
@@ -46,11 +46,11 @@ module.exports = function(grunt) {
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'bower_components/d3/d3.js',
-            'dist/line-chart.js',
+            'build/line-chart.js',
             'test/unit/**/*.coffee'
           ],
           preprocessors: {
-            'dist/line-chart.js': 'coverage',
+            'build/line-chart.js': 'coverage',
             'test/unit/**/*.coffee': 'coffee'
           }
         }
@@ -65,7 +65,7 @@ module.exports = function(grunt) {
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'bower_components/d3/d3.js',
-            'dist/line-chart.min.js',
+            'build/line-chart.min.js',
             'test/unit/**/*.coffee'
           ],
           preprocessors: {
@@ -78,11 +78,11 @@ module.exports = function(grunt) {
 
     concat: {
       utils: {
-        src: ['lib/utils/*.coffee'],
+        src: ['src/utils/*.coffee'],
         dest: '/tmp/utils.coffee',
         options: {
-          banner: grunt.file.read('lib/utils/utils.coffee.prefix'),
-          footer: grunt.file.read('lib/utils/utils.coffee.suffix'),
+          banner: grunt.file.read('src/utils/utils.coffee.prefix'),
+          footer: grunt.file.read('src/utils/utils.coffee.suffix'),
           separator: '\n\n',
           process: function(src, filepath) {
             return '# ' + filepath + '\n' + src + '\n# ----\n';
@@ -97,13 +97,13 @@ module.exports = function(grunt) {
             return '# ' + filepath + '\n' + src + '\n# ----\n';
           }
         },
-        src: ['lib/<%= pkg.name %>.coffee', '/tmp/utils.coffee'],
-        dest: 'dist/<%= pkg.name %>.coffee'
+        src: ['src/<%= pkg.name %>.coffee', '/tmp/utils.coffee'],
+        dest: 'build/<%= pkg.name %>.coffee'
       }
     },
 
     coffeelint: {
-      app: ['dist/<%= pkg.name %>.coffee'],
+      app: ['build/<%= pkg.name %>.coffee'],
       options: {
         'max_line_length': {
           'level': 'ignore'
@@ -117,7 +117,7 @@ module.exports = function(grunt) {
       },
       compile: {
         files: {
-          'dist/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.coffee'
+          'build/<%= pkg.name %>.js': 'build/<%= pkg.name %>.coffee'
         }
       }
     },
@@ -127,8 +127,8 @@ module.exports = function(grunt) {
         banner: '<%= bannerjs %>'
       },
       js: {
-        src: 'dist/<%= pkg.name %>.js',
-        dest: 'dist/<%= pkg.name %>.min.js'
+        src: 'build/<%= pkg.name %>.js',
+        dest: 'build/<%= pkg.name %>.min.js'
       }
     },
 
@@ -140,7 +140,7 @@ module.exports = function(grunt) {
         src: 'Gruntfile.js'
       },
       test: {
-        src: ['lib/*.js']
+        src: ['src/*.js']
       }
     },
 
