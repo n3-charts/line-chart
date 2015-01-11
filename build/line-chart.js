@@ -1,8 +1,8 @@
 
 /*
-line-chart - v1.1.4 - 04 December 2014
+line-chart - v1.1.5 - 11 January 2015
 https://github.com/n3-charts/line-chart
-Copyright (c) 2014 n3-charts
+Copyright (c) 2015 n3-charts
  */
 var directive, m, mod, old_m,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -48,14 +48,24 @@ directive('linechart', [
         }
       };
       scope.update = function(dimensions) {
-        var axes, columnWidth, dataPerSeries, handlers, isThumbnail, options, svg;
+        var axes, columnWidth, dataPerSeries, fn, handlers, isThumbnail, options, svg;
         options = _u.sanitizeOptions(scope.options, attrs.mode);
         handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options));
         dataPerSeries = _u.getDataPerSeries(scope.data, options);
         isThumbnail = attrs.mode === 'thumbnail';
         _u.clean(element[0]);
         svg = _u.bootstrap(element[0], dimensions);
-        axes = _u.createAxes(svg, dimensions, options.axes).andAddThemIf(isThumbnail);
+        fn = function(key) {
+          return (options.series.filter(function(s) {
+            return s.axis === key && s.visible !== false;
+          })).length > 0;
+        };
+        axes = _u.createAxes(svg, dimensions, options.axes).andAddThemIf({
+          all: !isThumbnail,
+          x: true,
+          y: fn('y'),
+          y2: fn('y2')
+        });
         if (dataPerSeries.length) {
           _u.setScalesDomain(axes, scope.data, options.series, svg, options);
         }
@@ -90,7 +100,9 @@ directive('linechart', [
       };
       $window.addEventListener('resize', window_resize);
       scope.$watch('data', scope.redraw, true);
-      return scope.$watch('options', scope.redraw, true);
+      return scope.$watch('options', (function() {
+        return scope.update(dim);
+      }), true);
     };
     return {
       replace: true,
@@ -1080,8 +1092,8 @@ mod.factory('n3utils', [
         return options;
       },
       createAxes: function(svg, dimensions, axesOptions) {
-        var drawY2Axis, height, style, that, width, x, xAxis, y, y2, y2Axis, yAxis;
-        drawY2Axis = axesOptions.y2 != null;
+        var createY2Axis, height, style, width, x, xAxis, y, y2, y2Axis, yAxis;
+        createY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
         height = dimensions.height;
         width = width - dimensions.left - dimensions.right;
@@ -1092,22 +1104,22 @@ mod.factory('n3utils', [
         } else {
           x = d3.scale.linear().rangeRound([0, width]);
         }
+        xAxis = this.createAxis(x, 'x', axesOptions);
         y = void 0;
         if (axesOptions.y.type === 'log') {
           y = d3.scale.log().clamp(true).rangeRound([height, 0]);
         } else {
           y = d3.scale.linear().rangeRound([height, 0]);
         }
+        y.clamp(true);
+        yAxis = this.createAxis(y, 'y', axesOptions);
         y2 = void 0;
-        if (drawY2Axis && axesOptions.y2.type === 'log') {
+        if (createY2Axis && axesOptions.y2.type === 'log') {
           y2 = d3.scale.log().clamp(true).rangeRound([height, 0]);
         } else {
           y2 = d3.scale.linear().rangeRound([height, 0]);
         }
-        y.clamp(true);
         y2.clamp(true);
-        xAxis = this.createAxis(x, 'x', axesOptions);
-        yAxis = this.createAxis(y, 'y', axesOptions);
         y2Axis = this.createAxis(y2, 'y2', axesOptions);
         style = function(group) {
           group.style({
@@ -1119,7 +1131,6 @@ mod.factory('n3utils', [
             'stroke': '#000'
           });
         };
-        that = this;
         return {
           xScale: x,
           yScale: y,
@@ -1127,11 +1138,15 @@ mod.factory('n3utils', [
           xAxis: xAxis,
           yAxis: yAxis,
           y2Axis: y2Axis,
-          andAddThemIf: function(condition) {
-            if (!condition) {
-              style(svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis));
-              style(svg.append('g').attr('class', 'y axis').call(yAxis));
-              if (drawY2Axis) {
+          andAddThemIf: function(conditions) {
+            if (!!conditions.all) {
+              if (!!conditions.x) {
+                style(svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis));
+              }
+              if (!!conditions.y) {
+                style(svg.append('g').attr('class', 'y axis').call(yAxis));
+              }
+              if (createY2Axis && !!conditions.y2) {
                 style(svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis));
               }
             }
@@ -1169,22 +1184,33 @@ mod.factory('n3utils', [
       setScalesDomain: function(scales, data, series, svg, options) {
         var y2Domain, yDomain;
         this.setXScale(scales.xScale, data, series, options.axes);
-        yDomain = this.getVerticalDomain(options, data, series, 'y');
-        y2Domain = this.getVerticalDomain(options, data, series, 'y2');
-        scales.yScale.domain(yDomain).nice();
-        scales.y2Scale.domain(y2Domain).nice();
         svg.selectAll('.x.axis').call(scales.xAxis);
-        svg.selectAll('.y.axis').call(scales.yAxis);
-        return svg.selectAll('.y2.axis').call(scales.y2Axis);
+        if ((series.filter(function(s) {
+          return s.axis === 'y' && s.visible !== false;
+        })).length > 0) {
+          yDomain = this.getVerticalDomain(options, data, series, 'y');
+          scales.yScale.domain(yDomain).nice();
+          svg.selectAll('.y.axis').call(scales.yAxis);
+        }
+        if ((series.filter(function(s) {
+          return s.axis === 'y2' && s.visible !== false;
+        })).length > 0) {
+          y2Domain = this.getVerticalDomain(options, data, series, 'y2');
+          scales.y2Scale.domain(y2Domain).nice();
+          return svg.selectAll('.y2.axis').call(scales.y2Axis);
+        }
       },
       getVerticalDomain: function(options, data, series, key) {
-        var domain, o;
+        var domain, mySeries, o;
         if (!(o = options.axes[key])) {
           return [];
         }
         if ((o.ticks != null) && angular.isArray(o.ticks)) {
           return [o.ticks[0], o.ticks[o.ticks.length - 1]];
         }
+        mySeries = series.filter(function(s) {
+          return s.axis === key && s.visible !== false;
+        });
         domain = this.yExtent(series.filter(function(s) {
           return s.axis === key && s.visible !== false;
         }), data, options.stacks.filter(function(stack) {
