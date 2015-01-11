@@ -45,9 +45,17 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       _u.clean(element[0])
 
       svg = _u.bootstrap(element[0], dimensions)
+
+      fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
+
       axes = _u
         .createAxes(svg, dimensions, options.axes)
-        .andAddThemIf(isThumbnail)
+        .andAddThemIf({
+          all: !isThumbnail
+          x: true
+          y: fn('y')
+          y2: fn('y2')
+        })
 
       if dataPerSeries.length
         _u.setScalesDomain(axes, scope.data, options.series, svg, options)
@@ -87,7 +95,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.redraw, true)
-    scope.$watch('options', scope.redraw, true)
+    scope.$watch('options', (-> scope.update(dim)) , true)
 
   return {
     replace: true
