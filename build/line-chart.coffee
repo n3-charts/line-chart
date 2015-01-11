@@ -1,7 +1,7 @@
 ###
-line-chart - v1.1.4 - 04 December 2014
+line-chart - v1.1.5 - 11 January 2015
 https://github.com/n3-charts/line-chart
-Copyright (c) 2014 n3-charts
+Copyright (c) 2015 n3-charts
 ###
 # src/line-chart.coffee
 old_m = angular.module('n3-charts.linechart', ['n3charts.utils'])
@@ -51,9 +51,17 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       _u.clean(element[0])
 
       svg = _u.bootstrap(element[0], dimensions)
+
+      fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
+
       axes = _u
         .createAxes(svg, dimensions, options.axes)
-        .andAddThemIf(isThumbnail)
+        .andAddThemIf({
+          all: !isThumbnail
+          x: true
+          y: fn('y')
+          y2: fn('y2')
+        })
 
       if dataPerSeries.length
         _u.setScalesDomain(axes, scope.data, options.series, svg, options)
@@ -93,7 +101,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.redraw, true)
-    scope.$watch('options', scope.redraw, true)
+    scope.$watch('options', (-> scope.update(dim)) , true)
 
   return {
     replace: true
@@ -992,7 +1000,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 # src/utils/scales.coffee
       createAxes: (svg, dimensions, axesOptions) ->
-        drawY2Axis = axesOptions.y2?
+        createY2Axis = axesOptions.y2?
 
         width = dimensions.width
         height = dimensions.height
@@ -1005,26 +1013,24 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           x = d3.time.scale().rangeRound([0, width])
         else
           x = d3.scale.linear().rangeRound([0, width])
+        xAxis = this.createAxis(x, 'x', axesOptions)
 
         y = undefined
         if axesOptions.y.type is 'log'
           y = d3.scale.log().clamp(true).rangeRound([height, 0])
         else
           y = d3.scale.linear().rangeRound([height, 0])
-
+        y.clamp(true)
+        yAxis = this.createAxis(y, 'y', axesOptions)
 
         y2 = undefined
-        if drawY2Axis and axesOptions.y2.type is 'log'
+        if createY2Axis and axesOptions.y2.type is 'log'
           y2 = d3.scale.log().clamp(true).rangeRound([height, 0])
         else
           y2 = d3.scale.linear().rangeRound([height, 0])
-
-        y.clamp(true)
         y2.clamp(true)
-
-        xAxis = this.createAxis(x, 'x', axesOptions)
-        yAxis = this.createAxis(y, 'y', axesOptions)
         y2Axis = this.createAxis(y2, 'y2', axesOptions)
+
 
         style = (group) ->
           group.style(
@@ -1037,8 +1043,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'stroke': '#000'
           )
 
-        that = this
-
         return {
           xScale: x
           yScale: y
@@ -1047,22 +1051,25 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           yAxis: yAxis
           y2Axis: y2Axis
 
-          andAddThemIf: (condition) ->
-            if not condition
-              style(
-                svg.append('g')
-                  .attr('class', 'x axis')
-                  .attr('transform', 'translate(0,' + height + ')')
-                  .call(xAxis)
-              )
+          andAddThemIf: (conditions) ->
+            if !!conditions.all
 
-              style(
-                svg.append('g')
-                  .attr('class', 'y axis')
-                  .call(yAxis)
-              )
+              if !!conditions.x
+                style(
+                  svg.append('g')
+                    .attr('class', 'x axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis)
+                )
 
-              if drawY2Axis
+              if !!conditions.y
+                style(
+                  svg.append('g')
+                    .attr('class', 'y axis')
+                    .call(yAxis)
+                )
+
+              if createY2Axis and !!conditions.y2
                 style(
                   svg.append('g')
                     .attr('class', 'y2 axis')
@@ -1103,21 +1110,26 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       setScalesDomain: (scales, data, series, svg, options) ->
         this.setXScale(scales.xScale, data, series, options.axes)
 
-        yDomain = this.getVerticalDomain(options, data, series, 'y')
-        y2Domain = this.getVerticalDomain(options, data, series, 'y2')
-
-        scales.yScale.domain(yDomain).nice()
-        scales.y2Scale.domain(y2Domain).nice()
-
         svg.selectAll('.x.axis').call(scales.xAxis)
-        svg.selectAll('.y.axis').call(scales.yAxis)
-        svg.selectAll('.y2.axis').call(scales.y2Axis)
+
+        if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
+          yDomain = this.getVerticalDomain(options, data, series, 'y')
+          scales.yScale.domain(yDomain).nice()
+          svg.selectAll('.y.axis').call(scales.yAxis)
+
+        if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
+          y2Domain = this.getVerticalDomain(options, data, series, 'y2')
+          scales.y2Scale.domain(y2Domain).nice()
+          svg.selectAll('.y2.axis').call(scales.y2Axis)
+
 
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]
 
         if o.ticks? and angular.isArray(o.ticks)
           return [o.ticks[0], o.ticks[o.ticks.length - 1]]
+
+        mySeries = series.filter (s) -> s.axis is key and s.visible isnt false
 
         domain = this.yExtent(
           series.filter (s) -> s.axis is key and s.visible isnt false
