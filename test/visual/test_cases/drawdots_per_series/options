@@ -1,0 +1,16 @@
+lineMode: "cardinal",
+      series: [
+        {y: "val_0", label: "This", type: "area", drawDots: false, color: "#bcbd22", thickness: "1px"},
+        {y: "val_1", label: "Is", type: "line", color: "#17becf", drawDots: true},
+        {
+          y: "val_2",
+          label: "Awesome",
+          color: "#9467bd",
+          type: "line",
+          thickness: "1px",
+          drawDots: false
+        }
+      ],
+      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
+      tension: 0.7,
+      tooltip: {mode: 'scrubber'}

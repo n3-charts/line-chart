@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="en" ng-app="example">
+<head>
+  <title>n3-charts</title>
+  <style type="text/css">
+  .example {
+    width: 600px;
+    height: 300px;
+    border: 1px solid lightgrey;
+    margin: 10px auto;
+    padding: 10px;
+  }
+
+  .example .label {
+    font-family: monospace;
+    font-weight: 100;
+  }
+
+  </style>
+</head>
+
+<body ng-controller='ExamplesCtrl'>
+  <div ng-repeat="example in examples" class="example">
+    <div class="label">{{example.label}}</div>
+    <linechart data="example.data" options="example.options"></linechart>
+  </div>
+
+  <script src="%project_path%bower_components/moment/min/moment.min.js"></script>
+  <script src="%project_path%bower_components/angular/angular.min.js"></script>
+  <script src="%project_path%bower_components/d3/d3.min.js"></script>
+  <script src="%project_path%build/line-chart.js"></script>
+  <script type="text/javascript">
+  angular.module('example', ['n3-line-chart'])
+  .controller('ExamplesCtrl', function($scope) {
+    $scope.examples = [
+      %repeat%{data: [ %data% ], options: { %options% }, label: "%name%"}%repeat%
+    ];
+  });
+  </script>
+</body>
+</html>
