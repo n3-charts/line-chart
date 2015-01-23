@@ -60,7 +60,7 @@ describe 'area series', ->
     areaPath = areaGroup.domElement.childNodes[0]
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
     expect(areaPath.getAttribute('class')).to.equal 'area'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30L850,450L680,450L510,450L340,450L170,450L0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z'
 
   it 'should create stripes pattern when told so', ->
     outerScope.$apply ->
@@ -92,7 +92,7 @@ describe 'area series', ->
     areaPath = areaGroup.child('path')
     expect(areaPath.getStyle().trim()).to.equal 'fill: url("#areaPattern_0") none; opacity: 1;'
     expect(areaPath.hasClass('area')).to.equal true
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L170,370L340,300L510,290L680,220L850,30L850,450L680,450L510,450L340,450L170,450L0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z'
 
   it 'should create a line group', ->
     lineGroup = element.childByClass('lineGroup series_0')
@@ -104,7 +104,7 @@ describe 'area series', ->
     expect(dotsGroup.domElement.nodeName).to.equal 'g'
     dots = dotsGroup.domElement.childNodes
     expect(dots.length).to.equal 6
-    expectedX = 'X 0 170 340 510 680 850'
+    expectedX = 'X 0 160 320 480 640 800'
     expectedY = 'Y 410 370 300 290 220 30'
     computedX = Array::reduce.call(dots, (a, b) ->
       a + ' ' + b.getAttribute('cx')

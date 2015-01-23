@@ -1,0 +1,16 @@
+axes: {
+        x: {key: "foo", type: "linear"},
+        y: {width: 70}
+      },
+      series: [
+        {
+          y: "val_0",
+          label: "Abl",
+          color: "#d62728",
+          type: "line",
+          thickness: "1px"
+        }
+      ],
+      lineMode: "linear",
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}
