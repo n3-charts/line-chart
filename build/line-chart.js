@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.5 - 11 January 2015
+line-chart - v1.1.5 - 26 January 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -57,7 +57,7 @@ directive('linechart', [
         svg = _u.bootstrap(element[0], dimensions);
         fn = function(key) {
           return (options.series.filter(function(s) {
-            return s.axis === key && s.visible !== false;
+            return s.axis === key;
           })).length > 0;
         };
         axes = _u.createAxes(svg, dimensions, options.axes).andAddThemIf({
@@ -1212,7 +1212,7 @@ mod.factory('n3utils', [
           return s.axis === key && s.visible !== false;
         });
         domain = this.yExtent(series.filter(function(s) {
-          return s.axis === key && s.visible !== false;
+          return s.axis === key;
         }), data, options.stacks.filter(function(stack) {
           return stack.axis === key;
         }));

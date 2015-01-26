@@ -46,7 +46,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       svg = _u.bootstrap(element[0], dimensions)
 
-      fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
+      fn = (key) -> (options.series.filter (s) -> s.axis is key).length > 0
 
       axes = _u
         .createAxes(svg, dimensions, options.axes)

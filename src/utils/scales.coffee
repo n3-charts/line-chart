@@ -131,7 +131,7 @@
         mySeries = series.filter (s) -> s.axis is key and s.visible isnt false
 
         domain = this.yExtent(
-          series.filter (s) -> s.axis is key and s.visible isnt false
+          series.filter (s) -> s.axis is key
           data
           options.stacks.filter (stack) -> stack.axis is key
         )
