@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.5 - 11 January 2015
+line-chart - v1.1.5 - 26 January 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -52,7 +52,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       svg = _u.bootstrap(element[0], dimensions)
 
-      fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
+      fn = (key) -> (options.series.filter (s) -> s.axis is key).length > 0
 
       axes = _u
         .createAxes(svg, dimensions, options.axes)
@@ -1132,7 +1132,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         mySeries = series.filter (s) -> s.axis is key and s.visible isnt false
 
         domain = this.yExtent(
-          series.filter (s) -> s.axis is key and s.visible isnt false
+          series.filter (s) -> s.axis is key
           data
           options.stacks.filter (stack) -> stack.axis is key
         )
