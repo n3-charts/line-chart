@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.5 - 11 January 2015
+line-chart - v1.1.6 - 04 February 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -32,11 +32,11 @@ directive('linechart', [
         left = _u.getPixelCssProp(parent, 'padding-left');
         right = _u.getPixelCssProp(parent, 'padding-right');
         dimensions.width = +(attrs.width || parent.offsetWidth || 900) - left - right;
-        return dimensions.height = +(attrs.height || parent.offsetHeight || 500) - top - bottom;
+        dimensions.height = +(attrs.height || parent.offsetHeight || 500) - top - bottom;
       };
       scope.redraw = function() {
         scope.updateDimensions(dim);
-        return scope.update(dim);
+        scope.update(dim);
       };
       isUpdatingOptions = false;
       initialHandlers = {
@@ -72,7 +72,7 @@ directive('linechart', [
         if (isThumbnail) {
           _u.adjustMarginsForThumbnail(dimensions, axes);
         } else {
-          _u.adjustMargins(svg, dimensions, options, scope.data);
+          _u.adjustMargins(dimensions, options);
         }
         _u.createContent(svg, handlers);
         if (dataPerSeries.length) {
@@ -815,37 +815,19 @@ mod.factory('n3utils', [
         dimensions.top = defaults.top;
         return dimensions.bottom = defaults.bottom;
       },
-      adjustMargins: function(svg, dimensions, options, data) {
-        var leftSeries, leftWidest, rightSeries, rightWidest, series;
+      adjustMargins: function(dimensions, options) {
+        var y, y2, _ref;
         this.resetMargins(dimensions);
-        if (!(data && data.length)) {
+        if (options.axes == null) {
           return;
         }
-        if (!options.series.length) {
-          return;
+        _ref = options.axes, y = _ref.y, y2 = _ref.y2;
+        if ((y != null ? y.width : void 0) != null) {
+          dimensions.left = y != null ? y.width : void 0;
         }
-        dimensions.left = this.getWidestTickWidth(svg, 'y');
-        dimensions.right = this.getWidestTickWidth(svg, 'y2');
-        if (dimensions.right === 0) {
-          dimensions.right = 20;
+        if ((y2 != null ? y2.width : void 0) != null) {
+          dimensions.right = y2 != null ? y2.width : void 0;
         }
-        if (options.tooltip.mode === 'scrubber') {
-          return;
-        }
-        series = options.series;
-        leftSeries = series.filter(function(s) {
-          return s.axis !== 'y2';
-        });
-        leftWidest = this.getWidestOrdinate(data, leftSeries, options);
-        dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20;
-        rightSeries = series.filter(function(s) {
-          return s.axis === 'y2';
-        });
-        if (!rightSeries.length) {
-          return;
-        }
-        rightWidest = this.getWidestOrdinate(data, rightSeries, options);
-        return dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20;
       },
       adjustMarginsForThumbnail: function(dimensions, axes) {
         dimensions.top = 1;
@@ -871,7 +853,7 @@ mod.factory('n3utils', [
         bbox = this.getTextBBox;
         ticks = svg.select("." + axisKey + ".axis").selectAll('.tick');
         if ((_ref = ticks[0]) != null) {
-          _ref.map(function(t) {
+          _ref.forEach(function(t) {
             return max = Math.max(max, bbox(t).width);
           });
         }
