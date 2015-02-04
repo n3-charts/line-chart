@@ -78,6 +78,7 @@ It can also contain, according to your series configuration, a `y` and a `y2` ke
  + `type` : optional, can be either linear' or 'log' (default is 'linear'). If set to 'log', the data may be clamped if its computed lower bound is 0 (this means the chart won't display an actual 0, but a close value - log scales can't display zero values).
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
+ + `width` : optional, forces the axis width (default is 50)
 
 
 ##### Series

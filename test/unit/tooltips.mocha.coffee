@@ -137,31 +137,6 @@ describe 'tooltip', ->
 
     expect(v).to.eql({x: 4})
 
-  it.skip 'should work when no x-formatter is found', ->
-    outerScope.$apply ->
-      outerScope.options = series: [
-        {
-          y: 'value'
-          color: '#4682b4'
-        }
-        {
-          y: 'value'
-          axis: 'y2'
-          color: '#4682b4'
-          type: 'column'
-        }
-      ]
-
-    leftAxisDotGroup = element.childByClass('dotGroup series_0')
-
-    checkVisibilityOf([])
-
-    fakeMouse.hoverIn(leftAxisDotGroup.domElement)
-    checkVisibilityOf(['x', 'y'])
-
-    fakeMouse.hoverOut(leftAxisDotGroup.domElement)
-    checkVisibilityOf([])
-
   it 'should show/hide the tooltip when hovering/leaving a right axis column', ->
     rightAxisColumnGroup = element.childByClass('columnGroup series_1')
 

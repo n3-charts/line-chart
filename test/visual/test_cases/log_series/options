@@ -1,0 +1,16 @@
+axes: {
+        x: {key: "foo", labelFunction: function (v) {return 'Na';}, type: "linear"},
+        y: {type: "log"}
+      },
+      series: [
+        {
+          y: "val_0",
+          label: "Batmaaan",
+          color: "#d62728",
+          type: "line",
+          thickness: "1px"
+        }
+      ],
+      lineMode: "linear",
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}

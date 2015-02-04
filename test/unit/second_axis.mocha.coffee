@@ -66,8 +66,8 @@ describe 'with a second axis', ->
     lines = element.childByClass('content').childrenByClass('line')
     expect(lines.length).to.equal(2)
 
-    expect(lines[0].getAttribute('d')).to.equal 'M0,410L168,370L336,300L504,290L672,220L840,30'
-    expect(lines[1].getAttribute('d')).to.equal 'M0,415L168,0L336,398L504,381L672,433L840,450'
+    expect(lines[0].getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30'
+    expect(lines[1].getAttribute('d')).to.equal 'M0,415L160,0L320,398L480,381L640,433L800,450'
 
   it 'should draw y area', ->
     areaGroup = element.childByClass('areaGroup series_0')
@@ -75,7 +75,7 @@ describe 'with a second axis', ->
 
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L168,370L336,300L504,290L672,220L840,30L840,450L672,450L504,450L336,450L168,450L0,450Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z'
 
   it 'should draw y2 area', ->
     areaGroup = element.childByClass('areaGroup series_1')
@@ -83,7 +83,7 @@ describe 'with a second axis', ->
 
     areaPath = areaGroup.childByClass('area')
     expect(areaPath.getAttribute('style').trim()).to.equal 'fill: steelblue; opacity: 0.3;'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,415L168,0L336,398L504,381L672,433L840,450L840,381L672,381L504,381L336,381L168,381L0,381Z'
+    expect(areaPath.getAttribute('d')).to.equal 'M0,415L160,0L320,398L480,381L640,433L800,450L800,381L640,381L480,381L320,381L160,381L0,381Z'
 
   it 'should draw y axis dots', ->
     leftDotsGroup = element.childByClass('dotGroup series_0')
@@ -97,7 +97,7 @@ describe 'with a second axis', ->
 
     computedX = Array::reduce.call(dots, fn('cx'), 'X')
     computedY = Array::reduce.call(dots, fn('cy'), 'Y')
-    expect(computedX).to.equal 'X 0 168 336 504 672 840'
+    expect(computedX).to.equal 'X 0 160 320 480 640 800'
     expect(computedY).to.equal 'Y 410 370 300 290 220 30'
     i = 0
 
@@ -118,7 +118,7 @@ describe 'with a second axis', ->
 
     computedX = Array::reduce.call(dots, fn('cx'), 'X')
     computedY = Array::reduce.call(dots, fn('cy'), 'Y')
-    expect(computedX).to.equal 'X 0 168 336 504 672 840'
+    expect(computedX).to.equal 'X 0 160 320 480 640 800'
     expect(computedY).to.equal 'Y 415 0 398 381 433 450'
     i = 0
 

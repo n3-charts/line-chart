@@ -106,7 +106,7 @@ def has_expected_image(path):
 
 
 def are_files_missing(path):
-  mandatories = ['html', 'javascript']
+  mandatories = ['html', 'options', 'data']
   return filter(lambda m:not os.path.isfile(path + '/' + m), mandatories)
 
 
@@ -153,18 +153,59 @@ def generate_test_files(dirs, project_path, template_path):
 def generate_test_file(test, project_path, template_path):
   name = os.path.basename(test)
   html = get_content(test + '/html')
-  javascript = get_content(test + '/javascript')
+  data = get_content(test + '/data')
+  options = get_content(test + '/options')
 
   with open(name + ".html", 'w') as target:
     with open(template_path, 'r') as src:
       line = src.read()
       line = re.sub(r'%html%', html, line)
-      line = re.sub(r'%javascript%', javascript, line)
+      line = re.sub(r'%data%', data, line)
+      line = re.sub(r'%options%', options, line)
       line = re.sub(r'%project_path%', project_path, line)
 
       target.write(line)
   return name
 
+
+def generate_global_file(dirs, project_path, template_path):
+  info('Creating global test file')
+  examples = gather_examples(dirs, project_path)
+
+  with cd('scripts'):
+    with open("../.tmp/global.html", 'w') as target:
+      with open("global_template.html", 'r') as src:
+        line = src.read()
+        line = re.sub(r'%project_path%', project_path, line)
+
+        m = re.search(r'%repeat%(.*)%repeat%', line)
+        values = []
+        for example in examples:
+          gp = m.group(1)
+          gp = re.sub(r'%data%', example['data'], gp)
+          gp = re.sub(r'%options%', example['options'], gp)
+          gp = re.sub(r'%name%', example['name'], gp)
+
+          values.append(gp)
+
+        line = re.sub(r'%repeat%(.*)%repeat%', ',\n'.join(values), line)
+        target.write(line)
+
+  debug('...done')
+
+def gather_examples(dirs, project_path):
+  examples = []
+
+  with cd('.tmp'):
+    for test in dirs:
+      example = {}
+      example['name'] = os.path.basename(test)
+      example['data'] = get_content(test + '/data')
+      example['options'] = get_content(test + '/options')
+      example['html'] = get_content(test + '/html')
+      examples.append(example)
+
+  return examples
 
 def generate_phantom_file(test, project_path, template_path):
   name = os.path.basename(test)
@@ -346,6 +387,7 @@ with cd(visual):
 
   create_temp_dir()
   generate_test_files(dirs, project_path, os.path.abspath("scripts"))
+  generate_global_file(dirs, project_path, os.path.abspath("scripts"))
 
   if args.no_capture:
     sys.exit(0)

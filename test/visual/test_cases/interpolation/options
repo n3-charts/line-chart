@@ -1,0 +1,19 @@
+lineMode: "bundle",
+      series: [
+        {y: "val_0", label: "Ping", color: "#e377c2", type: "line", thickness: "1px"},
+        {
+          y: "val_2",
+          label: "Pong",
+          axis: "y2",
+          color: "#7f7f7f",
+          type: "line",
+          thickness: "1px"
+        }
+      ],
+      axes: {
+        x: {type: "linear", key: "x"},
+        y: {type: "linear"},
+        y2: {type: "linear"}
+      },
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}
