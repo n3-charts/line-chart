@@ -1,9 +1,9 @@
 ###
-line-chart - v1.1.3 - 17 October 2014
+line-chart - v1.1.6 - 04 February 2015
 https://github.com/n3-charts/line-chart
-Copyright (c) 2014 n3-charts
+Copyright (c) 2015 n3-charts
 ###
-# lib/line-chart.coffee
+# src/line-chart.coffee
 old_m = angular.module('n3-charts.linechart', ['n3charts.utils'])
 m = angular.module('n3-line-chart', ['n3charts.utils'])
 
@@ -20,17 +20,23 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     element[0].style['font-size'] = 0
 
     scope.updateDimensions = (dimensions) ->
-      top = _u.getPixelCssProp(element[0].parentElement, 'padding-top')
-      bottom = _u.getPixelCssProp(element[0].parentElement, 'padding-bottom')
-      left = _u.getPixelCssProp(element[0].parentElement, 'padding-left')
-      right = _u.getPixelCssProp(element[0].parentElement, 'padding-right')
-      dimensions.width = (element[0].parentElement.offsetWidth || 900) - left - right
-      dimensions.height = (element[0].parentElement.offsetHeight || 500) - top - bottom
+      parent = element[0].parentElement
+
+      top = _u.getPixelCssProp(parent, 'padding-top')
+      bottom = _u.getPixelCssProp(parent, 'padding-bottom')
+      left = _u.getPixelCssProp(parent, 'padding-left')
+      right = _u.getPixelCssProp(parent, 'padding-right')
+
+      dimensions.width = +(attrs.width || parent.offsetWidth || 900) - left - right
+      dimensions.height = +(attrs.height || parent.offsetHeight || 500) - top - bottom
+
+      return
 
     scope.redraw = ->
       scope.updateDimensions(dim)
       scope.update(dim)
 
+      return
 
     isUpdatingOptions = false
     initialHandlers =
@@ -48,9 +54,17 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       _u.clean(element[0])
 
       svg = _u.bootstrap(element[0], dimensions)
+
+      fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
+
       axes = _u
         .createAxes(svg, dimensions, options.axes)
-        .andAddThemIf(isThumbnail)
+        .andAddThemIf({
+          all: !isThumbnail
+          x: true
+          y: fn('y')
+          y2: fn('y2')
+        })
 
       if dataPerSeries.length
         _u.setScalesDomain(axes, scope.data, options.series, svg, options)
@@ -58,7 +72,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       if isThumbnail
         _u.adjustMarginsForThumbnail(dimensions, axes)
       else
-        _u.adjustMargins(svg, dimensions, options, scope.data)
+        _u.adjustMargins(dimensions, options)
 
       _u.createContent(svg, handlers)
 
@@ -90,7 +104,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.redraw, true)
-    scope.$watch('options', scope.redraw, true)
+    scope.$watch('options', (-> scope.update(dim)) , true)
 
   return {
     replace: true
@@ -108,7 +122,7 @@ mod = angular.module('n3charts.utils', [])
 
 mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootScope) ->
   return {
-# lib/utils/areas.coffee
+# src/utils/areas.coffee
       addPatterns: (svg, series) ->
         pattern = svg.select('defs').selectAll('pattern')
         .data(series.filter (s) -> s.striped)
@@ -186,7 +200,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/columns.coffee
+# src/utils/columns.coffee
       getPseudoColumns: (data, options) ->
         data = data.filter (s) -> s.type is 'column'
 
@@ -287,7 +301,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/dots.coffee
+# src/utils/dots.coffee
       drawDots: (svg, axes, data, options, handlers) ->
         dotGroup = svg.select('.content').selectAll('.dotGroup')
           .data data.filter (s) -> s.type in ['line', 'area'] and s.drawDots
@@ -331,7 +345,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/legend.coffee
+# src/utils/legend.coffee
       computeLegendLayout: (svg, series, dimensions) ->
         padding = 10
         that = this
@@ -489,7 +503,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/lines.coffee
+# src/utils/lines.coffee
       drawLines: (svg, scales, data, options, handlers) ->
         drawers =
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension)
@@ -577,7 +591,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/misc.coffee
+# src/utils/misc.coffee
       getPixelCssProp: (element, propertyName) ->
         string = $window.getComputedStyle(element, null)
           .getPropertyValue(propertyName)
@@ -754,28 +768,16 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         dimensions.top = defaults.top
         dimensions.bottom = defaults.bottom
 
-      adjustMargins: (svg, dimensions, options, data) ->
+      adjustMargins: (dimensions, options) ->
         this.resetMargins(dimensions)
-        return unless data and data.length
-        return unless options.series.length
+        return unless options.axes?
 
-        dimensions.left = this.getWidestTickWidth(svg, 'y')
-        dimensions.right = this.getWidestTickWidth(svg, 'y2')
+        {y, y2} = options.axes
 
-        if dimensions.right is 0 then dimensions.right = 20
+        dimensions.left = y?.width if y?.width?
+        dimensions.right = y2?.width if y2?.width?
 
-        return if options.tooltip.mode is 'scrubber'
-        series = options.series
-
-        leftSeries = series.filter (s) -> s.axis isnt 'y2'
-        leftWidest = this.getWidestOrdinate(data, leftSeries, options)
-        dimensions.left = this.estimateSideTooltipWidth(svg, leftWidest).width + 20
-
-        rightSeries = series.filter (s) -> s.axis is 'y2'
-        return unless rightSeries.length
-
-        rightWidest = this.getWidestOrdinate(data, rightSeries, options)
-        dimensions.right = this.estimateSideTooltipWidth(svg, rightWidest).width + 20
+        return
 
       adjustMarginsForThumbnail: (dimensions, axes) ->
         dimensions.top = 1
@@ -801,7 +803,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         bbox = this.getTextBBox
 
         ticks = svg.select(".#{axisKey}.axis").selectAll('.tick')
-        ticks[0]?.map (t) -> max = Math.max(max, bbox(t).width)
+        ticks[0]?.forEach (t) -> max = Math.max(max, bbox(t).width)
 
         return max
 
@@ -824,7 +826,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/options.coffee
+# src/utils/options.coffee
       getDefaultOptions: ->
         return {
           tooltip: {mode: 'scrubber'}
@@ -982,18 +984,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         this.sanitizeExtrema(options)
 
-        if options.ticks and options.ticks instanceof Array
-          options.tickValues = options.ticks
-          delete options.ticks
-
         return options
 
 # ----
 
 
-# lib/utils/scales.coffee
+# src/utils/scales.coffee
       createAxes: (svg, dimensions, axesOptions) ->
-        drawY2Axis = axesOptions.y2?
+        createY2Axis = axesOptions.y2?
 
         width = dimensions.width
         height = dimensions.height
@@ -1006,26 +1004,24 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           x = d3.time.scale().rangeRound([0, width])
         else
           x = d3.scale.linear().rangeRound([0, width])
+        xAxis = this.createAxis(x, 'x', axesOptions)
 
         y = undefined
         if axesOptions.y.type is 'log'
           y = d3.scale.log().clamp(true).rangeRound([height, 0])
         else
           y = d3.scale.linear().rangeRound([height, 0])
-
+        y.clamp(true)
+        yAxis = this.createAxis(y, 'y', axesOptions)
 
         y2 = undefined
-        if drawY2Axis and axesOptions.y2.type is 'log'
+        if createY2Axis and axesOptions.y2.type is 'log'
           y2 = d3.scale.log().clamp(true).rangeRound([height, 0])
         else
           y2 = d3.scale.linear().rangeRound([height, 0])
-
-        y.clamp(true)
         y2.clamp(true)
-
-        xAxis = this.createAxis(x, 'x', axesOptions)
-        yAxis = this.createAxis(y, 'y', axesOptions)
         y2Axis = this.createAxis(y2, 'y2', axesOptions)
+
 
         style = (group) ->
           group.style(
@@ -1038,8 +1034,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'stroke': '#000'
           )
 
-        that = this
-
         return {
           xScale: x
           yScale: y
@@ -1048,22 +1042,25 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           yAxis: yAxis
           y2Axis: y2Axis
 
-          andAddThemIf: (condition) ->
-            if not condition
-              style(
-                svg.append('g')
-                  .attr('class', 'x axis')
-                  .attr('transform', 'translate(0,' + height + ')')
-                  .call(xAxis)
-              )
+          andAddThemIf: (conditions) ->
+            if !!conditions.all
 
-              style(
-                svg.append('g')
-                  .attr('class', 'y axis')
-                  .call(yAxis)
-              )
+              if !!conditions.x
+                style(
+                  svg.append('g')
+                    .attr('class', 'x axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis)
+                )
 
-              if drawY2Axis
+              if !!conditions.y
+                style(
+                  svg.append('g')
+                    .attr('class', 'y axis')
+                    .call(yAxis)
+                )
+
+              if createY2Axis and !!conditions.y2
                 style(
                   svg.append('g')
                     .attr('class', 'y2 axis')
@@ -1094,29 +1091,36 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .orient(sides[key])
           .tickFormat(o?.labelFunction)
 
-        axis.ticks(o?.ticks) if o?.ticks?
-        axis.tickValues(o?.tickValues) if o?.tickValues?
+        return axis unless o?
+
+        axis.ticks(o.ticks) if angular.isNumber(o.ticks)
+        axis.tickValues(o.ticks) if angular.isArray(o.ticks)
 
         return axis
 
       setScalesDomain: (scales, data, series, svg, options) ->
         this.setXScale(scales.xScale, data, series, options.axes)
 
-        yDomain = this.getVerticalDomain(options, data, series, 'y')
-        y2Domain = this.getVerticalDomain(options, data, series, 'y2')
-
-        scales.yScale.domain(yDomain).nice()
-        scales.y2Scale.domain(y2Domain).nice()
-
         svg.selectAll('.x.axis').call(scales.xAxis)
-        svg.selectAll('.y.axis').call(scales.yAxis)
-        svg.selectAll('.y2.axis').call(scales.y2Axis)
+
+        if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
+          yDomain = this.getVerticalDomain(options, data, series, 'y')
+          scales.yScale.domain(yDomain).nice()
+          svg.selectAll('.y.axis').call(scales.yAxis)
+
+        if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
+          y2Domain = this.getVerticalDomain(options, data, series, 'y2')
+          scales.y2Scale.domain(y2Domain).nice()
+          svg.selectAll('.y2.axis').call(scales.y2Axis)
+
 
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]
 
-        if o?.tickValues?
-          return [o.tickValues[0], o.tickValues[o.tickValues.length - 1]]
+        if o.ticks? and angular.isArray(o.ticks)
+          return [o.ticks[0], o.ticks[o.ticks.length - 1]]
+
+        mySeries = series.filter (s) -> s.axis is key and s.visible isnt false
 
         domain = this.yExtent(
           series.filter (s) -> s.axis is key and s.visible isnt false
@@ -1213,7 +1217,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/scrubber.coffee
+# src/utils/scrubber.coffee
       showScrubber: (svg, glass, axes, data, options, columnWidth) ->
         that = this
         glass.on('mousemove', ->
@@ -1425,7 +1429,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 # ----
 
 
-# lib/utils/tooltips.coffee
+# src/utils/tooltips.coffee
       getTooltipHandlers: (options) ->
         if options.tooltip.mode is 'scrubber'
           return {

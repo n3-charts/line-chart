@@ -20,7 +20,7 @@ You can find examples on the [demo page](http://n3-charts.github.io/line-chart/)
 A line chart is called using this syntax :
 
 ```html
-<linechart data="data" options="options" mode=""></linechart>
+<linechart data="data" options="options" mode="" width="" height=""></linechart>
 ```
 
 The line chart directives needs two attributes : `data` and `options`. If one is missing, nothing happens.
@@ -38,6 +38,8 @@ $scope.data = [
   {x: 5, value: 42, otherValue: 45}
 ];
 ```
+
+**Please make sure it's sorted by abscissa.**
 
 #### Options
 Options must be an object with a series array. It should look like this :
@@ -76,6 +78,7 @@ It can also contain, according to your series configuration, a `y` and a `y2` ke
  + `type` : optional, can be either linear' or 'log' (default is 'linear'). If set to 'log', the data may be clamped if its computed lower bound is 0 (this means the chart won't display an actual 0, but a close value - log scales can't display zero values).
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
+ + `width` : optional, forces the axis width (default is 50)
 
 
 ##### Series
@@ -125,6 +128,13 @@ The `columnsHGap` is optional (default is `5`). Sets the space between two colum
 #### Mode
 The mode can be set to 'thumbnail' (default is empty string). If so, the chart will take as much space as it can, and it will only display the series. No axes, no legend, no tooltips. Furthermore, the lines or areas will be drawn without dots. This is convenient for sparklines.
 
+#### Width and height
+This is more a hack. The chart usually tries to infer its own dimensions regarding its parent, but sometimes it fails like a noob. That's why these two attributes can be set. The should look like this :
+
+```html
+<linechart width="150" height="100"></linechart>
+```
+
 ### Building
 Fetch the repo :
 ```sh
@@ -155,6 +165,12 @@ Or run the visual tests, too :
 ```sh
 $ grunt travis
 ```
+
+### Contributing
+You're welcome to submit issues and PRs. However, please make sure :
+
+- to link a plunker with your issue ([here's one to start from](http://plnkr.co/edit/C9fHwXzo90LlRSkt6cjI?p=preview))
+- to add tests to your pull requests
 
 
 ### Testing

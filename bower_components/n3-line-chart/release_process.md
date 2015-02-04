@@ -1,9 +1,0 @@
-- Increment bower.json version number
-- Increment package.json version number
-- Update README.md with new features
-- Rebuild the project using `grunt`
-- Push the changes and merge them into master (if not already on master)
-- Create a new release/tag on GitHub
-- Checkout gh-pages and `bower update`
-- Update gh-pages' release note
-- Push gh-pages
