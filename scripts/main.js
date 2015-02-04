@@ -13,6 +13,20 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
   mixpanel.track("Home");
   $scope.releases = [
     {
+      tag: '1.1.6',
+      name: 'ludicrous-limbo',
+      lines: [
+        'Revamped the way axis are shown/adjusted to the view ([#177]).'
+      ]
+    },
+    {
+      tag: '1.1.4',
+      name: 'kou-kouye',
+      lines: [
+        'Added <code>width</code> and <code>height</code> as HTML attributes([#107])'
+      ]
+    },
+    {
       tag: '1.1.3',
       name: 'jealous-jeopardy',
       lines: [

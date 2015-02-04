@@ -128,6 +128,7 @@ figure.comparison > figcaption {
   border-top: 1px solid;
   margin: 0 auto;
   width: 350px;
+  padding-top: 4px;
 }
 
 .preview-chart {
@@ -138,7 +139,7 @@ figure.comparison > figcaption {
 div.release span.label {
   border: 1px solid lightgrey;
   border-radius: 17px;
-  padding: 1px 5px 2px 5px;
+  padding: 4px 5px 2px 5px;
   font-size: 11px;
 }
 
@@ -160,6 +161,7 @@ ul.notes {
 ul.notes > li {
   font-size: 12px;
   margin-bottom: 5px;
+  padding-top: 3px;
 }
 
 div.credits {
@@ -181,6 +183,7 @@ h3.subheading {
 
 .example {
   min-width: 600px;
+  width: 90%;
   margin: 0 auto 50px auto;
   border: 1px solid #CECECE;
   padding-left: 10px;
