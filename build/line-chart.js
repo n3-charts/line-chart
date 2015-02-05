@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.6 - 04 February 2015
+line-chart - v1.1.6 - 05 February 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -1235,6 +1235,7 @@ mod.factory('n3utils', [
           }
         });
         groups.forEach(function(group) {
+          group = group.filter(Boolean);
           minY = Math.min(minY, d3.min(data, function(d) {
             return group.reduce((function(a, s) {
               return Math.min(a, d[s.y]);
