@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.6 - 04 February 2015
+line-chart - v1.1.7 - 05 February 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -1153,6 +1153,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           groups.push([series]) unless isInStack
 
         groups.forEach (group) ->
+          group = group.filter(Boolean)
           minY = Math.min(minY, d3.min(data, (d) ->
             group.reduce ((a, s) -> Math.min(a, d[s.y]) ), Number.POSITIVE_INFINITY
           ))
