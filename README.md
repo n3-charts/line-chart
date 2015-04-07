@@ -169,7 +169,7 @@ $ grunt travis
 ### Contributing
 You're welcome to submit issues and PRs. However, please make sure :
 
-- to link a plunker with your issue ([here's one to start from](http://plnkr.co/edit/C9fHwXzo90LlRSkt6cjI?p=preview))
+- to link a plunker with your issue ([here's one to start from](http://plnkr.co/edit/2hqP1VfrsmrYydezW35G?p=preview))
 - to add tests to your pull requests
 
 
