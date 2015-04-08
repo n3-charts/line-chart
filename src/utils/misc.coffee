@@ -202,7 +202,7 @@
         return bbox
 
       getTextBBox: (svgTextElement) ->
-        if svgTextElement isnt null then svgTextElement.getBBox() else {}
+        return if svgTextElement isnt null then svgTextElement.getBBox() else {}
 
       getWidestTickWidth: (svg, axisKey) ->
         max = 0
