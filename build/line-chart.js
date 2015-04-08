@@ -845,7 +845,7 @@ mod.factory('n3utils', [
         return bbox;
       },
       getTextBBox: function(svgTextElement) {
-        return svgTextElement.getBBox();
+        return svgTextElement != null ? svgTextElement.getBBox() : {};
       },
       getWidestTickWidth: function(svg, axisKey) {
         var bbox, max, ticks, _ref;
