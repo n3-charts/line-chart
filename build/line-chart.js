@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.7 - 05 February 2015
+line-chart - v1.1.7 - 14 April 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -1056,7 +1056,7 @@ mod.factory('n3utils', [
         if (value == null) {
           return void 0;
         }
-        number = parseInt(value, 10);
+        number = parseFloat(value);
         if (isNaN(number)) {
           $log.warn("Invalid extremum value : " + value + ", deleting it.");
           return void 0;

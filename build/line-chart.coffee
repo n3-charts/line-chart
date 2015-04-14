@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.7 - 05 February 2015
+line-chart - v1.1.7 - 14 April 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -969,7 +969,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       getSanitizedNumber: (value) ->
         return undefined unless value?
 
-        number = parseInt(value, 10)
+        number = parseFloat(value)
 
         if isNaN(number)
           $log.warn("Invalid extremum value : #{value}, deleting it.")
