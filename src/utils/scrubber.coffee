@@ -48,7 +48,7 @@
 
           v = that.getClosestPoint(series.values, axes.xScale.invert(x))
 
-          text = v.x + ' : ' + v.y
+          text = v.x + ' : ' + (v.y / series.graphFactor)
           if options.tooltip.formatter
             text = options.tooltip.formatter(v.x, v.y, options.series[index])
 
