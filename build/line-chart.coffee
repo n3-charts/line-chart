@@ -720,6 +720,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             xOffset: 0
             type: s.type
             thickness: s.thickness
+            graphFactor: s.graphFactor || 1
             drawDots: s.drawDots isnt false
 
 
@@ -738,7 +739,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           data.filter((row) -> row[s.y]?).forEach (row) ->
             d =
               x: row[options.axes.x.key]
-              y: row[s.y]
+              y: row[s.y] * seriesData.graphFactor
               y0: 0
               axis: s.axis || 'y'
 
@@ -1155,10 +1156,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         groups.forEach (group) ->
           group = group.filter(Boolean)
           minY = Math.min(minY, d3.min(data, (d) ->
-            group.reduce ((a, s) -> Math.min(a, d[s.y]) ), Number.POSITIVE_INFINITY
+            group.reduce ((a, s) -> Math.min(a, d[s.y] * (s.graphFactor || 1)) ), Number.POSITIVE_INFINITY
           ))
           maxY = Math.max(maxY, d3.max(data, (d) ->
-            group.reduce ((a, s) -> a + d[s.y]), 0
+            group.reduce ((a, s) -> a + d[s.y] * (s.graphFactor || 1)), 0
           ))
 
         if minY is maxY
@@ -1269,7 +1270,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           v = that.getClosestPoint(series.values, axes.xScale.invert(x))
 
-          text = v.x + ' : ' + v.y
+          text = v.x + ' : ' + (v.y / series.graphFactor)
           if options.tooltip.formatter
             text = options.tooltip.formatter(v.x, v.y, options.series[index])
 
