@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.7 - 20 April 2015
+line-chart - v1.1.7 - 21 April 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -453,7 +453,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .attr(
             'class': (d, i) -> "legendText series_#{i}"
             'font-family': 'Courier'
-            'font-size': 10
+            'font-size': 12.5
             'transform': 'translate(13, 4)'
             'text-rendering': 'geometric-precision'
           )
