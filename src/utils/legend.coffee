@@ -105,7 +105,7 @@
           .attr(
             'class': (d, i) -> "legendText series_#{i}"
             'font-family': 'Courier'
-            'font-size': 10
+            'font-size': 12.5
             'transform': 'translate(13, 4)'
             'text-rendering': 'geometric-precision'
           )

@@ -126,6 +126,7 @@
             xOffset: 0
             type: s.type
             thickness: s.thickness
+            graphFactor: s.graphFactor || 1
             drawDots: s.drawDots isnt false
 
 
@@ -144,7 +145,7 @@
           data.filter((row) -> row[s.y]?).forEach (row) ->
             d =
               x: row[options.axes.x.key]
-              y: row[s.y]
+              y: row[s.y] * seriesData.graphFactor
               y0: 0
               axis: s.axis || 'y'
 

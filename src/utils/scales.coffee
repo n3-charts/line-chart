@@ -163,10 +163,10 @@
         groups.forEach (group) ->
           group = group.filter(Boolean)
           minY = Math.min(minY, d3.min(data, (d) ->
-            group.reduce ((a, s) -> Math.min(a, d[s.y]) ), Number.POSITIVE_INFINITY
+            group.reduce ((a, s) -> Math.min(a, d[s.y] * (s.graphFactor || 1)) ), Number.POSITIVE_INFINITY
           ))
           maxY = Math.max(maxY, d3.max(data, (d) ->
-            group.reduce ((a, s) -> a + d[s.y]), 0
+            group.reduce ((a, s) -> a + d[s.y] * (s.graphFactor || 1)), 0
           ))
 
         if minY is maxY

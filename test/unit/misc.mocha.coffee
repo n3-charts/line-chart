@@ -39,6 +39,7 @@ describe 'misc', ->
         thickness: '1px'
         drawDots: true
         dotSize: 5
+        graphFactor: 1
       }
       {
         id: 'id_1'
@@ -52,6 +53,7 @@ describe 'misc', ->
         thickness: '3px'
         drawDots: true
         dotSize: 2
+        graphFactor: 1
       }
     ]
     computed = n3utils.getDataPerSeries(data, options)
@@ -90,6 +92,7 @@ describe 'misc', ->
         thickness: '1px'
         drawDots: true
         dotSize: 2
+        graphFactor: 1
       }
       {
         index: 1
@@ -102,6 +105,7 @@ describe 'misc', ->
         xOffset: 0
         thickness: '3px'
         drawDots: false
+        graphFactor: 1
       }
     ]
     computed = n3utils.getDataPerSeries(data, options)
