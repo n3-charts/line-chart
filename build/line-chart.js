@@ -20,7 +20,7 @@ directive('linechart', [
   'n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
     var link;
     link = function(scope, element, attrs, ctrl) {
-      var dim, dispatch, initialHandlers, isUpdatingOptions, promise, window_resize, _u;
+      var dim, dispatch, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
       _u = n3utils;
       dim = _u.getDefaultMargins();
       dispatch = _u.getEventDispatcher();
@@ -92,15 +92,17 @@ directive('linechart', [
           return _u.addTooltips(svg, dimensions, options.axes);
         }
       };
-      if (scope.click) {
-        dispatch.on('click', scope.click);
-      }
-      if (scope.hover) {
-        dispatch.on('hover', scope.hover);
-      }
-      if (scope.focus) {
-        dispatch.on('focus', scope.focus);
-      }
+      updateEvents = function() {
+        if (scope.click) {
+          dispatch.on('click', scope.click);
+        }
+        if (scope.hover) {
+          dispatch.on('hover', scope.hover);
+        }
+        if (scope.focus) {
+          return dispatch.on('focus', scope.focus);
+        }
+      };
       promise = void 0;
       window_resize = function() {
         if (promise != null) {
@@ -110,9 +112,10 @@ directive('linechart', [
       };
       $window.addEventListener('resize', window_resize);
       scope.$watch('data', scope.redraw, true);
-      return scope.$watch('options', (function() {
+      scope.$watch('options', (function() {
         return scope.update(dim);
       }), true);
+      return scope.$watch('[click, hover, focus]', updateEvents);
     };
     return {
       replace: true,
@@ -298,12 +301,12 @@ mod.factory('n3utils', [
         colGroup.selectAll("rect").data(function(d) {
           return d.values;
         }).enter().append("rect").on({
-          'mouseover': function(d, i) {
-            return dispatch.hover(d, i);
-          }
-        }).on({
           'click': function(d, i) {
             return dispatch.click(d, i);
+          }
+        }).on({
+          'mouseover': function(d, i) {
+            return dispatch.hover(d, i);
           }
         }).style({
           'stroke-opacity': function(d) {
@@ -375,6 +378,10 @@ mod.factory('n3utils', [
           'click': function(d, i) {
             return dispatch.click(d, i);
           }
+        }).on({
+          'mouseover': function(d, i) {
+            return dispatch.hover(d, i);
+          }
         });
         if (options.tooltip.mode !== 'none') {
           dotGroup.on('mouseover', function(series) {
@@ -384,7 +391,6 @@ mod.factory('n3utils', [
             target.attr('r', function(s) {
               return s.dotSize + 2;
             });
-            dispatch.hover(d, series.values.indexOf(d));
             return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
               series: series,
               x: target.attr('cx'),

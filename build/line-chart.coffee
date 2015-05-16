@@ -96,14 +96,15 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
 
-    if scope.click
-      dispatch.on('click', scope.click)
+    updateEvents = ->
+      if scope.click
+        dispatch.on('click', scope.click)
 
-    if scope.hover
-      dispatch.on('hover', scope.hover)
+      if scope.hover
+        dispatch.on('hover', scope.hover)
 
-    if scope.focus
-      dispatch.on('focus', scope.focus)
+      if scope.focus
+        dispatch.on('focus', scope.focus)
 
     promise = undefined
     window_resize = ->
@@ -114,6 +115,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     scope.$watch('data', scope.redraw, true)
     scope.$watch('options', (-> scope.update(dim)) , true)
+    scope.$watch('[click, hover, focus]', updateEvents)
 
   return {
     replace: true
@@ -289,8 +291,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         colGroup.selectAll("rect")
           .data (d) -> d.values
           .enter().append("rect")
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
             .on('click': (d, i) -> dispatch.click(d, i))
+            .on('mouseover': (d, i) -> dispatch.hover(d, i))
             .style({
               'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
               'stroke-width': '1px'
@@ -334,14 +336,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               'stroke-width': '2px'
             )
             .on('click': (d, i) -> dispatch.click(d, i))
+            .on('mouseover': (d, i) -> dispatch.hover(d, i))
 
         if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
             d = target.datum()
             target.attr('r', (s) -> s.dotSize + 2)
-            
-            dispatch.hover(d, series.values.indexOf(d))
 
             handlers.onMouseOver?(svg, {
               series: series

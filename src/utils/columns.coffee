@@ -77,8 +77,8 @@
         colGroup.selectAll("rect")
           .data (d) -> d.values
           .enter().append("rect")
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
             .on('click': (d, i) -> dispatch.click(d, i))
+            .on('mouseover': (d, i) -> dispatch.hover(d, i))
             .style({
               'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
               'stroke-width': '1px'

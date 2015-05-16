@@ -74,8 +74,6 @@ describe 'event handling', ->
             }
           ]
           tooltip: {mode: 'axes', interpolate: false}
-        outerScope.clicked = (d, i) ->
-          console.log('clicked')
 
       sinon.stub(d3, 'mouse', -> [0, 0])
 
@@ -85,7 +83,6 @@ describe 'event handling', ->
     it 'should dispatch a click event when clicked on a dot', ->
 
       clicked = undefined
-      hovered = undefined
 
       outerScope.$apply ->
         outerScope.options =
@@ -95,9 +92,118 @@ describe 'event handling', ->
           ]
           tooltip: {mode: 'axes'}
         outerScope.clicked = (d, i) ->
-          console.log('clicked')
           clicked = [d, i]
+
+      dotGroup = element.childByClass('dotGroup')
+
+      dotGroup.children()[0].click()
+      expect(clicked[0].x).to.equal 0
+      expect(clicked[0].y).to.equal 4
+      expect(clicked[1]).to.equal 0
+
+      dotGroup.children()[1].click()
+      expect(clicked[0].x).to.equal 1
+      expect(clicked[0].y).to.equal 8
+      expect(clicked[1]).to.equal 1
+
+    it 'should dispatch a click event when clicked on a column', ->
+
+      clicked = undefined
+
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+          ]
+          tooltip: {mode: 'axes'}
+        outerScope.clicked = (d, i) ->
+          clicked = [d, i]
+
+      columnGroup = element.childByClass('columnGroup')
+
+      columnGroup.children()[0].click()
+      expect(clicked[0].x).to.equal 0
+      expect(clicked[0].y).to.equal 4
+      expect(clicked[1]).to.equal 0
+
+      columnGroup.children()[1].click()
+      expect(clicked[0].x).to.equal 1
+      expect(clicked[0].y).to.equal 8
+      expect(clicked[1]).to.equal 1
+
+    it 'should dispatch a hover event when hovering over a dot', ->
+
+      hovered = undefined
+
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+          ]
+          tooltip: {mode: 'axes'}
         outerScope.hovered = (d, i) ->
-          console.log('hovered')
           hovered = [d, i]
 
+      dotGroup = element.childByClass('dotGroup')
+
+      fakeMouse.hoverIn(dotGroup.children()[0].domElement)
+      expect(hovered[0].x).to.equal 0
+      expect(hovered[0].y).to.equal 4
+      expect(hovered[1]).to.equal 0
+
+      fakeMouse.hoverIn(dotGroup.children()[1].domElement)
+      expect(hovered[0].x).to.equal 1
+      expect(hovered[0].y).to.equal 8
+      expect(hovered[1]).to.equal 1
+
+    it 'should dispatch a hover event when hovering over a column', ->
+
+      hovered = undefined
+
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+          ]
+          tooltip: {mode: 'axes'}
+        outerScope.hovered = (d, i) ->
+          hovered = [d, i]
+
+      columnGroup = element.childByClass('columnGroup')
+
+      fakeMouse.hoverIn(columnGroup.children()[0].domElement)
+      expect(hovered[0].x).to.equal 0
+      expect(hovered[0].y).to.equal 4
+      expect(hovered[1]).to.equal 0
+
+      fakeMouse.hoverIn(columnGroup.children()[1].domElement)
+      expect(hovered[0].x).to.equal 1
+      expect(hovered[0].y).to.equal 8
+      expect(hovered[1]).to.equal 1
+
+    it 'should dispatch a focus event when scrubber is displayed', ->
+
+      focused = []
+
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+          ]
+          tooltip: {mode: 'scrubber'}
+        outerScope.focused = (d, i) ->
+          console.log('focus', d, i)
+          focused.push([d, i])
+
+      glass = element.childByClass('glass')
+
+      fakeMouse.hoverIn(glass)
+      fakeMouse.mouseMove(glass)
+      flushD3()
+
+      expect(focused[0][0].x).to.equal focused[1][0].x
+      expect(focused[0][1]).to.equal focused[0][1]
