@@ -135,6 +135,48 @@ This is more a hack. The chart usually tries to infer its own dimensions regardi
 <linechart width="150" height="100"></linechart>
 ```
 
+#### Custom events
+We can attach event handlers for *click*, *hover* and *focus* events of the chart.
+
+##### Click
+The event handler for the *click* event get's triggered when the mouse clicks on a dot or column of the chart in tooltip modes *none* and *axes*.
+
+```js
+$scope.onClick = function(d, i){
+  conosole.log(d, i);
+}
+```
+
+```html
+<linechart data="data" options="options" click="onClick"></linechart>
+```
+
+##### Hover
+The event handler for the *hover* event get's triggered when the mouse hovers over a dot or column of the chart in tooltip modes *none* and *axes*.
+
+```js
+$scope.onHover = function(d, i){
+  conosole.log(d, i);
+}
+```
+
+```html
+<linechart data="data" options="options" hover="onHover"></linechart>
+```
+
+##### Focus
+The event handler for a *focus* event get's triggered when the mouse hovers over the chart in tooltip mode *scrubber*.
+
+```js
+$scope.onFocus = function(d, i){
+  conosole.log(d, i);
+}
+```
+
+```html
+<linechart data="data" options="options" focus="onFocus"></linechart>
+```
+
 ### Building
 Fetch the repo :
 ```sh
