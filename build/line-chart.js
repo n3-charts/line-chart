@@ -1400,15 +1400,17 @@ mod.factory('n3utils', [
         that = this;
         positions = [];
         data.forEach(function(series, index) {
-          var item, lText, left, rText, right, side, sizes, text, v;
+          var item, lText, left, rText, right, side, sizes, text, v, xInvert, yInvert;
           item = svg.select(".scrubberItem.series_" + index);
           if (options.series[index].visible === false) {
             item.attr('opacity', 0);
             return;
           }
           item.attr('opacity', 1);
-          v = that.getClosestPoint(series.values, axes.xScale.invert(x));
-          dispatch.focus(v, series.values.indexOf(v));
+          xInvert = axes.xScale.invert(x);
+          yInvert = axes.yScale.invert(y);
+          v = that.getClosestPoint(series.values, xInvert);
+          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert]);
           text = v.x + ' : ' + v.y;
           if (options.tooltip.formatter) {
             text = options.tooltip.formatter(v.x, v.y, options.series[index]);

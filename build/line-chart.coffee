@@ -1296,9 +1296,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           item.attr('opacity', 1)
 
-          v = that.getClosestPoint(series.values, axes.xScale.invert(x))
+          xInvert = axes.xScale.invert(x)
+          yInvert = axes.yScale.invert(y)
 
-          dispatch.focus(v, series.values.indexOf(v))
+          v = that.getClosestPoint(series.values, xInvert)
+
+          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert])
 
           text = v.x + ' : ' + v.y
           if options.tooltip.formatter
