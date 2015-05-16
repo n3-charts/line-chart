@@ -72,15 +72,14 @@ describe 'legend', ->
     expect(l_0.childNodes[0].getAttribute('fill')).to.equal '#4682b4'
     expect(l_0.childNodes[1].getAttribute('clip-path')).to.equal 'url(#legend-clip)'
 
-    fakeMouse.clickOn(l_0.childNodes[0])
-
     fn = (cl) -> element.childByClass(cl).getStyle('display')
 
+    element.childrenByClass('legendItem')[0].click()
     expect(fn('lineGroup series_0')).to.equal('none')
     expect(fn('dotGroup series_0')).to.equal('none')
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('0.2')
 
-    fakeMouse.clickOn(l_0.childNodes[0])
+    element.childrenByClass('legendItem')[0].click()
     expect(fn('lineGroup series_0')).to.equal('')
     expect(fn('dotGroup series_0')).to.equal('')
     expect(element.childrenByClass('legendItem')[0].getAttribute('opacity')).to.equal('1')
