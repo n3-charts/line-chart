@@ -143,7 +143,7 @@ The event handler for the *click* event get's triggered when the mouse clicks on
 
 ```js
 $scope.onClick = function(d, i){
-  conosole.log(d, i);
+  console.log(d, i);
 }
 ```
 
@@ -156,7 +156,7 @@ The event handler for the *hover* event get's triggered when the mouse hovers ov
 
 ```js
 $scope.onHover = function(d, i){
-  conosole.log(d, i);
+  console.log(d, i);
 }
 ```
 
@@ -169,7 +169,7 @@ The event handler for a *focus* event get's triggered when the mouse hovers over
 
 ```js
 $scope.onFocus = function(d, i){
-  conosole.log(d, i);
+  console.log(d, i);
 }
 ```
 
