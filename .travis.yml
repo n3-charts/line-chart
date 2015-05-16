@@ -9,7 +9,7 @@ before_install:
 - sudo pip install pillow
 script: grunt travis
 addons:
-  firefox: '30.0'
+  firefox: '38.0'
 env:
   global:
     secure: dB3WMokJn/Z5d5Hpal4i+xtXw/8af7BxCyLL7h2fG4LlDgqke9QDL8t4RL6oEodAoMp1KIwASl2MQqnjgUOO+XzB+WCje9CiA22BIj3Q7CAgjImbPzY6i1ijDZJ8YwfHbdvzqGkZUL/INEmwCcrlsQGKagsHXNQ3n3uejzTnfj0=
