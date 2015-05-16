@@ -74,7 +74,7 @@ describe 'with a second axis', ->
     expect(areaGroup.getAttribute('style')).to.equal null
 
     areaPath = areaGroup.childByClass('area')
-    expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
+    expect(areaPath.getAttribute('style').trim()).to.match /fill: (rgb\(70, 130, 180\))|(#4682b4); opacity: 0.3;/
     expect(areaPath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z'
 
   it 'should draw y2 area', ->
@@ -82,7 +82,7 @@ describe 'with a second axis', ->
     expect(areaGroup.getAttribute('style')).to.equal null
 
     areaPath = areaGroup.childByClass('area')
-    expect(areaPath.getAttribute('style').trim()).to.equal 'fill: steelblue; opacity: 0.3;'
+    expect(areaPath.getAttribute('style').trim()).to.match /fill: (rgb\(70, 130, 180\))|(steelblue); opacity: 0.3;/
     expect(areaPath.getAttribute('d')).to.equal 'M0,415L160,0L320,398L480,381L640,433L800,450L800,381L640,381L480,381L320,381L160,381L0,381Z'
 
   it 'should draw y axis dots', ->

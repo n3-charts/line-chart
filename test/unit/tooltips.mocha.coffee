@@ -23,14 +23,10 @@ describe 'tooltip', ->
     checkVisibilityOf = (args) ->
       flushD3()
       args.forEach (axis) ->
-        if element.childByClass("#{axis}Tooltip").getAttribute('opacity') isnt '1'
-          console.warn "#{axis}Tooltip is not visible, but it should"
         expect(element.childByClass("#{axis}Tooltip").getAttribute('opacity')).to.equal('1')
 
       ['x', 'y', 'y2'].forEach (axis) ->
         if args.indexOf(axis) is -1
-          if element.childByClass("#{axis}Tooltip").getAttribute('opacity') isnt '0'
-            console.warn "#{axis}Tooltip is visible, but it shouldn't"
           expect(element.childByClass("#{axis}Tooltip").getAttribute('opacity')).to.equal('0')
 
 
@@ -91,9 +87,10 @@ describe 'tooltip', ->
   it 'should show/hide the tooltip when moving over/leaving a line', ->
     content = element.childByClass('content')
     linePath = content.childByClass('line')
+    lineGroup = content.childByClass('lineGroup')
 
     checkVisibilityOf([])
-    fakeMouse.mouseMove(linePath.domElement)
+    fakeMouse.mouseMove(lineGroup.domElement)
     checkVisibilityOf(['x', 'y'])
 
     fakeMouse.hoverOut(linePath.domElement)
