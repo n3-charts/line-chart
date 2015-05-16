@@ -59,40 +59,35 @@
             .style('fill', (s) -> s.color)
             .style('fill-opacity', 0.8)
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
-            .on('mouseover', (series) ->
-              target = d3.select(d3.event.target)
 
-              handlers.onMouseOver?(svg, {
-                series: series
-                x: target.attr('x')
-                y: axes[series.axis + 'Scale'](target.datum().y0 + target.datum().y)
-                datum: target.datum()
+        colGroup.each (series) ->
+          d3.select(this).selectAll("rect")
+            .data(series.values)
+            .enter().append("rect")
+              .style({
+                'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
+                'stroke-width': '1px'
+                'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
               })
-            )
-            .on('mouseout', (d) ->
-              d3.select(d3.event.target).attr('r', 2)
-              handlers.onMouseOut?(svg)
-            )
-
-        colGroup.selectAll("rect")
-          .data (d) -> d.values
-          .enter().append("rect")
-            .on('click': (d, i) -> dispatch.click(d, i))
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
-            .style({
-              'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
-              'stroke-width': '1px'
-              'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
-            })
-
-            .attr(
-              width: columnWidth
-              x: (d) -> axes.xScale(d.x)
-              height: (d) ->
-                return axes[d.axis + 'Scale'].range()[0] if d.y is 0
-                return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
-              y: (d) ->
-                if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
-            )
+              .attr(
+                width: columnWidth
+                x: (d) -> axes.xScale(d.x)
+                height: (d) ->
+                  return axes[d.axis + 'Scale'].range()[0] if d.y is 0
+                  return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
+                y: (d) ->
+                  if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
+              )
+              .on('mouseover', (d) ->
+                handlers.onMouseOver?(svg, {
+                  series: series
+                  x: axes.xScale(d.x)
+                  y: axes[d.axis + 'Scale'](d.y0 + d.y)
+                  datum: d
+                }, options.axes)
+              )
+              .on('mouseout', (d) ->
+                handlers.onMouseOut?(svg)
+              )
 
         return this

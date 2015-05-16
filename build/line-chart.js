@@ -267,19 +267,8 @@ mod.factory('n3utils', [
           return s.color;
         }).style('fill-opacity', 0.8).attr('transform', function(s) {
           return "translate(" + x1(s) + ",0)";
-        }).on('mouseover', function(series) {
-          var target;
-          target = d3.select(d3.event.target);
-          return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
-            series: series,
-            x: target.attr('x'),
-            y: axes[series.axis + 'Scale'](target.datum().y0 + target.datum().y),
-            datum: target.datum()
-          }) : void 0;
-        }).on('mouseout', function(d) {
-          d3.select(d3.event.target).attr('r', 2);
-          return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
         });
+<<<<<<< HEAD
         colGroup.selectAll("rect").data(function(d) {
           return d.values;
         }).enter().append("rect").on({
@@ -314,16 +303,53 @@ mod.factory('n3utils', [
           height: function(d) {
             if (d.y === 0) {
               return axes[d.axis + 'Scale'].range()[0];
+=======
+        colGroup.each(function(series) {
+          return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
+            'stroke-opacity': function(d) {
+              if (d.y === 0) {
+                return '0';
+              } else {
+                return '1';
+              }
+            },
+            'stroke-width': '1px',
+            'fill-opacity': function(d) {
+              if (d.y === 0) {
+                return 0;
+              } else {
+                return 0.7;
+              }
+>>>>>>> sanitizedNumber now returns a float
             }
-            return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0));
-          },
-          y: function(d) {
-            if (d.y === 0) {
-              return 0;
-            } else {
-              return axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y));
+          }).attr({
+            width: columnWidth,
+            x: function(d) {
+              return axes.xScale(d.x);
+            },
+            height: function(d) {
+              if (d.y === 0) {
+                return axes[d.axis + 'Scale'].range()[0];
+              }
+              return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0));
+            },
+            y: function(d) {
+              if (d.y === 0) {
+                return 0;
+              } else {
+                return axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y));
+              }
             }
-          }
+          }).on('mouseover', function(d) {
+            return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
+              series: series,
+              x: axes.xScale(d.x),
+              y: axes[d.axis + 'Scale'](d.y0 + d.y),
+              datum: d
+            }, options.axes) : void 0;
+          }).on('mouseout', function(d) {
+            return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
+          });
         });
         return this;
       },
@@ -377,8 +403,13 @@ mod.factory('n3utils', [
               series: series,
               x: target.attr('cx'),
               y: target.attr('cy'),
+<<<<<<< HEAD
               datum: d
             }) : void 0;
+=======
+              datum: target.datum()
+            }, options.axes) : void 0;
+>>>>>>> sanitizedNumber now returns a float
           }).on('mouseout', function(d) {
             d3.select(d3.event.target).attr('r', function(s) {
               return s.dotSize;
@@ -630,7 +661,7 @@ mod.factory('n3utils', [
               x: mousePos[0],
               y: mousePos[1],
               datum: interpDatum
-            }) : void 0;
+            }, options.axes) : void 0;
           };
           lineGroup.on('mousemove', interpolateData).on('mouseout', function(d) {
             return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
@@ -941,17 +972,23 @@ mod.factory('n3utils', [
         options.series = this.sanitizeSeriesOptions(options.series);
         options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series);
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
-        options.lineMode || (options.lineMode = 'linear');
-        options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : 0.7;
-        this.sanitizeTooltip(options);
+        options.tooltip = this.sanitizeTooltip(options.tooltip);
+        options.lineMode || (options.lineMode = this.getDefaultOptions().lineMode);
+        options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : this.getDefaultOptions().tension;
         options.drawLegend = options.drawLegend !== false;
         options.drawDots = options.drawDots !== false;
         if (!angular.isNumber(options.columnsHGap)) {
           options.columnsHGap = 5;
         }
+<<<<<<< HEAD
         options.margin = this.sanitizeMargins(options.margin);
         defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
         options.margin = angular.extend(defaultMargin, options.margin);
+=======
+        options.series = angular.extend(this.getDefaultOptions().series, options.series);
+        options.axes = angular.extend(this.getDefaultOptions().axes, options.axes);
+        options.tooltip = angular.extend(this.getDefaultOptions().tooltip, options.tooltip);
+>>>>>>> sanitizedNumber now returns a float
         return options;
       },
       sanitizeMargins: function(options) {
@@ -994,23 +1031,23 @@ mod.factory('n3utils', [
       },
       sanitizeTooltip: function(options) {
         var _ref;
-        if (!options.tooltip) {
-          options.tooltip = {
+        if (!options) {
+          return {
             mode: 'scrubber'
           };
-          return;
         }
-        if ((_ref = options.tooltip.mode) !== 'none' && _ref !== 'axes' && _ref !== 'scrubber') {
-          options.tooltip.mode = 'scrubber';
+        if ((_ref = options.mode) !== 'none' && _ref !== 'axes' && _ref !== 'scrubber') {
+          options.mode = 'scrubber';
         }
-        if (options.tooltip.mode === 'scrubber') {
-          delete options.tooltip.interpolate;
+        if (options.mode === 'scrubber') {
+          delete options.interpolate;
         } else {
-          options.tooltip.interpolate = !!options.tooltip.interpolate;
+          options.interpolate = !!options.interpolate;
         }
-        if (options.tooltip.mode === 'scrubber' && options.tooltip.interpolate) {
+        if (options.mode === 'scrubber' && options.interpolate) {
           throw new Error('Interpolation is not supported for scrubber tooltip mode.');
         }
+        return options;
       },
       sanitizeSeriesOptions: function(options) {
         var colors, knownIds;
@@ -1622,26 +1659,27 @@ mod.factory('n3utils', [
           }));
         }
       },
-      onMouseOver: function(svg, event) {
-        this.updateXTooltip(svg, event);
+      onMouseOver: function(svg, event, axesOptions) {
+        this.updateXTooltip(svg, event, axesOptions.x);
         if (event.series.axis === 'y2') {
-          return this.updateY2Tooltip(svg, event);
+          return this.updateY2Tooltip(svg, event, axesOptions.y2);
         } else {
-          return this.updateYTooltip(svg, event);
+          return this.updateYTooltip(svg, event, axesOptions.y);
         }
       },
       onMouseOut: function(svg) {
         return this.hideTooltips(svg);
       },
-      updateXTooltip: function(svg, _arg) {
-        var datum, label, series, textX, x, xTooltip;
+      updateXTooltip: function(svg, _arg, xAxisOptions) {
+        var datum, label, series, textX, x, xTooltip, _f;
         x = _arg.x, datum = _arg.datum, series = _arg.series;
         xTooltip = svg.select("#xTooltip");
         xTooltip.transition().attr({
           'opacity': 1.0,
           'transform': "translate(" + x + ",0)"
         });
-        textX = datum.x;
+        _f = xAxisOptions.labelFunction;
+        textX = _f ? _f(datum.x) : datum.x;
         label = xTooltip.select('text');
         label.text(textX);
         return xTooltip.select('path').attr('fill', series.color).attr('d', this.getXTooltipPath(label[0][0]));
@@ -1653,16 +1691,18 @@ mod.factory('n3utils', [
         p = 5;
         return 'm-' + w / 2 + ' ' + p + ' ' + 'l0 ' + h + ' ' + 'l' + w + ' 0 ' + 'l0 ' + '' + (-h) + 'l' + (-w / 2 + p) + ' 0 ' + 'l' + (-p) + ' -' + h / 4 + ' ' + 'l' + (-p) + ' ' + h / 4 + ' ' + 'l' + (-w / 2 + p) + ' 0z';
       },
-      updateYTooltip: function(svg, _arg) {
-        var datum, label, series, w, y, yTooltip;
+      updateYTooltip: function(svg, _arg, yAxisOptions) {
+        var datum, label, series, textY, w, y, yTooltip, _f;
         y = _arg.y, datum = _arg.datum, series = _arg.series;
         yTooltip = svg.select("#yTooltip");
         yTooltip.transition().attr({
           'opacity': 1.0,
           'transform': "translate(0, " + y + ")"
         });
+        _f = yAxisOptions.labelFunction;
+        textY = _f ? _f(datum.y) : datum.y;
         label = yTooltip.select('text');
-        label.text(datum.y);
+        label.text(textY);
         w = this.getTextBBox(label[0][0]).width + 5;
         label.attr({
           'transform': 'translate(' + (-w - 2) + ',3)',
@@ -1670,13 +1710,15 @@ mod.factory('n3utils', [
         });
         return yTooltip.select('path').attr('fill', series.color).attr('d', this.getYTooltipPath(w));
       },
-      updateY2Tooltip: function(svg, _arg) {
-        var datum, label, series, w, y, y2Tooltip;
+      updateY2Tooltip: function(svg, _arg, yAxisOptions) {
+        var datum, label, series, textY, w, y, y2Tooltip, _f;
         y = _arg.y, datum = _arg.datum, series = _arg.series;
         y2Tooltip = svg.select("#y2Tooltip");
         y2Tooltip.transition().attr('opacity', 1.0);
+        _f = yAxisOptions.labelFunction;
+        textY = _f ? _f(datum.y) : datum.y;
         label = y2Tooltip.select('text');
-        label.text(datum.y);
+        label.text(textY);
         w = this.getTextBBox(label[0][0]).width + 5;
         label.attr({
           'transform': 'translate(7, ' + (parseFloat(y) + 3) + ')',
