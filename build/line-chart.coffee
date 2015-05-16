@@ -254,21 +254,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .style('fill', (s) -> s.color)
             .style('fill-opacity', 0.8)
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
-            .on('mouseover', (series) ->
-              target = d3.select(d3.event.target)
 
-              handlers.onMouseOver?(svg, {
-                series: series
-                x: target.attr('x')
-                y: axes[series.axis + 'Scale'](target.datum().y0 + target.datum().y)
-                datum: target.datum()
-              })
-            )
-            .on('mouseout', (d) ->
-              d3.select(d3.event.target).attr('r', 2)
-              handlers.onMouseOut?(svg)
-            )
-
+<<<<<<< HEAD
         colGroup.selectAll("rect")
           .data (d) -> d.values
           .enter().append("rect")
@@ -279,16 +266,38 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               'stroke-width': '1px'
               'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
             })
+=======
+        colGroup.each (series) ->
+          d3.select(this).selectAll("rect")
+            .data(series.values)
+            .enter().append("rect")
+              .style({
+                'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
+                'stroke-width': '1px'
+                'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
+              })
+>>>>>>> sanitizedNumber now returns a float
 
-            .attr(
-              width: columnWidth
-              x: (d) -> axes.xScale(d.x)
-              height: (d) ->
-                return axes[d.axis + 'Scale'].range()[0] if d.y is 0
-                return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
-              y: (d) ->
-                if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
-            )
+              .attr(
+                width: columnWidth
+                x: (d) -> axes.xScale(d.x)
+                height: (d) ->
+                  return axes[d.axis + 'Scale'].range()[0] if d.y is 0
+                  return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
+                y: (d) ->
+                  if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
+              )
+              .on('mouseover', (d) ->
+                handlers.onMouseOver?(svg, {
+                  series: series
+                  x: axes.xScale(d.x)
+                  y: axes[d.axis + 'Scale'](d.y0 + d.y)
+                  datum: d
+                }, options.axes)
+              )
+              .on('mouseout', (d) ->
+                handlers.onMouseOut?(svg)
+              )
 
         return this
 
@@ -329,8 +338,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               series: series
               x: target.attr('cx')
               y: target.attr('cy')
+<<<<<<< HEAD
               datum: d
             })
+=======
+              datum: target.datum()
+            }, options.axes)
+>>>>>>> sanitizedNumber now returns a float
           )
           .on('mouseout', (d) ->
             d3.select(d3.event.target).attr('r', (s) -> s.dotSize)
@@ -576,7 +590,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               x: mousePos[0]
               y: mousePos[1]
               datum: interpDatum
-            })
+            }, options.axes)
 
           lineGroup
             .on 'mousemove', interpolateData
@@ -860,26 +874,32 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           options.drawDots = false
           options.tooltip = {mode: 'none', interpolate: false}
 
+        # Parse and sanitize the options
         options.series = this.sanitizeSeriesOptions(options.series)
         options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series)
-
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
-
-        options.lineMode or= 'linear'
-        options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
-
-        this.sanitizeTooltip(options)
-
+        options.tooltip = this.sanitizeTooltip(options.tooltip)
+        
+        options.lineMode or= this.getDefaultOptions().lineMode
+        options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension \
+          else this.getDefaultOptions().tension
+        
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
-
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
 
+<<<<<<< HEAD
         options.margin = this.sanitizeMargins(options.margin)
 
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()
         options.margin = angular.extend(defaultMargin, options.margin)
+=======
+        # Use default values where no options are defined
+        options.series = angular.extend(this.getDefaultOptions().series, options.series)
+        options.axes = angular.extend(this.getDefaultOptions().axes, options.axes)
+        options.tooltip = angular.extend(this.getDefaultOptions().tooltip, options.tooltip)
+>>>>>>> sanitizedNumber now returns a float
 
         return options
 
@@ -910,20 +930,21 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return stacks
 
       sanitizeTooltip: (options) ->
-        if !options.tooltip
-          options.tooltip = {mode: 'scrubber'}
-          return
+        if !options
+          return {mode: 'scrubber'}
 
-        if options.tooltip.mode not in ['none', 'axes', 'scrubber']
-          options.tooltip.mode = 'scrubber'
+        if options.mode not in ['none', 'axes', 'scrubber']
+          options.mode = 'scrubber'
 
-        if options.tooltip.mode is 'scrubber'
-          delete options.tooltip.interpolate
+        if options.mode is 'scrubber'
+          delete options.interpolate
         else
-          options.tooltip.interpolate = !!options.tooltip.interpolate
+          options.interpolate = !!options.interpolate
 
-        if options.tooltip.mode is 'scrubber' and options.tooltip.interpolate
+        if options.mode is 'scrubber' and options.interpolate
           throw new Error('Interpolation is not supported for scrubber tooltip mode.')
+
+        return options
 
       sanitizeSeriesOptions: (options) ->
         return [] unless options?
@@ -1543,18 +1564,18 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             )
           )
 
-      onMouseOver: (svg, event) ->
-        this.updateXTooltip(svg, event)
+      onMouseOver: (svg, event, axesOptions) ->
+        this.updateXTooltip(svg, event, axesOptions.x)
 
         if event.series.axis is 'y2'
-          this.updateY2Tooltip(svg, event)
+          this.updateY2Tooltip(svg, event, axesOptions.y2)
         else
-          this.updateYTooltip(svg, event)
+          this.updateYTooltip(svg, event, axesOptions.y)
 
       onMouseOut: (svg) ->
         this.hideTooltips(svg)
 
-      updateXTooltip: (svg, {x, datum, series}) ->
+      updateXTooltip: (svg, {x, datum, series}, xAxisOptions) ->
         xTooltip = svg.select("#xTooltip")
 
         xTooltip.transition()
@@ -1563,7 +1584,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'transform': "translate(#{x},0)"
           )
 
-        textX = datum.x
+        _f = xAxisOptions.labelFunction
+        textX = if _f then _f(datum.x) else datum.x
 
         label = xTooltip.select('text')
         label.text(textX)
@@ -1586,7 +1608,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           'l' + (-p) + ' ' + h/4 + ' ' +
           'l' + (-w/2 + p) + ' 0z'
 
-      updateYTooltip: (svg, {y, datum, series}) ->
+      updateYTooltip: (svg, {y, datum, series}, yAxisOptions) ->
         yTooltip = svg.select("#yTooltip")
         yTooltip.transition()
           .attr(
@@ -1594,8 +1616,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'transform': "translate(0, #{y})"
           )
 
+        _f = yAxisOptions.labelFunction
+        textY = if _f then _f(datum.y) else datum.y
+
         label = yTooltip.select('text')
-        label.text(datum.y)
+        label.text(textY)
         w = this.getTextBBox(label[0][0]).width + 5
 
         label.attr(
@@ -1607,13 +1632,16 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .attr('fill', series.color)
           .attr('d', this.getYTooltipPath(w))
 
-      updateY2Tooltip: (svg, {y, datum, series}) ->
+      updateY2Tooltip: (svg, {y, datum, series}, yAxisOptions) ->
         y2Tooltip = svg.select("#y2Tooltip")
         y2Tooltip.transition()
           .attr('opacity', 1.0)
 
+        _f = yAxisOptions.labelFunction
+        textY = if _f then _f(datum.y) else datum.y
+
         label = y2Tooltip.select('text')
-        label.text(datum.y)
+        label.text(textY)
         w = this.getTextBBox(label[0][0]).width + 5
         label.attr(
           'transform': 'translate(7, ' + (parseFloat(y) + 3) + ')'

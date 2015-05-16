@@ -71,7 +71,7 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
 
  + `key` : optional, defines where the chart will look for abscissas values in the data (default is 'x').
  + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
- + `labelFunction` : optional, allows to format the axis' ticklabels. Must be a function that accepts a single argument and returns a string.
+ + `labelFunction` : optional, allows to format the axis' ticklabels as well as the tooltips. Must be a function that accepts a single argument and returns a string.
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
  + `ticks` : optional, configures the axis' ticks (can be either a number or an array, more on this [here][3])

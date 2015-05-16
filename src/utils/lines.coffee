@@ -60,7 +60,7 @@
               x: mousePos[0]
               y: mousePos[1]
               datum: interpDatum
-            })
+            }, options.axes)
 
           lineGroup
             .on 'mousemove', interpolateData

@@ -32,8 +32,7 @@
               x: target.attr('cx')
               y: target.attr('cy')
               datum: d
-            })
-          )
+            }, options.axes)
           .on('mouseout', (d) ->
             d3.select(d3.event.target).attr('r', (s) -> s.dotSize)
             handlers.onMouseOut?(svg)
