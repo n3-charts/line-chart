@@ -196,7 +196,6 @@ describe 'event handling', ->
           ]
           tooltip: {mode: 'scrubber'}
         outerScope.focused = (d, i) ->
-          console.log('focus', d, i)
           focused.push([d, i])
 
       glass = element.childByClass('glass')
