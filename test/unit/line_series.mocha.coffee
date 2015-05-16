@@ -91,7 +91,7 @@ describe 'line series', ->
     content = element.childByClass('content')
     linePath = content.childByClass('line')
     expect(linePath.getAttribute('class')).to.equal 'line'
-    expect(linePath.getAttribute('style')).to.equal 'fill: none; stroke-width: 3px; stroke-dasharray: 10, 3;'
+    expect(linePath.getAttribute('style')).to.match /fill: none; stroke-width: 3px; stroke-dasharray: 10(px){0,1}, 3(px){0,1};/
     expect(linePath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30'
 
   it 'should update the chart if the array is changed (but not reassigned)', ->
