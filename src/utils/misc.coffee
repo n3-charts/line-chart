@@ -35,7 +35,7 @@
       createContent: (svg) ->
         svg.append('g').attr('class', 'content')
 
-      createGlass: (svg, dimensions, handlers, axes, data, options, columnWidth) ->
+      createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
         glass = svg.append('g')
           .attr(
             'class': 'glass-container'
@@ -106,7 +106,7 @@
           .style('fill', 'white')
           .style('fill-opacity', 0.000001)
           .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options, columnWidth)
+            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options, dispatch, columnWidth)
           )
 
 

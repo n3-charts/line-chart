@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.7 - 05 February 2015
+line-chart - v1.1.7 - 16 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -20,9 +20,10 @@ directive('linechart', [
   'n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
     var link;
     link = function(scope, element, attrs, ctrl) {
-      var dim, initialHandlers, isUpdatingOptions, promise, window_resize, _u;
+      var dim, dispatch, initialHandlers, isUpdatingOptions, promise, window_resize, _u;
       _u = n3utils;
       dim = _u.getDefaultMargins();
+      dispatch = _u.getEventDispatcher();
       element[0].style['font-size'] = 0;
       scope.updateDimensions = function(dimensions) {
         var bottom, left, parent, right, top;
@@ -77,20 +78,29 @@ directive('linechart', [
         _u.createContent(svg, handlers);
         if (dataPerSeries.length) {
           columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options);
-          _u.drawArea(svg, axes, dataPerSeries, options, handlers).drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers).drawLines(svg, axes, dataPerSeries, options, handlers);
+          _u.drawArea(svg, axes, dataPerSeries, options, handlers).drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers, dispatch).drawLines(svg, axes, dataPerSeries, options, handlers);
           if (options.drawDots) {
-            _u.drawDots(svg, axes, dataPerSeries, options, handlers);
+            _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch);
           }
         }
         if (options.drawLegend) {
           _u.drawLegend(svg, options.series, dimensions, handlers);
         }
         if (options.tooltip.mode === 'scrubber') {
-          return _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, columnWidth);
+          return _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
         } else if (options.tooltip.mode !== 'none') {
           return _u.addTooltips(svg, dimensions, options.axes);
         }
       };
+      if (scope.click) {
+        dispatch.on('click', scope.click);
+      }
+      if (scope.hover) {
+        dispatch.on('hover', scope.hover);
+      }
+      if (scope.focus) {
+        dispatch.on('focus', scope.focus);
+      }
       promise = void 0;
       window_resize = function() {
         if (promise != null) {
@@ -109,7 +119,10 @@ directive('linechart', [
       restrict: 'E',
       scope: {
         data: '=',
-        options: '='
+        options: '=',
+        click: '=',
+        hover: '=',
+        focus: '='
       },
       template: '<div></div>',
       link: link
@@ -252,7 +265,7 @@ mod.factory('n3utils', [
           return x1(index) - keys.length * columnWidth / 2;
         };
       },
-      drawColumns: function(svg, axes, data, columnWidth, options, handlers) {
+      drawColumns: function(svg, axes, data, columnWidth, options, handlers, dispatch) {
         var colGroup, x1;
         data = data.filter(function(s) {
           return s.type === 'column';
@@ -284,7 +297,15 @@ mod.factory('n3utils', [
         });
         colGroup.selectAll("rect").data(function(d) {
           return d.values;
-        }).enter().append("rect").style({
+        }).enter().append("rect").on({
+          'mouseover': function(d, i) {
+            return dispatch.hover(d, i);
+          }
+        }).on({
+          'click': function(d, i) {
+            return dispatch.click(d, i);
+          }
+        }).style({
           'stroke-opacity': function(d) {
             if (d.y === 0) {
               return '0';
@@ -321,7 +342,7 @@ mod.factory('n3utils', [
         });
         return this;
       },
-      drawDots: function(svg, axes, data, options, handlers) {
+      drawDots: function(svg, axes, data, options, handlers, dispatch) {
         var dotGroup;
         dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
           var _ref;
@@ -350,19 +371,25 @@ mod.factory('n3utils', [
         }).style({
           'stroke': 'white',
           'stroke-width': '2px'
+        }).on({
+          'click': function(d, i) {
+            return dispatch.click(d, i);
+          }
         });
         if (options.tooltip.mode !== 'none') {
           dotGroup.on('mouseover', function(series) {
-            var target;
+            var d, target;
             target = d3.select(d3.event.target);
+            d = target.datum();
             target.attr('r', function(s) {
               return s.dotSize + 2;
             });
+            dispatch.hover(d, series.values.indexOf(d));
             return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
               series: series,
               x: target.attr('cx'),
               y: target.attr('cy'),
-              datum: target.datum()
+              datum: d
             }) : void 0;
           }).on('mouseout', function(d) {
             d3.select(d3.event.target).attr('r', function(s) {
@@ -372,6 +399,11 @@ mod.factory('n3utils', [
           });
         }
         return this;
+      },
+      getEventDispatcher: function() {
+        var events;
+        events = ['focus', 'hover', 'click'];
+        return d3.dispatch.apply(this, events);
       },
       computeLegendLayout: function(svg, series, dimensions) {
         var cumul, i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
@@ -663,7 +695,7 @@ mod.factory('n3utils', [
       createContent: function(svg) {
         return svg.append('g').attr('class', 'content');
       },
-      createGlass: function(svg, dimensions, handlers, axes, data, options, columnWidth) {
+      createGlass: function(svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) {
         var g, g2, glass, items;
         glass = svg.append('g').attr({
           'class': 'glass-container',
@@ -736,7 +768,7 @@ mod.factory('n3utils', [
           width: dimensions.width - dimensions.left - dimensions.right,
           height: dimensions.height - dimensions.top - dimensions.bottom
         }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
-          return handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options, columnWidth);
+          return handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options, dispatch, columnWidth);
         });
       },
       getDataPerSeries: function(data, options) {
@@ -1317,12 +1349,12 @@ mod.factory('n3utils', [
           return s.axis !== 'y2';
         });
       },
-      showScrubber: function(svg, glass, axes, data, options, columnWidth) {
+      showScrubber: function(svg, glass, axes, data, options, dispatch, columnWidth) {
         var that;
         that = this;
         glass.on('mousemove', function() {
           svg.selectAll('.glass-container').attr('opacity', 1);
-          return that.updateScrubber(svg, d3.mouse(this), axes, data, options, columnWidth);
+          return that.updateScrubber(svg, d3.mouse(this), axes, data, options, dispatch, columnWidth);
         });
         return glass.on('mouseout', function() {
           glass.on('mousemove', null);
@@ -1353,7 +1385,7 @@ mod.factory('n3utils', [
         }
         return values[i];
       },
-      updateScrubber: function(svg, _arg, axes, data, options, columnWidth) {
+      updateScrubber: function(svg, _arg, axes, data, options, dispatch, columnWidth) {
         var ease, positions, that, tickLength, x, y;
         x = _arg[0], y = _arg[1];
         ease = function(element) {
@@ -1370,6 +1402,7 @@ mod.factory('n3utils', [
           }
           item.attr('opacity', 1);
           v = that.getClosestPoint(series.values, axes.xScale.invert(x));
+          dispatch.focus(v, series.values.indexOf(v));
           text = v.x + ' : ' + v.y;
           if (options.tooltip.formatter) {
             text = options.tooltip.formatter(v.x, v.y, options.series[index]);

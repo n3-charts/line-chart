@@ -9,6 +9,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
   link  = (scope, element, attrs, ctrl) ->
     _u = n3utils
     dim = _u.getDefaultMargins()
+    dispatch = _u.getEventDispatcher()
 
     # Hacky hack so the chart doesn't grow in height when resizing...
     element[0].style['font-size'] = 0
@@ -75,20 +76,28 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
         _u
           .drawArea(svg, axes, dataPerSeries, options, handlers)
-          .drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers)
+          .drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
           .drawLines(svg, axes, dataPerSeries, options, handlers)
 
         if options.drawDots
-          _u.drawDots(svg, axes, dataPerSeries, options, handlers)
+          _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch)
 
       if options.drawLegend
         _u.drawLegend(svg, options.series, dimensions, handlers)
 
       if options.tooltip.mode is 'scrubber'
-        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, columnWidth)
+        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
       else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
 
+    if scope.click
+      dispatch.on('click', scope.click)
+
+    if scope.hover
+      dispatch.on('hover', scope.hover)
+
+    if scope.focus
+      dispatch.on('focus', scope.focus)
 
     promise = undefined
     window_resize = ->
@@ -103,7 +112,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
   return {
     replace: true
     restrict: 'E'
-    scope: {data: '=', options: '='}
+    scope: {data: '=', options: '=', click: '=',  hover: '=',  focus: '='}
     template: '<div></div>'
     link: link
   }
