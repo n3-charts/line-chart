@@ -90,14 +90,15 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
 
-    if scope.click
-      dispatch.on('click', scope.click)
+    updateEvents = ->
+      if scope.click
+        dispatch.on('click', scope.click)
 
-    if scope.hover
-      dispatch.on('hover', scope.hover)
+      if scope.hover
+        dispatch.on('hover', scope.hover)
 
-    if scope.focus
-      dispatch.on('focus', scope.focus)
+      if scope.focus
+        dispatch.on('focus', scope.focus)
 
     promise = undefined
     window_resize = ->
@@ -108,6 +109,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     scope.$watch('data', scope.redraw, true)
     scope.$watch('options', (-> scope.update(dim)) , true)
+    scope.$watch('[click, hover, focus]', updateEvents)
 
   return {
     replace: true

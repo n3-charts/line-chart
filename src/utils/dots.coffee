@@ -19,14 +19,13 @@
               'stroke-width': '2px'
             )
             .on('click': (d, i) -> dispatch.click(d, i))
+            .on('mouseover': (d, i) -> dispatch.hover(d, i))
 
         if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
             target = d3.select(d3.event.target)
             d = target.datum()
             target.attr('r', (s) -> s.dotSize + 2)
-            
-            dispatch.hover(d, series.values.indexOf(d))
 
             handlers.onMouseOver?(svg, {
               series: series
