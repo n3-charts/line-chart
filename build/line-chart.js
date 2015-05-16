@@ -1094,7 +1094,7 @@ mod.factory('n3utils', [
         if (value == null) {
           return void 0;
         }
-        number = parseInt(value, 10);
+        number = parseFloat(value);
         if (isNaN(number)) {
           $log.warn("Invalid extremum value : " + value + ", deleting it.");
           return void 0;

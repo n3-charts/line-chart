@@ -226,6 +226,19 @@ describe 'options', ->
       expect(computed).to.eql(expected)
       expect($log.warn.callCount).to.equal(1)
 
+    it 'should parse extrema options as floats', inject ($log) ->
+      sinon.stub($log, 'warn', ->)
+
+      computed = n3utils.sanitizeOptions(
+        axes:
+          y:
+            min: '13.421'
+            max: 15.23
+      ).axes
+
+      expect(computed.y.min).to.eql 13.421
+      expect(computed.y.max).to.eql 15.23
+
   describe 'series', ->
     it 'should throw an error if twice the same id is found', ->
       expect(->n3utils.sanitizeSeriesOptions([
