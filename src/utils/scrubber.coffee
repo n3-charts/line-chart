@@ -1,8 +1,8 @@
-      showScrubber: (svg, glass, axes, data, options, columnWidth) ->
+      showScrubber: (svg, glass, axes, data, options, dispatch, columnWidth) ->
         that = this
         glass.on('mousemove', ->
           svg.selectAll('.glass-container').attr('opacity', 1)
-          that.updateScrubber(svg, d3.mouse(this), axes, data, options, columnWidth)
+          that.updateScrubber(svg, d3.mouse(this), axes, data, options, dispatch, columnWidth)
         )
         glass.on('mouseout', ->
           glass.on('mousemove', null)
@@ -32,7 +32,7 @@
 
         return values[i]
 
-      updateScrubber: (svg, [x, y], axes, data, options, columnWidth) ->
+      updateScrubber: (svg, [x, y], axes, data, options, dispatch, columnWidth) ->
         ease = (element) -> element.transition().duration(50)
         that = this
         positions = []
@@ -47,6 +47,8 @@
           item.attr('opacity', 1)
 
           v = that.getClosestPoint(series.values, axes.xScale.invert(x))
+
+          dispatch.focus(v, series.values.indexOf(v))
 
           text = v.x + ' : ' + v.y
           if options.tooltip.formatter
