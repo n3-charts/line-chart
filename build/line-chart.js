@@ -20,24 +20,13 @@ directive('linechart', [
   'n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
     var link;
     link = function(scope, element, attrs, ctrl) {
-      var dim, dispatch, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
+    var dispatch, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
       _u = n3utils;
-      dim = _u.getDefaultMargins();
       dispatch = _u.getEventDispatcher();
+
       element[0].style['font-size'] = 0;
-      scope.updateDimensions = function(dimensions) {
-        var bottom, left, parent, right, top;
-        parent = element[0].parentElement;
-        top = _u.getPixelCssProp(parent, 'padding-top');
-        bottom = _u.getPixelCssProp(parent, 'padding-bottom');
-        left = _u.getPixelCssProp(parent, 'padding-left');
-        right = _u.getPixelCssProp(parent, 'padding-right');
-        dimensions.width = +(attrs.width || parent.offsetWidth || 900) - left - right;
-        dimensions.height = +(attrs.height || parent.offsetHeight || 500) - top - bottom;
-      };
       scope.redraw = function() {
-        scope.updateDimensions(dim);
-        scope.update(dim);
+        scope.update();
       };
       isUpdatingOptions = false;
       initialHandlers = {
@@ -48,11 +37,12 @@ directive('linechart', [
           return scope.$apply();
         }
       };
-      scope.update = function(dimensions) {
-        var axes, columnWidth, dataPerSeries, fn, handlers, isThumbnail, options, svg;
+      scope.update = function() {
+        var axes, columnWidth, dataPerSeries, dimensions, fn, handlers, isThumbnail, options, svg;
         options = _u.sanitizeOptions(scope.options, attrs.mode);
         handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options));
         dataPerSeries = _u.getDataPerSeries(scope.data, options);
+        dimensions = _u.getDimensions(options, element, attrs);
         isThumbnail = attrs.mode === 'thumbnail';
         _u.clean(element[0]);
         svg = _u.bootstrap(element[0], dimensions);
@@ -69,11 +59,6 @@ directive('linechart', [
         });
         if (dataPerSeries.length) {
           _u.setScalesDomain(axes, scope.data, options.series, svg, options);
-        }
-        if (isThumbnail) {
-          _u.adjustMarginsForThumbnail(dimensions, axes);
-        } else {
-          _u.adjustMargins(dimensions, options);
         }
         _u.createContent(svg, handlers);
         if (dataPerSeries.length) {
@@ -112,9 +97,7 @@ directive('linechart', [
       };
       $window.addEventListener('resize', window_resize);
       scope.$watch('data', scope.redraw, true);
-      scope.$watch('options', (function() {
-        return scope.update(dim);
-      }), true);
+      return scope.$watch('options', scope.redraw, true);
       return scope.$watch('[click, hover, focus]', updateEvents);
     };
     return {
@@ -683,6 +666,32 @@ mod.factory('n3utils', [
           left: 50
         };
       },
+      getDefaultThumbnailMargins: function() {
+        return {
+          top: 1,
+          right: 1,
+          bottom: 2,
+          left: 0
+        };
+      },
+      getElementDimensions: function(element, width, height) {
+        var bottom, dim, left, parent, right, top;
+        dim = {};
+        parent = element;
+        top = this.getPixelCssProp(parent, 'padding-top');
+        bottom = this.getPixelCssProp(parent, 'padding-bottom');
+        left = this.getPixelCssProp(parent, 'padding-left');
+        right = this.getPixelCssProp(parent, 'padding-right');
+        dim.width = +(width || parent.offsetWidth || 900) - left - right;
+        dim.height = +(height || parent.offsetHeight || 500) - top - bottom;
+        return dim;
+      },
+      getDimensions: function(options, element, attrs) {
+        var dim;
+        dim = this.getElementDimensions(element[0].parentElement, attrs.width, attrs.height);
+        dim = angular.extend(options.margin, dim);
+        return dim;
+      },
       clean: function(element) {
         return d3.select(element).on('keydown', null).on('keyup', null).select('svg').remove();
       },
@@ -845,34 +854,6 @@ mod.factory('n3utils', [
         });
         return straightened;
       },
-      resetMargins: function(dimensions) {
-        var defaults;
-        defaults = this.getDefaultMargins();
-        dimensions.left = defaults.left;
-        dimensions.right = defaults.right;
-        dimensions.top = defaults.top;
-        return dimensions.bottom = defaults.bottom;
-      },
-      adjustMargins: function(dimensions, options) {
-        var y, y2, _ref;
-        this.resetMargins(dimensions);
-        if (options.axes == null) {
-          return;
-        }
-        _ref = options.axes, y = _ref.y, y2 = _ref.y2;
-        if ((y != null ? y.width : void 0) != null) {
-          dimensions.left = y != null ? y.width : void 0;
-        }
-        if ((y2 != null ? y2.width : void 0) != null) {
-          dimensions.right = y2 != null ? y2.width : void 0;
-        }
-      },
-      adjustMarginsForThumbnail: function(dimensions, axes) {
-        dimensions.top = 1;
-        dimensions.bottom = 2;
-        dimensions.left = 0;
-        return dimensions.right = 1;
-      },
       estimateSideTooltipWidth: function(svg, text) {
         var bbox, t;
         t = svg.append('text');
@@ -928,6 +909,7 @@ mod.factory('n3utils', [
           },
           lineMode: 'linear',
           tension: 0.7,
+          margin: this.getDefaultMargins(),
           axes: {
             x: {
               type: 'linear',
@@ -945,8 +927,9 @@ mod.factory('n3utils', [
         };
       },
       sanitizeOptions: function(options, mode) {
+        var defaultMargin;
         if (options == null) {
-          return this.getDefaultOptions();
+          options = {};
         }
         if (mode === 'thumbnail') {
           options.drawLegend = false;
@@ -967,7 +950,22 @@ mod.factory('n3utils', [
         if (!angular.isNumber(options.columnsHGap)) {
           options.columnsHGap = 5;
         }
+        options.margin = this.sanitizeMargins(options.margin);
+        defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
+        options.margin = angular.extend(defaultMargin, options.margin);
         return options;
+      },
+      sanitizeMargins: function(options) {
+        var attrs, margin, opt, value;
+        attrs = ['top', 'right', 'bottom', 'left'];
+        margin = {};
+        for (opt in options) {
+          value = options[opt];
+          if (__indexOf.call(attrs, opt) >= 0) {
+            margin[opt] = parseFloat(value);
+          }
+        }
+        return margin;
       },
       sanitizeSeriesStacks: function(stacks, series) {
         var seriesKeys;

@@ -6,6 +6,29 @@
       getDefaultMargins: ->
         return {top: 20, right: 50, bottom: 60, left: 50}
 
+      getDefaultThumbnailMargins: ->
+        return {top: 1, right: 1, bottom: 2, left: 0}
+
+      getElementDimensions: (element, width, height) ->
+        dim = {}
+        parent = element
+
+        top = this.getPixelCssProp(parent, 'padding-top')
+        bottom = this.getPixelCssProp(parent, 'padding-bottom')
+        left = this.getPixelCssProp(parent, 'padding-left')
+        right = this.getPixelCssProp(parent, 'padding-right')
+
+        dim.width = +(width || parent.offsetWidth || 900) - left - right
+        dim.height = +(height || parent.offsetHeight || 500) - top - bottom
+
+        return dim
+
+      getDimensions: (options, element, attrs) ->
+        dim = this.getElementDimensions(element[0].parentElement, attrs.width, attrs.height)
+        dim = angular.extend(options.margin, dim)
+
+        return dim
+
       clean: (element) ->
         d3.select(element)
           .on('keydown', null)
@@ -165,31 +188,6 @@
           layout(layers)
 
         return straightened
-
-      resetMargins: (dimensions) ->
-        defaults = this.getDefaultMargins()
-
-        dimensions.left = defaults.left
-        dimensions.right = defaults.right
-        dimensions.top = defaults.top
-        dimensions.bottom = defaults.bottom
-
-      adjustMargins: (dimensions, options) ->
-        this.resetMargins(dimensions)
-        return unless options.axes?
-
-        {y, y2} = options.axes
-
-        dimensions.left = y?.width if y?.width?
-        dimensions.right = y2?.width if y2?.width?
-
-        return
-
-      adjustMarginsForThumbnail: (dimensions, axes) ->
-        dimensions.top = 1
-        dimensions.bottom = 2
-        dimensions.left = 0
-        dimensions.right = 1
 
       estimateSideTooltipWidth: (svg, text) ->
         t = svg.append('text')

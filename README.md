@@ -51,6 +51,9 @@ $scope.options = {
     y: {type: 'linear', min: 0, max: 1, ticks: 5},
     y2: {type: 'linear', min: 0, max: 1, ticks: [1, 2, 3, 4]}
   },
+  margin: {
+    left: 100
+  },
   series: [
     {y: 'value', color: 'steelblue', thickness: '2px', type: 'area', striped: true, label: 'Pouet'},
     {y: 'otherValue', axis: 'y2', color: 'lightsteelblue', visible: false, drawDots: true, dotSize: 2}
@@ -101,6 +104,14 @@ The `tooltip` must be an object which contains the following properties :
  + `mode` : can be set to `none`, `axes`, or `scrubber`. It can also be set to `scrubber`, which displays tooltips for all series. Default is `scrubber`.
  + `interpolate` : can be either `true`or `false`. Default is `false`. Will be ignored if the tooltip's mode is not `axes`.
  + `formatter` : optional, allows to catch the tooltip before it gets rendered. Must be a function that takes `x`, `y` and `series` as arguments and returns a string. Ignored when mode is not `scrubber`.
+
+##### Margin
+With the `margin` option one can customize the following margins of the chart :
+
++ top
++ left
++ bottom
++ right
 
 ##### Optional stuff
 Additionally, you can set `lineMode` to a value between these :
