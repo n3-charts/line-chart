@@ -93,7 +93,7 @@ describe 'options', ->
       expect(o.margin.bottom).to.equal 2
       expect(o.margin.left).to.equal 0
 
-    it 'should use parse margins as float', ->
+    it 'should parse margins as float', ->
       o = n3utils.sanitizeOptions({
         margin: {top: '20.05', left: 40.68 }
       })
