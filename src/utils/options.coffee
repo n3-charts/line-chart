@@ -190,6 +190,10 @@
             # Use d3.format as formatter
             options.ticksFormatter = d3.format(options.ticksFormat)
 
+          # use the ticksFormatter per default
+          # if no tooltip format or formatter is defined
+          options.tooltipFormatter ?= options.ticksFormatter
+
         # String to format tooltip values
         if options.tooltipFormat?
 
@@ -200,7 +204,7 @@
           else
             # Use d3.format as formatter
             options.tooltipFormatter = d3.format(options.tooltipFormat)
-
+        
         this.sanitizeExtrema(options)
 
         return options

@@ -1115,6 +1115,9 @@ mod.factory('n3utils', [
           } else {
             options.ticksFormatter = d3.format(options.ticksFormat);
           }
+          if (options.tooltipFormatter == null) {
+            options.tooltipFormatter = options.ticksFormatter;
+          }
         }
         if (options.tooltipFormat != null) {
           if (options.type === 'date') {

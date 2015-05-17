@@ -279,6 +279,15 @@ describe 'options', ->
 
       expect(computed.x.ticksFormatter(new Date(2015,0,1))).to.eql '2015-01-01'
 
+    it 'should use the ticks formatter function when no tooltip format is defined', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            ticksFormat: '.2f'
+      ).axes
+
+      expect(computed.x.tooltipFormatter(2)).to.eql '2.00'
+
     it 'should create a formatter function when tooltip format is defined', ->
       computed = n3utils.sanitizeOptions(
         axes:
