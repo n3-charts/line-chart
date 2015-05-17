@@ -140,7 +140,7 @@
       getSanitizedNumber: (value) ->
         return undefined unless value?
 
-        number = parseInt(value, 10)
+        number = parseFloat(value)
 
         if isNaN(number)
           $log.warn("Invalid extremum value : #{value}, deleting it.")
