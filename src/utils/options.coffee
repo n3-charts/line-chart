@@ -3,6 +3,7 @@
           tooltip: {mode: 'scrubber'}
           lineMode: 'linear'
           tension: 0.7
+          margin: this.getDefaultMargins()
           axes: {
             x: {type: 'linear', key: 'x'}
             y: {type: 'linear'}
@@ -15,7 +16,7 @@
         }
 
       sanitizeOptions: (options, mode) ->
-        return this.getDefaultOptions() unless options?
+        options ?= {}
 
         if mode is 'thumbnail'
           options.drawLegend = false
@@ -37,7 +38,23 @@
 
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
 
+        options.margin = this.sanitizeMargins(options.margin)
+
+        defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
+          else this.getDefaultMargins()
+        options.margin = angular.extend(defaultMargin, options.margin)
+
         return options
+
+      sanitizeMargins: (options) ->
+        attrs = ['top', 'right', 'bottom', 'left']
+        margin = {}
+
+        for opt, value of options
+          if opt in attrs
+            margin[opt] = parseFloat(value)
+
+        return margin
 
       sanitizeSeriesStacks: (stacks, series) ->
         return [] unless stacks?

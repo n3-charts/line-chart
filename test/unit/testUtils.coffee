@@ -72,6 +72,20 @@ utils.factory 'pepito', ($compile, $rootScope, fakeMouse) ->
       }
   }
 
+utils.factory 'fakeWindow', ($window) ->
+
+  e = document.createEvent('UIEvent')
+
+  # We could add cool stuff here, e.g resize
+  # to a dimension 800x400
+  resize = () ->
+    e.initEvent 'resize', true, false
+    $window.dispatchEvent e
+
+  return {
+    resize: () -> resize(arguments)
+  }
+
 utils.factory 'fakeMouse', ->
   defaults =
     alt : false
