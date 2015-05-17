@@ -20,10 +20,9 @@ directive('linechart', [
   'n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
     var link;
     link = function(scope, element, attrs, ctrl) {
-    var dispatch, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
+      var dispatch, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
       _u = n3utils;
       dispatch = _u.getEventDispatcher();
-
       element[0].style['font-size'] = 0;
       scope.redraw = function() {
         scope.update();
@@ -97,7 +96,7 @@ directive('linechart', [
       };
       $window.addEventListener('resize', window_resize);
       scope.$watch('data', scope.redraw, true);
-      return scope.$watch('options', scope.redraw, true);
+      scope.$watch('options', scope.redraw, true);
       return scope.$watch('[click, hover, focus]', updateEvents);
     };
     return {

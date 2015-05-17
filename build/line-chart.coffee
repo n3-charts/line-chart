@@ -14,14 +14,11 @@ directive = (name, conf) ->
 directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
   link  = (scope, element, attrs, ctrl) ->
     _u = n3utils
-<<<<<<< HEAD
-    dim = _u.getDefaultMargins()
     dispatch = _u.getEventDispatcher()
-=======
->>>>>>> Added customizable margins and cleaned the dimension code
 
     # Hacky hack so the chart doesn't grow in height when resizing...
     element[0].style['font-size'] = 0
+
 
     scope.redraw = ->
       scope.update()
@@ -98,12 +95,8 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.redraw, true)
-<<<<<<< HEAD
-    scope.$watch('options', (-> scope.update(dim)) , true)
-    scope.$watch('[click, hover, focus]', updateEvents)
-=======
     scope.$watch('options', scope.redraw , true)
->>>>>>> Added customizable margins and cleaned the dimension code
+    scope.$watch('[click, hover, focus]', updateEvents)
 
   return {
     replace: true

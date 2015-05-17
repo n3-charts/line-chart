@@ -26,7 +26,6 @@ describe 'size', ->
         innerScope = element.children()[0].aElement.isolateScope()
       )
 
-    innerScope = element.childByClass('chart').aElement.isolateScope()
     spy = sinon.spy(innerScope, 'redraw')
 
     expect(spy.callCount).to.equal(0)
