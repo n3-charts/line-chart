@@ -260,6 +260,44 @@ describe 'options', ->
       expect(computed.y.min).to.eql 13.421
       expect(computed.y.max).to.eql 15.23
 
+    it 'should create a formatter function when ticks format is defined', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            ticksFormat: '.2f'
+      ).axes
+
+      expect(computed.x.ticksFormatter(2)).to.eql '2.00'
+
+    it 'should create a time formatter function when ticks format is defined on date axis', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            type: 'date'
+            ticksFormat: "%Y-%m-%d"
+      ).axes
+
+      expect(computed.x.ticksFormatter(new Date(2015,0,1))).to.eql '2015-01-01'
+
+    it 'should create a formatter function when tooltip format is defined', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            tooltipFormat: '.2f'
+      ).axes
+
+      expect(computed.x.tooltipFormatter(2)).to.eql '2.00'
+
+    it 'should create a time formatter function when tooltip format is defined on date axis', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            type: 'date'
+            tooltipFormat: "%Y-%m-%d"
+      ).axes
+
+      expect(computed.x.tooltipFormatter(new Date(2015,0,1))).to.eql '2015-01-01'
+
   describe 'series', ->
     it 'should throw an error if twice the same id is found', ->
       expect(->n3utils.sanitizeSeriesOptions([

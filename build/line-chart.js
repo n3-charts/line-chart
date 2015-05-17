@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.7 - 17 May 2015
+line-chart - v1.1.7 - 18 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -268,42 +268,6 @@ mod.factory('n3utils', [
         }).style('fill-opacity', 0.8).attr('transform', function(s) {
           return "translate(" + x1(s) + ",0)";
         });
-<<<<<<< HEAD
-        colGroup.selectAll("rect").data(function(d) {
-          return d.values;
-        }).enter().append("rect").on({
-          'click': function(d, i) {
-            return dispatch.click(d, i);
-          }
-        }).on({
-          'mouseover': function(d, i) {
-            return dispatch.hover(d, i);
-          }
-        }).style({
-          'stroke-opacity': function(d) {
-            if (d.y === 0) {
-              return '0';
-            } else {
-              return '1';
-            }
-          },
-          'stroke-width': '1px',
-          'fill-opacity': function(d) {
-            if (d.y === 0) {
-              return 0;
-            } else {
-              return 0.7;
-            }
-          }
-        }).attr({
-          width: columnWidth,
-          x: function(d) {
-            return axes.xScale(d.x);
-          },
-          height: function(d) {
-            if (d.y === 0) {
-              return axes[d.axis + 'Scale'].range()[0];
-=======
         colGroup.each(function(series) {
           return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
             'stroke-opacity': function(d) {
@@ -320,7 +284,6 @@ mod.factory('n3utils', [
               } else {
                 return 0.7;
               }
->>>>>>> sanitizedNumber now returns a float
             }
           }).attr({
             width: columnWidth,
@@ -340,7 +303,12 @@ mod.factory('n3utils', [
                 return axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y));
               }
             }
-          }).on('mouseover', function(d) {
+          }).on({
+            'click': function(d, i) {
+              return dispatch.click(d, i);
+            }
+          }).on('mouseover', function(d, i) {
+            dispatch.hover(d, i);
             return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
               series: series,
               x: axes.xScale(d.x),
@@ -403,13 +371,8 @@ mod.factory('n3utils', [
               series: series,
               x: target.attr('cx'),
               y: target.attr('cy'),
-<<<<<<< HEAD
               datum: d
-            }) : void 0;
-=======
-              datum: target.datum()
             }, options.axes) : void 0;
->>>>>>> sanitizedNumber now returns a float
           }).on('mouseout', function(d) {
             d3.select(d3.event.target).attr('r', function(s) {
               return s.dotSize;
@@ -919,8 +882,8 @@ mod.factory('n3utils', [
           return series.forEach(function(series) {
             var v, _ref;
             v = row[series.y];
-            if ((series.axis != null) && ((_ref = options.axes[series.axis]) != null ? _ref.labelFunction : void 0)) {
-              v = options.axes[series.axis].labelFunction(v);
+            if ((series.axis != null) && ((_ref = options.axes[series.axis]) != null ? _ref.ticksFormatter : void 0)) {
+              v = options.axes[series.axis].ticksFormatter(v);
             }
             if (v == null) {
               return;
@@ -973,6 +936,7 @@ mod.factory('n3utils', [
         options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series);
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series));
         options.tooltip = this.sanitizeTooltip(options.tooltip);
+        options.margin = this.sanitizeMargins(options.margin);
         options.lineMode || (options.lineMode = this.getDefaultOptions().lineMode);
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : this.getDefaultOptions().tension;
         options.drawLegend = options.drawLegend !== false;
@@ -980,15 +944,11 @@ mod.factory('n3utils', [
         if (!angular.isNumber(options.columnsHGap)) {
           options.columnsHGap = 5;
         }
-<<<<<<< HEAD
-        options.margin = this.sanitizeMargins(options.margin);
         defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
-        options.margin = angular.extend(defaultMargin, options.margin);
-=======
         options.series = angular.extend(this.getDefaultOptions().series, options.series);
         options.axes = angular.extend(this.getDefaultOptions().axes, options.axes);
         options.tooltip = angular.extend(this.getDefaultOptions().tooltip, options.tooltip);
->>>>>>> sanitizedNumber now returns a float
+        options.margin = angular.extend(defaultMargin, options.margin);
         return options;
       },
       sanitizeMargins: function(options) {
@@ -1146,6 +1106,23 @@ mod.factory('n3utils', [
           };
         }
         options.type || (options.type = 'linear');
+        if (options.labelFunction != null) {
+          options.ticksFormatter = options.labelFunction;
+        }
+        if (options.ticksFormat != null) {
+          if (options.type === 'date') {
+            options.ticksFormatter = d3.time.format(options.ticksFormat);
+          } else {
+            options.ticksFormatter = d3.format(options.ticksFormat);
+          }
+        }
+        if (options.tooltipFormat != null) {
+          if (options.type === 'date') {
+            options.tooltipFormatter = d3.time.format(options.tooltipFormat);
+          } else {
+            options.tooltipFormatter = d3.format(options.tooltipFormat);
+          }
+        }
         this.sanitizeExtrema(options);
         return options;
       },
@@ -1227,7 +1204,7 @@ mod.factory('n3utils', [
           y2: 'right'
         };
         o = options[key];
-        axis = d3.svg.axis().scale(scale).orient(sides[key]).tickFormat(o != null ? o.labelFunction : void 0);
+        axis = d3.svg.axis().scale(scale).orient(sides[key]).tickFormat(o != null ? o.ticksFormatter : void 0);
         if (o == null) {
           return axis;
         }
@@ -1678,7 +1655,7 @@ mod.factory('n3utils', [
           'opacity': 1.0,
           'transform': "translate(" + x + ",0)"
         });
-        _f = xAxisOptions.labelFunction;
+        _f = xAxisOptions.tooltipFormatter;
         textX = _f ? _f(datum.x) : datum.x;
         label = xTooltip.select('text');
         label.text(textX);
@@ -1699,7 +1676,7 @@ mod.factory('n3utils', [
           'opacity': 1.0,
           'transform': "translate(0, " + y + ")"
         });
-        _f = yAxisOptions.labelFunction;
+        _f = yAxisOptions.tooltipFormatter;
         textY = _f ? _f(datum.y) : datum.y;
         label = yTooltip.select('text');
         label.text(textY);
@@ -1715,7 +1692,7 @@ mod.factory('n3utils', [
         y = _arg.y, datum = _arg.datum, series = _arg.series;
         y2Tooltip = svg.select("#y2Tooltip");
         y2Tooltip.transition().attr('opacity', 1.0);
-        _f = yAxisOptions.labelFunction;
+        _f = yAxisOptions.tooltipFormatter;
         textY = _f ? _f(datum.y) : datum.y;
         label = y2Tooltip.select('text');
         label.text(textY);

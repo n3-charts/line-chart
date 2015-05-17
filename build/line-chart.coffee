@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.7 - 17 May 2015
+line-chart - v1.1.7 - 18 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -18,7 +18,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     # Hacky hack so the chart doesn't grow in height when resizing...
     element[0].style['font-size'] = 0
-
 
     scope.redraw = ->
       scope.update()
@@ -106,7 +105,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     link: link
   }
 ])
-
 # ----
 
 # /tmp/utils.coffee
@@ -255,18 +253,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .style('fill-opacity', 0.8)
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
-<<<<<<< HEAD
-        colGroup.selectAll("rect")
-          .data (d) -> d.values
-          .enter().append("rect")
-            .on('click': (d, i) -> dispatch.click(d, i))
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
-            .style({
-              'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
-              'stroke-width': '1px'
-              'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
-            })
-=======
         colGroup.each (series) ->
           d3.select(this).selectAll("rect")
             .data(series.values)
@@ -276,8 +262,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                 'stroke-width': '1px'
                 'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
               })
->>>>>>> sanitizedNumber now returns a float
-
               .attr(
                 width: columnWidth
                 x: (d) -> axes.xScale(d.x)
@@ -287,7 +271,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                 y: (d) ->
                   if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
               )
-              .on('mouseover', (d) ->
+              .on('click': (d, i) -> dispatch.click(d, i))
+              .on('mouseover', (d, i) ->
+                dispatch.hover(d, i)
                 handlers.onMouseOver?(svg, {
                   series: series
                   x: axes.xScale(d.x)
@@ -300,7 +286,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               )
 
         return this
-
 # ----
 
 
@@ -338,13 +323,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               series: series
               x: target.attr('cx')
               y: target.attr('cy')
-<<<<<<< HEAD
               datum: d
-            })
-=======
-              datum: target.datum()
             }, options.axes)
->>>>>>> sanitizedNumber now returns a float
           )
           .on('mouseout', (d) ->
             d3.select(d3.event.target).attr('r', (s) -> s.dotSize)
@@ -835,8 +815,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         data.forEach (row) ->
           series.forEach (series) ->
             v = row[series.y]
-            if series.axis? and options.axes[series.axis]?.labelFunction
-              v = options.axes[series.axis].labelFunction(v)
+            
+            if series.axis? and options.axes[series.axis]?.ticksFormatter
+              v = options.axes[series.axis].ticksFormatter(v)
 
             return unless v?
 
@@ -879,6 +860,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series)
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
         options.tooltip = this.sanitizeTooltip(options.tooltip)
+        options.margin = this.sanitizeMargins(options.margin)
         
         options.lineMode or= this.getDefaultOptions().lineMode
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension \
@@ -888,18 +870,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
 
-<<<<<<< HEAD
-        options.margin = this.sanitizeMargins(options.margin)
-
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()
-        options.margin = angular.extend(defaultMargin, options.margin)
-=======
+
         # Use default values where no options are defined
         options.series = angular.extend(this.getDefaultOptions().series, options.series)
         options.axes = angular.extend(this.getDefaultOptions().axes, options.axes)
         options.tooltip = angular.extend(this.getDefaultOptions().tooltip, options.tooltip)
->>>>>>> sanitizedNumber now returns a float
+        options.margin = angular.extend(defaultMargin, options.margin)
 
         return options
 
@@ -1028,6 +1006,33 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         options.type or= 'linear'
 
+        # labelFunction is deprecated and will be remvoed in 2.x
+        # please use ticksFormatter instead
+        if options.labelFunction?
+          options.ticksFormatter = options.labelFunction
+
+        # String to format tick values
+        if options.ticksFormat?
+
+          if options.type is 'date'
+            # Use d3.time.format as formatter
+            options.ticksFormatter = d3.time.format(options.ticksFormat)
+            
+          else
+            # Use d3.format as formatter
+            options.ticksFormatter = d3.format(options.ticksFormat)
+
+        # String to format tooltip values
+        if options.tooltipFormat?
+
+          if options.type is 'date'
+            # Use d3.time.format as formatter
+            options.tooltipFormatter = d3.time.format(options.tooltipFormat)
+            
+          else
+            # Use d3.format as formatter
+            options.tooltipFormatter = d3.format(options.tooltipFormat)
+
         this.sanitizeExtrema(options)
 
         return options
@@ -1135,7 +1140,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         axis = d3.svg.axis()
           .scale(scale)
           .orient(sides[key])
-          .tickFormat(o?.labelFunction)
+          .tickFormat(o?.ticksFormatter)
 
         return axis unless o?
 
@@ -1584,7 +1589,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'transform': "translate(#{x},0)"
           )
 
-        _f = xAxisOptions.labelFunction
+        _f = xAxisOptions.tooltipFormatter
         textX = if _f then _f(datum.x) else datum.x
 
         label = xTooltip.select('text')
@@ -1616,7 +1621,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             'transform': "translate(0, #{y})"
           )
 
-        _f = yAxisOptions.labelFunction
+        _f = yAxisOptions.tooltipFormatter
         textY = if _f then _f(datum.y) else datum.y
 
         label = yTooltip.select('text')
@@ -1637,7 +1642,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         y2Tooltip.transition()
           .attr('opacity', 1.0)
 
-        _f = yAxisOptions.labelFunction
+        _f = yAxisOptions.tooltipFormatter
         textY = if _f then _f(datum.y) else datum.y
 
         label = y2Tooltip.select('text')

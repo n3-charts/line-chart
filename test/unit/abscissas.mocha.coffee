@@ -37,7 +37,7 @@ describe "abscissas", ->
         outerScope.options =
           axes:
             x:
-              labelFunction: (v) -> '#' + v * .1
+              ticksFormatter: (v) -> '#' + v * .1
           series: [
             y: 'value'
             color: '#4682b4'

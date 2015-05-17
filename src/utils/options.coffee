@@ -174,6 +174,33 @@
 
         options.type or= 'linear'
 
+        # labelFunction is deprecated and will be remvoed in 2.x
+        # please use ticksFormatter instead
+        if options.labelFunction?
+          options.ticksFormatter = options.labelFunction
+
+        # String to format tick values
+        if options.ticksFormat?
+
+          if options.type is 'date'
+            # Use d3.time.format as formatter
+            options.ticksFormatter = d3.time.format(options.ticksFormat)
+            
+          else
+            # Use d3.format as formatter
+            options.ticksFormatter = d3.format(options.ticksFormat)
+
+        # String to format tooltip values
+        if options.tooltipFormat?
+
+          if options.type is 'date'
+            # Use d3.time.format as formatter
+            options.tooltipFormatter = d3.time.format(options.tooltipFormat)
+            
+          else
+            # Use d3.format as formatter
+            options.tooltipFormatter = d3.format(options.tooltipFormat)
+
         this.sanitizeExtrema(options)
 
         return options

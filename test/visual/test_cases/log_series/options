@@ -1,5 +1,5 @@
 axes: {
-        x: {key: "foo", labelFunction: function (v) {return 'Na';}, type: "linear"},
+        x: {key: "foo", ticksFormatter: function (v) {return 'Na';}, type: "linear"},
         y: {type: "log"}
       },
       series: [
