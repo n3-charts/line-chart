@@ -78,7 +78,9 @@
                 y: (d) ->
                   if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
               )
-              .on('mouseover', (d) ->
+              .on('click': (d, i) -> dispatch.click(d, i))
+              .on('mouseover', (d, i) ->
+                dispatch.hover(d, i)
                 handlers.onMouseOver?(svg, {
                   series: series
                   x: axes.xScale(d.x)
