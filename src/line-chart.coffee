@@ -8,28 +8,14 @@ directive = (name, conf) ->
 directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $timeout) ->
   link  = (scope, element, attrs, ctrl) ->
     _u = n3utils
-    dim = _u.getDefaultMargins()
     dispatch = _u.getEventDispatcher()
 
     # Hacky hack so the chart doesn't grow in height when resizing...
     element[0].style['font-size'] = 0
 
-    scope.updateDimensions = (dimensions) ->
-      parent = element[0].parentElement
-
-      top = _u.getPixelCssProp(parent, 'padding-top')
-      bottom = _u.getPixelCssProp(parent, 'padding-bottom')
-      left = _u.getPixelCssProp(parent, 'padding-left')
-      right = _u.getPixelCssProp(parent, 'padding-right')
-
-      dimensions.width = +(attrs.width || parent.offsetWidth || 900) - left - right
-      dimensions.height = +(attrs.height || parent.offsetHeight || 500) - top - bottom
-
-      return
 
     scope.redraw = ->
-      scope.updateDimensions(dim)
-      scope.update(dim)
+      scope.update()
 
       return
 
@@ -39,11 +25,11 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         scope.options.series[index].visible = newVisibility
         scope.$apply()
 
-    scope.update = (dimensions) ->
+    scope.update = () ->
       options = _u.sanitizeOptions(scope.options, attrs.mode)
       handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options))
       dataPerSeries = _u.getDataPerSeries(scope.data, options)
-
+      dimensions = _u.getDimensions(options, element, attrs)
       isThumbnail = attrs.mode is 'thumbnail'
 
       _u.clean(element[0])
@@ -63,11 +49,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       if dataPerSeries.length
         _u.setScalesDomain(axes, scope.data, options.series, svg, options)
-
-      if isThumbnail
-        _u.adjustMarginsForThumbnail(dimensions, axes)
-      else
-        _u.adjustMargins(dimensions, options)
 
       _u.createContent(svg, handlers)
 
@@ -108,7 +89,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     $window.addEventListener('resize', window_resize)
 
     scope.$watch('data', scope.redraw, true)
-    scope.$watch('options', (-> scope.update(dim)) , true)
+    scope.$watch('options', scope.redraw , true)
     scope.$watch('[click, hover, focus]', updateEvents)
 
   return {
