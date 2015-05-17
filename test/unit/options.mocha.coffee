@@ -78,6 +78,27 @@ describe 'options', ->
       o = n3utils.sanitizeOptions(tension: 0.95)
       expect(o.tension).to.equal 0.95
 
+  describe 'margin', ->
+    it 'should use the default margin', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.margin.top).to.equal 20
+      expect(o.margin.right).to.equal 50
+      expect(o.margin.bottom).to.equal 60
+      expect(o.margin.left).to.equal 50
+
+    it 'should use the default thumbnail margin', ->
+      o = n3utils.sanitizeOptions(null, 'thumbnail')
+      expect(o.margin.top).to.equal 1
+      expect(o.margin.right).to.equal 1
+      expect(o.margin.bottom).to.equal 2
+      expect(o.margin.left).to.equal 0
+
+    it 'should parse margins as float', ->
+      o = n3utils.sanitizeOptions({
+        margin: {top: '20.05', left: 40.68 }
+      })
+      expect(o.margin.top).to.equal 20.05
+      expect(o.margin.left).to.equal 40.68
 
   describe 'axes', ->
     it 'should return default options when given null or undefined', ->

@@ -16,23 +16,29 @@ describe 'size', ->
     sinon.stub(innerScope, 'update', ->)
     sinon.spy(innerScope, 'redraw')
 
-  it 'should redraw when $window resize', inject ($window) ->
-    e = document.createEvent('HTMLEvents')
-    e.initEvent 'resize', true, false
-    $window.dispatchEvent e
+  it 'should call redraw when window is resized ', inject (pepito, fakeWindow, $timeout) ->
+    {element, outerScope} = pepito.directive("""
+      <div>
+        <linechart data='data' options='options'></linechart>
+      </div>
+      """,
+      (element) ->
+        innerScope = element.children()[0].aElement.isolateScope()
+      )
 
-  it 'should pass the new dimensions to update when $window is resized ', inject ($window) ->
-    sinon.stub innerScope, 'updateDimensions', (d) ->
-      d.width = 120
-      d.height = 50
+    spy = sinon.spy(innerScope, 'redraw')
 
-    # This could be better...
-    e = document.createEvent('HTMLEvents')
-    e.initEvent 'resize', true, false
-    $window.dispatchEvent e
+    expect(spy.callCount).to.equal(0)
+
+    # Trigger a resize event
+    fakeWindow.resize()
+    outerScope.$digest()
+    $timeout.flush()
+
+    expect(spy.callCount).to.equal(1)
 
   describe 'computation method', ->
-    it 'should have default size', inject (pepito) ->
+    it 'should have default size', inject (pepito, n3utils) ->
       {element, outerScope} = pepito.directive("""
       <div>
         <linechart data='data' options='options'></linechart>
@@ -44,24 +50,19 @@ describe 'size', ->
         sinon.spy innerScope, 'redraw'
       )
 
-      innerScope = element.childByClass('chart').aElement.isolateScope()
-      expect(innerScope.update.args[0][0]).to.eql
-        top: 20
-        right: 50
-        bottom: 60
-        left: 50
-        width: 900
-        height: 500
+      svgElem = element.childByClass('chart').children()[0].domElement
+      expect(svgElem.width.baseVal.value).to.eql 900
+      expect(svgElem.height.baseVal.value).to.eql 500
 
     it 'should consider forced dimensions', inject (pepito, n3utils) ->
-      {element, outerScope, innerScope} = pepito.directive("""
-        <div id="toto">
-          <linechart width="234" height="556" data='data' options='options'></linechart>
-        </div>
+      {element, outerScope} = pepito.directive("""
+      <div id="toto">
+        <linechart width="234" height="556" data='data' options='options'></linechart>
+      </div>
       """,
       (element) ->
         innerScope = element.children()[0].aElement.isolateScope()
-        sinon.stub innerScope, 'update', ->
+        sinon.spy innerScope, 'update'
         sinon.spy innerScope, 'redraw'
 
         sinon.stub n3utils, 'getPixelCssProp', (element, property) ->
@@ -80,18 +81,11 @@ describe 'size', ->
           }[property]
       )
 
-      innerScope = element.children()[0].aElement.isolateScope()
-
       outerScope.$digest()
 
-      expect(innerScope.update.args[1][0]).to.eql
-        top: 20
-        right: 50
-        bottom: 60
-        left: 50
-        width: 174
-        height: 496
-
+      svgElem = element.childByClass('chart').children()[0].domElement
+      expect(svgElem.width.baseVal.value).to.eql 174
+      expect(svgElem.height.baseVal.value).to.eql 496
 
     it 'should detect parent\'s top padding', inject (pepito, n3utils) ->
       {element, outerScope} = pepito.directive("""
@@ -101,7 +95,7 @@ describe 'size', ->
       """,
       (element) ->
         innerScope = element.children()[0].aElement.isolateScope()
-        sinon.stub innerScope, 'update', ->
+        sinon.spy innerScope, 'update'
         sinon.spy innerScope, 'redraw'
 
         sinon.stub n3utils, 'getPixelCssProp', (element, property) ->
@@ -120,14 +114,9 @@ describe 'size', ->
           }[property]
       )
 
-      innerScope = element.children()[0].aElement.isolateScope()
-
       outerScope.$digest()
-      expect(innerScope.update.args[1][0]).to.eql
-        top: 20
-        right: 50
-        bottom: 60
-        left: 50
-        width: 840
-        height: 440
+      
+      svgElem = element.childByClass('chart').children()[0].domElement
+      expect(svgElem.width.baseVal.value).to.eql 840
+      expect(svgElem.height.baseVal.value).to.eql 440
 
