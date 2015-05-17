@@ -97,7 +97,7 @@
         axis = d3.svg.axis()
           .scale(scale)
           .orient(sides[key])
-          .tickFormat(o?.labelFunction)
+          .tickFormat(o?.ticksFormatter)
 
         return axis unless o?
 

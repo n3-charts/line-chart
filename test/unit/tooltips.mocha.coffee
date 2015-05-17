@@ -108,10 +108,11 @@ describe 'tooltip', ->
     expect(element.childByClass("xTooltip").children()[1].innerHTML()).to.equal '0'
     expect(element.childByClass("yTooltip").children()[1].innerHTML()).to.equal '4'
 
-    # Now apply the formatter function
-    formatter = d3.format('.4f')
-    outerScope.options.axes.x.labelFunction = (d) -> formatter(d)
-    outerScope.options.axes.y.labelFunction = (d) -> formatter(d)
+    outerScope.$apply ->
+      # Now apply the formatter function
+      formatter = d3.format('.4f')
+      outerScope.options.axes.x.tooltipFormatter = formatter
+      outerScope.options.axes.y.tooltipFormatter = formatter
 
     # Hover over the first dot
     fakeMouse.mouseOver(firstDot)

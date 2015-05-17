@@ -100,7 +100,7 @@
             'transform': "translate(#{x},0)"
           )
 
-        _f = xAxisOptions.labelFunction
+        _f = xAxisOptions.tooltipFormatter
         textX = if _f then _f(datum.x) else datum.x
 
         label = xTooltip.select('text')
@@ -132,7 +132,7 @@
             'transform': "translate(0, #{y})"
           )
 
-        _f = yAxisOptions.labelFunction
+        _f = yAxisOptions.tooltipFormatter
         textY = if _f then _f(datum.y) else datum.y
 
         label = yTooltip.select('text')
@@ -153,7 +153,7 @@
         y2Tooltip.transition()
           .attr('opacity', 1.0)
 
-        _f = yAxisOptions.labelFunction
+        _f = yAxisOptions.tooltipFormatter
         textY = if _f then _f(datum.y) else datum.y
 
         label = y2Tooltip.select('text')
