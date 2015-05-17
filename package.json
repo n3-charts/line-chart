@@ -35,9 +35,7 @@
     "karma-sinon": "~1.0.3",
     "matchdep": "*",
     "phantomjs": "~1.9.7-5",
+    "grunt-cli": "~0.1.13",
     "sinon": "~1.9.1"
-  },
-  "peerDependencies": {
-    "grunt-cli": "~0.1.13"
   }
 }
