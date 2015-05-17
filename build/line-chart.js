@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.7 - 16 May 2015
+line-chart - v1.1.7 - 17 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -883,7 +883,11 @@ mod.factory('n3utils', [
         return bbox;
       },
       getTextBBox: function(svgTextElement) {
-        return svgTextElement.getBBox();
+        if (svgTextElement !== null) {
+          return svgTextElement.getBBox();
+        } else {
+          return {};
+        }
       },
       getWidestTickWidth: function(svg, axisKey) {
         var bbox, max, ticks, _ref;
