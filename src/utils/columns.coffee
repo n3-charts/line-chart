@@ -44,7 +44,7 @@
           return x1(index) - keys.length*columnWidth/2
 
 
-      drawColumns: (svg, axes, data, columnWidth, options, handlers) ->
+      drawColumns: (svg, axes, data, columnWidth, options, handlers, dispatch) ->
         data = data.filter (s) -> s.type is 'column'
 
         x1 = this.getColumnAxis(data, columnWidth, options)
@@ -77,6 +77,8 @@
         colGroup.selectAll("rect")
           .data (d) -> d.values
           .enter().append("rect")
+            .on('click': (d, i) -> dispatch.click(d, i))
+            .on('mouseover': (d, i) -> dispatch.hover(d, i))
             .style({
               'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
               'stroke-width': '1px'
