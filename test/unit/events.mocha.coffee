@@ -15,6 +15,7 @@ describe 'event handling', ->
       expect(dispatch).to.have.property("focus")
       expect(dispatch).to.have.property("hover")
       expect(dispatch).to.have.property("click")
+      expect(dispatch).to.have.property("toggle")
 
   describe 'rendering', ->
     element = undefined
@@ -46,7 +47,7 @@ describe 'event handling', ->
     beforeEach inject (pepito) ->
       {element, innerScope, outerScope} = pepito.directive """
       <div>
-        <linechart data='data' options='options' click='clicked' hover='hovered' focus='focused'></linechart>
+        <linechart data='data' options='options' on-click='clicked' on-hover='hovered' on-focus='focused' on-toggle='toggled'></linechart>
       </div>
       """
 
@@ -206,3 +207,32 @@ describe 'event handling', ->
 
       expect(focused[0][0].x).to.equal focused[1][0].x
       expect(focused[0][1]).to.equal focused[0][1]
+
+    it 'should dispatch a toggle event when clicked on a legend', ->
+
+      clicked = undefined
+
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4', visible: false}
+          ]
+          tooltip: {mode: 'axes'}
+        outerScope.toggled = (d, i, visibility) ->
+          clicked = [d, i, visibility]
+
+      firstLegendItem = element.childrenByClass('legendItem')[0]
+      secondLegendItem = element.childrenByClass('legendItem')[1]
+
+      firstLegendItem.click()
+      expect(clicked[1]).to.equal 0
+      expect(clicked[2]).to.equal false
+
+      firstLegendItem.click()
+      expect(clicked[1]).to.equal 0
+      expect(clicked[2]).to.equal true
+
+      secondLegendItem.click()
+      expect(clicked[1]).to.equal 1
+      expect(clicked[2]).to.equal true
