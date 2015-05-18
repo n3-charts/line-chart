@@ -39,8 +39,8 @@ describe 'ordinates', ->
 
         outerScope.options =
           axes:
-            y: {labelFunction: f}
-            y2: {labelFunction: f2}
+            y: {ticksFormatter: f}
+            y2: {ticksFormatter: f2}
 
           series: [
             {y: 'value', color: '#4682b4'}

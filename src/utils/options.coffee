@@ -23,25 +23,28 @@
           options.drawDots = false
           options.tooltip = {mode: 'none', interpolate: false}
 
+        # Parse and sanitize the options
         options.series = this.sanitizeSeriesOptions(options.series)
         options.stacks = this.sanitizeSeriesStacks(options.stacks, options.series)
-
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
-
-        options.lineMode or= 'linear'
-        options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension else 0.7
-
-        this.sanitizeTooltip(options)
-
+        options.tooltip = this.sanitizeTooltip(options.tooltip)
+        options.margin = this.sanitizeMargins(options.margin)
+        
+        options.lineMode or= this.getDefaultOptions().lineMode
+        options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension \
+          else this.getDefaultOptions().tension
+        
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
-
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
-
-        options.margin = this.sanitizeMargins(options.margin)
 
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()
+
+        # Use default values where no options are defined
+        options.series = angular.extend(this.getDefaultOptions().series, options.series)
+        options.axes = angular.extend(this.getDefaultOptions().axes, options.axes)
+        options.tooltip = angular.extend(this.getDefaultOptions().tooltip, options.tooltip)
         options.margin = angular.extend(defaultMargin, options.margin)
 
         return options
@@ -73,20 +76,21 @@
         return stacks
 
       sanitizeTooltip: (options) ->
-        if !options.tooltip
-          options.tooltip = {mode: 'scrubber'}
-          return
+        if !options
+          return {mode: 'scrubber'}
 
-        if options.tooltip.mode not in ['none', 'axes', 'scrubber']
-          options.tooltip.mode = 'scrubber'
+        if options.mode not in ['none', 'axes', 'scrubber']
+          options.mode = 'scrubber'
 
-        if options.tooltip.mode is 'scrubber'
-          delete options.tooltip.interpolate
+        if options.mode is 'scrubber'
+          delete options.interpolate
         else
-          options.tooltip.interpolate = !!options.tooltip.interpolate
+          options.interpolate = !!options.interpolate
 
-        if options.tooltip.mode is 'scrubber' and options.tooltip.interpolate
+        if options.mode is 'scrubber' and options.interpolate
           throw new Error('Interpolation is not supported for scrubber tooltip mode.')
+
+        return options
 
       sanitizeSeriesOptions: (options) ->
         return [] unless options?
@@ -170,6 +174,37 @@
 
         options.type or= 'linear'
 
+        # labelFunction is deprecated and will be remvoed in 2.x
+        # please use ticksFormatter instead
+        if options.labelFunction?
+          options.ticksFormatter = options.labelFunction
+
+        # String to format tick values
+        if options.ticksFormat?
+
+          if options.type is 'date'
+            # Use d3.time.format as formatter
+            options.ticksFormatter = d3.time.format(options.ticksFormat)
+            
+          else
+            # Use d3.format as formatter
+            options.ticksFormatter = d3.format(options.ticksFormat)
+
+          # use the ticksFormatter per default
+          # if no tooltip format or formatter is defined
+          options.tooltipFormatter ?= options.ticksFormatter
+
+        # String to format tooltip values
+        if options.tooltipFormat?
+
+          if options.type is 'date'
+            # Use d3.time.format as formatter
+            options.tooltipFormatter = d3.time.format(options.tooltipFormat)
+            
+          else
+            # Use d3.format as formatter
+            options.tooltipFormatter = d3.format(options.tooltipFormat)
+        
         this.sanitizeExtrema(options)
 
         return options

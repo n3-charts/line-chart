@@ -217,8 +217,9 @@
         data.forEach (row) ->
           series.forEach (series) ->
             v = row[series.y]
-            if series.axis? and options.axes[series.axis]?.labelFunction
-              v = options.axes[series.axis].labelFunction(v)
+            
+            if series.axis? and options.axes[series.axis]?.ticksFormatter
+              v = options.axes[series.axis].ticksFormatter(v)
 
             return unless v?
 
