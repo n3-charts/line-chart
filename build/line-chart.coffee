@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.7 - 17 May 2015
+line-chart - v1.1.7 - 18 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -69,7 +69,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
           _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch)
 
       if options.drawLegend
-        _u.drawLegend(svg, options.series, dimensions, handlers)
+        _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
 
       if options.tooltip.mode is 'scrubber'
         _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
@@ -77,14 +77,35 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.addTooltips(svg, dimensions, options.axes)
 
     updateEvents = ->
-      if scope.click
+      
+      # Deprecated: this will be removed in 2.x
+      if scope.oldclick
+        dispatch.on('click', scope.oldclick)
+      else if scope.click
         dispatch.on('click', scope.click)
+      else
+        dispatch.on('click', null)
 
-      if scope.hover
+      # Deprecated: this will be removed in 2.x
+      if scope.oldhover
+        dispatch.on('hover', scope.oldhover)
+      else if scope.hover
         dispatch.on('hover', scope.hover)
+      else
+        dispatch.on('hover', null)
 
-      if scope.focus
+      # Deprecated: this will be removed in 2.x
+      if scope.oldfocus
+        dispatch.on('focus', scope.oldfocus)
+      else if scope.focus
         dispatch.on('focus', scope.focus)
+      else
+        dispatch.on('focus', null)
+
+      if scope.toggle
+        dispatch.on('toggle', scope.toggle)
+      else
+        dispatch.on('toggle', null)
 
     promise = undefined
     window_resize = ->
@@ -95,12 +116,20 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     scope.$watch('data', scope.redraw, true)
     scope.$watch('options', scope.redraw , true)
-    scope.$watch('[click, hover, focus]', updateEvents)
+    scope.$watch('[click, hover, focus, toggle]', updateEvents)
+    
+    # Deprecated: this will be removed in 2.x
+    scope.$watch('[oldclick, oldhover, oldfocus]', updateEvents)
 
   return {
     replace: true
     restrict: 'E'
-    scope: {data: '=', options: '=', click: '=',  hover: '=',  focus: '='}
+    scope:
+      data: '=', options: '=',
+      # Deprecated: this will be removed in 2.x
+      oldclick: '=click',  oldhover: '=hover',  oldfocus: '=focus',
+      # Events
+      click: '=onClick',  hover: '=onHover',  focus: '=onFocus',  toggle: '=onToggle'
     template: '<div></div>'
     link: link
   }
@@ -342,7 +371,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         events = [
           'focus',
           'hover',
-          'click'
+          'click',
+          'toggle'
         ]
 
         return d3.dispatch.apply(this, events)
@@ -395,7 +425,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return widths
 
-      drawLegend: (svg, series, dimensions, handlers) ->
+      drawLegend: (svg, series, dimensions, handlers, dispatch) ->
         that = this
         legend = svg.append('g').attr('class', 'legend')
 
@@ -419,10 +449,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             )
 
         item.on('click', (s, i) ->
+          visibility = !(s.visible isnt false)
+          dispatch.toggle(s, i, visibility)
           handlers.onSeriesVisibilityChange?({
             series: s,
             index: i,
-            newVisibility: !(s.visible isnt false)
+            newVisibility: visibility
           })
         )
 
