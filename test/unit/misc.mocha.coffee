@@ -129,7 +129,7 @@ describe 'misc', ->
     series = [{y: 'value'}, {y: 'foo'}]
     expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 1.1548578
 
-  it 'should compute the widest y value - with a labelFunction', ->
+  it 'should compute the widest y value - with a ticksFormatter', ->
     data = [
       {x: 0, foo: 4.154, value: 4}
       {x: 1, foo: 8.15485, value: 8}
@@ -142,7 +142,7 @@ describe 'misc', ->
       axes:
         x: {}
         y: {}
-        y2: {labelFunction: (v) -> 'huehuehuehuehue'}
+        y2: {ticksFormatter: (v) -> 'huehuehuehuehue'}
 
     series = [y: 'value']
     expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 15

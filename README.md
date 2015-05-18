@@ -47,7 +47,7 @@ Options must be an object with a series array. It should look like this :
 ```js
 $scope.options = {
   axes: {
-    x: {key: 'x', labelFunction: function(value) {return value;}, type: 'linear', min: 0, max: 10, ticks: 2},
+    x: {key: 'x', ticksFormat: '.2f', type: 'linear', min: 0, max: 10, ticks: 2},
     y: {type: 'linear', min: 0, max: 1, ticks: 5},
     y2: {type: 'linear', min: 0, max: 1, ticks: [1, 2, 3, 4]}
   },
@@ -71,7 +71,10 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
 
  + `key` : optional, defines where the chart will look for abscissas values in the data (default is 'x').
  + `type` : optional, can be either 'date' or 'linear' (default is 'linear'). If set to 'date', the chart will expect Date objects as abscissas. No transformation is done by the chart itself, so the behavior is basically D3.js' time scale's.
- + `labelFunction` : optional, allows to format the axis' ticklabels. Must be a function that accepts a single argument and returns a string.
+ + `ticksFormat` : optional, format string, that is parsed with d3.format (d3.time.format for type 'date') to format the axis' ticklabels. Default behavior: the raw value is used unformatted
+ + `ticksFormatter` : optional, function that allows to format the axis' ticklabels; must be a function that accepts a single argument and returns a string.
+ + `tooltipFormat` : optional, format string, that is parsed with d3.format (d3.time.format for type 'date') to format the axis' tooltip values (tooltip mode 'axes'). Default behavior: uses the same format as `ticksFormat`
+ + `tooltipFormatter` : optional, function that allows to format the axis' tooltip values (tooltip mode 'axes'); must be a function that accepts a single argument and returns a string.
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
  + `ticks` : optional, configures the axis' ticks (can be either a number or an array, more on this [here][3])

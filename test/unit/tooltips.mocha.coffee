@@ -96,6 +96,32 @@ describe 'tooltip', ->
     fakeMouse.hoverOut(linePath.domElement)
     checkVisibilityOf([])
 
+  it 'should format the tooltip when a formatter function is defined', ->
+    leftAxisDotGroup = element.childByClass('dotGroup series_0')
+    firstDot = leftAxisDotGroup.children()[0]
+
+    # Hover over the first dot
+    fakeMouse.mouseOver(firstDot)
+    flushD3()
+    
+    # Check tooltips without formatter
+    expect(element.childByClass("xTooltip").children()[1].innerHTML()).to.equal '0'
+    expect(element.childByClass("yTooltip").children()[1].innerHTML()).to.equal '4'
+
+    outerScope.$apply ->
+      # Now apply the formatter function
+      formatter = d3.format('.4f')
+      outerScope.options.axes.x.tooltipFormatter = formatter
+      outerScope.options.axes.y.tooltipFormatter = formatter
+
+    # Hover over the first dot
+    fakeMouse.mouseOver(firstDot)
+    flushD3()
+    
+    # Check tooltips with formatter
+    expect(element.childByClass("xTooltip").children()[1].innerHTML()).to.equal '0.0000'
+    expect(element.childByClass("yTooltip").children()[1].innerHTML()).to.equal '4.0000'
+
   describe 'scrubber mode', ->
     beforeEach ->
       outerScope.$apply ->
@@ -139,8 +165,8 @@ describe 'tooltip', ->
 
     checkVisibilityOf([])
 
-    fakeMouse.hoverIn(rightAxisColumnGroup.domElement)
+    fakeMouse.hoverIn(rightAxisColumnGroup.children()[0])
     checkVisibilityOf(['x', 'y2'])
 
-    fakeMouse.hoverOut(rightAxisColumnGroup.domElement)
+    fakeMouse.hoverOut(rightAxisColumnGroup.children()[0])
     checkVisibilityOf([])

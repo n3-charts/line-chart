@@ -13,7 +13,6 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     # Hacky hack so the chart doesn't grow in height when resizing...
     element[0].style['font-size'] = 0
 
-
     scope.redraw = ->
       scope.update()
 
