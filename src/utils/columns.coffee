@@ -55,9 +55,6 @@
           .data(data)
           .enter().append("g")
             .attr('class', (s) -> 'columnGroup series_' + s.index)
-            .style('stroke', (s) -> s.color)
-            .style('fill', (s) -> s.color)
-            .style('fill-opacity', 0.8)
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
         colGroup.each (series) ->
@@ -65,6 +62,8 @@
             .data(series.values)
             .enter().append("rect")
               .style({
+                'stroke': series.color
+                'fill': series.color
                 'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
                 'stroke-width': '1px'
                 'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
