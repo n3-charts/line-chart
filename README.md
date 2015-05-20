@@ -150,7 +150,7 @@ This is more a hack. The chart usually tries to infer its own dimensions regardi
 ```
 
 #### Custom events
-We can attach event handlers for *click*, *hover* and *focus* events of the chart.
+We can attach event handlers for *click*, *hover*, *focus* and *toggle* events of the chart.
 
 ##### Click
 The event handler for the *click* event get's triggered when the mouse clicks on a dot or column of the chart in tooltip modes *none* and *axes*.
@@ -162,7 +162,7 @@ $scope.onClick = function(d, i){
 ```
 
 ```html
-<linechart data="data" options="options" click="onClick"></linechart>
+<linechart data="data" options="options" on-click="onClick"></linechart>
 ```
 
 ##### Hover
@@ -175,21 +175,35 @@ $scope.onHover = function(d, i){
 ```
 
 ```html
-<linechart data="data" options="options" hover="onHover"></linechart>
+<linechart data="data" options="options" on-hover="onHover"></linechart>
 ```
 
 ##### Focus
 The event handler for a *focus* event get's triggered when the mouse hovers over the chart in tooltip mode *scrubber*.
 
 ```js
-$scope.onFocus = function(d, i){
-  console.log(d, i);
+$scope.onFocus = function(d, i, position){
+  console.log(d, i, position);
 }
 ```
 
 ```html
-<linechart data="data" options="options" focus="onFocus"></linechart>
+<linechart data="data" options="options" on-focus="onFocus"></linechart>
 ```
+
+##### Toggle
+The event handler for a *toggle* event get's triggered when a series changes its visibility.
+
+```js
+$scope.onToggle = function(d, i, visible){
+  console.log(d, i, visible);
+}
+```
+
+```html
+<linechart data="data" options="options" on-toggle="onToggle"></linechart>
+```
+
 
 ### Building
 Fetch the repo :
