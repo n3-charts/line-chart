@@ -87,9 +87,12 @@ describe 'column series', ->
   it 'should create a group', ->
     content = element.childByClass('content')
     expect(content.children().length).to.equal 1
+    
     columnGroup = content.children()[0]
     expect(columnGroup.getAttribute('class')).to.equal 'columnGroup series_0'
-    expect(columnGroup.getAttribute('style').trim()).to.equal 'stroke: rgb(70, 130, 180); fill: rgb(70, 130, 180); fill-opacity: 0.8;'
+    
+    firstColumnStyle = columnGroup.children()[0].getAttribute('style').trim()
+    expect(firstColumnStyle).to.match /stroke: rgb\(70, 130, 180\); fill: rgb\(70, 130, 180\);(.)* fill-opacity: 0.7;/
 
   describe 'stack', ->
     it 'should work with an empty stack', ->
