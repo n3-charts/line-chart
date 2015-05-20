@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.7 - 17 May 2015
+line-chart - v1.1.7 - 18 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -68,7 +68,7 @@ directive('linechart', [
           }
         }
         if (options.drawLegend) {
-          _u.drawLegend(svg, options.series, dimensions, handlers);
+          _u.drawLegend(svg, options.series, dimensions, handlers, dispatch);
         }
         if (options.tooltip.mode === 'scrubber') {
           return _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
@@ -77,14 +77,31 @@ directive('linechart', [
         }
       };
       updateEvents = function() {
-        if (scope.click) {
+        if (scope.oldclick) {
+          dispatch.on('click', scope.oldclick);
+        } else if (scope.click) {
           dispatch.on('click', scope.click);
+        } else {
+          dispatch.on('click', null);
         }
-        if (scope.hover) {
+        if (scope.oldhover) {
+          dispatch.on('hover', scope.oldhover);
+        } else if (scope.hover) {
           dispatch.on('hover', scope.hover);
+        } else {
+          dispatch.on('hover', null);
         }
-        if (scope.focus) {
-          return dispatch.on('focus', scope.focus);
+        if (scope.oldfocus) {
+          dispatch.on('focus', scope.oldfocus);
+        } else if (scope.focus) {
+          dispatch.on('focus', scope.focus);
+        } else {
+          dispatch.on('focus', null);
+        }
+        if (scope.toggle) {
+          return dispatch.on('toggle', scope.toggle);
+        } else {
+          return dispatch.on('toggle', null);
         }
       };
       promise = void 0;
@@ -97,7 +114,8 @@ directive('linechart', [
       $window.addEventListener('resize', window_resize);
       scope.$watch('data', scope.redraw, true);
       scope.$watch('options', scope.redraw, true);
-      return scope.$watch('[click, hover, focus]', updateEvents);
+      scope.$watch('[click, hover, focus, toggle]', updateEvents);
+      return scope.$watch('[oldclick, oldhover, oldfocus]', updateEvents);
     };
     return {
       replace: true,
@@ -105,9 +123,13 @@ directive('linechart', [
       scope: {
         data: '=',
         options: '=',
-        click: '=',
-        hover: '=',
-        focus: '='
+        oldclick: '=click',
+        oldhover: '=hover',
+        oldfocus: '=focus',
+        click: '=onClick',
+        hover: '=onHover',
+        focus: '=onFocus',
+        toggle: '=onToggle'
       },
       template: '<div></div>',
       link: link
@@ -384,7 +406,7 @@ mod.factory('n3utils', [
       },
       getEventDispatcher: function() {
         var events;
-        events = ['focus', 'hover', 'click'];
+        events = ['focus', 'hover', 'click', 'toggle'];
         return d3.dispatch.apply(this, events);
       },
       computeLegendLayout: function(svg, series, dimensions) {
@@ -432,7 +454,7 @@ mod.factory('n3utils', [
         }
         return widths;
       },
-      drawLegend: function(svg, series, dimensions, handlers) {
+      drawLegend: function(svg, series, dimensions, handlers, dispatch) {
         var d, item, items, left, legend, right, that, _ref;
         that = this;
         legend = svg.append('g').attr('class', 'legend');
@@ -452,10 +474,13 @@ mod.factory('n3utils', [
           }
         });
         item.on('click', function(s, i) {
+          var visibility;
+          visibility = !(s.visible !== false);
+          dispatch.toggle(s, i, visibility);
           return typeof handlers.onSeriesVisibilityChange === "function" ? handlers.onSeriesVisibilityChange({
             series: s,
             index: i,
-            newVisibility: !(s.visible !== false)
+            newVisibility: visibility
           }) : void 0;
         });
         item.append('circle').attr({

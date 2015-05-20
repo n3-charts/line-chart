@@ -43,7 +43,7 @@
 
         return widths
 
-      drawLegend: (svg, series, dimensions, handlers) ->
+      drawLegend: (svg, series, dimensions, handlers, dispatch) ->
         that = this
         legend = svg.append('g').attr('class', 'legend')
 
@@ -67,10 +67,12 @@
             )
 
         item.on('click', (s, i) ->
+          visibility = !(s.visible isnt false)
+          dispatch.toggle(s, i, visibility)
           handlers.onSeriesVisibilityChange?({
             series: s,
             index: i,
-            newVisibility: !(s.visible isnt false)
+            newVisibility: visibility
           })
         )
 
