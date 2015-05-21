@@ -126,13 +126,13 @@
                   return "translate(#{right.shift()},#{dimensions.height-40})"
             )
 
-        # we need to do call this once, to not make the legend text
-        # does not blink on every update
+        # We need to call this once, so the
+        # legend text does not blink on every update
         translateLegends()
 
         # now once again,
         # to make sure, text width gets really! computed properly
-        setTimeout translateLegends, 0
+        setTimeout(translateLegends, 0)
 
         return this
 

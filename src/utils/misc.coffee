@@ -59,66 +59,71 @@
         svg.append('g').attr('class', 'content')
 
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
+        that = this
+
         glass = svg.append('g')
           .attr(
             'class': 'glass-container'
             'opacity': 0
           )
 
-        items = glass.selectAll('.scrubberItem')
-          .data(data)
-          .enter()
+        scrubberGroup = glass.selectAll('.scrubberItem')
+          .data(data).enter()
             .append('g')
               .attr('class', (s, i) -> "scrubberItem series_#{i}")
 
-        g = items.append('g')
-          .attr('class': (s, i) -> "rightTT")
+        scrubberGroup.each (s, i) ->
 
-        g.append('path')
-          .attr(
-            'class': (s, i) -> "scrubberPath series_#{i}"
-            'y': '-7px'
-            'fill': (s) -> s.color
-          )
+          item = d3.select(this)
 
-        this.styleTooltip(g.append('text')
-          .style('text-anchor', 'start')
-          .attr(
-            'class': (d, i) -> "scrubberText series_#{i}"
-            'height': '14px'
-            'transform': 'translate(7, 3)'
-            'text-rendering': 'geometric-precision'
-          ))
-          .text (s) -> s.label || s.y
+          g = item.append('g')
+            .attr('class': "rightTT")
 
-        g2 = items.append('g')
-          .attr('class': (s, i) -> "leftTT")
+          g.append('path')
+            .attr(
+              'class': "scrubberPath series_#{i}"
+              'y': '-7px'
+              'fill': s.color
+            )
 
-        g2.append('path')
-          .attr(
-            'class': (s, i) -> "scrubberPath series_#{i}"
-            'y': '-7px'
-            'fill': (s) -> s.color
-          )
+          that.styleTooltip(g.append('text')
+            .style('text-anchor', 'start')
+            .attr(
+              'class': (d, i) -> "scrubberText series_#{i}"
+              'height': '14px'
+              'transform': 'translate(7, 3)'
+              'text-rendering': 'geometric-precision'
+            ))
+            .text(s.label || s.y)
 
-        this.styleTooltip(g2.append('text')
-          .style('text-anchor', 'end')
-          .attr(
-            'class': (d, i) -> "scrubberText series_#{i}"
-            'height': '14px'
-            'transform': 'translate(-13, 3)'
-            'text-rendering': 'geometric-precision'
-          ))
-          .text (s) -> s.label || s.y
+          g2 = item.append('g')
+            .attr('class': "leftTT")
 
-        items.append('circle')
-          .attr(
-            'class': (s, i) -> "scrubberDot series_#{i}"
-            'fill': 'white'
-            'stroke': (s) -> s.color
-            'stroke-width': '2px'
-            'r': 4
-          )
+          g2.append('path')
+            .attr(
+              'class': "scrubberPath series_#{i}"
+              'y': '-7px'
+              'fill': s.color
+            )
+
+          that.styleTooltip(g2.append('text')
+            .style('text-anchor', 'end')
+            .attr(
+              'class': "scrubberText series_#{i}"
+              'height': '14px'
+              'transform': 'translate(-13, 3)'
+              'text-rendering': 'geometric-precision'
+            ))
+            .text(s.label || s.y)
+
+          item.append('circle')
+            .attr(
+              'class': "scrubberDot series_#{i}"
+              'fill': 'white'
+              'stroke': s.color
+              'stroke-width': '2px'
+              'r': 4
+            )
 
         glass.append('rect')
           .attr(

@@ -83,6 +83,13 @@
 
           positions[index] = {index, x: xPos, y: axes[v.axis + 'Scale'](v.y + v.y0), side, sizes}
 
+          # Use a coloring function if defined, else use a color string value
+          color = series.color?(v, series.values.indexOf(v)) ? series.color
+          
+          # Color the elements of the scrubber
+          item.selectAll('circle').attr('stroke', color)
+          item.selectAll('path').attr('fill', color)
+
         positions = this.preventOverlapping(positions)
 
         tickLength = Math.max(15, 100/columnWidth)
