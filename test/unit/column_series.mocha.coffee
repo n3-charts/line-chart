@@ -183,4 +183,41 @@ describe 'column series', ->
       i++
     return
 
+  it 'should color the columns with a string value', ->
+    
+    outerScope.$apply ->
+      outerScope.data = [
+        {x: 0, value: 5}
+        {x: 1, value: 10}
+      ]
+      outerScope.options = series: [
+        y: 'value'
+        color: 'red'
+        type: 'column'
+      ]
+
+    content = element.childByClass('content')
+    columnGroup = content.children()[0]
+    
+    expect(columnGroup.children()[0].getStyle('fill')).to.match /(rgb\(255, 0, 0\))|(red)/
+    expect(columnGroup.children()[1].getStyle('fill')).to.match /(rgb\(255, 0, 0\))|(red)/
+
+  it 'should color the columns with a conditional function', ->
+    
+    outerScope.$apply ->
+      outerScope.data = [
+        {x: 0, value: 5}
+        {x: 1, value: 10}
+      ]
+      outerScope.options = series: [
+        y: 'value'
+        color: (d, i) -> if d?.y > 5 then 'green' else 'red'
+        type: 'column'
+      ]
+
+    content = element.childByClass('content')
+    columnGroup = content.children()[0]
+    
+    expect(columnGroup.children()[0].getStyle('fill')).to.match /(rgb\(255, 0, 0\))|(red)/
+    expect(columnGroup.children()[1].getStyle('fill')).to.match /(rgb\(0, 128, 0\))|(green)/
   return
