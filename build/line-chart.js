@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.7 - 18 May 2015
+line-chart - v1.1.7 - 22 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -801,7 +801,7 @@ mod.factory('n3utils', [
           width: dimensions.width - dimensions.left - dimensions.right,
           height: dimensions.height - dimensions.top - dimensions.bottom
         }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
-          return handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options, dispatch, columnWidth);
+          return handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth);
         });
       },
       getDataPerSeries: function(data, options) {
@@ -1410,29 +1410,22 @@ mod.factory('n3utils', [
           return svg.selectAll('.glass-container').attr('opacity', 0);
         });
       },
-      getClosestPoint: function(values, value) {
-        var i, left, right;
-        left = 0;
-        right = values.length - 1;
-        i = Math.round((right - left) / 2);
-        while (true) {
-          if (value < values[i].x) {
-            right = i;
-            i = i - Math.ceil((right - left) / 2);
-          } else {
-            left = i;
-            i = i + Math.floor((right - left) / 2);
-          }
-          if (i === left || i === right) {
-            if (Math.abs(value - values[left].x) < Math.abs(value - values[right].x)) {
-              i = left;
-            } else {
-              i = right;
-            }
-            break;
-          }
+      getClosestPoint: function(values, xValue) {
+        var d, d0, d1, i, xBisector;
+        xBisector = d3.bisector(function(d) {
+          return d.x;
+        }).left;
+        i = xBisector(values, xValue);
+        if (i === 0) {
+          return values[0];
         }
-        return values[i];
+        if (i > values.length - 1) {
+          return values[values.length - 1];
+        }
+        d0 = values[i - 1];
+        d1 = values[i];
+        d = xValue - d0.x > d1.x - xValue ? d1 : d0;
+        return d;
       },
       updateScrubber: function(svg, _arg, axes, data, options, dispatch, columnWidth) {
         var ease, positions, that, tickLength, x, y;
@@ -1443,7 +1436,7 @@ mod.factory('n3utils', [
         that = this;
         positions = [];
         data.forEach(function(series, index) {
-          var item, lText, left, rText, right, side, sizes, text, v, xInvert, yInvert;
+          var item, lText, left, rText, right, side, sizes, text, v, xInvert, xPos, yInvert;
           item = svg.select(".scrubberItem.series_" + index);
           if (options.series[index].visible === false) {
             item.attr('opacity', 0);
@@ -1469,13 +1462,13 @@ mod.factory('n3utils', [
             left: that.getTextBBox(lText[0][0]).width + 5
           };
           side = series.axis === 'y2' ? 'right' : 'left';
-          x = axes.xScale(v.x);
+          xPos = axes.xScale(v.x);
           if (side === 'left') {
-            if (x + that.getTextBBox(lText[0][0]).x - 10 < 0) {
+            if (xPos + that.getTextBBox(lText[0][0]).x - 10 < 0) {
               side = 'right';
             }
           } else if (side === 'right') {
-            if (x + sizes.right > that.getTextBBox(svg.select('.glass')[0][0]).width) {
+            if (xPos + sizes.right > that.getTextBBox(svg.select('.glass')[0][0]).width) {
               side = 'left';
             }
           }
@@ -1488,7 +1481,7 @@ mod.factory('n3utils', [
           }
           return positions[index] = {
             index: index,
-            x: x,
+            x: xPos,
             y: axes[v.axis + 'Scale'](v.y + v.y0),
             side: side,
             sizes: sizes

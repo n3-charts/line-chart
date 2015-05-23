@@ -129,7 +129,7 @@
           .style('fill', 'white')
           .style('fill-opacity', 0.000001)
           .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(d3.event.target), axes, data, options, dispatch, columnWidth)
+            handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth)
           )
 
 
