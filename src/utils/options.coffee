@@ -174,6 +174,9 @@
 
         options.type or= 'linear'
 
+        if options.ticksRotate?
+          options.ticksRotate = this.getSanitizedNumber(options.ticksRotate)
+
         # labelFunction is deprecated and will be remvoed in 2.x
         # please use ticksFormatter instead
         if options.labelFunction?

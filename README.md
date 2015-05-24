@@ -75,6 +75,7 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
  + `ticksFormatter` : optional, function that allows to format the axis' ticklabels; must be a function that accepts a single argument and returns a string.
  + `tooltipFormat` : optional, format string, that is parsed with d3.format (d3.time.format for type 'date') to format the axis' tooltip values (tooltip mode 'axes'). Default behavior: uses the same format as `ticksFormat`
  + `tooltipFormatter` : optional, function that allows to format the axis' tooltip values (tooltip mode 'axes'); must be a function that accepts a single argument and returns a string.
+ + `ticksRotate` : optional, defines the rotation of the tick labels in degrees (positive values rotate clockwise, and negative vales counter clockwise)
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
  + `ticks` : optional, configures the axis' ticks (can be either a number or an array, more on this [here][3])
