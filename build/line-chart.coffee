@@ -1407,7 +1407,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           positions[index] = {index, x: xPos, y: axes[v.axis + 'Scale'](v.y + v.y0), side, sizes}
 
           # Use a coloring function if defined, else use a color string value
-          color = series.color?(v, series.values.indexOf(v)) ? series.color
+          color = if angular.isFunction(series.color) \
+            then series.color(v, series.values.indexOf(v)) else series.color
           
           # Color the elements of the scrubber
           item.selectAll('circle').attr('stroke', color)
@@ -1651,7 +1652,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         label.text(textX)
 
         # Use a coloring function if defined, else use a color string value
-        color = series.color?(datum, series.values.indexOf(datum)) ? series.color
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
 
         xTooltip.select('path')
           .style('fill', color)
@@ -1692,7 +1694,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         )
 
         # Use a coloring function if defined, else use a color string value
-        color = series.color?(datum, series.values.indexOf(datum)) ? series.color
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
 
         yTooltip.select('path')
           .style('fill', color)
@@ -1715,7 +1718,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         )
 
         # Use a coloring function if defined, else use a color string value
-        color = series.color?(datum, series.values.indexOf(datum)) ? series.color
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
 
         y2Tooltip.select('path')
           .style('fill', color)

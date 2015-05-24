@@ -40,27 +40,27 @@ describe 'area series', ->
 
   it 'should properly configure y axis', ->
     ticks = element.childByClass('y axis').children('text')
-    expect(ticks.length).to.equal 10
-    expect(ticks[0].domElement.textContent).to.equal '0'
-    expect(ticks[9].domElement.textContent).to.equal '45'
+    expect(ticks.length).to.equal(10)
+    expect(ticks[0].domElement.textContent).to.equal('0')
+    expect(ticks[9].domElement.textContent).to.equal('45')
 
   it 'should properly configure x axis', ->
     ticks = element.childByClass('x axis').children('text')
-    expect(ticks.length).to.equal 11
-    expect(ticks[0].domElement.textContent).to.equal '0.0'
-    expect(ticks[10].domElement.textContent).to.equal '5.0'
+    expect(ticks.length).to.equal(11)
+    expect(ticks[0].domElement.textContent).to.equal('0.0')
+    expect(ticks[10].domElement.textContent).to.equal('5.0')
 
   it 'should create 3 elements', ->
     content = element.childByClass('content').domElement
-    expect(content.childNodes.length).to.equal 3
+    expect(content.childNodes.length).to.equal(3)
 
   it 'should create an area group', ->
     areaGroup = element.childByClass('areaGroup series_0')
-    expect(areaGroup.getStyle()).to.equal null
+    expect(areaGroup.getStyle()).to.equal(null)
     areaPath = areaGroup.domElement.childNodes[0]
-    expect(areaPath.getAttribute('style').trim()).to.equal 'fill: rgb(70, 130, 180); opacity: 0.3;'
-    expect(areaPath.getAttribute('class')).to.equal 'area'
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z'
+    expect(areaPath.getAttribute('style').trim()).to.equal('fill: rgb(70, 130, 180); opacity: 0.3;')
+    expect(areaPath.getAttribute('class')).to.equal('area')
+    expect(areaPath.getAttribute('d')).to.equal('M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z')
 
   it 'should create stripes pattern when told so', ->
     outerScope.$apply ->
@@ -72,11 +72,11 @@ describe 'area series', ->
       ]
 
     patterns = element.childByClass('patterns')
-    expect(patterns.domElement.childNodes.length).to.equal 2
+    expect(patterns.domElement.childNodes.length).to.equal(2)
     pattern = patterns.domElement.childNodes[0]
-    expect(pattern.getAttribute('id')).to.equal 'areaPattern_0'
+    expect(pattern.getAttribute('id')).to.equal('areaPattern_0')
     patternGroup = pattern.childNodes[0]
-    expect(patternGroup.getAttribute('style').trim()).to.equal 'fill: rgb(69, 130, 180); fill-opacity: 0.3;'
+    expect(patternGroup.getAttribute('style').trim()).to.equal('fill: rgb(69, 130, 180); fill-opacity: 0.3;')
 
   it 'should link pattern to fill style', ->
     outerScope.$apply ->
@@ -88,22 +88,22 @@ describe 'area series', ->
       ]
 
     areaGroup = element.childByClass('areaGroup series_0')
-    expect(areaGroup.getStyle()).to.equal null
+    expect(areaGroup.getStyle()).to.equal(null)
     areaPath = areaGroup.child('path')
-    expect(areaPath.getStyle().trim()).to.match /fill: url\(("){0,1}#areaPattern_0("){0,1}\)( none){0,1}; opacity: 1;/
-    expect(areaPath.hasClass('area')).to.equal true
-    expect(areaPath.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z'
+    expect(areaPath.getStyle().trim()).to.match(/fill: url\(("){0,1}#areaPattern_0("){0,1}\)( none){0,1}; opacity: 1;/)
+    expect(areaPath.hasClass('area')).to.equal(true)
+    expect(areaPath.getAttribute('d')).to.equal('M0,410L160,370L320,300L480,290L640,220L800,30L800,450L640,450L480,450L320,450L160,450L0,450Z')
 
   it 'should create a line group', ->
     lineGroup = element.childByClass('lineGroup series_0')
-    expect(lineGroup.getStyle().trim()).to.equal 'stroke: rgb(70, 130, 180);'
+    expect(lineGroup.getStyle().trim()).to.equal('stroke: rgb(70, 130, 180);')
 
   it 'should create a dots group', ->
     dotsGroup = element.childByClass('dotGroup series_0')
 
-    expect(dotsGroup.domElement.nodeName).to.equal 'g'
+    expect(dotsGroup.domElement.nodeName).to.equal('g')
     dots = dotsGroup.domElement.childNodes
-    expect(dots.length).to.equal 6
+    expect(dots.length).to.equal(6)
     expectedX = 'X 0 160 320 480 640 800'
     expectedY = 'Y 410 370 300 290 220 30'
     computedX = Array::reduce.call(dots, (a, b) ->
@@ -115,9 +115,9 @@ describe 'area series', ->
     i = 0
 
     while i < dots.length
-      expect(dots[i].nodeName).to.equal 'circle'
+      expect(dots[i].nodeName).to.equal('circle')
       i++
-    expect(computedX).to.equal expectedX
-    expect(computedY).to.equal expectedY
+    expect(computedX).to.equal(expectedX)
+    expect(computedY).to.equal(expectedY)
 
 
