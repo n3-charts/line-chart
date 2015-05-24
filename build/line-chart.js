@@ -1408,7 +1408,7 @@ mod.factory('n3utils', [
         that = this;
         positions = [];
         data.forEach(function(series, index) {
-          var color, item, lText, left, rText, right, side, sizes, text, v, xInvert, xPos, yInvert, _ref;
+          var color, item, lText, left, rText, right, side, sizes, text, v, xInvert, xPos, yInvert;
           item = svg.select(".scrubberItem.series_" + index);
           if (options.series[index].visible === false) {
             item.attr('opacity', 0);
@@ -1458,7 +1458,7 @@ mod.factory('n3utils', [
             side: side,
             sizes: sizes
           };
-          color = (_ref = typeof series.color === "function" ? series.color(v, series.values.indexOf(v)) : void 0) != null ? _ref : series.color;
+          color = angular.isFunction(series.color) ? series.color(v, series.values.indexOf(v)) : series.color;
           item.selectAll('circle').attr('stroke', color);
           return item.selectAll('path').attr('fill', color);
         });
@@ -1644,7 +1644,7 @@ mod.factory('n3utils', [
         return this.hideTooltips(svg);
       },
       updateXTooltip: function(svg, _arg, xAxisOptions) {
-        var color, datum, label, series, textX, x, xTooltip, _f, _ref;
+        var color, datum, label, series, textX, x, xTooltip, _f;
         x = _arg.x, datum = _arg.datum, series = _arg.series;
         xTooltip = svg.select("#xTooltip");
         xTooltip.transition().attr({
@@ -1655,7 +1655,7 @@ mod.factory('n3utils', [
         textX = _f ? _f(datum.x) : datum.x;
         label = xTooltip.select('text');
         label.text(textX);
-        color = (_ref = typeof series.color === "function" ? series.color(datum, series.values.indexOf(datum)) : void 0) != null ? _ref : series.color;
+        color = angular.isFunction(series.color) ? series.color(datum, series.values.indexOf(datum)) : series.color;
         return xTooltip.select('path').style('fill', color).attr('d', this.getXTooltipPath(label[0][0]));
       },
       getXTooltipPath: function(textElement) {
@@ -1666,7 +1666,7 @@ mod.factory('n3utils', [
         return 'm-' + w / 2 + ' ' + p + ' ' + 'l0 ' + h + ' ' + 'l' + w + ' 0 ' + 'l0 ' + '' + (-h) + 'l' + (-w / 2 + p) + ' 0 ' + 'l' + (-p) + ' -' + h / 4 + ' ' + 'l' + (-p) + ' ' + h / 4 + ' ' + 'l' + (-w / 2 + p) + ' 0z';
       },
       updateYTooltip: function(svg, _arg, yAxisOptions) {
-        var color, datum, label, series, textY, w, y, yTooltip, _f, _ref;
+        var color, datum, label, series, textY, w, y, yTooltip, _f;
         y = _arg.y, datum = _arg.datum, series = _arg.series;
         yTooltip = svg.select("#yTooltip");
         yTooltip.transition().attr({
@@ -1682,11 +1682,11 @@ mod.factory('n3utils', [
           'transform': 'translate(' + (-w - 2) + ',3)',
           'width': w
         });
-        color = (_ref = typeof series.color === "function" ? series.color(datum, series.values.indexOf(datum)) : void 0) != null ? _ref : series.color;
+        color = angular.isFunction(series.color) ? series.color(datum, series.values.indexOf(datum)) : series.color;
         return yTooltip.select('path').style('fill', color).attr('d', this.getYTooltipPath(w));
       },
       updateY2Tooltip: function(svg, _arg, yAxisOptions) {
-        var color, datum, label, series, textY, w, y, y2Tooltip, _f, _ref;
+        var color, datum, label, series, textY, w, y, y2Tooltip, _f;
         y = _arg.y, datum = _arg.datum, series = _arg.series;
         y2Tooltip = svg.select("#y2Tooltip");
         y2Tooltip.transition().attr('opacity', 1.0);
@@ -1699,7 +1699,7 @@ mod.factory('n3utils', [
           'transform': 'translate(7, ' + (parseFloat(y) + 3) + ')',
           'w': w
         });
-        color = (_ref = typeof series.color === "function" ? series.color(datum, series.values.indexOf(datum)) : void 0) != null ? _ref : series.color;
+        color = angular.isFunction(series.color) ? series.color(datum, series.values.indexOf(datum)) : series.color;
         return y2Tooltip.select('path').style('fill', color).attr({
           'd': this.getY2TooltipPath(w),
           'transform': 'translate(0, ' + y + ')'

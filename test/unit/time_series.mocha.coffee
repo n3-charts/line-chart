@@ -80,6 +80,6 @@ describe "time series", ->
 
   it "should properly configure x axis", ->
     ticks = element.childByClass('x axis').children('text')
-    expect(ticks.length).to.equal 5
-    expect(ticks[0].domElement.textContent).to.equal ":15"
-    expect(ticks[4].domElement.textContent).to.equal ":35"
+    expect(ticks.length).to.equal(5)
+    expect(ticks[0].domElement.textContent).to.equal(":15")
+    expect(ticks[4].domElement.textContent).to.equal(":35")

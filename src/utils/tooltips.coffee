@@ -107,7 +107,8 @@
         label.text(textX)
 
         # Use a coloring function if defined, else use a color string value
-        color = series.color?(datum, series.values.indexOf(datum)) ? series.color
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
 
         xTooltip.select('path')
           .style('fill', color)
@@ -148,7 +149,8 @@
         )
 
         # Use a coloring function if defined, else use a color string value
-        color = series.color?(datum, series.values.indexOf(datum)) ? series.color
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
 
         yTooltip.select('path')
           .style('fill', color)
@@ -171,7 +173,8 @@
         )
 
         # Use a coloring function if defined, else use a color string value
-        color = series.color?(datum, series.values.indexOf(datum)) ? series.color
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
 
         y2Tooltip.select('path')
           .style('fill', color)
