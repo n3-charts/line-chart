@@ -64,4 +64,4 @@ git commit -am "Released version $VERSION"
 
 git tag -a $VERSION -m "$VERSION_NAME ($TAG_NAME)"
 
-git push --dry-run origin master && git push --dry-run origin $VERSION
+git push origin master && git push --tags
