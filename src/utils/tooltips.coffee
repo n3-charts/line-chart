@@ -10,7 +10,7 @@
           }
 
       styleTooltip: (d3TextElement) ->
-        return d3TextElement.attr({
+        return d3TextElement.style({
           'font-family': 'monospace'
           'font-size': 10
           'fill': 'white'
@@ -106,8 +106,12 @@
         label = xTooltip.select('text')
         label.text(textX)
 
+        # Use a coloring function if defined, else use a color string value
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
+
         xTooltip.select('path')
-          .attr('fill', series.color)
+          .style('fill', color)
           .attr('d', this.getXTooltipPath(label[0][0]))
 
       getXTooltipPath: (textElement) ->
@@ -144,8 +148,12 @@
           'width': w
         )
 
+        # Use a coloring function if defined, else use a color string value
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
+
         yTooltip.select('path')
-          .attr('fill', series.color)
+          .style('fill', color)
           .attr('d', this.getYTooltipPath(w))
 
       updateY2Tooltip: (svg, {y, datum, series}, yAxisOptions) ->
@@ -164,9 +172,13 @@
           'w': w
         )
 
+        # Use a coloring function if defined, else use a color string value
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
+
         y2Tooltip.select('path')
+          .style('fill', color)
           .attr(
-            'fill': series.color
             'd': this.getY2TooltipPath(w)
             'transform': 'translate(0, ' + y + ')'
           )

@@ -76,9 +76,9 @@ describe 'column series', ->
 
   it 'should properly configure y axis', ->
     ticks = element.childByClass('y axis').children('text')
-    expect(ticks.length).to.equal 10
-    expect(ticks[0].domElement.textContent).to.equal '0'
-    expect(ticks[9].domElement.textContent).to.equal '45'
+    expect(ticks.length).to.equal(10)
+    expect(ticks[0].domElement.textContent).to.equal('0')
+    expect(ticks[9].domElement.textContent).to.equal('45')
 
   it 'should configure x axis with extra space', ->
     ticks = element.childByClass('x axis').children('text').map (t) -> t.domElement.textContent
@@ -86,10 +86,13 @@ describe 'column series', ->
 
   it 'should create a group', ->
     content = element.childByClass('content')
-    expect(content.children().length).to.equal 1
+    expect(content.children().length).to.equal(1)
+    
     columnGroup = content.children()[0]
-    expect(columnGroup.getAttribute('class')).to.equal 'columnGroup series_0'
-    expect(columnGroup.getAttribute('style').trim()).to.equal 'stroke: rgb(70, 130, 180); fill: rgb(70, 130, 180); fill-opacity: 0.8;'
+    expect(columnGroup.getAttribute('class')).to.equal('columnGroup series_0')
+    
+    firstColumnStyle = columnGroup.children()[0].getAttribute('style').trim()
+    expect(firstColumnStyle).to.match(/stroke: rgb\(70, 130, 180\); fill: rgb\(70, 130, 180\);(.)* fill-opacity: 0.7;/)
 
   describe 'stack', ->
     it 'should work with an empty stack', ->
@@ -114,9 +117,9 @@ describe 'column series', ->
     content = element.childByClass('content')
 
     columnGroup = content.children()[0]
-    expect(columnGroup.domElement.nodeName).to.equal 'g'
+    expect(columnGroup.domElement.nodeName).to.equal('g')
     columns = columnGroup.children()
-    expect(columns.length).to.equal 6
+    expect(columns.length).to.equal(6)
     fn = (att) ->
       (a, b) ->
         a + ' ' + b.getAttribute(att)
@@ -130,8 +133,8 @@ describe 'column series', ->
     i = 0
 
     while i < columns.length
-      expect(columns[i].domElement.nodeName).to.equal 'rect'
-      expect(columns[i].getStyle('fill-opacity')).to.equal '0.7'
+      expect(columns[i].domElement.nodeName).to.equal('rect')
+      expect(columns[i].getStyle('fill-opacity')).to.equal('0.7')
       i++
 
   it 'should draw zero value columns with full height and opacity to zero', ->
@@ -153,7 +156,7 @@ describe 'column series', ->
     content = element.childByClass('content')
     columnGroup = content.children()[0]
     columns = columnGroup.children()
-    expect(columns.length).to.equal 6
+    expect(columns.length).to.equal(6)
     expectedOpacities = [
       '0'
       '0.7'
@@ -175,9 +178,46 @@ describe 'column series', ->
     i = 0
 
     while i < columns.length
-      expect(columns[i].domElement.nodeName).to.equal 'rect'
-      expect(columns[i].getStyle('fill-opacity')).to.equal expectedOpacities[i]
+      expect(columns[i].domElement.nodeName).to.equal('rect')
+      expect(columns[i].getStyle('fill-opacity')).to.equal(expectedOpacities[i])
       i++
     return
 
+  it 'should color the columns with a string value', ->
+    
+    outerScope.$apply ->
+      outerScope.data = [
+        {x: 0, value: 5}
+        {x: 1, value: 10}
+      ]
+      outerScope.options = series: [
+        y: 'value'
+        color: 'red'
+        type: 'column'
+      ]
+
+    content = element.childByClass('content')
+    columnGroup = content.children()[0]
+    
+    expect(columnGroup.children()[0].getStyle('fill')).to.match(/(rgb\(255, 0, 0\))|(red)/)
+    expect(columnGroup.children()[1].getStyle('fill')).to.match(/(rgb\(255, 0, 0\))|(red)/)
+
+  it 'should color the columns with a conditional function', ->
+    
+    outerScope.$apply ->
+      outerScope.data = [
+        {x: 0, value: 5}
+        {x: 1, value: 10}
+      ]
+      outerScope.options = series: [
+        y: 'value'
+        color: (d, i) -> if d?.y > 5 then 'green' else 'red'
+        type: 'column'
+      ]
+
+    content = element.childByClass('content')
+    columnGroup = content.children()[0]
+    
+    expect(columnGroup.children()[0].getStyle('fill')).to.match(/(rgb\(255, 0, 0\))|(red)/)
+    expect(columnGroup.children()[1].getStyle('fill')).to.match(/(rgb\(0, 128, 0\))|(green)/)
   return

@@ -49,12 +49,12 @@ describe 'ordinates', ->
 
     it 'should configure y axis', ->
       ticks = element.childByClass('y axis').children('text')
-      expect(ticks.length).to.equal 10
-      expect(ticks[0].domElement.textContent).to.equal '#0'
-      expect(ticks[9].domElement.textContent).to.equal '#4.5'
+      expect(ticks.length).to.equal(10)
+      expect(ticks[0].domElement.textContent).to.equal('#0')
+      expect(ticks[9].domElement.textContent).to.equal('#4.5')
 
     it 'should configure y2 axis', ->
       ticks = element.childByClass('y2 axis').children('text')
-      expect(ticks.length).to.equal 11
-      expect(ticks[0].domElement.textContent).to.equal '$0'
-      expect(ticks[10].domElement.textContent).to.equal '$5'
+      expect(ticks.length).to.equal(11)
+      expect(ticks[0].domElement.textContent).to.equal('$0')
+      expect(ticks[10].domElement.textContent).to.equal('$5')

@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.7 - 22 May 2015
+line-chart - v1.1.7 - 24 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -277,9 +277,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .data(data)
           .enter().append("g")
             .attr('class', (s) -> 'columnGroup series_' + s.index)
-            .style('stroke', (s) -> s.color)
-            .style('fill', (s) -> s.color)
-            .style('fill-opacity', 0.8)
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
         colGroup.each (series) ->
@@ -287,6 +284,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .data(series.values)
             .enter().append("rect")
               .style({
+                'stroke': series.color
+                'fill': series.color
                 'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
                 'stroke-width': '1px'
                 'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
@@ -430,15 +429,26 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         legend = svg.append('g').attr('class', 'legend')
 
         d = 16
+
         svg.select('defs').append('svg:clipPath')
           .attr('id', 'legend-clip')
           .append('circle').attr('r', d/2)
 
-        item = legend.selectAll('.legendItem')
+        groups = legend.selectAll('.legendItem')
           .data(series)
 
-        items = item.enter().append('g')
-            .attr(
+        groups.enter().append('g')
+          .on('click', (s, i) ->
+            visibility = !(s.visible isnt false)
+            dispatch.toggle(s, i, visibility)
+            handlers.onSeriesVisibilityChange?({
+              series: s,
+              index: i,
+              newVisibility: visibility
+            })
+          )
+        
+        groups.attr(
               'class': (s, i) -> "legendItem series_#{i} #{s.axis}"
               'opacity': (s, i) ->
                 if s.visible is false
@@ -447,63 +457,63 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
                 return '1'
             )
+          .each (s) ->
+            item = d3.select(this)
+            item.append('circle')
+              .attr(
+                'fill': s.color
+                'stroke': s.color
+                'stroke-width': '2px'
+                'r': d/2
+              )
 
-        item.on('click', (s, i) ->
-          visibility = !(s.visible isnt false)
-          dispatch.toggle(s, i, visibility)
-          handlers.onSeriesVisibilityChange?({
-            series: s,
-            index: i,
-            newVisibility: visibility
-          })
-        )
+            item.append('path')
+              .attr(
+                'clip-path': 'url(#legend-clip)'
+                'fill-opacity': if s.type in ['area', 'column'] then '1' else '0'
+                'fill': 'white'
+                'stroke': 'white'
+                'stroke-width': '2px'
+                'd': that.getLegendItemPath(s, d, d)
+              )
 
-        item.append('circle')
-          .attr(
-            'fill': (s) -> s.color
-            'stroke': (s) -> s.color
-            'stroke-width': '2px'
-            'r': d/2
-          )
+            item.append('circle')
+              .attr(
+                'fill-opacity': 0
+                'stroke': s.color
+                'stroke-width': '2px'
+                'r': d/2
+              )
 
-        item.append('path')
-          .attr(
-            'clip-path': 'url(#legend-clip)'
-            'fill-opacity': (s) -> if s.type in ['area', 'column'] then '1' else '0'
-            'fill': 'white'
-            'stroke': 'white'
-            'stroke-width': '2px'
-            'd': (s) -> that.getLegendItemPath(s, d, d)
-          )
+            item.append('text')
+              .attr(
+                'class': (d, i) -> "legendText series_#{i}"
+                'font-family': 'Courier'
+                'font-size': 10
+                'transform': 'translate(13, 4)'
+                'text-rendering': 'geometric-precision'
+              )
+              .text(s.label || s.y)
 
-        item.append('circle')
-          .attr(
-            'fill-opacity': 0
-            'stroke': (s) -> s.color
-            'stroke-width': '2px'
-            'r': d/2
-          )
+        # Translate every legend g node to its position
+        translateLegends = () ->
+          [left, right] = that.computeLegendLayout(svg, series, dimensions)
+          groups
+            .attr(
+              'transform': (s, i) ->
+                if s.axis is 'y'
+                  return "translate(#{left.shift()},#{dimensions.height-40})"
+                else
+                  return "translate(#{right.shift()},#{dimensions.height-40})"
+            )
 
+        # We need to call this once, so the
+        # legend text does not blink on every update
+        translateLegends()
 
-        item.append('text')
-          .attr(
-            'class': (d, i) -> "legendText series_#{i}"
-            'font-family': 'Courier'
-            'font-size': 10
-            'transform': 'translate(13, 4)'
-            'text-rendering': 'geometric-precision'
-          )
-          .text (s) -> s.label || s.y
-
-
-        [left, right] = this.computeLegendLayout(svg, series, dimensions)
-        items.attr(
-          'transform': (s, i) ->
-            if s.axis is 'y'
-              return "translate(#{left.shift()},#{dimensions.height-40})"
-            else
-              return "translate(#{right.shift()},#{dimensions.height-40})"
-        )
+        # now once again,
+        # to make sure, text width gets really! computed properly
+        setTimeout(translateLegends, 0)
 
         return this
 
@@ -689,66 +699,71 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         svg.append('g').attr('class', 'content')
 
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
+        that = this
+
         glass = svg.append('g')
           .attr(
             'class': 'glass-container'
             'opacity': 0
           )
 
-        items = glass.selectAll('.scrubberItem')
-          .data(data)
-          .enter()
+        scrubberGroup = glass.selectAll('.scrubberItem')
+          .data(data).enter()
             .append('g')
               .attr('class', (s, i) -> "scrubberItem series_#{i}")
 
-        g = items.append('g')
-          .attr('class': (s, i) -> "rightTT")
+        scrubberGroup.each (s, i) ->
 
-        g.append('path')
-          .attr(
-            'class': (s, i) -> "scrubberPath series_#{i}"
-            'y': '-7px'
-            'fill': (s) -> s.color
-          )
+          item = d3.select(this)
 
-        this.styleTooltip(g.append('text')
-          .style('text-anchor', 'start')
-          .attr(
-            'class': (d, i) -> "scrubberText series_#{i}"
-            'height': '14px'
-            'transform': 'translate(7, 3)'
-            'text-rendering': 'geometric-precision'
-          ))
-          .text (s) -> s.label || s.y
+          g = item.append('g')
+            .attr('class': "rightTT")
 
-        g2 = items.append('g')
-          .attr('class': (s, i) -> "leftTT")
+          g.append('path')
+            .attr(
+              'class': "scrubberPath series_#{i}"
+              'y': '-7px'
+              'fill': s.color
+            )
 
-        g2.append('path')
-          .attr(
-            'class': (s, i) -> "scrubberPath series_#{i}"
-            'y': '-7px'
-            'fill': (s) -> s.color
-          )
+          that.styleTooltip(g.append('text')
+            .style('text-anchor', 'start')
+            .attr(
+              'class': (d, i) -> "scrubberText series_#{i}"
+              'height': '14px'
+              'transform': 'translate(7, 3)'
+              'text-rendering': 'geometric-precision'
+            ))
+            .text(s.label || s.y)
 
-        this.styleTooltip(g2.append('text')
-          .style('text-anchor', 'end')
-          .attr(
-            'class': (d, i) -> "scrubberText series_#{i}"
-            'height': '14px'
-            'transform': 'translate(-13, 3)'
-            'text-rendering': 'geometric-precision'
-          ))
-          .text (s) -> s.label || s.y
+          g2 = item.append('g')
+            .attr('class': "leftTT")
 
-        items.append('circle')
-          .attr(
-            'class': (s, i) -> "scrubberDot series_#{i}"
-            'fill': 'white'
-            'stroke': (s) -> s.color
-            'stroke-width': '2px'
-            'r': 4
-          )
+          g2.append('path')
+            .attr(
+              'class': "scrubberPath series_#{i}"
+              'y': '-7px'
+              'fill': s.color
+            )
+
+          that.styleTooltip(g2.append('text')
+            .style('text-anchor', 'end')
+            .attr(
+              'class': "scrubberText series_#{i}"
+              'height': '14px'
+              'transform': 'translate(-13, 3)'
+              'text-rendering': 'geometric-precision'
+            ))
+            .text(s.label || s.y)
+
+          item.append('circle')
+            .attr(
+              'class': "scrubberDot series_#{i}"
+              'fill': 'white'
+              'stroke': s.color
+              'stroke-width': '2px'
+              'r': 4
+            )
 
         glass.append('rect')
           .attr(
@@ -1391,6 +1406,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           positions[index] = {index, x: xPos, y: axes[v.axis + 'Scale'](v.y + v.y0), side, sizes}
 
+          # Use a coloring function if defined, else use a color string value
+          color = if angular.isFunction(series.color) \
+            then series.color(v, series.values.indexOf(v)) else series.color
+          
+          # Color the elements of the scrubber
+          item.selectAll('circle').attr('stroke', color)
+          item.selectAll('path').attr('fill', color)
+
         positions = this.preventOverlapping(positions)
 
         tickLength = Math.max(15, 100/columnWidth)
@@ -1532,7 +1555,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           }
 
       styleTooltip: (d3TextElement) ->
-        return d3TextElement.attr({
+        return d3TextElement.style({
           'font-family': 'monospace'
           'font-size': 10
           'fill': 'white'
@@ -1628,8 +1651,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         label = xTooltip.select('text')
         label.text(textX)
 
+        # Use a coloring function if defined, else use a color string value
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
+
         xTooltip.select('path')
-          .attr('fill', series.color)
+          .style('fill', color)
           .attr('d', this.getXTooltipPath(label[0][0]))
 
       getXTooltipPath: (textElement) ->
@@ -1666,8 +1693,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           'width': w
         )
 
+        # Use a coloring function if defined, else use a color string value
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
+
         yTooltip.select('path')
-          .attr('fill', series.color)
+          .style('fill', color)
           .attr('d', this.getYTooltipPath(w))
 
       updateY2Tooltip: (svg, {y, datum, series}, yAxisOptions) ->
@@ -1686,9 +1717,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           'w': w
         )
 
+        # Use a coloring function if defined, else use a color string value
+        color = if angular.isFunction(series.color) \
+          then series.color(datum, series.values.indexOf(datum)) else series.color
+
         y2Tooltip.select('path')
+          .style('fill', color)
           .attr(
-            'fill': series.color
             'd': this.getY2TooltipPath(w)
             'transform': 'translate(0, ' + y + ')'
           )

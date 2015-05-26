@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.7 - 22 May 2015
+line-chart - v1.1.7 - 24 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -283,15 +283,13 @@ mod.factory('n3utils', [
         });
         colGroup = svg.select('.content').selectAll('.columnGroup').data(data).enter().append("g").attr('class', function(s) {
           return 'columnGroup series_' + s.index;
-        }).style('stroke', function(s) {
-          return s.color;
-        }).style('fill', function(s) {
-          return s.color;
-        }).style('fill-opacity', 0.8).attr('transform', function(s) {
+        }).attr('transform', function(s) {
           return "translate(" + x1(s) + ",0)";
         });
         colGroup.each(function(series) {
           return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
+            'stroke': series.color,
+            'fill': series.color,
             'stroke-opacity': function(d) {
               if (d.y === 0) {
                 return '0';
@@ -455,13 +453,23 @@ mod.factory('n3utils', [
         return widths;
       },
       drawLegend: function(svg, series, dimensions, handlers, dispatch) {
-        var d, item, items, left, legend, right, that, _ref;
+        var d, groups, legend, that, translateLegends;
         that = this;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
-        item = legend.selectAll('.legendItem').data(series);
-        items = item.enter().append('g').attr({
+        groups = legend.selectAll('.legendItem').data(series);
+        groups.enter().append('g').on('click', function(s, i) {
+          var visibility;
+          visibility = !(s.visible !== false);
+          dispatch.toggle(s, i, visibility);
+          return typeof handlers.onSeriesVisibilityChange === "function" ? handlers.onSeriesVisibilityChange({
+            series: s,
+            index: i,
+            newVisibility: visibility
+          }) : void 0;
+        });
+        groups.attr({
           'class': function(s, i) {
             return "legendItem series_" + i + " " + s.axis;
           },
@@ -472,73 +480,54 @@ mod.factory('n3utils', [
             }
             return '1';
           }
+        }).each(function(s) {
+          var item, _ref;
+          item = d3.select(this);
+          item.append('circle').attr({
+            'fill': s.color,
+            'stroke': s.color,
+            'stroke-width': '2px',
+            'r': d / 2
+          });
+          item.append('path').attr({
+            'clip-path': 'url(#legend-clip)',
+            'fill-opacity': (_ref = s.type) === 'area' || _ref === 'column' ? '1' : '0',
+            'fill': 'white',
+            'stroke': 'white',
+            'stroke-width': '2px',
+            'd': that.getLegendItemPath(s, d, d)
+          });
+          item.append('circle').attr({
+            'fill-opacity': 0,
+            'stroke': s.color,
+            'stroke-width': '2px',
+            'r': d / 2
+          });
+          return item.append('text').attr({
+            'class': function(d, i) {
+              return "legendText series_" + i;
+            },
+            'font-family': 'Courier',
+            'font-size': 10,
+            'transform': 'translate(13, 4)',
+            'text-rendering': 'geometric-precision'
+          }).text(s.label || s.y);
         });
-        item.on('click', function(s, i) {
-          var visibility;
-          visibility = !(s.visible !== false);
-          dispatch.toggle(s, i, visibility);
-          return typeof handlers.onSeriesVisibilityChange === "function" ? handlers.onSeriesVisibilityChange({
-            series: s,
-            index: i,
-            newVisibility: visibility
-          }) : void 0;
-        });
-        item.append('circle').attr({
-          'fill': function(s) {
-            return s.color;
-          },
-          'stroke': function(s) {
-            return s.color;
-          },
-          'stroke-width': '2px',
-          'r': d / 2
-        });
-        item.append('path').attr({
-          'clip-path': 'url(#legend-clip)',
-          'fill-opacity': function(s) {
-            var _ref;
-            if ((_ref = s.type) === 'area' || _ref === 'column') {
-              return '1';
-            } else {
-              return '0';
+        translateLegends = function() {
+          var left, right, _ref;
+          _ref = that.computeLegendLayout(svg, series, dimensions), left = _ref[0], right = _ref[1];
+          return groups.attr({
+            'transform': function(s, i) {
+              if (s.axis === 'y') {
+                return "translate(" + (left.shift()) + "," + (dimensions.height - 40) + ")";
+              } else {
+                return "translate(" + (right.shift()) + "," + (dimensions.height - 40) + ")";
+              }
             }
-          },
-          'fill': 'white',
-          'stroke': 'white',
-          'stroke-width': '2px',
-          'd': function(s) {
-            return that.getLegendItemPath(s, d, d);
-          }
-        });
-        item.append('circle').attr({
-          'fill-opacity': 0,
-          'stroke': function(s) {
-            return s.color;
-          },
-          'stroke-width': '2px',
-          'r': d / 2
-        });
-        item.append('text').attr({
-          'class': function(d, i) {
-            return "legendText series_" + i;
-          },
-          'font-family': 'Courier',
-          'font-size': 10,
-          'transform': 'translate(13, 4)',
-          'text-rendering': 'geometric-precision'
-        }).text(function(s) {
-          return s.label || s.y;
-        });
-        _ref = this.computeLegendLayout(svg, series, dimensions), left = _ref[0], right = _ref[1];
-        items.attr({
-          'transform': function(s, i) {
-            if (s.axis === 'y') {
-              return "translate(" + (left.shift()) + "," + (dimensions.height - 40) + ")";
-            } else {
-              return "translate(" + (right.shift()) + "," + (dimensions.height - 40) + ")";
-            }
-          }
-        });
+          });
+        };
+        translateLegends();
+        setTimeout(translateLegends, 0);
         return this;
       },
       getLegendItemPath: function(series, w, h) {
@@ -729,72 +718,55 @@ mod.factory('n3utils', [
         return svg.append('g').attr('class', 'content');
       },
       createGlass: function(svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) {
-        var g, g2, glass, items;
+        var glass, scrubberGroup, that;
+        that = this;
         glass = svg.append('g').attr({
           'class': 'glass-container',
           'opacity': 0
         });
-        items = glass.selectAll('.scrubberItem').data(data).enter().append('g').attr('class', function(s, i) {
+        scrubberGroup = glass.selectAll('.scrubberItem').data(data).enter().append('g').attr('class', function(s, i) {
           return "scrubberItem series_" + i;
         });
-        g = items.append('g').attr({
-          'class': function(s, i) {
-            return "rightTT";
-          }
-        });
-        g.append('path').attr({
-          'class': function(s, i) {
-            return "scrubberPath series_" + i;
-          },
-          'y': '-7px',
-          'fill': function(s) {
-            return s.color;
-          }
-        });
-        this.styleTooltip(g.append('text').style('text-anchor', 'start').attr({
-          'class': function(d, i) {
-            return "scrubberText series_" + i;
-          },
-          'height': '14px',
-          'transform': 'translate(7, 3)',
-          'text-rendering': 'geometric-precision'
-        })).text(function(s) {
-          return s.label || s.y;
-        });
-        g2 = items.append('g').attr({
-          'class': function(s, i) {
-            return "leftTT";
-          }
-        });
-        g2.append('path').attr({
-          'class': function(s, i) {
-            return "scrubberPath series_" + i;
-          },
-          'y': '-7px',
-          'fill': function(s) {
-            return s.color;
-          }
-        });
-        this.styleTooltip(g2.append('text').style('text-anchor', 'end').attr({
-          'class': function(d, i) {
-            return "scrubberText series_" + i;
-          },
-          'height': '14px',
-          'transform': 'translate(-13, 3)',
-          'text-rendering': 'geometric-precision'
-        })).text(function(s) {
-          return s.label || s.y;
-        });
-        items.append('circle').attr({
-          'class': function(s, i) {
-            return "scrubberDot series_" + i;
-          },
-          'fill': 'white',
-          'stroke': function(s) {
-            return s.color;
-          },
-          'stroke-width': '2px',
-          'r': 4
+        scrubberGroup.each(function(s, i) {
+          var g, g2, item;
+          item = d3.select(this);
+          g = item.append('g').attr({
+            'class': "rightTT"
+          });
+          g.append('path').attr({
+            'class': "scrubberPath series_" + i,
+            'y': '-7px',
+            'fill': s.color
+          });
+          that.styleTooltip(g.append('text').style('text-anchor', 'start').attr({
+            'class': function(d, i) {
+              return "scrubberText series_" + i;
+            },
+            'height': '14px',
+            'transform': 'translate(7, 3)',
+            'text-rendering': 'geometric-precision'
+          })).text(s.label || s.y);
+          g2 = item.append('g').attr({
+            'class': "leftTT"
+          });
+          g2.append('path').attr({
+            'class': "scrubberPath series_" + i,
+            'y': '-7px',
+            'fill': s.color
+          });
+          that.styleTooltip(g2.append('text').style('text-anchor', 'end').attr({
+            'class': "scrubberText series_" + i,
+            'height': '14px',
+            'transform': 'translate(-13, 3)',
+            'text-rendering': 'geometric-precision'
+          })).text(s.label || s.y);
+          return item.append('circle').attr({
+            'class': "scrubberDot series_" + i,
+            'fill': 'white',
+            'stroke': s.color,
+            'stroke-width': '2px',
+            'r': 4
+          });
         });
         return glass.append('rect').attr({
           "class": 'glass',
@@ -1436,7 +1408,7 @@ mod.factory('n3utils', [
         that = this;
         positions = [];
         data.forEach(function(series, index) {
-          var item, lText, left, rText, right, side, sizes, text, v, xInvert, xPos, yInvert;
+          var color, item, lText, left, rText, right, side, sizes, text, v, xInvert, xPos, yInvert;
           item = svg.select(".scrubberItem.series_" + index);
           if (options.series[index].visible === false) {
             item.attr('opacity', 0);
@@ -1479,13 +1451,16 @@ mod.factory('n3utils', [
             ease(right).attr('opacity', 1);
             ease(left).attr('opacity', 0);
           }
-          return positions[index] = {
+          positions[index] = {
             index: index,
             x: xPos,
             y: axes[v.axis + 'Scale'](v.y + v.y0),
             side: side,
             sizes: sizes
           };
+          color = angular.isFunction(series.color) ? series.color(v, series.values.indexOf(v)) : series.color;
+          item.selectAll('circle').attr('stroke', color);
+          return item.selectAll('path').attr('fill', color);
         });
         positions = this.preventOverlapping(positions);
         tickLength = Math.max(15, 100 / columnWidth);
@@ -1606,7 +1581,7 @@ mod.factory('n3utils', [
         }
       },
       styleTooltip: function(d3TextElement) {
-        return d3TextElement.attr({
+        return d3TextElement.style({
           'font-family': 'monospace',
           'font-size': 10,
           'fill': 'white',
@@ -1669,7 +1644,7 @@ mod.factory('n3utils', [
         return this.hideTooltips(svg);
       },
       updateXTooltip: function(svg, _arg, xAxisOptions) {
-        var datum, label, series, textX, x, xTooltip, _f;
+        var color, datum, label, series, textX, x, xTooltip, _f;
         x = _arg.x, datum = _arg.datum, series = _arg.series;
         xTooltip = svg.select("#xTooltip");
         xTooltip.transition().attr({
@@ -1680,7 +1655,8 @@ mod.factory('n3utils', [
         textX = _f ? _f(datum.x) : datum.x;
         label = xTooltip.select('text');
         label.text(textX);
-        return xTooltip.select('path').attr('fill', series.color).attr('d', this.getXTooltipPath(label[0][0]));
+        color = angular.isFunction(series.color) ? series.color(datum, series.values.indexOf(datum)) : series.color;
+        return xTooltip.select('path').style('fill', color).attr('d', this.getXTooltipPath(label[0][0]));
       },
       getXTooltipPath: function(textElement) {
         var h, p, w;
@@ -1690,7 +1666,7 @@ mod.factory('n3utils', [
         return 'm-' + w / 2 + ' ' + p + ' ' + 'l0 ' + h + ' ' + 'l' + w + ' 0 ' + 'l0 ' + '' + (-h) + 'l' + (-w / 2 + p) + ' 0 ' + 'l' + (-p) + ' -' + h / 4 + ' ' + 'l' + (-p) + ' ' + h / 4 + ' ' + 'l' + (-w / 2 + p) + ' 0z';
       },
       updateYTooltip: function(svg, _arg, yAxisOptions) {
-        var datum, label, series, textY, w, y, yTooltip, _f;
+        var color, datum, label, series, textY, w, y, yTooltip, _f;
         y = _arg.y, datum = _arg.datum, series = _arg.series;
         yTooltip = svg.select("#yTooltip");
         yTooltip.transition().attr({
@@ -1706,10 +1682,11 @@ mod.factory('n3utils', [
           'transform': 'translate(' + (-w - 2) + ',3)',
           'width': w
         });
-        return yTooltip.select('path').attr('fill', series.color).attr('d', this.getYTooltipPath(w));
+        color = angular.isFunction(series.color) ? series.color(datum, series.values.indexOf(datum)) : series.color;
+        return yTooltip.select('path').style('fill', color).attr('d', this.getYTooltipPath(w));
       },
       updateY2Tooltip: function(svg, _arg, yAxisOptions) {
-        var datum, label, series, textY, w, y, y2Tooltip, _f;
+        var color, datum, label, series, textY, w, y, y2Tooltip, _f;
         y = _arg.y, datum = _arg.datum, series = _arg.series;
         y2Tooltip = svg.select("#y2Tooltip");
         y2Tooltip.transition().attr('opacity', 1.0);
@@ -1722,8 +1699,8 @@ mod.factory('n3utils', [
           'transform': 'translate(7, ' + (parseFloat(y) + 3) + ')',
           'w': w
         });
-        return y2Tooltip.select('path').attr({
-          'fill': series.color,
+        color = angular.isFunction(series.color) ? series.color(datum, series.values.indexOf(datum)) : series.color;
+        return y2Tooltip.select('path').style('fill', color).attr({
           'd': this.getY2TooltipPath(w),
           'transform': 'translate(0, ' + y + ')'
         });
