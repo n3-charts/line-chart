@@ -1113,6 +1113,9 @@ mod.factory('n3utils', [
           };
         }
         options.type || (options.type = 'linear');
+        if (options.ticksRotate != null) {
+          options.ticksRotate = this.getSanitizedNumber(options.ticksRotate);
+        }
         if (options.labelFunction != null) {
           options.ticksFormatter = options.labelFunction;
         }
@@ -1189,13 +1192,13 @@ mod.factory('n3utils', [
           andAddThemIf: function(conditions) {
             if (!!conditions.all) {
               if (!!conditions.x) {
-                style(svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis));
+                svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis).call(style);
               }
               if (!!conditions.y) {
-                style(svg.append('g').attr('class', 'y axis').call(yAxis));
+                svg.append('g').attr('class', 'y axis').call(yAxis).call(style);
               }
               if (createY2Axis && !!conditions.y2) {
-                style(svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis));
+                svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis).call(style);
               }
             }
             return {
@@ -1231,22 +1234,31 @@ mod.factory('n3utils', [
         return axis;
       },
       setScalesDomain: function(scales, data, series, svg, options) {
-        var y2Domain, yDomain;
+        var axis, y2Domain, yDomain;
         this.setXScale(scales.xScale, data, series, options.axes);
-        svg.selectAll('.x.axis').call(scales.xAxis);
+        axis = svg.selectAll('.x.axis').call(scales.xAxis);
+        if (options.axes.x.ticksRotate != null) {
+          axis.selectAll('.tick>text').attr('dy', null).attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)').style('text-anchor', options.axes.x.ticksRotate >= 0 ? 'start' : 'end');
+        }
         if ((series.filter(function(s) {
           return s.axis === 'y' && s.visible !== false;
         })).length > 0) {
           yDomain = this.getVerticalDomain(options, data, series, 'y');
           scales.yScale.domain(yDomain).nice();
-          svg.selectAll('.y.axis').call(scales.yAxis);
+          axis = svg.selectAll('.y.axis').call(scales.yAxis);
+          if (options.axes.y.ticksRotate != null) {
+            axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)').style('text-anchor', 'end');
+          }
         }
         if ((series.filter(function(s) {
           return s.axis === 'y2' && s.visible !== false;
         })).length > 0) {
           y2Domain = this.getVerticalDomain(options, data, series, 'y2');
           scales.y2Scale.domain(y2Domain).nice();
-          return svg.selectAll('.y2.axis').call(scales.y2Axis);
+          axis = svg.selectAll('.y2.axis').call(scales.y2Axis);
+          if (options.axes.y2.ticksRotate != null) {
+            return axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)').style('text-anchor', 'start');
+          }
         }
       },
       getVerticalDomain: function(options, data, series, key) {
