@@ -205,6 +205,9 @@
             # Use d3.format as formatter
             options.tooltipFormatter = d3.format(options.tooltipFormat)
         
+        if options.ticksInterval?
+          options.ticksInterval = this.getSanitizedNumber(options.ticksInterval)
+
         this.sanitizeExtrema(options)
 
         return options

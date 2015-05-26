@@ -218,3 +218,27 @@ describe 'scales', ->
       y2ticks = element.childByClass('y2 axis').children('text')
       computedY2Ticks = y2ticks.map (t) -> t.domElement.textContent
       expect(computedY2Ticks).to.eql expectedTicks
+
+    it 'should compute the correct interval for time range function with ticksInterval', ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: new Date(2015, 0, 4), value: 1}
+          {x: new Date(2015, 0, 5), value: 1}
+          {x: new Date(2015, 0, 6), value: 1}
+          {x: new Date(2015, 0, 7), value: 1}
+          {x: new Date(2015, 0, 8), value: 1}
+          {x: new Date(2015, 0, 9), value: 1}
+          {x: new Date(2015, 0, 10), value: 1}
+        ]
+        outerScope.options =
+          axes:
+            x: {type: 'date', ticks: d3.time.day, ticksInterval: 3, ticksFormat: '%d.%m.%Y'}
+
+          series: [
+            {y: 'value'}
+          ]
+
+      expectedTicks = ['04.01.2015', '07.01.2015', '10.01.2015']
+      xticks = element.childByClass('x axis').children('text')
+      computedXTicks = xticks.map (t) -> t.domElement.textContent
+      expect(computedXTicks).to.eql(expectedTicks)
