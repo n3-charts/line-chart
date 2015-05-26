@@ -1,21 +1,5 @@
 angular.module('utils', [])
 
-.factory('$shorten', function($http, $q) {
-  return function(url) {
-    deferred = $q.defer()
-
-    $http.get('http://is.gd/create.php?format=json&url=' + url)
-      .success(function(data) {
-        deferred.resolve(data.shorturl);
-      })
-      .error(function() {
-        deferred.reject();
-      })
-
-    return deferred.promise;
-  };
-})
-
 .factory('appUtils', function() {
   return {
     positiveData: function(rowCount, seriesCount) {

@@ -205,6 +205,29 @@ h3.subheading {
   visibility: visible;
 }
 
+.codepen-form.right {
+  text-align: right;
+  margin-right: 30px;
+}
+
+button.codepen-button {
+  border: none;
+  background: transparent;
+  border: 1px solid;
+  color: lightgrey;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+  padding-left: 5px;
+  font-size: 13px;
+}
+
+button.codepen-button:hover {
+  background: lightgrey;
+  color: white;
+  border-radius: 50%;
+}
+
 .example .description {
   color: grey;
 }
@@ -244,60 +267,6 @@ h3.subheading {
   visibility: visible;
 }
 
-
-/* PLAYGROUND */
-.playground {
-  left: 50px;
-  right: 50px;
-  position: absolute;
-}
-
-.playground-form {
-  width: 320px;
-}
-
-.playground-chart {
-  top: 53px;
-  position: fixed;
-  left: 400px;
-  right: 70px;
-}
-
-.playground-chart > .chart {
-  height: 500px;
-  width: 800px;
-}
-
-.playground-credits {
-  position: fixed;
-  top: 550px;
-  left: 400px;
-  right: 70px;
-}
-
-.playground h3 {
-  margin-bottom: 0px;
-}
-
-.playground-form .subactions {
-  text-align: center;
-}
-
-.playground-form .subactions span {
-  margin: 0px 4px;
-}
-
-.playground-form .url {
-  text-align: center;
-}
-
-.playground-form .url input {
-  outline: none;
-  border: 1px solid #d3d3da;
-  font-weight: 100;
-  font-size: 14px;
-}
-
 form.chart-options div {
   font-size: 12px;
 }
@@ -330,79 +299,6 @@ span.only-hover {
   float: right;
 }
 
-div.warning {
-  font-style: italic;
-  text-align: center;
-  background-color: lightgoldenrodyellow;
-  color: rgb(173, 147, 61);
-  padding: 10px 0;
-}
-
-.floating {
-  position: fixed;
-  margin: 0 auto;
-  left: 33%;
-  width: 400px;
-  background-color: white;
-  box-shadow: 6px 6px 10px #DDD;
-  border: 1px solid #CECECE;
-  max-height: 500px;
-  z-index: 100;
-}
-
-.modal {
-  position: absolute;
-  margin: 0 auto;
-  left: 33%;
-  width: 400px;
-  background-color: white;
-  box-shadow: 6px 6px 10px #DDD;
-  border: 1px solid #CECECE;
-  max-height: 500px;
-  overflow-y: scroll;
-  z-index: 100;
-}
-
-.floating pre {
-  padding: 10px;
-}
-
-.floating .icon, .modal .icon:hover {
-  cursor:pointer;
-  color: lightgrey;
-}
-
-.floating .icon:hover, .modal .icon:hover {
-  color: grey;
-}
-
-.floating .close-handle, .modal .close-handle {
-  float: right;
-  font-size: 13px;
-  line-height: 8px;
-  margin-right: 3px;
-}
-
-.floating .drag-handle, .modal .drag-handle {
-  height: 14px;
-  cursor: pointer;
-  text-align: center;
-  font-size: 10px;
-  text-transform: lowercase;
-  background-color: rgb(236, 236, 236);
-}
-
-.floating > .scrollable {
-  overflow-y: scroll;
-  height: 400px;
-}
-
-
 pre.options-output, pre.data-output {
   font-size: 10px;
-}
-
-/* DIRECTIVES : OPTIONS */
-.chart-options legend {
-  /*height: 20px;*/
 }
