@@ -10,7 +10,9 @@
           }
 
       styleTooltip: (d3TextElement) ->
-        return d3TextElement.style({
+        # This needs to be defined as .attr() otherwise
+        # FF will not render and compute it properly
+        return d3TextElement.attr({
           'font-family': 'monospace'
           'font-size': 10
           'fill': 'white'
