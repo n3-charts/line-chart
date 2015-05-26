@@ -78,6 +78,7 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
  + `min` : optional, forces the axis minimum value (default is computed from data)
  + `max` : optional, forces the axis maximum value (default is computed from data)
  + `ticks` : optional, configures the axis' ticks (can be either a number or an array, more on this [here][3])
+ + `ticksInterval` : optional, configures the step size of tick values if `ticks` is set to a range or time range function (e.g. d3.time.minute), more on this [here][4]
 
 It can also contain, according to your series configuration, a `y` and a `y2` key with the following properties :
 
@@ -250,3 +251,4 @@ It has a good coverage rate (above 95%), let's keep it this way.
   [1]: https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
   [2]: https://github.com/n3-charts/line-chart/issues/44
   [3]: http://stackoverflow.com/a/11661725
+  [4]: https://github.com/mbostock/d3/wiki/Time-Scales#ticks
