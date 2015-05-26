@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.9 - 25 May 2015
+line-chart - v1.1.9 - 26 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -845,7 +845,18 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return bbox
 
       getTextBBox: (svgTextElement) ->
-        return if svgTextElement isnt null then svgTextElement.getBBox() else {}
+        if svgTextElement isnt null
+        
+          try
+            return svgTextElement.getBBox()
+        
+          catch error
+            # NS_ERROR_FAILURE in FF for calling .getBBox()
+            # on an element that is not rendered (e.g. display: none)
+            # https://bugzilla.mozilla.org/show_bug.cgi?id=612118
+            return {height: 0, width: 0, y: 0, x: 0}
+        
+        return {}
 
       getWidestTickWidth: (svg, axisKey) ->
         max = 0
@@ -1555,7 +1566,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           }
 
       styleTooltip: (d3TextElement) ->
-        return d3TextElement.style({
+        # This needs to be defined as .attr() otherwise
+        # FF will not render and compute it properly
+        return d3TextElement.attr({
           'font-family': 'monospace'
           'font-size': 10
           'fill': 'white'
