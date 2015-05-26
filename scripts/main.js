@@ -1,10 +1,9 @@
-angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', 'playground'])
+angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'directives', 'examples', 'tests'])
 
 .config(['$routeProvider', function config($routeProvider) {
   $routeProvider
   .when('/tests', {controller: 'TestsCtrl', templateUrl: 'views/tests.html'})
   .when('/examples', {controller: 'ExamplesCtrl', templateUrl: 'views/examples.html'})
-  .when('/playground', {controller: 'PlaygroundCtrl', templateUrl: 'views/playground.html', reloadOnSearch: false})
   .when('/', {controller: 'HomeCtrl', templateUrl: 'views/home.html'})
   .otherwise({redirectTo: '/'});
 }])
@@ -13,7 +12,6 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'examples', 'tests', '
   mixpanel.track("Home");
 
   $http.get('https://api.github.com/repos/n3-charts/line-chart/releases').success(function(r) {
-    console.log(r);
     $scope.releases = r.map(function(release) {
       return {
         tag: release.tag_name,

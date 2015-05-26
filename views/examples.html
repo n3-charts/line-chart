@@ -1,6 +1,12 @@
 <div class='pure-g example' ng-repeat='example in examples'>
   <div class="description pure-u-1-2"><span>{{example.label}}</span></div><div class="actions hideable pure-u-1-2">
-    <a ng-href="#/playground?dataType={{example.dataType}}&options={{example.jsonOptions}}"><span class="action-icon"><span class="label">Open in playground</span><i class="fa fa-gear"></i></span></a>
+    <codepen-button
+      class="right"
+      codepen-data="example.data"
+      codepen-options="example.options"
+      codepen-name="example.label"
+      title="Open example in CodePen"
+    ></codepen-button>
   </div>
   <div class="chart pure-u-2-3">
     <linechart data='example.data' options='example.options'></linechart>

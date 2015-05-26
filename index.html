@@ -7,9 +7,6 @@
   <link href="assets/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
 
   <link href="css/app.css" rel="stylesheet" type="text/css" />
-  <link href="css/series.css" rel="stylesheet" type="text/css" />
-  <link href="css/axis.css" rel="stylesheet" type="text/css" />
-  <link href="css/stack.css" rel="stylesheet" type="text/css" />
 
   <!-- start Mixpanel -->
   <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
@@ -42,7 +39,6 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
           <li><a href="#/">Home</a></li>
           <li><a href="#/examples">Examples</a></li>
           <li><a href="#/tests">Tests</a></li>
-          <li><a href="#/playground">Playground</a></li>
           <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
           <li><a href="https://travis-ci.org/n3-charts/line-chart" target="_blank">Travis CI <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
         </ul>
@@ -53,15 +49,14 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
   </div>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular-route.min.js"></script>
 <script src="//d3js.org/d3.v3.min.js"></script>
-<script src="//cdn.rawgit.com/n3-charts/line-chart/master/build/line-chart.min.js"></script>
+<script src="https://cdn.rawgit.com/n3-charts/line-chart/master/build/line-chart.min.js"></script>
 <script src="//cdn.rawgit.com/lorem--ipsum/apojop/master/apojop.min.js"></script>
 
 <script src="scripts/examples.js"></script>
 <script src="scripts/tests.js"></script>
-<script src="scripts/playground.js"></script>
 <script src="scripts/directives.js"></script>
 <script src="scripts/main.js"></script>
 
