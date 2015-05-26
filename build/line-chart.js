@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.9 - 25 May 2015
+line-chart - v1.1.9 - 26 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -854,11 +854,21 @@ mod.factory('n3utils', [
         return bbox;
       },
       getTextBBox: function(svgTextElement) {
+        var error;
         if (svgTextElement !== null) {
-          return svgTextElement.getBBox();
-        } else {
-          return {};
+          try {
+            return svgTextElement.getBBox();
+          } catch (_error) {
+            error = _error;
+            return {
+              height: 0,
+              width: 0,
+              y: 0,
+              x: 0
+            };
+          }
         }
+        return {};
       },
       getWidestTickWidth: function(svg, axisKey) {
         var bbox, max, ticks, _ref;
@@ -1581,7 +1591,7 @@ mod.factory('n3utils', [
         }
       },
       styleTooltip: function(d3TextElement) {
-        return d3TextElement.style({
+        return d3TextElement.attr({
           'font-family': 'monospace',
           'font-size': 10,
           'fill': 'white',

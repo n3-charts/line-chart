@@ -205,7 +205,18 @@
         return bbox
 
       getTextBBox: (svgTextElement) ->
-        return if svgTextElement isnt null then svgTextElement.getBBox() else {}
+        if svgTextElement isnt null
+        
+          try
+            return svgTextElement.getBBox()
+        
+          catch error
+            # NS_ERROR_FAILURE in FF for calling .getBBox()
+            # on an element that is not rendered (e.g. display: none)
+            # https://bugzilla.mozilla.org/show_bug.cgi?id=612118
+            return {height: 0, width: 0, y: 0, x: 0}
+        
+        return {}
 
       getWidestTickWidth: (svg, axisKey) ->
         max = 0
