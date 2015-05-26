@@ -51,8 +51,8 @@ describe 'size', ->
       )
 
       svgElem = element.childByClass('chart').children()[0].domElement
-      expect(svgElem.width.baseVal.value).to.eql 900
-      expect(svgElem.height.baseVal.value).to.eql 500
+      expect(svgElem.width.baseVal.value).to.equal(900)
+      expect(svgElem.height.baseVal.value).to.equal(500)
 
     it 'should consider forced dimensions', inject (pepito, n3utils) ->
       {element, outerScope} = pepito.directive("""
@@ -84,8 +84,8 @@ describe 'size', ->
       outerScope.$digest()
 
       svgElem = element.childByClass('chart').children()[0].domElement
-      expect(svgElem.width.baseVal.value).to.eql 174
-      expect(svgElem.height.baseVal.value).to.eql 496
+      expect(svgElem.width.baseVal.value).to.equal(174)
+      expect(svgElem.height.baseVal.value).to.equal(496)
 
     it 'should detect parent\'s top padding', inject (pepito, n3utils) ->
       {element, outerScope} = pepito.directive("""
@@ -117,6 +117,6 @@ describe 'size', ->
       outerScope.$digest()
       
       svgElem = element.childByClass('chart').children()[0].domElement
-      expect(svgElem.width.baseVal.value).to.eql 840
-      expect(svgElem.height.baseVal.value).to.eql 440
+      expect(svgElem.width.baseVal.value).to.equal(840)
+      expect(svgElem.height.baseVal.value).to.equal(440)
 

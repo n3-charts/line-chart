@@ -98,14 +98,14 @@ describe 'event handling', ->
       dotGroup = element.childByClass('dotGroup')
 
       dotGroup.children()[0].click()
-      expect(clicked[0].x).to.equal 0
-      expect(clicked[0].y).to.equal 4
-      expect(clicked[1]).to.equal 0
+      expect(clicked[0].x).to.equal(0)
+      expect(clicked[0].y).to.equal(4)
+      expect(clicked[1]).to.equal(0)
 
       dotGroup.children()[1].click()
-      expect(clicked[0].x).to.equal 1
-      expect(clicked[0].y).to.equal 8
-      expect(clicked[1]).to.equal 1
+      expect(clicked[0].x).to.equal(1)
+      expect(clicked[0].y).to.equal(8)
+      expect(clicked[1]).to.equal(1)
 
     it 'should dispatch a click event when clicked on a column', ->
 
@@ -124,14 +124,14 @@ describe 'event handling', ->
       columnGroup = element.childByClass('columnGroup')
 
       columnGroup.children()[0].click()
-      expect(clicked[0].x).to.equal 0
-      expect(clicked[0].y).to.equal 4
-      expect(clicked[1]).to.equal 0
+      expect(clicked[0].x).to.equal(0)
+      expect(clicked[0].y).to.equal(4)
+      expect(clicked[1]).to.equal(0)
 
       columnGroup.children()[1].click()
-      expect(clicked[0].x).to.equal 1
-      expect(clicked[0].y).to.equal 8
-      expect(clicked[1]).to.equal 1
+      expect(clicked[0].x).to.equal(1)
+      expect(clicked[0].y).to.equal(8)
+      expect(clicked[1]).to.equal(1)
 
     it 'should dispatch a hover event when hovering over a dot', ->
 
@@ -150,14 +150,14 @@ describe 'event handling', ->
       dotGroup = element.childByClass('dotGroup')
 
       fakeMouse.hoverIn(dotGroup.children()[0].domElement)
-      expect(hovered[0].x).to.equal 0
-      expect(hovered[0].y).to.equal 4
-      expect(hovered[1]).to.equal 0
+      expect(hovered[0].x).to.equal(0)
+      expect(hovered[0].y).to.equal(4)
+      expect(hovered[1]).to.equal(0)
 
       fakeMouse.hoverIn(dotGroup.children()[1].domElement)
-      expect(hovered[0].x).to.equal 1
-      expect(hovered[0].y).to.equal 8
-      expect(hovered[1]).to.equal 1
+      expect(hovered[0].x).to.equal(1)
+      expect(hovered[0].y).to.equal(8)
+      expect(hovered[1]).to.equal(1)
 
     it 'should dispatch a hover event when hovering over a column', ->
 
@@ -176,14 +176,14 @@ describe 'event handling', ->
       columnGroup = element.childByClass('columnGroup')
 
       fakeMouse.hoverIn(columnGroup.children()[0].domElement)
-      expect(hovered[0].x).to.equal 0
-      expect(hovered[0].y).to.equal 4
-      expect(hovered[1]).to.equal 0
+      expect(hovered[0].x).to.equal(0)
+      expect(hovered[0].y).to.equal(4)
+      expect(hovered[1]).to.equal(0)
 
       fakeMouse.hoverIn(columnGroup.children()[1].domElement)
-      expect(hovered[0].x).to.equal 1
-      expect(hovered[0].y).to.equal 8
-      expect(hovered[1]).to.equal 1
+      expect(hovered[0].x).to.equal(1)
+      expect(hovered[0].y).to.equal(8)
+      expect(hovered[1]).to.equal(1)
 
     it 'should dispatch a focus event when scrubber is displayed', ->
 
@@ -205,8 +205,8 @@ describe 'event handling', ->
       fakeMouse.mouseMove(glass)
       flushD3()
 
-      expect(focused[0][0].x).to.equal focused[1][0].x
-      expect(focused[0][1]).to.equal focused[0][1]
+      expect(focused[0][0].x).to.equal(focused[1][0].x)
+      expect(focused[0][1]).to.equal(focused[0][1])
 
     it 'should dispatch a toggle event when clicked on a legend', ->
 
@@ -226,13 +226,13 @@ describe 'event handling', ->
       secondLegendItem = element.childrenByClass('legendItem')[1]
 
       firstLegendItem.click()
-      expect(clicked[1]).to.equal 0
-      expect(clicked[2]).to.equal false
+      expect(clicked[1]).to.equal(0)
+      expect(clicked[2]).to.equal(false)
 
       firstLegendItem.click()
-      expect(clicked[1]).to.equal 0
-      expect(clicked[2]).to.equal true
+      expect(clicked[1]).to.equal(0)
+      expect(clicked[2]).to.equal(true)
 
       secondLegendItem.click()
-      expect(clicked[1]).to.equal 1
-      expect(clicked[2]).to.equal true
+      expect(clicked[1]).to.equal(1)
+      expect(clicked[2]).to.equal(true)

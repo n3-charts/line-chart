@@ -46,15 +46,15 @@ describe "abscissas", ->
     it 'should configure x axis', ->
       ticks = element.childByClass('x axis').children('text')
 
-      expect(ticks.length).to.equal 11
-      expect(ticks[0].domElement.textContent).to.equal '#0'
-      expect(ticks[10].domElement.textContent).to.equal '#0.5'
+      expect(ticks.length).to.equal(11)
+      expect(ticks[0].domElement.textContent).to.equal('#0')
+      expect(ticks[10].domElement.textContent).to.equal('#0.5')
 
     it 'should draw a line', ->
       linePath = element.childByClass('line')
 
-      expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30'
+      expect(linePath.hasClass('line')).to.equal(true)
+      expect(linePath.domElement.getAttribute('d')).to.equal('M0,410L160,370L320,300L480,290L640,220L800,30')
 
 
   describe 'default key', ->
@@ -76,15 +76,15 @@ describe "abscissas", ->
     it 'should configure x axis', ->
       ticks = element.childByClass('x axis').children('text')
 
-      expect(ticks.length).to.equal 11
-      expect(ticks[0].domElement.textContent).to.equal '0.0'
-      expect(ticks[10].domElement.textContent).to.equal '5.0'
+      expect(ticks.length).to.equal(11)
+      expect(ticks[0].domElement.textContent).to.equal('0.0')
+      expect(ticks[10].domElement.textContent).to.equal('5.0')
 
     it 'should draw a line', ->
       linePath = element.childByClass('line')
 
-      expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30'
+      expect(linePath.hasClass('line')).to.equal(true)
+      expect(linePath.domElement.getAttribute('d')).to.equal('M0,410L160,370L320,300L480,290L640,220L800,30')
 
 
   describe 'min, max', ->
@@ -113,15 +113,15 @@ describe "abscissas", ->
     it 'should properly configure x axis', ->
       ticks = element.childByClass('x axis').children('text')
 
-      expect(ticks.length).to.equal 9
-      expect(ticks[0].domElement.textContent).to.equal '10'
-      expect(ticks[8].domElement.textContent).to.equal '50'
+      expect(ticks.length).to.equal(9)
+      expect(ticks[0].domElement.textContent).to.equal('10')
+      expect(ticks[8].domElement.textContent).to.equal('50')
 
     it 'should draw a line', ->
       linePath = element.childByClass('line')
 
-      expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M-200,410L-180,370L-160,300L-140,290L-120,220L-100,30'
+      expect(linePath.hasClass('line')).to.equal(true)
+      expect(linePath.domElement.getAttribute('d')).to.equal('M-200,410L-180,370L-160,300L-140,290L-120,220L-100,30')
 
   describe 'custom key', ->
     beforeEach ->
@@ -147,12 +147,12 @@ describe "abscissas", ->
     it 'should properly configure x axis from custom key', ->
       ticks = element.childByClass('x axis').children('text')
 
-      expect(ticks.length).to.equal 11
-      expect(ticks[0].domElement.textContent).to.equal '0.0'
-      expect(ticks[10].domElement.textContent).to.equal '5.0'
+      expect(ticks.length).to.equal(11)
+      expect(ticks[0].domElement.textContent).to.equal('0.0')
+      expect(ticks[10].domElement.textContent).to.equal('5.0')
 
     it 'should draw a line', ->
       linePath = element.childByClass('line')
 
-      expect(linePath.hasClass('line')).to.equal true
-      expect(linePath.domElement.getAttribute('d')).to.equal 'M0,410L160,370L320,300L480,290L640,220L800,30'
+      expect(linePath.hasClass('line')).to.equal(true)
+      expect(linePath.domElement.getAttribute('d')).to.equal('M0,410L160,370L320,300L480,290L640,220L800,30')

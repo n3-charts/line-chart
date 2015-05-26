@@ -9,7 +9,7 @@ describe 'misc', ->
 
   describe 'getBestColumnWidth', ->
     it 'should handle no data', ->
-      expect(n3utils.getBestColumnWidth({}, [])).to.equal 10
+      expect(n3utils.getBestColumnWidth({}, [])).to.equal(10)
 
   it 'should compute data per series', ->
     data = [
@@ -124,10 +124,10 @@ describe 'misc', ->
         y: {}
 
     series = [y: 'value']
-    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 15
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal(15)
 
     series = [{y: 'value'}, {y: 'foo'}]
-    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 1.1548578
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal(1.1548578)
 
   it 'should compute the widest y value - with a ticksFormatter', ->
     data = [
@@ -145,7 +145,7 @@ describe 'misc', ->
         y2: {ticksFormatter: (v) -> 'huehuehuehuehue'}
 
     series = [y: 'value']
-    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 15
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal(15)
 
     series = [{y: 'value'}, {y: 'foo', axis: 'y2'}]
-    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal 'huehuehuehuehue'
+    expect(n3utils.getWidestOrdinate(data, series, options)).to.equal('huehuehuehuehue')

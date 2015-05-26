@@ -105,8 +105,8 @@ describe 'tooltip', ->
     flushD3()
     
     # Check tooltips without formatter
-    expect(element.childByClass("xTooltip").children()[1].innerHTML()).to.equal '0'
-    expect(element.childByClass("yTooltip").children()[1].innerHTML()).to.equal '4'
+    expect(element.childByClass("xTooltip").children()[1].innerHTML()).to.equal('0')
+    expect(element.childByClass("yTooltip").children()[1].innerHTML()).to.equal('4')
 
     outerScope.$apply ->
       # Now apply the formatter function
@@ -119,8 +119,58 @@ describe 'tooltip', ->
     flushD3()
     
     # Check tooltips with formatter
-    expect(element.childByClass("xTooltip").children()[1].innerHTML()).to.equal '0.0000'
-    expect(element.childByClass("yTooltip").children()[1].innerHTML()).to.equal '4.0000'
+    expect(element.childByClass("xTooltip").children()[1].innerHTML()).to.equal('0.0000')
+    expect(element.childByClass("yTooltip").children()[1].innerHTML()).to.equal('4.0000')
+
+  it 'should color the tooltips with a string value', ->
+    leftAxisDotGroup = element.childByClass('dotGroup series_0')
+    firstDot = leftAxisDotGroup.children()[0]
+
+    # Hover over the first col
+    fakeMouse.hoverIn(firstDot)
+    fakeMouse.mouseOver(firstDot)
+    flushD3()
+    
+    # Check tooltip color without formatter
+    expect(element.childByClass("xTooltip").children()[0].getStyle('fill')).to.match(/(rgb\(70, 130, 180\))|(#4682b4)/)
+    expect(element.childByClass("yTooltip").children()[0].getStyle('fill')).to.match(/(rgb\(70, 130, 180\))|(#4682b4)/)
+
+  it 'should color the tooltips with a conditional function', ->
+
+    outerScope.$apply ->
+      outerScope.data = [
+        {x: 0, value: 5}
+        {x: 1, value: 10}
+      ]
+      outerScope.options = 
+        tooltip: {mode: 'axes'}
+        series: [
+          y: 'value'
+          color: (d, i) -> if d?.y > 5 then 'green' else 'red'
+          type: 'column'
+        ]
+
+    colGroup = element.childByClass('columnGroup series_0')
+    firstCol = colGroup.children()[0]
+    secondCol = colGroup.children()[1]
+    
+    # Hover over the first col
+    fakeMouse.hoverIn(firstCol)
+    fakeMouse.mouseOver(firstCol)
+    flushD3()
+    
+    # Check tooltip color, should be red
+    expect(element.childByClass("xTooltip").children()[0].getStyle('fill')).to.match(/(rgb\(255, 0, 0\))|(red)/)
+    expect(element.childByClass("yTooltip").children()[0].getStyle('fill')).to.match(/(rgb\(255, 0, 0\))|(red)/)
+    
+    # Hover over the second col
+    fakeMouse.hoverIn(secondCol)
+    fakeMouse.mouseOver(secondCol)
+    flushD3()
+
+    # Check tooltip color, should be green now
+    expect(element.childByClass("xTooltip").children()[0].getStyle('fill')).to.match(/(rgb\(0, 128, 0\))|(green)/)
+    expect(element.childByClass("yTooltip").children()[0].getStyle('fill')).to.match(/(rgb\(0, 128, 0\))|(green)/)
 
   describe 'scrubber mode', ->
     beforeEach ->
