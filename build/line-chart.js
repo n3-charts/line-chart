@@ -1133,6 +1133,9 @@ mod.factory('n3utils', [
             options.tooltipFormatter = d3.format(options.tooltipFormat);
           }
         }
+        if (options.ticksInterval != null) {
+          options.ticksInterval = this.getSanitizedNumber(options.ticksInterval);
+        }
         this.sanitizeExtrema(options);
         return options;
       },
@@ -1218,11 +1221,12 @@ mod.factory('n3utils', [
         if (o == null) {
           return axis;
         }
-        if (angular.isNumber(o.ticks)) {
-          axis.ticks(o.ticks);
-        }
         if (angular.isArray(o.ticks)) {
           axis.tickValues(o.ticks);
+        } else if (angular.isNumber(o.ticks)) {
+          axis.ticks(o.ticks);
+        } else if (angular.isFunction(o.ticks)) {
+          axis.ticks(o.ticks, o.ticksInterval);
         }
         return axis;
       },

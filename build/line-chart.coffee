@@ -1095,6 +1095,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             # Use d3.format as formatter
             options.tooltipFormatter = d3.format(options.tooltipFormat)
         
+        if options.ticksInterval?
+          options.ticksInterval = this.getSanitizedNumber(options.ticksInterval)
+
         this.sanitizeExtrema(options)
 
         return options
@@ -1206,8 +1209,17 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return axis unless o?
 
-        axis.ticks(o.ticks) if angular.isNumber(o.ticks)
-        axis.tickValues(o.ticks) if angular.isArray(o.ticks)
+        # ticks can be either an array of tick values
+        if angular.isArray(o.ticks)
+          axis.tickValues(o.ticks)
+        
+        # or a number of ticks (approximately)
+        else if angular.isNumber(o.ticks)
+          axis.ticks(o.ticks)
+        
+        # or a range function e.g. d3.time.minute
+        else if angular.isFunction(o.ticks)
+          axis.ticks(o.ticks, o.ticksInterval)
 
         return axis
 

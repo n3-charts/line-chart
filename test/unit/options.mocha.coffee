@@ -192,6 +192,9 @@ describe 'options', ->
         y:
           type: 'linear'
           ticks: [5]
+        y2:
+          type: 'date'
+          ticks: d3.time.minute
 
       computed = n3utils.sanitizeOptions(
         axes:
@@ -199,6 +202,35 @@ describe 'options', ->
             ticks: 2
           y:
             ticks: [5]
+          y2:
+            type: 'date'
+            ticks: d3.time.minute
+      ).axes
+
+      expect(computed).to.eql(expected)
+
+    it 'should pass the ticksInterval property as a number', ->
+      expected =
+        x:
+          type: 'date'
+          key: 'x'
+          ticks: d3.time.minute
+          ticksInterval: 5
+        y:
+          type: 'date'
+          ticks: d3.time.minute
+          ticksInterval: 10
+
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            type: 'date'
+            ticks: d3.time.minute
+            ticksInterval: 5
+          y:
+            type: 'date'
+            ticks: d3.time.minute
+            ticksInterval: '10'
       ).axes
 
       expect(computed).to.eql(expected)
