@@ -54,27 +54,24 @@
             if !!conditions.all
 
               if !!conditions.x
-                style(
-                  svg.append('g')
-                    .attr('class', 'x axis')
-                    .attr('transform', 'translate(0,' + height + ')')
-                    .call(xAxis)
-                )
+                svg.append('g')
+                  .attr('class', 'x axis')
+                  .attr('transform', 'translate(0,' + height + ')')
+                  .call(xAxis)
+                  .call(style)
 
               if !!conditions.y
-                style(
-                  svg.append('g')
-                    .attr('class', 'y axis')
-                    .call(yAxis)
-                )
+                svg.append('g')
+                  .attr('class', 'y axis')
+                  .call(yAxis)
+                  .call(style)
 
               if createY2Axis and !!conditions.y2
-                style(
-                  svg.append('g')
-                    .attr('class', 'y2 axis')
-                    .attr('transform', 'translate(' + width + ', 0)')
-                    .call(y2Axis)
-                )
+                svg.append('g')
+                  .attr('class', 'y2 axis')
+                  .attr('transform', 'translate(' + width + ', 0)')
+                  .call(y2Axis)
+                  .call(style)
 
             return {
               xScale: x
@@ -118,17 +115,36 @@
       setScalesDomain: (scales, data, series, svg, options) ->
         this.setXScale(scales.xScale, data, series, options.axes)
 
-        svg.selectAll('.x.axis').call(scales.xAxis)
+        axis = svg.selectAll('.x.axis')
+          .call(scales.xAxis)
+        
+        if options.axes.x.ticksRotate?
+          axis.selectAll('.tick>text')
+            .attr('dy', null)
+            .attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)')
+            .style('text-anchor', if options.axes.x.ticksRotate >= 0 then 'start' else 'end')
 
         if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
           yDomain = this.getVerticalDomain(options, data, series, 'y')
           scales.yScale.domain(yDomain).nice()
-          svg.selectAll('.y.axis').call(scales.yAxis)
+          axis = svg.selectAll('.y.axis')
+            .call(scales.yAxis)
+          
+          if options.axes.y.ticksRotate?
+            axis.selectAll('.tick>text')
+              .attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)')
+              .style('text-anchor', 'end')
 
         if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
           y2Domain = this.getVerticalDomain(options, data, series, 'y2')
           scales.y2Scale.domain(y2Domain).nice()
-          svg.selectAll('.y2.axis').call(scales.y2Axis)
+          axis = svg.selectAll('.y2.axis')
+            .call(scales.y2Axis)
+          
+          if options.axes.y2.ticksRotate?
+            axis.selectAll('.tick>text')
+              .attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)')
+              .style('text-anchor', 'start')
 
 
       getVerticalDomain: (options, data, series, key) ->
