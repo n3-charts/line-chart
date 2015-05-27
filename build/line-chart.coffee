@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.9 - 26 May 2015
+line-chart - v1.1.9 - 27 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -15,6 +15,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
   link  = (scope, element, attrs, ctrl) ->
     _u = n3utils
     dispatch = _u.getEventDispatcher()
+    id = _u.uuid()
 
     # Hacky hack so the chart doesn't grow in height when resizing...
     element[0].style['font-size'] = 0
@@ -39,7 +40,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       _u.clean(element[0])
 
-      svg = _u.bootstrap(element[0], dimensions)
+      svg = _u.bootstrap(element[0], id, dimensions)
 
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
@@ -55,7 +56,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       if dataPerSeries.length
         _u.setScalesDomain(axes, scope.data, options.series, svg, options)
 
-      _u.createContent(svg, handlers)
+      _u.createContent(svg, id, options, handlers)
 
       if dataPerSeries.length
         columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options)
@@ -679,7 +680,16 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .select('svg')
             .remove()
 
-      bootstrap: (element, dimensions) ->
+      uuid: () ->
+        # @src: http://stackoverflow.com/a/2117523
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+          /[xy]/g, (c) ->
+            r = Math.random()*16|0
+            v = if c == 'x' then r else r&0x3|0x8
+            return v.toString(16)
+          )
+
+      bootstrap: (element, id, dimensions) ->
         d3.select(element).classed('chart', true)
 
         width = dimensions.width
@@ -693,13 +703,29 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           .append('g')
             .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')')
 
-        svg.append('defs')
+        defs = svg.append('defs')
           .attr('class', 'patterns')
+        
+        # Add a clipPath for the content area
+        defs.append('clipPath')
+          .attr('class', 'content-clip')
+          .attr('id', "content-clip-#{id}")
+          .append('rect')
+            .attr({
+              'x': 0
+              'y': 0
+              'width': width - dimensions.left - dimensions.right
+              'height': height - dimensions.top - dimensions.bottom
+            })
 
         return svg
 
-      createContent: (svg) ->
-        svg.append('g').attr('class', 'content')
+      createContent: (svg, id, options) ->
+        content = svg.append('g')
+          .attr('class', 'content')
+        
+        if options.hideOverflow
+          content.attr('clip-path', "url(#content-clip-#{id})")
 
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
         that = this
@@ -906,6 +932,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           drawDots: true
           stacks: []
           columnsHGap: 5
+          hideOverflow: false
         }
 
       sanitizeOptions: (options, mode) ->
@@ -930,6 +957,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
+        options.hideOverflow = options.hideOverflow or false
 
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()

@@ -13,6 +13,7 @@
           drawDots: true
           stacks: []
           columnsHGap: 5
+          hideOverflow: false
         }
 
       sanitizeOptions: (options, mode) ->
@@ -37,6 +38,7 @@
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
+        options.hideOverflow = options.hideOverflow or false
 
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()

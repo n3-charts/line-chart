@@ -36,7 +36,16 @@
           .select('svg')
             .remove()
 
-      bootstrap: (element, dimensions) ->
+      uuid: () ->
+        # @src: http://stackoverflow.com/a/2117523
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+          /[xy]/g, (c) ->
+            r = Math.random()*16|0
+            v = if c == 'x' then r else r&0x3|0x8
+            return v.toString(16)
+          )
+
+      bootstrap: (element, id, dimensions) ->
         d3.select(element).classed('chart', true)
 
         width = dimensions.width
@@ -50,13 +59,29 @@
           .append('g')
             .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')')
 
-        svg.append('defs')
+        defs = svg.append('defs')
           .attr('class', 'patterns')
+        
+        # Add a clipPath for the content area
+        defs.append('clipPath')
+          .attr('class', 'content-clip')
+          .attr('id', "content-clip-#{id}")
+          .append('rect')
+            .attr({
+              'x': 0
+              'y': 0
+              'width': width - dimensions.left - dimensions.right
+              'height': height - dimensions.top - dimensions.bottom
+            })
 
         return svg
 
-      createContent: (svg) ->
-        svg.append('g').attr('class', 'content')
+      createContent: (svg, id, options) ->
+        content = svg.append('g')
+          .attr('class', 'content')
+        
+        if options.hideOverflow
+          content.attr('clip-path', "url(#content-clip-#{id})")
 
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
         that = this

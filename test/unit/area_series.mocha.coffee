@@ -72,8 +72,7 @@ describe 'area series', ->
       ]
 
     patterns = element.childByClass('patterns')
-    expect(patterns.domElement.childNodes.length).to.equal(2)
-    pattern = patterns.domElement.childNodes[0]
+    pattern = patterns.domElement.childNodes[1]
     expect(pattern.getAttribute('id')).to.equal('areaPattern_0')
     patternGroup = pattern.childNodes[0]
     expect(patternGroup.getAttribute('style').trim()).to.equal('fill: rgb(69, 130, 180); fill-opacity: 0.3;')
