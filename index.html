@@ -35,12 +35,13 @@ mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
     <div class='pure-u-1'>
       <div class="pure-menu pure-menu-open pure-menu-horizontal">
         <h1 class="pure-menu-heading"><a href="#/about"><img src="assets/images/logo_small.png">n3-charts</a></h1>
-        <ul class="right">
-          <li><a href="#/">Home</a></li>
-          <li><a href="#/examples">Examples</a></li>
-          <li><a href="#/tests">Tests</a></li>
+        <ul class="right" ng-controller="menuCtrl">
+          <li class="internal" ng-class="{active: isActive('/')}"><a href="#/">Home</a></li>
+          <li class="internal" ng-class="{active: isActive('/examples')}"><a href="#/examples">Examples</a></li>
+          <li class="internal" ng-class="{active: isActive('/tests')}"><a href="#/tests">Tests</a></li>
           <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
           <li><a href="https://travis-ci.org/n3-charts/line-chart" target="_blank">Travis CI <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
+          <li><a href="https://gitter.im/n3-charts/line-chart" target="_blank">Gitter <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
         </ul>
       </div>
     </div>

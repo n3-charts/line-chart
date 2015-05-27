@@ -8,6 +8,12 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'directives', 'example
   .otherwise({redirectTo: '/'});
 }])
 
+.controller('menuCtrl', function($scope, $location) {
+  $scope.isActive = function(route) {
+    return $location.path() === route;
+  };
+})
+
 .controller('HomeCtrl', function($scope, $sce, $http) {
   mixpanel.track("Home");
 

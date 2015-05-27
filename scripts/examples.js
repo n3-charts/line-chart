@@ -189,6 +189,6 @@ angular.module('examples', ['apojop', 'utils'])
   ];
 
   $scope.examples.forEach(function(e) {
-    e.jsonOptions = escape(angular.toJson(e.options));
+    e.pristineOptions = angular.copy(e.options);
   });
 });

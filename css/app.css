@@ -80,6 +80,31 @@ h1.pure-menu-heading>a>img {
   vertical-align: middle;
 }
 
+.pure-menu li {
+  border-bottom: 2px solid transparent;
+}
+
+.pure-menu li.internal.active {
+  border-bottom: 2px solid hsla(123, 38%, 48%, 1);
+}
+
+.pure-menu li.internal:hover {
+  border-bottom: 2px solid hsla(123, 38%, 48%, 0.5);
+}
+
+.pure-menu li a:hover, .pure-menu li a:focus {
+  background: none;
+  outline: none;
+}
+
+.pure-menu li:not(.internal):hover a {
+  color: hsla(0, 0%, 50%, 1);
+}
+
+.pure-menu li:not(.internal):hover a i.fa{
+  color: hsla(123, 38%, 48%, 1);
+}
+
 /* TESTS */
 .good {
   color: rgba(104, 173, 40, 1);
@@ -183,6 +208,7 @@ h3.subheading {
 
 .example {
   min-width: 600px;
+  height: 550px;
   width: 90%;
   margin: 0 auto 50px auto;
   border: 1px solid #CECECE;
@@ -211,21 +237,17 @@ h3.subheading {
 }
 
 button.codepen-button {
-  border: none;
   background: transparent;
-  border: 1px solid;
-  color: lightgrey;
-  border-radius: 50%;
-  height: 25px;
-  width: 25px;
+  border: 1px solid hsla(84, 43%, 54%, 1);
+  color: hsla(84, 43%, 54%, 1);
+  border-radius: 12px;
   padding-left: 5px;
-  font-size: 13px;
+  font-size: 10px;
 }
 
 button.codepen-button:hover {
-  background: lightgrey;
+  background: hsla(84, 43%, 54%, 1);
   color: white;
-  border-radius: 50%;
 }
 
 .example .description {

@@ -3,7 +3,7 @@
     <codepen-button
       class="right"
       codepen-data="example.data"
-      codepen-options="example.options"
+      codepen-options="example.pristineOptions"
       codepen-name="example.label"
       title="Open example in CodePen"
     ></codepen-button>
@@ -12,7 +12,7 @@
     <linechart data='example.data' options='example.options'></linechart>
   </div>
   <div class="chart-options pure-u-1-3">
-    <pre class="options-output" ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:80:"columns") + ";" | safe'></pre>
+    <pre class="options-output" ng-bind-html='"$scope.options = " + (example.pristineOptions | prettyUnsafe:50:"columns") + ";" | safe'></pre>
   </div>
 </div>
 <div class="pure-u-1">
