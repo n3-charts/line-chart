@@ -241,8 +241,8 @@ $ grunt travis
 ### Contributing
 You're welcome to submit issues and PRs. However, please make sure :
 
-- to link a plunker with your issue ([here's one to start from](http://plnkr.co/edit/2hqP1VfrsmrYydezW35G?p=preview))
-- to add tests to your pull requests
+- to link a CodePen/Plunker/JSFiddle with your issue (you can generate CodePens from the [examples page][5], clickhover any example and a link will appear in the example's top right corner)
+- to add tests to your pull requests (otherwise, a [ruthless admin will inevitably close your pull request][6])
 
 
 ### Testing
@@ -253,3 +253,5 @@ It has a good coverage rate (above 95%), let's keep it this way.
   [2]: https://github.com/n3-charts/line-chart/issues/44
   [3]: http://stackoverflow.com/a/11661725
   [4]: https://github.com/mbostock/d3/wiki/Time-Scales#ticks
+  [5]: http://n3-charts.github.io/line-chart/#/examples
+  [6]: http://ih0.redbubble.net/image.41361934.7038/fc,220x200,white.jpg
