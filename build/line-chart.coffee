@@ -724,7 +724,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         content = svg.append('g')
           .attr('class', 'content')
         
-        if options.clipSeries
+        if options.hideOverflow
           content.attr('clip-path', "url(#content-clip-#{id})")
 
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
@@ -932,7 +932,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           drawDots: true
           stacks: []
           columnsHGap: 5
-          clipSeries: false
+          hideOverflow: false
         }
 
       sanitizeOptions: (options, mode) ->
@@ -957,7 +957,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
-        options.clipSeries = options.clipSeries or false
+        options.hideOverflow = options.hideOverflow or false
 
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()

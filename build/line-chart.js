@@ -732,7 +732,7 @@ mod.factory('n3utils', [
       createContent: function(svg, id, options) {
         var content;
         content = svg.append('g').attr('class', 'content');
-        if (options.clipSeries) {
+        if (options.hideOverflow) {
           return content.attr('clip-path', "url(#content-clip-" + id + ")");
         }
       },
@@ -943,7 +943,7 @@ mod.factory('n3utils', [
           drawDots: true,
           stacks: [],
           columnsHGap: 5,
-          clipSeries: false
+          hideOverflow: false
         };
       },
       sanitizeOptions: function(options, mode) {
@@ -971,7 +971,7 @@ mod.factory('n3utils', [
         if (!angular.isNumber(options.columnsHGap)) {
           options.columnsHGap = 5;
         }
-        options.clipSeries = options.clipSeries || false;
+        options.hideOverflow = options.hideOverflow || false;
         defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
         options.series = angular.extend(this.getDefaultOptions().series, options.series);
         options.axes = angular.extend(this.getDefaultOptions().axes, options.axes);
