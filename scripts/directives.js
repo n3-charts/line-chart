@@ -41,10 +41,13 @@ angular.module('directives', [])
             '\n  <linechart data="data" options="options"></linechart>' +
             '\n</div>';
 
+
           var JS = "angular.module('example', ['n3-line-chart'])" +
           "\n.controller('ExampleCtrl', function($scope) {" +
-          "\n  $scope.data = " + JSON.stringify(data, null, 2).replace('\n', '\n  ') + ";" +
-          "\n\n  $scope.options = " + JSON.stringify(options, null, 2) + ";" +
+          "\n // Due to CodePen's API, it's not possible to include functions in dynamic CodePen's such as this one," +
+          " therefore some closures might be missing (the axes' formatting functions, for example) and need to be added manually. Thanks ! :-)" +
+          "\n  $scope.data = " + JSON.stringify(data, null, 2).replace('\n', '\n  ').replace(/"([^"]+)":/g, '$1:') + ";" +
+          "\n\n  $scope.options = " + JSON.stringify(options, null, 2).replace(/"([^"]+)":/g, '$1:') + ";" +
           "\n  " + postDeserializing +
           "\n});";
 
@@ -53,13 +56,13 @@ angular.module('directives', [])
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js',
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular-route.min.js',
             'http://d3js.org/d3.v3.min.js',
-            'http://cdn.rawgit.com/n3-charts/line-chart/master/build/line-chart.min.js'
+            'https://rawgit.com/n3-charts/line-chart/master/build/line-chart.min.js'
           ].join(';');
 
           var CSS = ".container {\n  width: 600px;\n  height: 300px;\n}";
 
           var data = {
-            title: name,
+            title: 'n3-charts: ' + name.toLowerCase(),
             html: HTML,
             css: CSS,
             js: JS,
@@ -75,7 +78,7 @@ angular.module('directives', [])
     replace: true,
     template: '<form class="codepen-form" action="http://codepen.io/pen/define" method="POST" target="_blank">' +
       '<input type="hidden" name="data" value="{{jsonPayload}}">' +
-      '<button class="codepen-button"><i class="fa fa-codepen"></i></button>' +
+      '<button class="codepen-button">Open in CodePen</button>' +
     '</form>'
   }
 })
