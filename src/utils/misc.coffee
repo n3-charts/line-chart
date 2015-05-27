@@ -80,7 +80,7 @@
         content = svg.append('g')
           .attr('class', 'content')
         
-        if options.clipSeries
+        if options.hideOverflow
           content.attr('clip-path', "url(#content-clip-#{id})")
 
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->

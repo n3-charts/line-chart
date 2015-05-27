@@ -118,13 +118,13 @@ describe 'chart initialization', ->
 
     it 'should set the proper dimensions for the content clipping path', inject (n3utils, pepito) ->
       outerScope.$apply ->
-        outerScope.options.clipSeries = false
+        outerScope.options.hideOverflow = false
 
       content = element.childByClass('content')
       expect(content.getAttribute('clip-path')).to.equal(null)
 
       outerScope.$apply ->
-        outerScope.options.clipSeries = true
+        outerScope.options.hideOverflow = true
 
       content = element.childByClass('content')
       expect(content.getAttribute('clip-path')).to.match(/^url\(#content-clip-(.)+\)$/)
