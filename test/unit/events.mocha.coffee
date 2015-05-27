@@ -9,7 +9,7 @@ describe 'event handling', ->
       n3utils = _n3utils_
 
     it 'should create a dispatcher with event attrs', ->
-      
+
       dispatch = n3utils.getEventDispatcher()
 
       expect(dispatch).to.have.property("focus")
@@ -47,7 +47,14 @@ describe 'event handling', ->
     beforeEach inject (pepito) ->
       {element, innerScope, outerScope} = pepito.directive """
       <div>
-        <linechart data='data' options='options' on-click='clicked' on-hover='hovered' on-focus='focused' on-toggle='toggled'></linechart>
+        <linechart
+          data='data'
+          options='options'
+          on-click='clicked'
+          on-hover='hovered'
+          on-focus='focused'
+          on-toggle='toggled'
+        ></linechart>
       </div>
       """
 
