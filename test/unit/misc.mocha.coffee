@@ -149,3 +149,14 @@ describe 'misc', ->
 
     series = [{y: 'value'}, {y: 'foo', axis: 'y2'}]
     expect(n3utils.getWidestOrdinate(data, series, options)).to.equal('huehuehuehuehue')
+
+  it 'should generate random uuids', ->
+    numIds = 1000
+
+    # Generate random ids
+    ids = d3.range(numIds).map( n3utils.uuid )
+
+    # Extract all unique elements
+    uids = ids.filter( (value, index, self) -> self.indexOf(value) is index )
+
+    expect(uids.length).to.equal(numIds)

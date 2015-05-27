@@ -56,12 +56,11 @@ describe 'legend', ->
     expect(spy.callCount).to.equal(2)
 
   it 'should create a clipping path for legend items', ->
-    patterns = element.childByClass('patterns')
-    expect(patterns.children().length).to.equal(1)
-    pattern = patterns.children()[0]
-    expect(pattern.getAttribute('id')).to.equal('legend-clip')
-    expect(pattern.domElement.tagName).to.equal('clipPath')
-    expect(pattern.innerHTML()).to.equal('<circle r="8"></circle>')
+    chart = element.childByClass('chart')
+    clip = chart.child('defs').children()[1]
+    expect(clip.getAttribute('id')).to.equal('legend-clip')
+    expect(clip.domElement.tagName).to.equal('clipPath')
+    expect(clip.innerHTML()).to.equal('<circle r="8"></circle>')
 
   it 'should create legend elements', inject (fakeMouse) ->
     legendGroup = element.childByClass('legend')

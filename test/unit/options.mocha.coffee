@@ -58,6 +58,15 @@ describe 'options', ->
       o = n3utils.sanitizeOptions(drawDots: false)
       expect(o.drawDots).to.equal(false)
 
+  describe 'hideOverflow', ->
+    it 'should set default hideOverflow value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.hideOverflow).to.equal(false)
+
+    it 'should preserve the given hideOverflow value if defined and valid', ->
+      o = n3utils.sanitizeOptions(hideOverflow: true)
+      expect(o.hideOverflow).to.equal(true)
+
   describe 'tooltip', ->
     it 'should set default tooltip.mode if undefined or invalid', ->
       o = n3utils.sanitizeOptions()

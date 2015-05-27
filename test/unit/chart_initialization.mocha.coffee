@@ -92,3 +92,39 @@ describe 'chart initialization', ->
       expect(content[7].getAttribute('id')).to.equal('yTooltip')
       expect(content[8].getAttribute('id')).to.equal('y2Tooltip')
 
+    it 'should create a clipping path for the content', ->
+      chart = element.childByClass('chart')
+      clip = chart.child('defs').children()[0]
+      expect(clip.getAttribute('class')).to.equal('content-clip')
+      expect(clip.domElement.tagName).to.equal('clipPath')
+      expect(clip.innerHTML()).to.match(/^<rect (.)+><\/rect>$/)
+
+    it 'should set the proper dimensions for the content clipping path', inject (n3utils, pepito) ->
+      {element, innerScope, outerScope} = pepito.directive """
+      <div>
+        <linechart data="data" options="options" width="400" height="200"></linechart>
+      </div>
+      """
+      clipRect = element.childByClass('content-clip').children()[0]
+
+      m = n3utils.getDefaultMargins()
+      w = 400-m.left-m.right
+      h = 200-m.top-m.bottom
+      
+      expect(clipRect.getAttribute('x')).to.equal('0')
+      expect(clipRect.getAttribute('y')).to.equal('0')
+      expect(clipRect.getAttribute('width')).to.equal("#{w}")
+      expect(clipRect.getAttribute('height')).to.equal("#{h}")
+
+    it 'should set the proper dimensions for the content clipping path', inject (n3utils, pepito) ->
+      outerScope.$apply ->
+        outerScope.options.hideOverflow = false
+
+      content = element.childByClass('content')
+      expect(content.getAttribute('clip-path')).to.equal(null)
+
+      outerScope.$apply ->
+        outerScope.options.hideOverflow = true
+
+      content = element.childByClass('content')
+      expect(content.getAttribute('clip-path')).to.match(/^url\(#content-clip-(.)+\)$/)
