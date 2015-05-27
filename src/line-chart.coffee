@@ -71,7 +71,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.addTooltips(svg, dimensions, options.axes)
 
     updateEvents = ->
-      
+
       # Deprecated: this will be removed in 2.x
       if scope.oldclick
         dispatch.on('click', scope.oldclick)
@@ -110,10 +110,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     scope.$watch('data', scope.redraw, true)
     scope.$watch('options', scope.redraw , true)
-    scope.$watch('[click, hover, focus, toggle]', updateEvents)
-    
+    scope.$watchCollection('[click, hover, focus, toggle]', updateEvents)
+
     # Deprecated: this will be removed in 2.x
-    scope.$watch('[oldclick, oldhover, oldfocus]', updateEvents)
+    scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents)
+
+    return
 
   return {
     replace: true

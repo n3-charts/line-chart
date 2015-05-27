@@ -114,8 +114,8 @@ directive('linechart', [
       $window.addEventListener('resize', window_resize);
       scope.$watch('data', scope.redraw, true);
       scope.$watch('options', scope.redraw, true);
-      scope.$watch('[click, hover, focus, toggle]', updateEvents);
-      return scope.$watch('[oldclick, oldhover, oldfocus]', updateEvents);
+      scope.$watchCollection('[click, hover, focus, toggle]', updateEvents);
+      scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents);
     };
     return {
       replace: true,
