@@ -9,6 +9,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
   link  = (scope, element, attrs, ctrl) ->
     _u = n3utils
     dispatch = _u.getEventDispatcher()
+    id = _u.uuid()
 
     # Hacky hack so the chart doesn't grow in height when resizing...
     element[0].style['font-size'] = 0
@@ -33,7 +34,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       _u.clean(element[0])
 
-      svg = _u.bootstrap(element[0], dimensions)
+      svg = _u.bootstrap(element[0], id, dimensions)
 
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
@@ -49,7 +50,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       if dataPerSeries.length
         _u.setScalesDomain(axes, scope.data, options.series, svg, options)
 
-      _u.createContent(svg, handlers)
+      _u.createContent(svg, id, options, handlers)
 
       if dataPerSeries.length
         columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options)

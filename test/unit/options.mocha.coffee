@@ -58,6 +58,15 @@ describe 'options', ->
       o = n3utils.sanitizeOptions(drawDots: false)
       expect(o.drawDots).to.equal(false)
 
+  describe 'clipSeries', ->
+    it 'should set default clipSeries value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.clipSeries).to.equal(false)
+
+    it 'should preserve the given clipSeries value if defined and valid', ->
+      o = n3utils.sanitizeOptions(clipSeries: true)
+      expect(o.clipSeries).to.equal(true)
+
   describe 'tooltip', ->
     it 'should set default tooltip.mode if undefined or invalid', ->
       o = n3utils.sanitizeOptions()

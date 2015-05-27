@@ -63,6 +63,7 @@ $scope.options = {
   tooltip: {mode: 'scrubber', formatter: function(x, y, series) {return 'pouet';}},
   drawLegend: true,
   drawDots: true,
+  clipSeries: false,
   columnsHGap: 5
 }
 ```

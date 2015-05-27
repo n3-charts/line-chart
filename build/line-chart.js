@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.9 - 26 May 2015
+line-chart - v1.1.9 - 27 May 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -20,9 +20,10 @@ directive('linechart', [
   'n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
     var link;
     link = function(scope, element, attrs, ctrl) {
-      var dispatch, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
+      var dispatch, id, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
       _u = n3utils;
       dispatch = _u.getEventDispatcher();
+      id = _u.uuid();
       element[0].style['font-size'] = 0;
       scope.redraw = function() {
         scope.update();
@@ -44,7 +45,7 @@ directive('linechart', [
         dimensions = _u.getDimensions(options, element, attrs);
         isThumbnail = attrs.mode === 'thumbnail';
         _u.clean(element[0]);
-        svg = _u.bootstrap(element[0], dimensions);
+        svg = _u.bootstrap(element[0], id, dimensions);
         fn = function(key) {
           return (options.series.filter(function(s) {
             return s.axis === key && s.visible !== false;
@@ -59,7 +60,7 @@ directive('linechart', [
         if (dataPerSeries.length) {
           _u.setScalesDomain(axes, scope.data, options.series, svg, options);
         }
-        _u.createContent(svg, handlers);
+        _u.createContent(svg, id, options, handlers);
         if (dataPerSeries.length) {
           columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options);
           _u.drawArea(svg, axes, dataPerSeries, options, handlers).drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers, dispatch).drawLines(svg, axes, dataPerSeries, options, handlers);
@@ -702,8 +703,16 @@ mod.factory('n3utils', [
       clean: function(element) {
         return d3.select(element).on('keydown', null).on('keyup', null).select('svg').remove();
       },
-      bootstrap: function(element, dimensions) {
-        var height, svg, width;
+      uuid: function() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r, v;
+          r = Math.random() * 16 | 0;
+          v = c === 'x' ? r : r & 0x3 | 0x8;
+          return v.toString(16);
+        });
+      },
+      bootstrap: function(element, id, dimensions) {
+        var defs, height, svg, width;
         d3.select(element).classed('chart', true);
         width = dimensions.width;
         height = dimensions.height;
@@ -711,11 +720,21 @@ mod.factory('n3utils', [
           width: width,
           height: height
         }).append('g').attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')');
-        svg.append('defs').attr('class', 'patterns');
+        defs = svg.append('defs').attr('class', 'patterns');
+        defs.append('clipPath').attr('class', 'content-clip').attr('id', "content-clip-" + id).append('rect').attr({
+          'x': 0,
+          'y': 0,
+          'width': width - dimensions.left - dimensions.right,
+          'height': height - dimensions.top - dimensions.bottom
+        });
         return svg;
       },
-      createContent: function(svg) {
-        return svg.append('g').attr('class', 'content');
+      createContent: function(svg, id, options) {
+        var content;
+        content = svg.append('g').attr('class', 'content');
+        if (options.clipSeries) {
+          return content.attr('clip-path', "url(#content-clip-" + id + ")");
+        }
       },
       createGlass: function(svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) {
         var glass, scrubberGroup, that;
@@ -923,7 +942,8 @@ mod.factory('n3utils', [
           drawLegend: true,
           drawDots: true,
           stacks: [],
-          columnsHGap: 5
+          columnsHGap: 5,
+          clipSeries: false
         };
       },
       sanitizeOptions: function(options, mode) {
@@ -951,6 +971,7 @@ mod.factory('n3utils', [
         if (!angular.isNumber(options.columnsHGap)) {
           options.columnsHGap = 5;
         }
+        options.clipSeries = options.clipSeries || false;
         defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
         options.series = angular.extend(this.getDefaultOptions().series, options.series);
         options.axes = angular.extend(this.getDefaultOptions().axes, options.axes);
