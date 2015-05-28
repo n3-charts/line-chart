@@ -28,6 +28,10 @@ module.exports = function(grunt) {
       'Copyright (c) <%= grunt.template.today("yyyy") %> n3-charts' +
       '\n*/\n',
 
+    clean: {
+      tests: ['test/coverage']
+    },
+
     watch: {
       files: ['src/**/*.coffee', 'test/unit/**/*.mocha.coffee'],
       tasks: ['concat', 'coffeelint', 'coffee', 'karma:unminified', 'uglify', 'karma:minified'],
@@ -38,9 +42,6 @@ module.exports = function(grunt) {
       options: testConfig('karma.conf.js'),
 
       unminified: {
-        singleRun: true,
-        autoWatch: false,
-        browsers: ['Firefox'],
         options: {
           files: [
             'bower_components/angular/angular.js',
@@ -49,6 +50,8 @@ module.exports = function(grunt) {
             'build/line-chart.js',
             'test/unit/**/*.coffee'
           ],
+          reporters: ['coverage'],
+          coverageReporter: {type: 'lcovonly', dir: 'test/coverage/'},
           preprocessors: {
             'build/line-chart.js': 'coverage',
             'test/unit/**/*.coffee': 'coffee'
@@ -57,9 +60,6 @@ module.exports = function(grunt) {
       },
 
       minified: {
-        singleRun: true,
-        autoWatch: false,
-        browsers: ['Firefox'],
         options: {
           files: [
             'bower_components/angular/angular.js',
@@ -68,10 +68,8 @@ module.exports = function(grunt) {
             'build/line-chart.min.js',
             'test/unit/**/*.coffee'
           ],
-          preprocessors: {
-            'test/unit/**/*.coffee': 'coffee'
-          },
           reporters: ['dots'],
+          preprocessors: {'test/unit/**/*.coffee': 'coffee'}
         }
       }
     },
@@ -151,12 +149,21 @@ module.exports = function(grunt) {
       }
     },
 
+    coveralls: {
+      options: {
+        force: true
+      },
+      bwa: {
+        src: 'test/coverage/**/lcov.info'
+      }
+    },
+
     bumpup: ['package.json', 'bower.json']
   });
 
   // Default task.
-  grunt.registerTask('travis', ['default', 'shell:visual']);
+  grunt.registerTask('travis', ['default', 'shell:visual', 'coveralls']);
   grunt.registerTask('visual', ['concat', 'coffeelint', 'coffee', 'uglify', 'shell:visual']);
-  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:minified']);
+  grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'karma:unminified', 'uglify', 'karma:minified']);
   grunt.registerTask('build', ['default']);
 };

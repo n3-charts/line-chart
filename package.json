@@ -16,12 +16,15 @@
     "chai": "~1.9.1",
     "grunt": "*",
     "grunt-bumpup": "^0.6.2",
+    "grunt-cli": "~0.1.13",
     "grunt-coffeelint": "0.0.8",
+    "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-coffee": "~0.10.1",
     "grunt-contrib-concat": "*",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*",
+    "grunt-coveralls": "^1.0.0",
     "grunt-karma": "*",
     "grunt-shell": "~0.7.0",
     "image-diff": "~1.0.1",
@@ -35,7 +38,6 @@
     "karma-sinon": "~1.0.3",
     "matchdep": "*",
     "phantomjs": "~1.9.7-5",
-    "grunt-cli": "~0.1.13",
     "sinon": "~1.9.1"
   }
 }
