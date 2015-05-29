@@ -71,11 +71,8 @@ gulp.task('watch', ['compile:source', 'test'], function () {
 
 gulp.task('coveralls', function() {
   gulp.src('coverage/**/lcov.info')
-    .pipe(coveralls({dryRun: true}));
+    .pipe(coveralls());
 })
-
-gulp.src('test/coverage/**/lcov.info')
-  .pipe(coveralls());
 
 gulp.task('default', ['build']);
 
@@ -92,6 +89,6 @@ gulp.task('travis', function(callback) {
     ['tslint', 'compile:source'],
     'test',
     'coveralls',
-    'clean',
+    // 'clean',
   callback);
 });
