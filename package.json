@@ -1,0 +1,38 @@
+{
+  "name": "line-chart",
+  "version": "2.0.0-alpha",
+  "homepage": "https://github.com/n3-charts/line-chart",
+  "licenses": {
+    "type": "MIT",
+    "url": "https://github.com/n3-charts/line-chart/blob/master/LICENCE"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/n3-charts/line-chart.git"
+  },
+  "bugs": "https://github.com/n3-charts/line-chart/issues",
+  "devDependencies": {
+    "angular": "^1.4.0",
+    "chai": "^2.3.0",
+    "expect.js": "^0.3.1",
+    "gulp": "^3.8.11",
+    "gulp-clean": "^0.3.1",
+    "gulp-coveralls": "^0.1.4",
+    "gulp-karma": "0.0.4",
+    "gulp-mocha": "^2.1.0",
+    "gulp-shell": "^0.4.1",
+    "gulp-tsc": "^0.10.0",
+    "gulp-tslint": "^3.0.1-beta",
+    "jsdom": "^5.4.3",
+    "karma": "^0.12.33",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-coverage": "^0.3.1",
+    "karma-mocha": "^0.1.10",
+    "mocha": "^2.2.5",
+    "run-sequence": "^1.1.0",
+    "sinon": "^1.14.1",
+    "tsd": "^0.6.0",
+    "tslint": "^2.2.0-beta",
+    "typescript": "^1.5.0-beta"
+  }
+}
