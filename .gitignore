@@ -1,6 +1,3 @@
-line-chart.sublime-workspace
-line-chart.sublime-project
-
-bower_components/
 node_modules/
 coverage/
+.tmp/
