@@ -1,5 +1,4 @@
 module.exports = function(config) {
-  var browsers =
   if(process.env.TRAVIS){
     configuration.browsers = ['Chrome_travis_ci'];
   }
