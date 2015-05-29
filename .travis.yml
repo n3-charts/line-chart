@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+- '0.12'
+before_install:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- npm install
+script: gulp travis
+addons:
+  firefox: '38.0'
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/8e10fa2e1361dec93c24
+    on_success: change  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: true     # default: false
