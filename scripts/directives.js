@@ -29,6 +29,10 @@ angular.module('directives', [])
             return;
           }
 
+          scope.track = function() {
+            mixpanel.track("codepen", {title: name});
+          };
+
           var postDeserializing = "";
 
           if (options.axes && options.axes.x.type === 'date') {
@@ -78,7 +82,7 @@ angular.module('directives', [])
     replace: true,
     template: '<form class="codepen-form" action="http://codepen.io/pen/define" method="POST" target="_blank">' +
       '<input type="hidden" name="data" value="{{jsonPayload}}">' +
-      '<button class="codepen-button">Open in CodePen</button>' +
+      '<button ng-click="track()" class="codepen-button">Open in CodePen</button>' +
     '</form>'
   }
 })
