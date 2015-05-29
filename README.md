@@ -1,4 +1,4 @@
-# n3-line-chart [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart) [![Coverage Status](https://coveralls.io/repos/n3-charts/line-chart/badge.svg?branch=master)](https://coveralls.io/r/n3-charts/line-chart?branch=master) [![Join the chat at https://gitter.im/n3-charts/line-chart](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/n3-charts/line-chart)
+# n3-line-chart [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart) [![Coverage Status](https://coveralls.io/repos/n3-charts/line-chart/badge.svg?branch=master&pouet=tut)](https://coveralls.io/r/n3-charts/line-chart?branch=master) [![Join the chat at https://gitter.im/n3-charts/line-chart](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/n3-charts/line-chart)
 
 ![](https://raw.githubusercontent.com/n3-charts/line-chart/gh-pages/assets/images/n3-charts.png)
 
