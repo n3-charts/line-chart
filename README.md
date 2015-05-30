@@ -14,6 +14,11 @@ Install dev dependencies :
 $ npm install
 ```
 
+Install the tpye definitions :
+```sh
+$ tsd reinstall -s
+```
+
 Watch :
 ```sh
 $ gulp watch

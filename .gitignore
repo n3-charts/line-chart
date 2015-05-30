@@ -1,3 +1,5 @@
+build/
+typings/
 node_modules/
 coverage/
 .tmp/
