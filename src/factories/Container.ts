@@ -26,23 +26,20 @@ module n3Charts.Factory {
     }
 
     create() {
-      console.log('Create '  + this.key);
-
       this.createRoot();
       this.createContainer();
     }
 
-    update() {
-      console.log('Update ' + this.key);
-
+    update(options, attributes: ng.IAttributes) {
+      // Compute the dimensions
       this.dim = this.getDimensions();
+
       this.updateRoot();
       this.updateContainer();
     }
 
     destroy() {
-      // Remove the root node
-      this.svg.remove();
+      this.destroyRoot();
     }
 
     createRoot() {
@@ -57,6 +54,11 @@ module n3Charts.Factory {
       this.svg
         .attr('width', this.dim.width)
         .attr('height', this.dim.height);
+    }
+
+    destroyRoot() {
+      // Remove the root node
+      this.svg.remove();
     }
 
     createContainer() {

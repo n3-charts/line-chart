@@ -1,11 +1,12 @@
 /// <reference path='../typings/tsd.d.ts' />
 
-/// <reference path='utils/Event.ts' />
-/// <reference path='utils/Factory.ts' />
+/// <reference path='utils/EventManager.ts' />
+/// <reference path='utils/FactoryManager.ts' />
+/// <reference path='utils/BaseFactory.ts' />
 /// <reference path='factories/Container.ts' />
 /// <reference path='factories/Axis.ts' />
 
-/// <reference path='linechart.ts' />
+/// <reference path='LineChart.ts' />
 
 module n3Charts {
   'use strict';

@@ -14,7 +14,7 @@ Install dev dependencies :
 $ npm install
 ```
 
-Install the tpye definitions :
+Install the type definitions :
 ```sh
 $ tsd reinstall -s
 ```
