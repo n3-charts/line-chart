@@ -7,11 +7,11 @@ module.exports = function(config) {
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/d3/d3.js',
-      'build/utils/*.js',
-      'build/factories/*.js',
-      'build/linechart.js',
-      'build/app.js',
-      '.tmp/unit/**/*.js',
+      '.tmp/src/utils/*.js',
+      '.tmp/src/factories/*.js',
+      '.tmp/src/linechart.js',
+      '.tmp/src/app.js',
+      '.tmp/test/unit/**/*.js',
       {pattern: 'build/**/*.map', included: false},
       {pattern: '.tmp/**/*.map', included: false}
 
