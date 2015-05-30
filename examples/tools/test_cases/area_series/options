@@ -1,0 +1,13 @@
+series: [
+        {
+          y: "val_0",
+          label: "A colorful area series",
+          color: "#ff7f0e",
+          type: "area",
+          thickness: "1px"
+        }
+      ],
+      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
+      lineMode: "linear",
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}

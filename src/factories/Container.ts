@@ -22,12 +22,13 @@ module n3Charts.Factory {
 
     constructor(private element: HTMLElement) {
       super();
-
     }
 
     create() {
       this.createRoot();
       this.createContainer();
+
+      return this;
     }
 
     update(options, attributes: ng.IAttributes) {
@@ -36,6 +37,8 @@ module n3Charts.Factory {
 
       this.updateRoot();
       this.updateContainer();
+
+      return this;
     }
 
     destroy() {

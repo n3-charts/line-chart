@@ -1,0 +1,26 @@
+series: [
+        {
+          y: "val_0",
+          label: "On the left !",
+          color: "#8c564b",
+          type: "line",
+          thickness: "1px",
+          visible: false
+        },
+        {
+          y: "val_1",
+          axis: "y2",
+          label: "On the right !",
+          color: "#d62728",
+          type: "line",
+          thickness: "1px"
+        }
+      ],
+      axes: {
+        x: {type: "linear", key: "x"},
+        y: {type: "linear"},
+        y2: {type: "linear"}
+      },
+      lineMode: "linear",
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}
