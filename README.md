@@ -14,6 +14,11 @@ Install dev dependencies :
 $ npm install
 ```
 
+Install the type definitions :
+```sh
+$ tsd reinstall -s
+```
+
 Watch :
 ```sh
 $ gulp watch
