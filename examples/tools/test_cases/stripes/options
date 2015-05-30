@@ -1,0 +1,30 @@
+lineMode: "cardinal",
+      series: [
+        {
+          y: "val_0",
+          label: "Stripes",
+          type: "area",
+          striped: true,
+          color: "#1f77b4",
+          thickness: "1px"
+        },
+        {
+          y: "val_1",
+          label: "Are",
+          type: "area",
+          striped: true,
+          color: "#ff7f0e",
+          thickness: "1px"
+        },
+        {
+          y: "val_2",
+          label: "Sweet",
+          type: "area",
+          striped: true,
+          color: "#2ca02c",
+          thickness: "1px"
+        }
+      ],
+      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}

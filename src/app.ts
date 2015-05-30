@@ -13,7 +13,6 @@ module n3Charts {
 
   // Create the angular module
   angular.module('n3-line-chart', [])
-
     // and our services
     .service('n3FactoryManager', Utils.FactoryManager)
     .service('n3EventManager', Utils.EventManager)

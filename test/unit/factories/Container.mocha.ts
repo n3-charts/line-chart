@@ -7,7 +7,7 @@ describe('n3Charts.Factory.Container', () => {
   beforeEach(() => {
     // Truncate the domElement
     domElement.children().remove();
-    
+
     container = new n3Charts.Factory.Container(domElement[0]);
   });
 
@@ -19,7 +19,7 @@ describe('n3Charts.Factory.Container', () => {
 
       container.createRoot();
 
-      rootNode = domElement[0].getElementsByTagName('svg')[0];
+      rootNode = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
 
       expect(rootNode.getAttribute('class')).to.equal('chart');
     });
@@ -48,7 +48,7 @@ describe('n3Charts.Factory.Container', () => {
       container.createRoot();
       container.createContainer();
 
-      visContainer = domElement[0].getElementsByTagName('g')[0];
+      visContainer = <SVGElement> domElement[0].getElementsByTagName('g')[0];
 
       expect(visContainer.getAttribute('class')).to.equal('container');
     });

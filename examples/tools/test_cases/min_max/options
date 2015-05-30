@@ -1,0 +1,16 @@
+series: [
+        {
+          y: "val_0",
+          label: "My super series",
+          color: "#ff7f0e",
+          type: "column"
+        },
+        {
+          y: "val_0",
+          label: "My also super series",
+          color: "steelblue",
+          type: "column",
+          axis: 'y2'
+        }
+      ],
+      axes: {x: {type: "linear", key: "x", min: 2, max: "5"}, y: {type: "linear", min: 0, max:100}},
