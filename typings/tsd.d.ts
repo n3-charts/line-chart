@@ -5,3 +5,4 @@
 /// <reference path="sinon/sinon.d.ts" />
 /// <reference path="expect.js/expect.js.d.ts" />
 /// <reference path="jsdom/jsdom.d.ts" />
+/// <reference path="d3/d3.d.ts" />
