@@ -62,7 +62,7 @@ gulp.task('test', ['compile:tests'], function() {
     'node_modules/d3/d3.js',
     paths.tests.to + 'src/utils/*.js',
     paths.tests.to + 'src/factories/*.js',
-    paths.tests.to + 'src/linechart.js',
+    paths.tests.to + 'src/LineChart.js',
     paths.tests.to + 'src/app.js',
     paths.tests.to + 'test/unit/**/*.js'
   ]).pipe(karma({

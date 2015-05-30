@@ -1,11 +1,13 @@
 /// <reference path='../test.mocha.ts' />
 
 describe('n3Charts.Factory.Container', () => {
-  var domElement: JQuery = undefined;
+  var domElement: JQuery = angular.element(document.body).append('<div></div>');
   var container: n3Charts.Factory.Container = undefined;
 
   beforeEach(() => {
-    domElement = angular.element(document.body).append('<div></div>');
+    // Truncate the domElement
+    domElement.children().remove();
+    
     container = new n3Charts.Factory.Container(domElement[0]);
   });
 

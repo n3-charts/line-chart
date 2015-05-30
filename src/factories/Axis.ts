@@ -13,19 +13,15 @@ module n3Charts.Factory {
     }
 
     create() {
-      console.log('Create ' + this.key);
-
       // Get the svg container
-      var vis: D3.Selection = this.fm.get('container').vis;
+      var vis: D3.Selection = this.factoryMgr.get('container').vis;
 
       this.createAxis(vis);
     }
 
-    update() {
-      console.log('Update ' + this.key);
-
+    update(options, attributes: ng.IAttributes) {
       // Get the container dimensions
-      var dim: IDimension = this.fm.get('container').dim;
+      var dim: IDimension = this.factoryMgr.get('container').dim;
 
       this.scale = this.getScale(dim);
       this.axis = this.getAxis();
@@ -34,8 +30,7 @@ module n3Charts.Factory {
     }
 
     destroy() {
-      // Remove the axis container
-      this.svg.remove();
+      this.destroyAxis();
     }
 
     createAxis(vis: D3.Selection) {
@@ -57,6 +52,11 @@ module n3Charts.Factory {
 
       // Generate the Axis
       this.svg.call(this.axis);
+    }
+
+    destroyAxis() {
+      // Remove the axis container
+      this.svg.remove();
     }
 
     getScale(dim: IDimension): D3.Scale.Scale {
