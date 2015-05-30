@@ -14,12 +14,17 @@ var paths = {
   },
   source: {
     from: 'src/**/*.ts',
-    to: './build/'
+    to: 'build/'
   }
 };
 
-gulp.task('clean', function () {
-    return gulp.src(['.tmp/', 'coverage'], {read: false})
+gulp.task('clean:tmp', function () {
+    return gulp.src(['.tmp/', 'coverage/'], {read: false})
+      .pipe(clean());
+});
+
+gulp.task('clean:build', function () {
+    return gulp.src(['.tmp/', 'coverage/'], {read: false})
       .pipe(clean());
 });
 
@@ -49,12 +54,17 @@ gulp.task('compile:tests', function () {
     .pipe(gulp.dest(paths.tests.to));
 });
 
-
 gulp.task('test', ['compile:tests'], function() {
   return gulp.src([
-    'node_modules/angular/angular.js',
     'node_modules/expect.js/index.js',
-    paths.tests.to + '**/*.js'
+    'node_modules/angular/angular.js',
+    'node_modules/angular-mocks/angular-mocks.js',
+    'node_modules/d3/d3.js',
+    paths.tests.to + 'src/utils/*.js',
+    paths.tests.to + 'src/factories/*.js',
+    paths.tests.to + 'src/LineChart.js',
+    paths.tests.to + 'src/app.js',
+    paths.tests.to + 'test/unit/**/*.js'
   ]).pipe(karma({
     configFile: 'karma.conf.js',
     action: 'run',
@@ -77,18 +87,20 @@ gulp.task('coveralls', function() {
 gulp.task('default', ['build']);
 
 gulp.task('build', function(callback) {
-  return runSequence('clean',
+  return runSequence('clean:tmp',
+    'clean:build',
     ['tslint', 'compile:source'],
     'test',
-    'clean',
+    'clean:tmp',
   callback);
 });
 
 gulp.task('travis', function(callback) {
-  return runSequence('clean',
+  return runSequence('clean:tmp',
+    'clean:build',
     ['tslint', 'compile:source'],
     'test',
     'coveralls',
-    // 'clean',
+    //'clean:tmp',
   callback);
 });
