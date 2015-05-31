@@ -29,7 +29,8 @@ module n3Charts.Style {
     }
 
     destroy() {
-
+      this.unStyleAxis(this.factoryMgr.get('x-axis'));
+      this.unStyleAxis(this.factoryMgr.get('y-axis'));
     }
   }
 }
