@@ -1,0 +1,12 @@
+series: [
+        {
+          y: "val_0",
+          label: "The best column series ever",
+          color: "#2ca02c",
+          type: "column"
+        }
+      ],
+      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
+      lineMode: "linear",
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}

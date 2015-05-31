@@ -1,0 +1,7 @@
+lineMode: "cardinal",
+      series: [
+        {y: "val_0", label: "columns", type: "column"},
+        {y: "val_0", label: "area", type: "area", thickness: "1px", axis: 'y2'}
+      ],
+      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
+      tooltip: {mode: 'axes', interpolate: false}

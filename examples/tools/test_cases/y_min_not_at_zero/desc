@@ -1,0 +1,1 @@
+Chart should crop areas and columns if y axes are not zero-based.
