@@ -17,13 +17,10 @@ module n3Charts.Utils {
       this.eventMgr.on('create.' + this.key, this.create.bind(this));
       this.eventMgr.on('update.' + this.key, this.update.bind(this));
       this.eventMgr.on('destroy.' + this.key, this.destroy.bind(this));
-
-      return this;
     }
 
     create() {
       // This methods need to be overwritten by factories
-      return this;
     }
 
     update(options, attributes: ng.IAttributes) {
