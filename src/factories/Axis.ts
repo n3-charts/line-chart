@@ -20,8 +20,6 @@ module n3Charts.Factory {
       var vis: D3.Selection = this.factoryMgr.get('container').vis;
 
       this.createAxis(vis);
-
-      return this;
     }
 
     update(options, attributes: ng.IAttributes) {
@@ -33,8 +31,6 @@ module n3Charts.Factory {
       this.axis = this.getAxis();
 
       this.updateAxis(dim);
-
-      return this;
     }
 
     destroy() {

@@ -43,7 +43,19 @@ module n3Charts.Utils {
       return this._factoryStack;
     }
 
-    register(key: string, constructor: any, ...args:any[]): FactoryManager {
+    registerMany(factories: any[]) {
+      // Loop over the factories
+      factories.forEach((factoryArgs) => {
+        // Register each of them, applying all
+        // values as arguments
+        this.register.apply(this, factoryArgs);
+      });
+
+      // Support chaining
+      return this;
+    }
+
+    register(key: string, constructor: any, ...args:any[])  {
       // This generates a new factory constructor, applying
       // the additional args to the original constructor;
       // it preserves the name of the original constructor
@@ -58,8 +70,8 @@ module n3Charts.Utils {
         instance: instance
       });
 
-      // Support chaining
-      return this;
+      // Return the instance
+      return instance;
     }
 
     unregister(factoryKey): FactoryManager {
