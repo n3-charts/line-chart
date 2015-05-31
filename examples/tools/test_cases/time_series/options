@@ -1,0 +1,19 @@
+axes: {
+        x: {
+          type: "date",
+          key: "x"
+        },
+        y: {type: "linear"}
+      },
+      series: [
+        {
+          y: "val_0",
+          label: "A time series",
+          color: "#9467bd",
+          type: "line",
+          thickness: "1px"
+        }
+      ],
+      lineMode: "linear",
+      tension: 0.7,
+      tooltip: {mode: 'axes', interpolate: false}

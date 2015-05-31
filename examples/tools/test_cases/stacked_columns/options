@@ -1,0 +1,55 @@
+stacks: [
+        {series: ['series_0', 'series_1', 'series_2'], axis:'y'},
+        {series: ['series_4', 'series_5'], axis:'y2'}
+      ],
+      series: [
+        {
+          id: 'series_0',
+          y: "val_0",
+          label: "First",
+          type: "column",
+          thickness: "1px"
+        },
+        {
+          id: 'series_1',
+          y: "val_1",
+          label: "Second",
+          type: "column",
+          thickness: "1px"
+        },
+        {
+          id: 'series_2',
+          y: "val_2",
+          label: "Third",
+          type: "column",
+          thickness: "1px"
+        },
+        {
+          id: 'series_4',
+          y: "val_1",
+          label: "Second",
+          type: "column",
+          thickness: "1px",
+          axis: 'y2'
+        },
+        {
+          id: 'series_5',
+          y: "val_2",
+          label: "Third",
+          type: "column",
+          thickness: "1px",
+          axis: 'y2'
+        },
+        {
+          id: 'series_6',
+          y: "val_2",
+          label: "Fourth",
+          type: "column",
+          thickness: "1px",
+          axis: 'y2'
+        }
+      ],
+      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
+      lineMode: "linear",
+      tension: 0.7,
+      tooltip: {mode: 'scrubber', formatter: function(x, y, series) {return series.label + ' : ' + y + '%';}}

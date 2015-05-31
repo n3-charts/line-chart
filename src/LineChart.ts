@@ -1,5 +1,3 @@
-/// <reference path='app.ts' />
-
 module n3Charts {
   'use strict';
 
@@ -49,7 +47,7 @@ module n3Charts {
       this.eventMgr.trigger('create');
 
       // Trigger the update event
-      scope.$watch('options, data', () => {
+      scope.$watch('options+data', () => {
         // Call the update event with a copy of the options
         // to avoid infinite digest loop
         this.eventMgr.trigger('update', angular.copy(scope.options), attributes);
@@ -64,7 +62,7 @@ module n3Charts {
     // and to inject stuff into the directive
     static factory() {
 
-        // Let's craete a directive factory, that can be instanciated
+        // Let's create a directive factory, that can be instanciated
         // according to the arguments in the constructor
         var directive = (em: Utils.EventManager, fm: Utils.FactoryManager) => new LineChart(em, fm);
 
