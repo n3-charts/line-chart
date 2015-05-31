@@ -10,7 +10,7 @@ module n3Charts.Factory {
     constructor(public side: string) {
       super();
 
-      if (['y', 'x'].indexOf(side) < 0) {
+      if (['x', 'y'].indexOf(side) < 0) {
         throw new TypeError('Wrong axis side : ' + side);
       }
     }

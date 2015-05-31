@@ -9,7 +9,7 @@ module n3Charts {
   export class LineChart implements ng.IDirective  {
 
     public scope = {
-      datasets: '=',
+      data: '=',
       options: '='
     };
 
@@ -17,60 +17,38 @@ module n3Charts {
     public replace = true;
     public template = '<div></div>';
 
-    constructor(public eventMgr: Utils.EventManager, public factoryMgr: Utils.FactoryManager) {
-
-    }
-
     link = (scope: ILineChartScope, element: JQuery, attributes: ng.IAttributes) => {
+      var eventMgr = new Utils.EventManager();
+      var factoryMgr = new Utils.FactoryManager();
 
       // Initialize global events
-      this.eventMgr.init([
-        'create',  // on creation of the chart
-        'update',  // on update of the chart
-        'destroy', // on destroying the chart
-        'hover',   // on hover over a data point or column
-        'click',   // on click on a data point or column
-        'focus',   // on focus of a data point from a snappy tooltip
-        'toggle',  // on toggling series' visibility
-      ]);
+      eventMgr.init(Utils.EventManager.EVENTS);
 
       // Register all factories
       // Note: we can apply additional arguments to each factory
-      this.factoryMgr.register('container', Factory.Container, element[0]);
-      this.factoryMgr.register('x-axis', Factory.Axis, 'x');
-      this.factoryMgr.register('y-axis', Factory.Axis, 'y');
+      factoryMgr.registerMany([
+        ['container', Factory.Container, element[0]],
+        ['x-axis', Factory.Axis, 'x'],
+        ['y-axis', Factory.Axis, 'y'],
+        ['style-sheet', Style.DefaultStyle],
+      ]);
 
       // Initialize all factories
-      this.factoryMgr.all().map((f) => f.instance.init(f.key, this.eventMgr, this.factoryMgr));
+      factoryMgr.all().forEach((f) => f.instance.init(f.key, eventMgr, factoryMgr));
 
       // Trigger the create event
-      this.eventMgr.trigger('create');
+      eventMgr.trigger('create');
+
 
       // Trigger the update event
       scope.$watch('options+data', () => {
         // Call the update event with a copy of the options
         // to avoid infinite digest loop
-        this.eventMgr.trigger('update', angular.copy(scope.options), attributes);
+        eventMgr.trigger('update', angular.copy(scope.options), attributes);
       }, true);
 
       // Trigger the destroy event
-      scope.$on('$destroy', () => this.eventMgr.trigger('destroy'));
+      scope.$on('$destroy', () => eventMgr.trigger('destroy'));
     };
-
-    // This creates a callable directive factory
-    // we need this to use TS classes for directives
-    // and to inject stuff into the directive
-    static factory() {
-
-        // Let's create a directive factory, that can be instanciated
-        // according to the arguments in the constructor
-        var directive = (em: Utils.EventManager, fm: Utils.FactoryManager) => new LineChart(em, fm);
-
-        // Let's define the injected stuff
-        directive.$inject = ['n3EventManager', 'n3FactoryManager'];
-
-        // Here you go, return the directive
-        return directive;
-    }
   }
 }

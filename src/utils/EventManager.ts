@@ -19,7 +19,6 @@ module n3Charts.Utils {
       return new EventManager().init(EventManager.EVENTS);
     };
 
-
     init(events:string[]) : EventManager {
       // Generate a new d3.dispatch event dispatcher
       this._dispatch = d3.dispatch.apply(this, events);
