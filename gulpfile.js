@@ -79,6 +79,10 @@ gulp.task('watch', ['compile:source:concat', 'test'], function () {
   gulp.watch([paths.tests.from, paths.source.from], [['compile:source:concat', 'test']])
 });
 
+gulp.task('quick-watch', ['compile:source:concat'], function () {
+  gulp.watch([paths.source.from], [['compile:source:concat']])
+});
+
 gulp.task('coveralls', function() {
   gulp.src('coverage/**/lcov.info')
     .pipe($.coveralls());
