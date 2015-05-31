@@ -2,15 +2,19 @@ module n3Charts {
   'use strict';
 
   interface ILineChartScope extends ng.IScope {
+    data;
     datasets;
     options;
+    styles;
   }
 
   export class LineChart implements ng.IDirective  {
 
     public scope = {
       data: '=',
-      options: '='
+      datasets: '=',
+      options: '=',
+      styles: '='
     };
 
     public restrict = 'E';
@@ -44,7 +48,7 @@ module n3Charts {
       scope.$watch('options+data', () => {
         // Call the update event with a copy of the options
         // to avoid infinite digest loop
-        eventMgr.trigger('update', angular.copy(scope.options), attributes);
+        eventMgr.trigger('update', scope.datasets, angular.copy(scope.options), attributes);
       }, true);
 
       // Trigger the destroy event
