@@ -1,1 +1,2 @@
-/// <reference path='DefaultStyle.ts' />
+/// <reference path='Default.ts' />
+/// <reference path='Monokai.ts' />

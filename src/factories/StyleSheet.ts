@@ -3,19 +3,38 @@ module n3Charts.Factory {
 
   export class StyleSheet extends Utils.BaseFactory {
 
-    public style: Utils.IFactory;
-
     update(datasets, options, attributes: ng.IAttributes) {
-      // Load a style
-      this.style = new Style.DefaultStyle();
+      // Get the current Style
+      var style = Style.Default.template;
+      // Get the svg root node
+      var container: Factory.Container = this.factoryMgr.get('container');
 
-      // Update a style
-      this.style.update(datasets, options, attributes);
+      // Apply the style
+      for (var selector in style) {
+        if (selector === '.') {
+          container.svg.style(style[selector]);
+        } else if (style.hasOwnProperty(selector)) {
+          container.svg.selectAll(selector)
+            .style(style[selector]);
+        }
+      }
     }
 
     destroy() {
-      // Destroy Style
-      this.style.destroy();
+      // Get the current Style
+      var style = Style.Default.template;
+      // Get the svg root node
+      var container: Factory.Container = this.factoryMgr.get('container');
+
+      // Remove the style
+      for (var selector in style) {
+        if (selector === '.') {
+          container.svg.style('');
+        } else if (style.hasOwnProperty(selector)) {
+          container.svg.selectAll(selector)
+            .style('');
+        }
+      }
     }
   }
 }
