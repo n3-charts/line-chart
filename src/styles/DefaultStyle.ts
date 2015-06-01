@@ -3,6 +3,8 @@ module n3Charts.Style {
 
   export class DefaultStyle extends Utils.BaseFactory {
 
+    public colorPrimary = 'steelblue';
+
     private styleAxis(axis:Factory.Axis) {
       axis.svg.style({
         'font': '10px Courier',
@@ -23,13 +25,14 @@ module n3Charts.Style {
       });
     }
 
-    update() {
+    update(datasets, options, attributes: ng.IAttributes) {
       this.styleAxis(this.factoryMgr.get('x-axis'));
       this.styleAxis(this.factoryMgr.get('y-axis'));
     }
 
     destroy() {
-
+      this.unStyleAxis(this.factoryMgr.get('x-axis'));
+      this.unStyleAxis(this.factoryMgr.get('y-axis'));
     }
   }
 }

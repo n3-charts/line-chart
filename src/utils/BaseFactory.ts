@@ -23,7 +23,7 @@ module n3Charts.Utils {
       // This methods need to be overwritten by factories
     }
 
-    update(options, attributes: ng.IAttributes) {
+    update(datasets, options, attributes: ng.IAttributes) {
       // This methods need to be overwritten by factories
     }
 
