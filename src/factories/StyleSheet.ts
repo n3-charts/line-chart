@@ -3,36 +3,51 @@ module n3Charts.Factory {
 
   export class StyleSheet extends Utils.BaseFactory {
 
+    private style = Style.Default.template;
+
     update(datasets, options, attributes: ng.IAttributes) {
-      // Get the current Style
-      var style = Style.Default.template;
       // Get the svg root node
       var container: Factory.Container = this.factoryMgr.get('container');
 
-      // Apply the style
+      this.updateStyle(container.svg, this.style);
+    }
+
+    destroy() {
+      // Get the svg root node
+      var container: Factory.Container = this.factoryMgr.get('container');
+
+      this.destroyStyle(container.svg, this.style);
+    }
+
+    updateStyle(selection: D3.Selection, style) {
+      // Update the style
       for (var selector in style) {
         if (selector === '.') {
-          container.svg.style(style[selector]);
+          selection.style(style[selector]);
         } else if (style.hasOwnProperty(selector)) {
-          container.svg.selectAll(selector)
+          selection.selectAll(selector)
             .style(style[selector]);
         }
       }
     }
 
-    destroy() {
-      // Get the current Style
-      var style = Style.Default.template;
-      // Get the svg root node
-      var container: Factory.Container = this.factoryMgr.get('container');
-
+    destroyStyle(selection: D3.Selection, style) {
+      var key: string = undefined;
       // Remove the style
       for (var selector in style) {
         if (selector === '.') {
-          container.svg.style('');
+          for (key in style[selector]) {
+            if (style[selector].hasOwnProperty(key)) {
+              selection.style(key, '');
+            }
+          }
         } else if (style.hasOwnProperty(selector)) {
-          container.svg.selectAll(selector)
-            .style('');
+          for (key in style[selector]) {
+            if (style[selector].hasOwnProperty(key)) {
+              selection.selectAll(selector)
+                .style(key, '');
+            }
+          }
         }
       }
     }
