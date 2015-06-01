@@ -22,7 +22,7 @@ module n3Charts.Factory {
       this.createAxis(vis);
     }
 
-    update(options, attributes: ng.IAttributes) {
+    update(datasets, options, attributes: ng.IAttributes) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: IDimension = container.getDimensions();

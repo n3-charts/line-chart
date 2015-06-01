@@ -1,7 +1,7 @@
 /// <reference path='../typings/tsd.d.ts' />
 
 /// <reference path='utils/_index.ts' />
-/// <reference path='style/_index.ts' />
+/// <reference path='styles/_index.ts' />
 /// <reference path='factories/_index.ts' />
 
 /// <reference path='LineChart.ts' />

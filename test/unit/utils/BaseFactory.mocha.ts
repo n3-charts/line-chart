@@ -25,7 +25,7 @@ describe('n3Charts.Utils.BaseFactory', () => {
   beforeEach(() => {
 
     childFactoryStub = new ChildFactoryStub();
-    eventMgr.init(['create', 'update', 'destroy']);
+    eventMgr.init(n3Charts.Utils.EventManager.EVENTS);
   });
 
   describe('init()', () => {
