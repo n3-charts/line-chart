@@ -32,8 +32,9 @@ module n3Charts {
       // Note: we can apply additional arguments to each factory
       factoryMgr.registerMany([
         ['container', Factory.Container, element[0]],
-        ['x-axis', Factory.Axis, 'x'],
-        ['y-axis', Factory.Axis, 'y'],
+        ['x-axis', Factory.Axis, Factory.Axis.SIDE_X],
+        ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
+        ['lines-container', Factory.Series.LineSeriesContainer, 'y'],
         ['style', Factory.StyleSheet],
       ]);
 
@@ -48,7 +49,7 @@ module n3Charts {
       scope.$watch('options+data', () => {
         // Call the update event with a copy of the options
         // to avoid infinite digest loop
-        eventMgr.trigger('update', scope.datasets, angular.copy(scope.options), attributes);
+        eventMgr.trigger('update', scope.datasets, new Utils.Options(angular.copy(scope.options)));
       }, true);
 
       // Trigger the destroy event

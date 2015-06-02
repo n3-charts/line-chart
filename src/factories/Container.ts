@@ -29,7 +29,7 @@ module n3Charts.Factory {
       this.createContainer();
     }
 
-    update(datasets, options, attributes: ng.IAttributes) {
+    update(datasets, options) {
       // Compute the dimensions
       this.dim = this.getDimensions();
 
