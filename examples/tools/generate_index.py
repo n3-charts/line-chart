@@ -82,7 +82,7 @@ def gather_examples(tests_dir):
     for test in os.listdir('.'):
       example = {}
       example['name'] = os.path.basename(test)
-      example['data'] = get_content(test + '/data')
+      example['datasets'] = get_content(test + '/datasets')
       example['options'] = get_content(test + '/options')
       examples.append(example)
 
@@ -116,7 +116,7 @@ with cd(current_dir):
       values = []
       for example in examples:
         gp = m.group(1)
-        gp = re.sub(r'%data%', example['data'], gp)
+        gp = re.sub(r'%datasets%', example['datasets'], gp)
         gp = re.sub(r'%options%', example['options'], gp)
         gp = re.sub(r'%name%', example['name'], gp)
 

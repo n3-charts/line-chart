@@ -6,11 +6,13 @@ module n3Charts.Factory {
     public svg: D3.Selection;
     public scale: D3.Scale.Scale;
     public axis: D3.Svg.Axis;
+    public static SIDE_X: string = 'x';
+    public static SIDE_Y: string = 'y';
 
     constructor(public side: string) {
       super();
 
-      if (['x', 'y'].indexOf(side) < 0) {
+      if ([Axis.SIDE_X, Axis.SIDE_Y].indexOf(side) < 0) {
         throw new TypeError('Wrong axis side : ' + side);
       }
     }
@@ -22,7 +24,7 @@ module n3Charts.Factory {
       this.createAxis(vis);
     }
 
-    update(datasets, options, attributes: ng.IAttributes) {
+    update(datasets, options:Utils.Options) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: IDimension = container.getDimensions();
@@ -30,11 +32,71 @@ module n3Charts.Factory {
       this.scale = this.getScale(dim);
       this.axis = this.getAxis();
 
-      this.updateAxis(dim);
+      this.updateScaleDomain(datasets, options);
+      this.updateAxisSize(dim);
     }
 
     destroy() {
       this.destroyAxis();
+    }
+
+    updateScaleDomain(datasets, options) {
+      this.scale.domain(this.getExtent(datasets, options));
+    }
+
+    getExtentForDatasets(
+      datasets,
+      filter: (key:string) => Boolean,
+      accessor: (datum, datasetKey:string) => number[]
+    ) {
+      var min = Number.POSITIVE_INFINITY;
+      var max = Number.NEGATIVE_INFINITY;
+
+      for (var key in datasets) {
+        if (!filter(key)) continue;
+
+        datasets[key].forEach((datum) => {
+          var data = accessor(datum, key);
+          if (data[0] < min) min = data[0];
+          if (data[1] > max) max = data[1];
+        });
+      }
+
+      return [min, max];
+    }
+
+    getExtent(datasets, options) {
+      if (this.isAbscissas()) {
+        var abscissasKey = options.axes.x.key;
+        return this.getExtentForDatasets(
+          datasets,
+          () => true,
+          (datum) => [datum[abscissasKey], datum[abscissasKey]]
+        );
+      }
+
+      var datasetsForSide = [];
+      var seriesForDataset = {};
+      options.series.forEach((series) => {
+        if (series.axis === this.side) {
+          datasetsForSide.push(series.dataset);
+          if (!seriesForDataset[series.dataset]) seriesForDataset[series.dataset] = [];
+          seriesForDataset[series.dataset].push(series);
+        }
+      });
+
+      return this.getExtentForDatasets(
+        datasets,
+        (key) => datasetsForSide.indexOf(key) > -1,
+        (datum, datasetKey) => {
+          var data = seriesForDataset[datasetKey].map((series) => datum[series.key]);
+          return [<number>d3.min(data), <number>d3.max(data)]
+        }
+      );
+    }
+
+    isAbscissas() {
+      return this.side === Axis.SIDE_X;
     }
 
     createAxis(vis: D3.Selection) {
@@ -44,12 +106,12 @@ module n3Charts.Factory {
           .attr('class', 'axis ' + this.side + '-axis');
     }
 
-    updateAxis(dim: IDimension) {
+    updateAxisSize(dim: IDimension) {
       // Move the axis container to the correct position
-      if (this.side === 'x') {
+      if (this.side === Axis.SIDE_X) {
         this.svg
           .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
-      } else if (this.side === 'y') {
+      } else if (this.side === Axis.SIDE_Y) {
         this.svg
           .attr('transform', 'translate(0, 0)');
       }
@@ -67,9 +129,9 @@ module n3Charts.Factory {
       // Create a d3.scale object
       var scale = d3.scale.linear();
 
-      if (this.side === 'x') {
+      if (this.side === Axis.SIDE_X) {
         scale.range([0, dim.innerWidth]);
-      } else if (this.side === 'y') {
+      } else if (this.side === Axis.SIDE_Y) {
         scale.range([dim.innerHeight, 0]);
       }
 
@@ -81,9 +143,9 @@ module n3Charts.Factory {
       var axis = d3.svg.axis()
         .scale(this.scale);
 
-      if (this.side === 'x') {
+      if (this.side === Axis.SIDE_X) {
         axis.orient('bottom');
-      } else if (this.side === 'y') {
+      } else if (this.side === Axis.SIDE_Y) {
         axis.orient('left');
       }
 

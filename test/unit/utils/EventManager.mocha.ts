@@ -9,7 +9,7 @@ describe('n3Charts.Utils.EventManager', () => {
   });
 
   describe('init()', () => {
-    
+
     it('should parse arguments', () => {
 
       expect(() => eventMgr.init(['test'])).to.not.throwError();
@@ -24,7 +24,7 @@ describe('n3Charts.Utils.EventManager', () => {
   });
 
   describe('on()', () => {
-    
+
     it('should throw a TypeError, when the event is not initialized', () => {
 
       var e = eventMgr.init(['test']);
@@ -42,7 +42,7 @@ describe('n3Charts.Utils.EventManager', () => {
   });
 
   describe('trigger()', () => {
-  
+
     it('should trigger the handler', () => {
 
       var triggered = false;
@@ -63,7 +63,7 @@ describe('n3Charts.Utils.EventManager', () => {
       e.on('test', () => triggered1 = true);
       e.on('test', () => triggered2 = true);
       e.trigger('test');
-      
+
       expect(triggered1).to.equal(false);
       expect(triggered2).to.equal(true);
     });
@@ -78,7 +78,7 @@ describe('n3Charts.Utils.EventManager', () => {
       e.on('test', () => triggered2 = true);
       e.on('test', null);
       e.trigger('test');
-      
+
       expect(triggered1).to.equal(false);
       expect(triggered2).to.equal(false);
     });

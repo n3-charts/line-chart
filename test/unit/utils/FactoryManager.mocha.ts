@@ -55,7 +55,7 @@ describe('n3Charts.Utils.FactoryManager', () => {
     it('should return all factory entries', () => {
 
       var enties: n3Charts.Utils.IFactoryEntry[] = undefined;
-      
+
       factoryMgr.register('stub1', FactoryStub);
       factoryMgr.register('stub2', FactoryStub);
 
@@ -66,7 +66,7 @@ describe('n3Charts.Utils.FactoryManager', () => {
 
       expect(enties[1].key).to.equal('stub2');
       expect(enties[1].instance).to.be.a(FactoryStub);
-      
+
       expect(enties[0].instance).to.not.equal(enties[1].instance);
     });
   });
@@ -77,7 +77,7 @@ describe('n3Charts.Utils.FactoryManager', () => {
 
       var factoryStub1 = undefined;
       var factoryStub2 = undefined;
-        
+
       factoryMgr.registerMany([
         ['stub1', FactoryStub, 'arg1', 2, true],
         ['stub2', FactoryStub, 'arg2', 3, false]
@@ -88,7 +88,7 @@ describe('n3Charts.Utils.FactoryManager', () => {
       expect(factoryStub1.args[0]).to.equal('arg1');
       expect(factoryStub1.args[1]).to.equal(2);
       expect(factoryStub1.args[2]).to.equal(true);
-      
+
       factoryStub2 = factoryMgr.get('stub2');
       expect(factoryStub2).to.be.a(FactoryStub);
       expect(factoryStub2.args[0]).to.equal('arg2');
@@ -97,7 +97,7 @@ describe('n3Charts.Utils.FactoryManager', () => {
     });
 
     it('should return the instance', () => {
-      
+
       expect(factoryMgr.registerMany([])).to.equal(factoryMgr);
     });
   });
@@ -117,7 +117,7 @@ describe('n3Charts.Utils.FactoryManager', () => {
     });
 
     it('should return the instance of the factory', () => {
-      
+
       var f = factoryMgr.register('stub', FactoryStub);
 
       expect(f).to.be.a(FactoryStub);
@@ -127,9 +127,9 @@ describe('n3Charts.Utils.FactoryManager', () => {
   describe('unregister()', () => {
 
     it('should remove the factory entry', () => {
-      
+
       factoryMgr.register('stub', FactoryStub);
-      
+
       expect(factoryMgr.index('stub')).to.equal(0);
       expect(factoryMgr.get('stub')).to.be.a(FactoryStub);
 
@@ -140,7 +140,7 @@ describe('n3Charts.Utils.FactoryManager', () => {
     });
 
     it('should return the instance', () => {
-      
+
       factoryMgr.register('stub', FactoryStub);
 
       expect(factoryMgr.unregister('stub')).to.equal(factoryMgr);
