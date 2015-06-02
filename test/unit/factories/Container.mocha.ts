@@ -67,5 +67,31 @@ describe('n3Charts.Factory.Container', () => {
       expect(visProp.getAttribute('class')).to.equal('container');
     });
 
+    it('should create a data container', () => {
+
+      var dataContainer: SVGElement = undefined;
+
+      container.createRoot();
+      container.createContainer();
+
+      dataContainer = <SVGElement> domElement[0].getElementsByTagName('g')[1];
+
+      expect(dataContainer.getAttribute('class')).to.equal('data');
+    });
+
+    it('should provide a data property', () => {
+
+      var dataProp: SVGElement = undefined;
+
+      expect(container.data).to.equal(undefined);
+
+      container.createRoot();
+      container.createContainer();
+
+      dataProp = container.data[0][0];
+
+      expect(dataProp.getAttribute('class')).to.equal('data');
+    });
+
   });
 });

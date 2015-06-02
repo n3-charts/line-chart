@@ -53,12 +53,12 @@ module n3Charts.Factory {
       var max = Number.NEGATIVE_INFINITY;
 
       for (var key in datasets) {
-        if (!filter(key)) continue;
+        if (!filter(key)) { continue; };
 
         datasets[key].forEach((datum) => {
           var data = accessor(datum, key);
-          if (data[0] < min) min = data[0];
-          if (data[1] > max) max = data[1];
+          if (data[0] < min) { min = data[0]; }
+          if (data[1] > max) { max = data[1]; }
         });
       }
 
@@ -80,7 +80,9 @@ module n3Charts.Factory {
       options.series.forEach((series) => {
         if (series.axis === this.side) {
           datasetsForSide.push(series.dataset);
-          if (!seriesForDataset[series.dataset]) seriesForDataset[series.dataset] = [];
+          if (!seriesForDataset[series.dataset]) {
+            seriesForDataset[series.dataset] = [];
+          }
           seriesForDataset[series.dataset].push(series);
         }
       });
@@ -90,7 +92,7 @@ module n3Charts.Factory {
         (key) => datasetsForSide.indexOf(key) > -1,
         (datum, datasetKey) => {
           var data = seriesForDataset[datasetKey].map((series) => datum[series.key]);
-          return [<number>d3.min(data), <number>d3.max(data)]
+          return [<number>d3.min(data), <number>d3.max(data)];
         }
       );
     }

@@ -34,7 +34,7 @@ module n3Charts {
         ['container', Factory.Container, element[0]],
         ['x-axis', Factory.Axis, Factory.Axis.SIDE_X],
         ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
-        ['lines-container', Factory.Series.LineSeriesContainer, 'y'],
+        ['series-line', Factory.Series.Line],
         ['style', Factory.StyleSheet],
       ]);
 
