@@ -22,7 +22,7 @@
 <body ng-controller='ExamplesCtrl'>
   <div ng-repeat="example in examples" class="example">
     <div class="label">{{example.label}}</div>
-    <linechart data="example.data" options="example.options"></linechart>
+    <linechart datasets="example.datasets" options="example.options"></linechart>
   </div>
 
   <!-- <script src="%project_path%node_modules/moment/min/moment.min.js"></script> -->
@@ -33,7 +33,7 @@
   angular.module('example', ['n3-line-chart'])
   .controller('ExamplesCtrl', function($scope) {
     $scope.examples = [
-      %repeat%{data: [ %data% ], options: { %options% }, label: "%name%"}%repeat%
+      %repeat%{datasets: %datasets%, options: %options%, label: "%name%"}%repeat%
     ];
   });
   </script>

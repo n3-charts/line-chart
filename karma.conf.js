@@ -13,7 +13,7 @@ module.exports = function(config) {
       'build/LineChart.js',
       '.tmp/unit/**/*.js'
     ],
-    reporters: ['progress', 'coverage'],
+    reporters: ['dots', 'coverage'],
     coverageReporter: {
       type : 'lcovonly',
       dir : 'coverage/'
