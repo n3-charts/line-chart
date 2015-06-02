@@ -1,17 +1,11 @@
-series: [
+{series: [
         {
-          y: "val_0",
+          axis: "y",
+          dataset: "dataset0",
+          key: "val_0",
           label: "A line sinusoid",
           color: "#1f77b4",
           type: "line",
-          thickness: "1px"
-        },
-        {y: "val_0", label: "A column sinusoid", color: "#ff7f0e", type: "column"},
-        {
-          y: "val_0",
-          label: "An area sinusoid",
-          color: "#2ca02c",
-          type: "area",
           thickness: "1px"
         }
       ],
@@ -19,3 +13,4 @@ series: [
       lineMode: "linear",
       tension: 0.7,
       tooltip: {mode: 'axes', interpolate: false}
+}

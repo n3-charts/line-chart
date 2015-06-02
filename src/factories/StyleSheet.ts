@@ -5,7 +5,7 @@ module n3Charts.Factory {
 
     private style = Style.Default.template;
 
-    update(datasets, options, attributes: ng.IAttributes) {
+    update(datasets, options) {
       // Get the svg root node
       var container: Factory.Container = this.factoryMgr.get('container');
 
