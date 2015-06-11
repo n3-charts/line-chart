@@ -34,7 +34,7 @@ module n3Charts {
         ['container', Factory.Container, element[0]],
         ['x-axis', Factory.Axis, Factory.Axis.SIDE_X],
         ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
-        ['lines-container', Factory.Series.LineSeriesContainer, 'y'],
+        ['series-line', Factory.Series.Line],
         ['style', Factory.StyleSheet],
       ]);
 
@@ -44,12 +44,13 @@ module n3Charts {
       // Trigger the create event
       eventMgr.trigger('create');
 
-
       // Trigger the update event
       scope.$watch('options+data', () => {
         // Call the update event with a copy of the options
-        // to avoid infinite digest loop
-        eventMgr.trigger('update', scope.datasets, new Utils.Options(angular.copy(scope.options)));
+        // and datasets to avoid infinite digest loop
+        var options = new Utils.Options(angular.copy(scope.options));
+        var datasets = new Utils.Dataset(angular.copy(scope.datasets), options);
+        eventMgr.trigger('update', datasets, options);
       }, true);
 
       // Trigger the destroy event
