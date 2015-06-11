@@ -1,1 +1,1 @@
-/// <reference path='LineSeriesContainer.ts' />
+/// <reference path='Line.ts' />
