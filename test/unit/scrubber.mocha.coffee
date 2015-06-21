@@ -121,6 +121,39 @@ describe 'scrubber tooltip', ->
       expect(tooltips[2].innerHTML()).to.equal('0 : 0')
       expect(tooltips[3].innerHTML()).to.equal('0 : 0')
 
+    it 'should set text-anchor for non rtl', ->
+      glass = element.childByClass('glass')
+
+      fakeMouse.hoverIn(glass)
+      fakeMouse.mouseMove(glass)
+      flushD3()
+
+      tooltips = element.childrenByClass('scrubberText')
+
+      expect(tooltips[0].getStyle('text-anchor')).to.equal('start')
+      expect(tooltips[1].getStyle('text-anchor')).to.equal('end')
+
+      expect(tooltips[2].getStyle('text-anchor')).to.equal('start')
+      expect(tooltips[3].getStyle('text-anchor')).to.equal('end')
+
+    it 'should invert text-anchor for rtl', ->
+      outerScope.$apply ->
+        outerScope.options.rtl = true
+
+      glass = element.childByClass('glass')
+
+      fakeMouse.hoverIn(glass)
+      fakeMouse.mouseMove(glass)
+      flushD3()
+
+      tooltips = element.childrenByClass('scrubberText')
+
+      expect(tooltips[0].getStyle('text-anchor')).to.equal('start')
+      expect(tooltips[1].getStyle('text-anchor')).to.equal('start')
+
+      expect(tooltips[2].getStyle('text-anchor')).to.equal('start')
+      expect(tooltips[3].getStyle('text-anchor')).to.equal('start')
+
     it 'should not show tooltips for invisble series', ->
       outerScope.$apply ->
         outerScope.options =

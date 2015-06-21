@@ -106,12 +106,23 @@
 
           xOffset = (if p.side is 'left' then series.xOffset else (-series.xOffset))
 
+          offsetWhenLeft = -3 - tickLength - xOffset
+          offsetWhenRight = 4 + tickLength + xOffset
+
           tt.select('text')
+            .style('text-anchor', ->
+              if p.side is 'left' and not options.rtl
+                return 'end'
+              else if p.side is 'left' and options.rtl or p.side is 'right' and not options.rtl
+                return 'start'
+              else
+                return 'end'
+            )
             .attr('transform', ->
               if p.side is 'left'
-                return "translate(#{-3 - tickLength - xOffset}, #{p.labelOffset+3})"
+                return "translate(#{offsetWhenLeft}, #{p.labelOffset+3})"
               else
-                return "translate(#{4 + tickLength + xOffset}, #{p.labelOffset+3})"
+                return "translate(#{offsetWhenRight}, #{p.labelOffset+3})"
             )
 
           tt.select('path')

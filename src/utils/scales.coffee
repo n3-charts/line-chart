@@ -122,18 +122,25 @@
           axis.selectAll('.tick>text')
             .attr('dy', null)
             .attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)')
-            .style('text-anchor', if options.axes.x.ticksRotate >= 0 then 'start' else 'end')
+            .style('text-anchor', ->
+              if not options.rtl
+                return if options.axes.x.ticksRotate >= 0 then 'start' else 'end'
+              else
+                return if options.axes.x.ticksRotate >= 0 then 'end' else 'start'
+            )
 
         if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
           yDomain = this.getVerticalDomain(options, data, series, 'y')
           scales.yScale.domain(yDomain).nice()
           axis = svg.selectAll('.y.axis')
             .call(scales.yAxis)
-          
+
           if options.axes.y.ticksRotate?
             axis.selectAll('.tick>text')
               .attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)')
-              .style('text-anchor', 'end')
+ 
+          axis.selectAll('.tick>text')
+            .style('text-anchor', if not options.rtl then 'end' else 'start')
 
         if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
           y2Domain = this.getVerticalDomain(options, data, series, 'y2')
@@ -144,8 +151,9 @@
           if options.axes.y2.ticksRotate?
             axis.selectAll('.tick>text')
               .attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)')
-              .style('text-anchor', 'start')
 
+          axis.selectAll('.tick>text')
+            .style('text-anchor', if not options.rtl then 'start' else 'end')
 
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]

@@ -69,7 +69,7 @@ directive('linechart', [
           }
         }
         if (options.drawLegend) {
-          _u.drawLegend(svg, options.series, dimensions, handlers, dispatch);
+          _u.drawLegend(svg, options, dimensions, handlers, dispatch);
         }
         if (options.tooltip.mode === 'scrubber') {
           return _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
@@ -480,9 +480,10 @@ mod.factory('n3utils', [
         }
         return widths;
       },
-      drawLegend: function(svg, series, dimensions, handlers, dispatch) {
-        var d, groups, legend, that, translateLegends;
+      drawLegend: function(svg, options, dimensions, handlers, dispatch) {
+        var d, groups, legend, series, that, translateLegends;
         that = this;
+        series = options.series;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
@@ -531,7 +532,13 @@ mod.factory('n3utils', [
             'stroke-width': '2px',
             'r': d / 2
           });
-          return item.append('text').attr({
+          return item.append('text').style('text-anchor', function() {
+            if (!options.rtl) {
+              return 'start';
+            } else {
+              return 'end';
+            }
+          }).attr({
             'class': function(d, i) {
               return "legendText series_" + i;
             },
@@ -993,6 +1000,7 @@ mod.factory('n3utils', [
         options.margin = this.sanitizeMargins(options.margin);
         options.lineMode || (options.lineMode = this.getDefaultOptions().lineMode);
         options.tension = /^\d+(\.\d+)?$/.test(options.tension) ? options.tension : this.getDefaultOptions().tension;
+        options.rtl = options.rtl ? true : false;
         options.drawLegend = options.drawLegend !== false;
         options.drawDots = options.drawDots !== false;
         if (!angular.isNumber(options.columnsHGap)) {
@@ -1286,7 +1294,21 @@ mod.factory('n3utils', [
         this.setXScale(scales.xScale, data, series, options.axes);
         axis = svg.selectAll('.x.axis').call(scales.xAxis);
         if (options.axes.x.ticksRotate != null) {
-          axis.selectAll('.tick>text').attr('dy', null).attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)').style('text-anchor', options.axes.x.ticksRotate >= 0 ? 'start' : 'end');
+          axis.selectAll('.tick>text').attr('dy', null).attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)').style('text-anchor', function() {
+            if (!options.rtl) {
+              if (options.axes.x.ticksRotate >= 0) {
+                return 'start';
+              } else {
+                return 'end';
+              }
+            } else {
+              if (options.axes.x.ticksRotate >= 0) {
+                return 'end';
+              } else {
+                return 'start';
+              }
+            }
+          });
         }
         if ((series.filter(function(s) {
           return s.axis === 'y' && s.visible !== false;
@@ -1295,7 +1317,9 @@ mod.factory('n3utils', [
           scales.yScale.domain(yDomain).nice();
           axis = svg.selectAll('.y.axis').call(scales.yAxis);
           if (options.axes.y.ticksRotate != null) {
-            axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)').style('text-anchor', 'end');
+            axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)').style('text-anchor', !options.rtl ? 'end' : 'start');
+          } else {
+            axis.selectAll('.tick>text').style('text-anchor', !options.rtl ? 'end' : 'start');
           }
         }
         if ((series.filter(function(s) {
@@ -1305,7 +1329,9 @@ mod.factory('n3utils', [
           scales.y2Scale.domain(y2Domain).nice();
           axis = svg.selectAll('.y2.axis').call(scales.y2Axis);
           if (options.axes.y2.ticksRotate != null) {
-            return axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)').style('text-anchor', 'start');
+            return axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)').style('text-anchor', !options.rtl ? 'start' : 'end');
+          } else {
+            return axis.selectAll('.tick>text').style('text-anchor', !options.rtl ? 'start' : 'end');
           }
         }
       },
@@ -1539,7 +1565,7 @@ mod.factory('n3utils', [
         positions = this.preventOverlapping(positions);
         tickLength = Math.max(15, 100 / columnWidth);
         return data.forEach(function(series, index) {
-          var item, p, tt, xOffset;
+          var item, offsetWhenLeft, offsetWhenRight, p, tt, xOffset;
           if (options.series[index].visible === false) {
             return;
           }
@@ -1547,11 +1573,21 @@ mod.factory('n3utils', [
           item = svg.select(".scrubberItem.series_" + index);
           tt = item.select("." + p.side + "TT");
           xOffset = (p.side === 'left' ? series.xOffset : -series.xOffset);
-          tt.select('text').attr('transform', function() {
-            if (p.side === 'left') {
-              return "translate(" + (-3 - tickLength - xOffset) + ", " + (p.labelOffset + 3) + ")";
+          offsetWhenLeft = -3 - tickLength - xOffset;
+          offsetWhenRight = 4 + tickLength + xOffset;
+          tt.select('text').style('text-anchor', function() {
+            if (p.side === 'left' && !options.rtl) {
+              return 'end';
+            } else if (p.side === 'left' && options.rtl || p.side === 'right' && !options.rtl) {
+              return 'start';
             } else {
-              return "translate(" + (4 + tickLength + xOffset) + ", " + (p.labelOffset + 3) + ")";
+              return 'end';
+            }
+          }).attr('transform', function() {
+            if (p.side === 'left') {
+              return "translate(" + offsetWhenLeft + ", " + (p.labelOffset + 3) + ")";
+            } else {
+              return "translate(" + offsetWhenRight + ", " + (p.labelOffset + 3) + ")";
             }
           });
           tt.select('path').attr('d', that.getScrubberPath(p.sizes[p.side] + 1, p.labelOffset, p.side, tickLength + xOffset));

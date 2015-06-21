@@ -13,6 +13,16 @@ describe 'options', ->
     o = n3utils.sanitizeOptions({})
     expect(o.columnsHGap).to.equal(5)
 
+  it 'should set default rtl to false', ->
+    o = n3utils.sanitizeOptions()
+    expect(o.rtl).to.equal(false)
+
+  it 'should parse rtl', ->
+    o = n3utils.sanitizeOptions({
+      rtl: true
+    })
+    expect(o.rtl).to.equal(true)
+
   describe 'stacks', ->
     it 'should create an empty array of none found', ->
       o = n3utils.sanitizeOptions()

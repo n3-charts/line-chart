@@ -43,8 +43,10 @@
 
         return widths
 
-      drawLegend: (svg, series, dimensions, handlers, dispatch) ->
+      drawLegend: (svg, options, dimensions, handlers, dispatch) ->
         that = this
+        
+        series = options.series
         legend = svg.append('g').attr('class', 'legend')
 
         d = 16
@@ -105,6 +107,12 @@
               )
 
             item.append('text')
+              .style('text-anchor', ->
+                if not options.rtl
+                  return 'start'
+                else
+                  return 'end'
+              )
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
                 'font-family': 'Courier'

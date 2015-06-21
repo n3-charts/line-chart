@@ -62,6 +62,16 @@ describe 'legend', ->
     expect(clip.domElement.tagName).to.equal('clipPath')
     expect(clip.innerHTML()).to.equal('<circle r="8"></circle>')
 
+  it 'should set text-anchor for non rtl', inject (fakeMouse) ->
+    legendItem = element.childrenByClass('legendItem')[0]
+    expect(legendItem.children()[3].getStyle('text-anchor')).to.equal('start')
+  
+  it 'should invert text-anchor for rtl', inject (fakeMouse) ->
+    outerScope.$apply ->
+      outerScope.options.rtl = true
+    legendItem = element.childrenByClass('legendItem')[0]
+    expect(legendItem.children()[3].getStyle('text-anchor')).to.equal('end')
+
   it 'should create legend elements', inject (fakeMouse) ->
     legendGroup = element.childByClass('legend')
     expect(legendGroup.children().length).to.equal(2)
