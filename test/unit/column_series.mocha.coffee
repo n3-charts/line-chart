@@ -47,6 +47,35 @@ describe 'column series', ->
 
 
   describe 'utils', ->
+    describe 'getMinDelta', ->
+      it 'should compute the minimum difference', inject (n3utils) ->
+        seriesData = [{
+            values: [{x: 1}, {x: 3}, {x:4}]
+        }]
+        scaleMock = (d) => d
+        range = [0, 4]
+
+        expect(n3utils.getMinDelta(seriesData, 'x', scaleMock, range)).to.equal(1)
+
+      it 'should compute the minimum difference in a given range', inject (n3utils) ->
+        seriesData = [{
+            values: [{x: 1}, {x: 3}, {x:5}, {x:6}]
+        }]
+        scaleMock = (d) => d
+        range = [1, 5]
+
+        expect(n3utils.getMinDelta(seriesData, 'x', scaleMock, range)).to.equal(2)
+
+      it 'should compute the minimum difference in a given scale', inject (n3utils) ->
+        seriesData = [{
+            values: [{x: 1}, {x: 3}, {x:5}, {x:6}]
+        }]
+        scaleMock = (d) => 2*d
+        range = [0, 24]
+
+        expect(n3utils.getMinDelta(seriesData, 'x', scaleMock, range)).to.equal(2)
+
+
     describe 'getPseudoColumns', ->
       it 'should group column series by stacks', inject (n3utils) ->
         options =
@@ -113,6 +142,8 @@ describe 'column series', ->
             type: 'column'
           ]
 
+
+
   it 'should draw columns', ->
     content = element.childByClass('content')
 
@@ -136,6 +167,26 @@ describe 'column series', ->
       expect(columns[i].domElement.nodeName).to.equal('rect')
       expect(columns[i].getStyle('fill-opacity')).to.equal('0.7')
       i++
+
+  it 'should compute the correct column width', ->
+    
+    outerScope.$apply ->
+      outerScope.data = [
+        {x: 0, value: 0}
+        {x: 1, value: 8}
+        {x: 2, value: 15}
+        {x: 3, value: 16}
+        {x: 4, value: 23}
+        {x: 5, value: 42}
+      ]
+      outerScope.options = series: [
+        y: 'value'
+        color: '#4682b4'
+        type: 'column'
+      ]
+
+    cols = element.childByClass('columnGroup').children()
+    expect(cols[0].getAttribute('width')).to.equal('109')
 
   it 'should draw zero value columns with full height and opacity to zero', ->
     outerScope.$apply ->

@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.9 - 27 May 2015
+line-chart - v1.1.9 - 21 June 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -62,7 +62,7 @@ directive('linechart', [
         }
         _u.createContent(svg, id, options, handlers);
         if (dataPerSeries.length) {
-          columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options);
+          columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options);
           _u.drawArea(svg, axes, dataPerSeries, options, handlers).drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers, dispatch).drawLines(svg, axes, dataPerSeries, options, handlers);
           if (options.drawDots) {
             _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch);
@@ -244,8 +244,25 @@ mod.factory('n3utils', [
           keys: keys
         };
       },
-      getBestColumnWidth: function(dimensions, seriesData, options) {
-        var avWidth, keys, n, pseudoColumns, seriesCount, _ref;
+      getMinDelta: function(seriesData, key, scale, range) {
+        return d3.min(seriesData.map(function(series) {
+          return series.values.map(function(d) {
+            return scale(d[key]);
+          }).filter(function(e) {
+            return e >= range[0] && e <= range[1];
+          }).reduce(function(prev, cur, i, arr) {
+            var diff;
+            diff = i > 0 ? cur - arr[i - 1] : Number.MAX_VALUE;
+            if (diff < prev) {
+              return diff;
+            } else {
+              return prev;
+            }
+          }, Number.MAX_VALUE);
+        }));
+      },
+      getBestColumnWidth: function(axes, dimensions, seriesData, options) {
+        var colData, delta, innerWidth, keys, nSeries, pseudoColumns, _ref;
         if (!(seriesData && seriesData.length !== 0)) {
           return 10;
         }
@@ -255,10 +272,13 @@ mod.factory('n3utils', [
           return 10;
         }
         _ref = this.getPseudoColumns(seriesData, options), pseudoColumns = _ref.pseudoColumns, keys = _ref.keys;
-        n = seriesData[0].values.length + 2;
-        seriesCount = keys.length;
-        avWidth = dimensions.width - dimensions.left - dimensions.right;
-        return parseInt(Math.max((avWidth - (n - 1) * options.columnsHGap) / (n * seriesCount), 5));
+        innerWidth = dimensions.width - dimensions.left - dimensions.right;
+        colData = seriesData.filter(function(d) {
+          return pseudoColumns.hasOwnProperty(d.id);
+        });
+        delta = this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth]);
+        nSeries = keys.length;
+        return parseInt((delta - options.columnsHGap) / nSeries);
       },
       getColumnAxis: function(data, columnWidth, options) {
         var keys, pseudoColumns, x1, _ref;
