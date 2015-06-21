@@ -281,6 +281,9 @@ mod.factory('n3utils', [
           return pseudoColumns.hasOwnProperty(d.id);
         });
         delta = this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth]);
+        if (delta > innerWidth) {
+          delta = 0.25 * innerWidth;
+        }
         nSeries = keys.length;
         return parseInt((delta - options.columnsHGap) / nSeries);
       },

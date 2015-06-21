@@ -56,10 +56,10 @@
         )
 
         # Get the smallest difference on the x axis in the visible range
-        delta = if this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth])
+        delta = this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth])
         
         # We get a big value when we cannot compute the difference
-        if delta > innerWidth:
+        if delta > innerWidth
           # Set to some good looking ordinary value
           delta = 0.25 * innerWidth
 
