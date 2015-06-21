@@ -53,7 +53,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       _u.createContent(svg, id, options, handlers)
 
       if dataPerSeries.length
-        columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options)
+        columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options)
 
         _u
           .drawArea(svg, axes, dataPerSeries, options, handlers)

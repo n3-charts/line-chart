@@ -43,6 +43,8 @@ module.exports = function(grunt) {
 
       unminified: {
         options: {
+          singleRun: true,
+          autoWatch: false,
           files: [
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
@@ -61,6 +63,8 @@ module.exports = function(grunt) {
 
       minified: {
         options: {
+          singleRun: true,
+          autoWatch: false,
           files: [
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
