@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.9 - 27 May 2015
+line-chart - v1.1.9 - 21 June 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -59,7 +59,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       _u.createContent(svg, id, options, handlers)
 
       if dataPerSeries.length
-        columnWidth = _u.getBestColumnWidth(dimensions, dataPerSeries, options)
+        columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options)
 
         _u
           .drawArea(svg, axes, dataPerSeries, options, handlers)
@@ -243,19 +243,56 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return {pseudoColumns, keys}
 
-      getBestColumnWidth: (dimensions, seriesData, options) ->
+      getMinDelta: (seriesData, key, scale, range) ->
+        return d3.min(
+          # Compute the minimum difference along an axis on all series
+          seriesData.map (series) ->
+            # Compute delta
+            return series.values
+              # Look at all sclaed values on the axis
+              .map((d) -> scale(d[key]))
+              # Select only columns in the visible range
+              .filter((e) ->
+                return if range then e >= range[0] && e <= range[1] else true
+              )
+              # Return the smallest difference between 2 values
+              .reduce((prev, cur, i, arr) ->
+                # Get the difference from the current value
+                # with the previous value in the array
+                diff = if i > 0 then cur - arr[i - 1] else Number.MAX_VALUE
+                # Return the new difference if it is smaller
+                # than the previous difference
+                return if diff < prev then diff else prev
+              , Number.MAX_VALUE)
+        )
+
+      getBestColumnWidth: (axes, dimensions, seriesData, options) ->
         return 10 unless seriesData and seriesData.length isnt 0
 
         return 10 if (seriesData.filter (s) -> s.type is 'column').length is 0
 
         {pseudoColumns, keys} = this.getPseudoColumns(seriesData, options)
 
-        # +2 because abscissas will be extended to one more row at each end
-        n = seriesData[0].values.length + 2
-        seriesCount = keys.length
-        avWidth = dimensions.width - dimensions.left - dimensions.right
+        # iner width of the chart area
+        innerWidth = dimensions.width - dimensions.left - dimensions.right
 
-        return parseInt(Math.max((avWidth - (n - 1)*options.columnsHGap) / (n*seriesCount), 5))
+        # Get column data (= columns that are not stacked)
+        colData = seriesData.filter((d) ->
+          return pseudoColumns.hasOwnProperty(d.id)
+        )
+
+        # Get the smallest difference on the x axis in the visible range
+        delta = this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth])
+        
+        # We get a big value when we cannot compute the difference
+        if delta > innerWidth
+          # Set to some good looking ordinary value
+          delta = 0.25 * innerWidth
+
+        # number of series to display
+        nSeries = keys.length
+
+        return parseInt((delta - options.columnsHGap) / nSeries)
 
       getColumnAxis: (data, columnWidth, options) ->
         {pseudoColumns, keys} = this.getPseudoColumns(data, options)
@@ -268,7 +305,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           return 0 unless pseudoColumns[s.id]?
           index = pseudoColumns[s.id]
           return x1(index) - keys.length*columnWidth/2
-
 
       drawColumns: (svg, axes, data, columnWidth, options, handlers, dispatch) ->
         data = data.filter (s) -> s.type is 'column'
