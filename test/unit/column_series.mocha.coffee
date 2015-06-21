@@ -53,9 +53,8 @@ describe 'column series', ->
             values: [{x: 1}, {x: 3}, {x:4}]
         }]
         scaleMock = (d) => d
-        range = [0, 4]
 
-        expect(n3utils.getMinDelta(seriesData, 'x', scaleMock, range)).to.equal(1)
+        expect(n3utils.getMinDelta(seriesData, 'x', scaleMock)).to.equal(1)
 
       it 'should compute the minimum difference in a given range', inject (n3utils) ->
         seriesData = [{
@@ -71,9 +70,8 @@ describe 'column series', ->
             values: [{x: 1}, {x: 3}, {x:5}, {x:6}]
         }]
         scaleMock = (d) => 2*d
-        range = [0, 24]
 
-        expect(n3utils.getMinDelta(seriesData, 'x', scaleMock, range)).to.equal(2)
+        expect(n3utils.getMinDelta(seriesData, 'x', scaleMock)).to.equal(2)
 
 
     describe 'getPseudoColumns', ->

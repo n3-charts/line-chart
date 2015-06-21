@@ -249,7 +249,11 @@ mod.factory('n3utils', [
           return series.values.map(function(d) {
             return scale(d[key]);
           }).filter(function(e) {
-            return e >= range[0] && e <= range[1];
+            if (range) {
+              return e >= range[0] && e < range[1];
+            } else {
+              return true;
+            }
           }).reduce(function(prev, cur, i, arr) {
             var diff;
             diff = i > 0 ? cur - arr[i - 1] : Number.MAX_VALUE;
