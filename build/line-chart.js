@@ -1294,7 +1294,21 @@ mod.factory('n3utils', [
         this.setXScale(scales.xScale, data, series, options.axes);
         axis = svg.selectAll('.x.axis').call(scales.xAxis);
         if (options.axes.x.ticksRotate != null) {
-          axis.selectAll('.tick>text').attr('dy', null).attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)').style('text-anchor', options.axes.x.ticksRotate >= 0 ? 'start' : 'end');
+          axis.selectAll('.tick>text').attr('dy', null).attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)').style('text-anchor', function() {
+            if (!options.rtl) {
+              if (options.axes.x.ticksRotate >= 0) {
+                return 'start';
+              } else {
+                return 'end';
+              }
+            } else {
+              if (options.axes.x.ticksRotate >= 0) {
+                return 'end';
+              } else {
+                return 'start';
+              }
+            }
+          });
         }
         if ((series.filter(function(s) {
           return s.axis === 'y' && s.visible !== false;
@@ -1303,7 +1317,9 @@ mod.factory('n3utils', [
           scales.yScale.domain(yDomain).nice();
           axis = svg.selectAll('.y.axis').call(scales.yAxis);
           if (options.axes.y.ticksRotate != null) {
-            axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)').style('text-anchor', 'end');
+            axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)').style('text-anchor', !options.rtl ? 'end' : 'start');
+          } else {
+            axis.selectAll('.tick>text').style('text-anchor', !options.rtl ? 'end' : 'start');
           }
         }
         if ((series.filter(function(s) {
@@ -1313,7 +1329,9 @@ mod.factory('n3utils', [
           scales.y2Scale.domain(y2Domain).nice();
           axis = svg.selectAll('.y2.axis').call(scales.y2Axis);
           if (options.axes.y2.ticksRotate != null) {
-            return axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)').style('text-anchor', 'start');
+            return axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)').style('text-anchor', !options.rtl ? 'start' : 'end');
+          } else {
+            return axis.selectAll('.tick>text').style('text-anchor', !options.rtl ? 'start' : 'end');
           }
         }
       },
