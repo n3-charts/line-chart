@@ -27,7 +27,7 @@
               .map((d) -> scale(d[key]))
               # Select only columns in the visible range
               .filter((e) ->
-                return if range then e >= range[0] && e < range[1] else true
+                return if range then e >= range[0] && e <= range[1] else true
               )
               # Return the smallest difference between 2 values
               .reduce((prev, cur, i, arr) ->

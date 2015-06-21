@@ -250,7 +250,7 @@ mod.factory('n3utils', [
             return scale(d[key]);
           }).filter(function(e) {
             if (range) {
-              return e >= range[0] && e < range[1];
+              return e >= range[0] && e <= range[1];
             } else {
               return true;
             }
