@@ -35,6 +35,9 @@
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension \
           else this.getDefaultOptions().tension
         
+        # Check if direction is ltr (standard) or rtl
+        options.rtl = if options.rtl then true else false
+
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)

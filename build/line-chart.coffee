@@ -70,7 +70,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
           _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch)
 
       if options.drawLegend
-        _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
+        _u.drawLegend(svg, options, dimensions, handlers, dispatch)
 
       if options.tooltip.mode is 'scrubber'
         _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
@@ -464,8 +464,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return widths
 
-      drawLegend: (svg, series, dimensions, handlers, dispatch) ->
+      drawLegend: (svg, options, dimensions, handlers, dispatch) ->
         that = this
+        
+        series = options.series
         legend = svg.append('g').attr('class', 'legend')
 
         d = 16
@@ -526,6 +528,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               )
 
             item.append('text')
+              .style('text-anchor', ->
+                if not options.rtl
+                  return 'start'
+                else
+                  return 'end'
+              )
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
                 'font-family': 'Courier'
@@ -990,6 +998,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension \
           else this.getDefaultOptions().tension
         
+        # Check if direction is ltr (standard) or rtl
+        options.rtl = if options.rtl then true else false
+
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
@@ -1538,12 +1549,23 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           xOffset = (if p.side is 'left' then series.xOffset else (-series.xOffset))
 
+          offsetWhenLeft = -3 - tickLength - xOffset
+          offsetWhenRight = 4 + tickLength + xOffset
+
           tt.select('text')
+            .style('text-anchor', ->
+              if p.side is 'left' and not options.rtl
+                return 'end'
+              else if p.side is 'left' and options.rtl or p.side is 'right' and not options.rtl
+                return 'start'
+              else
+                return 'end'
+            )
             .attr('transform', ->
               if p.side is 'left'
-                return "translate(#{-3 - tickLength - xOffset}, #{p.labelOffset+3})"
+                return "translate(#{offsetWhenLeft}, #{p.labelOffset+3})"
               else
-                return "translate(#{4 + tickLength + xOffset}, #{p.labelOffset+3})"
+                return "translate(#{offsetWhenRight}, #{p.labelOffset+3})"
             )
 
           tt.select('path')
