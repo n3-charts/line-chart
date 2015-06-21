@@ -56,8 +56,13 @@
         )
 
         # Get the smallest difference on the x axis in the visible range
-        delta = this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth])
+        delta = if this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth])
         
+        # We get a big value when we cannot compute the difference
+        if delta > innerWidth:
+          # Set to some good looking ordinary value
+          delta = 0.25 * innerWidth
+
         # number of series to display
         nSeries = keys.length
 
@@ -74,7 +79,6 @@
           return 0 unless pseudoColumns[s.id]?
           index = pseudoColumns[s.id]
           return x1(index) - keys.length*columnWidth/2
-
 
       drawColumns: (svg, axes, data, columnWidth, options, handlers, dispatch) ->
         data = data.filter (s) -> s.type is 'column'
