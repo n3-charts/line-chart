@@ -167,7 +167,6 @@ describe 'column series', ->
       i++
 
   it 'should compute the correct column width', ->
-    
     outerScope.$apply ->
       outerScope.data = [
         {x: 0, value: 0}
@@ -185,6 +184,22 @@ describe 'column series', ->
 
     cols = element.childByClass('columnGroup').children()
     expect(cols[0].getAttribute('width')).to.equal('109')
+
+    outerScope.$apply ->
+      outerScope.options = series: [{
+        y: 'value'
+        color: '#4682b4'
+        type: 'column'
+      }, {
+        y: 'value'
+        color: '#4682b4'
+        type: 'column'
+      }]
+
+    cols_0 = element.childrenByClass('columnGroup')[0].children()
+    cols_1 = element.childrenByClass('columnGroup')[1].children()
+    expect(cols_0[0].getAttribute('width')).to.equal('54')
+    expect(cols_1[0].getAttribute('width')).to.equal('54')
 
   it 'should draw zero value columns with full height and opacity to zero', ->
     outerScope.$apply ->
