@@ -24,7 +24,7 @@ module n3Charts.Factory {
       this.createAxis(vis);
     }
 
-    update(datasets, options:Utils.Options) {
+    update(datasets:Utils.Datasets, options:Utils.Options) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: IDimension = container.getDimensions();
@@ -40,22 +40,22 @@ module n3Charts.Factory {
       this.destroyAxis();
     }
 
-    updateScaleDomain(datasets, options) {
+    updateScaleDomain(datasets: Utils.Datasets, options: Utils.Options) {
       this.scale.domain(this.getExtent(datasets, options));
     }
 
     getExtentForDatasets(
-      datasets,
+      datasets: Utils.Datasets,
       filter: (key:string) => Boolean,
       accessor: (datum, datasetKey:string) => number[]
     ) {
       var min = Number.POSITIVE_INFINITY;
       var max = Number.NEGATIVE_INFINITY;
 
-      for (var key in datasets) {
+      for (var key in datasets.sets) {
         if (!filter(key)) { continue; };
 
-        datasets[key].forEach((datum) => {
+        datasets.sets[key].values.forEach((datum) => {
           var data = accessor(datum, key);
           if (data[0] < min) { min = data[0]; }
           if (data[1] > max) { max = data[1]; }
@@ -65,9 +65,9 @@ module n3Charts.Factory {
       return [min, max];
     }
 
-    getExtent(datasets, options) {
+    getExtent(datasets: Utils.Datasets, options: Utils.Options) {
       if (this.isAbscissas()) {
-        var abscissasKey = options.axes.x.key;
+        var abscissasKey = options.getAbsKey();
         return this.getExtentForDatasets(
           datasets,
           () => true,
@@ -119,7 +119,9 @@ module n3Charts.Factory {
       }
 
       // Generate the Axis
-      this.svg.call(this.axis);
+      this.svg
+        .call(this.factoryMgr.get('transitions').pimp('axis'))
+        .call(this.axis);
     }
 
     destroyAxis() {
