@@ -2,18 +2,16 @@ module n3Charts.Utils {
   'use strict';
 
   export class Dataset {
-    public data: Object[];
-    public key: string;
+    public values: any[];
+    public id: string;
 
-    constructor(js:any) {
-      if (js) {
-        this.fromJS(js);
-      }
+    constructor(values: any[], id:string) {
+      this.fromJS(values, id);
     }
 
-    fromJS(js:any) {
-      this.key = js.key;
-      this.data = js.data;
+    fromJS(values:any[], id:string) {
+      this.id = id;
+      this.values = values;
     }
   }
 }
