@@ -3,25 +3,21 @@
           axis: "y",
           dataset: "dataset0",
           key: "val_0",
-          label: "A line sinusoid",
+          label: "An area series",
           color: "#1f77b4",
-          type: "line",
-          thickness: "1px",
+          type: "area",
           id: 'mySeries0'
         },
         {
           axis: "y",
           dataset: "dataset0",
           key: "val_1",
-          label: "Another  line sinusoid",
+          label: "Another area series",
           color: "grey",
-          type: "line",
           thickness: "1px",
+          type: "area",
           id: 'mySeries1'
         }
       ],
-      axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
-      lineMode: "linear",
-      tension: 0.7,
-      tooltip: {mode: 'axes', interpolate: false}
+      axes: {x: {key: "x"}}
 }

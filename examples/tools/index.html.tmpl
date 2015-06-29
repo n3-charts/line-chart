@@ -37,14 +37,17 @@
     ];
 
 
-    // setInterval(function() {
-    //     $scope.examples[0].datasets.dataset0.forEach(function(datum) {
-    //       datum.val_0 = Math.random()*5;
-    //     });
+    setInterval(function() {
+      $scope.examples[0].datasets.dataset0.forEach(function(datum) {
+        datum.val_0 = Math.random()*5;
+        datum.val_1 = Math.random()*5;
+      });
 
-    //     $scope.$apply();
+      $scope.examples[0].datasets = angular.copy($scope.examples[0].datasets);
 
-    //   }, 1000);
+      $scope.$apply();
+
+    }, 1000);
   });
   </script>
 </body>
