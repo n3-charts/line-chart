@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.9 - 21 June 2015
+line-chart - v1.1.9 - 26 June 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -221,22 +221,25 @@ mod.factory('n3utils', [
         });
         pseudoColumns = {};
         keys = [];
-        data.forEach(function(series) {
-          var i, inAStack, index;
-          inAStack = false;
-          options.stacks.forEach(function(stack, index) {
-            var _ref;
-            if ((series.id != null) && (_ref = series.id, __indexOf.call(stack.series, _ref) >= 0)) {
-              pseudoColumns[series.id] = index;
-              if (__indexOf.call(keys, index) < 0) {
-                keys.push(index);
+        data.forEach(function(series, i) {
+          var inAStack, index, visible, _ref;
+          visible = (_ref = options.series) != null ? _ref[i].visible : void 0;
+          if (visible === void 0 || visible === !false) {
+            inAStack = false;
+            options.stacks.forEach(function(stack, index) {
+              var _ref1;
+              if ((series.id != null) && (_ref1 = series.id, __indexOf.call(stack.series, _ref1) >= 0)) {
+                pseudoColumns[series.id] = index;
+                if (__indexOf.call(keys, index) < 0) {
+                  keys.push(index);
+                }
+                return inAStack = true;
               }
-              return inAStack = true;
+            });
+            if (inAStack === false) {
+              i = pseudoColumns[series.id] = index = keys.length;
+              return keys.push(i);
             }
-          });
-          if (inAStack === false) {
-            i = pseudoColumns[series.id] = index = keys.length;
-            return keys.push(i);
           }
         });
         return {
