@@ -4,6 +4,9 @@ module n3Charts.Factory.Series {
   export class Line extends Utils.BaseFactory {
 
     public svg: D3.Selection;
+    protected containerClassName = 'line-data';
+    protected itemsClassName = 'line-series';
+    protected itemClassName = 'line';
 
     constructor() {
       super();
@@ -18,7 +21,7 @@ module n3Charts.Factory.Series {
     createContainer(parent: D3.Selection) {
       this.svg = parent
         .append('g')
-          .attr('class', 'line-data');
+          .attr('class', this.containerClassName);
     }
 
     _getDrawers(series: Utils.OptionsSeries[]): any {
@@ -36,33 +39,41 @@ module n3Charts.Factory.Series {
       return drawers;
     }
 
-    update(datasets: Utils.Datasets, options: Utils.Options) {
-      var lines = options.getSeriesForType(Utils.Options.SERIES_TYPES.LINE);
-      var sets: {} = datasets.getValuesForSeries(lines, options);
-      var drawers: {} = this._getDrawers(lines);
+    _getSeriesToDraw(options: Utils.Options):any[] {
+      return options.getSeriesForType(Utils.Options.SERIES_TYPES.LINE);
+    }
 
-      var svgs = this.svg.selectAll('.line-series')
+    _style(selection:D3.Selection):void {
+      selection.style({
+        'fill': 'none',
+        'stroke': (s) => s.series.color
+      });
+    }
+
+    update(datasets: Utils.Datasets, options: Utils.Options) {
+      var series = this._getSeriesToDraw(options);
+      var sets: {} = datasets.getValuesForSeries(series, options);
+      var drawers: {} = this._getDrawers(series);
+
+      var svgs = this.svg.selectAll('.' + this.itemsClassName)
         .data(
-          lines.map((s) => {return { series: s, set: sets[s.id] }; }),
+          series.map((s) => {return { series: s, set: sets[s.id] }; }),
           (d) => d.series.id
         );
 
       svgs.enter()
         .append('g')
         .attr({
-          class: (d: Utils.OptionsSeries) => 'line-series ' + d.key
+          class: (d: Utils.OptionsSeries) => this.itemsClassName + ' ' + d.key
         })
         .append('path');
 
       svgs.select('path')
-        .style({
-          'fill': 'none',
-          'stroke': (s) => s.series.color
-        })
+        .call(this._style)
         .transition()
         .call(this.factoryMgr.get('transitions').pimp('line'))
         .attr({
-          class: 'line',
+          class: this.itemClassName,
           d: (s) => drawers[s.series.id](s.set)
         });
     }

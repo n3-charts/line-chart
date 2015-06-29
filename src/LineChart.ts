@@ -35,6 +35,7 @@ module n3Charts {
         ['transitions', Factory.Transition],
         ['x-axis', Factory.Axis, Factory.Axis.SIDE_X],
         ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
+        ['series-area', Factory.Series.Area],
         ['series-line', Factory.Series.Line],
         ['style', Factory.StyleSheet],
       ]);
