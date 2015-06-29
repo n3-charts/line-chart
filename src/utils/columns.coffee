@@ -3,17 +3,19 @@
 
         pseudoColumns = {}
         keys = []
-        data.forEach (series) ->
-          inAStack = false
-          options.stacks.forEach (stack, index) ->
-            if series.id? and series.id in stack.series
-              pseudoColumns[series.id] = index
-              keys.push(index) unless index in keys
-              inAStack = true
+        data.forEach (series, i) ->
+          visible = options.series?[i].visible
+          if visible is undefined or visible is not false
+            inAStack = false
+            options.stacks.forEach (stack, index) ->
+              if series.id? and series.id in stack.series
+                pseudoColumns[series.id] = index
+                keys.push(index) unless index in keys
+                inAStack = true
 
-          if inAStack is false
-            i = pseudoColumns[series.id] = index = keys.length
-            keys.push(i)
+            if inAStack is false
+              i = pseudoColumns[series.id] = index = keys.length
+              keys.push(i)
 
         return {pseudoColumns, keys}
 
@@ -50,10 +52,11 @@
         # iner width of the chart area
         innerWidth = dimensions.width - dimensions.left - dimensions.right
 
-        # Get column data (= columns that are not stacked)
-        colData = seriesData.filter((d) ->
-          return pseudoColumns.hasOwnProperty(d.id)
-        )
+        colData = seriesData
+          # Get column data (= columns that are not stacked)
+          .filter((d) ->
+            return pseudoColumns.hasOwnProperty(d.id)
+          )
 
         # Get the smallest difference on the x axis in the visible range
         delta = this.getMinDelta(colData, 'x', axes.xScale, [0, innerWidth])
