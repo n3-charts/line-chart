@@ -88,7 +88,7 @@ module n3Charts.Factory {
         innerWidth: 560,
         innerHeight: 160,
         margin: {
-          left: 20,
+          left: 30,
           bottom: 20,
           right: 20,
           top: 20

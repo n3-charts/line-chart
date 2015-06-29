@@ -6,7 +6,18 @@
           label: "A line sinusoid",
           color: "#1f77b4",
           type: "line",
-          thickness: "1px"
+          thickness: "1px",
+          id: 'mySeries0'
+        },
+        {
+          axis: "y",
+          dataset: "dataset0",
+          key: "val_1",
+          label: "Another  line sinusoid",
+          color: "grey",
+          type: "line",
+          thickness: "1px",
+          id: 'mySeries1'
         }
       ],
       axes: {x: {type: "linear", key: "x"}, y: {type: "linear"}},
