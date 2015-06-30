@@ -1,0 +1,24 @@
+{
+  series: [
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: "val_0",
+      label: "A first series",
+      color: "#1f77b4",
+      type: "line",
+      id: 'mySeries0'
+    },
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: "val_1",
+      label: "Another series",
+      color: "grey",
+      thickness: "1px",
+      type: "line",
+      id: 'mySeries1'
+    }
+  ],
+  axes: {x: {key: "x"}}
+}

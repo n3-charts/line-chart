@@ -4,3 +4,5 @@ node_modules/
 coverage/
 .tmp/
 *.log
+*.sublime-*
+.atom-build.json
