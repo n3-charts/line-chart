@@ -2,14 +2,9 @@ module n3Charts.Factory.Series {
   'use strict';
 
   export class Area extends Line {
-    protected containerClassName = 'area-series';
-    protected itemClassName = 'area';
-
-    createContainer(parent: D3.Selection) {
-      this.svg = parent
-        .append('g')
-          .attr('class', 'area-data');
-    }
+    containerClassName = 'area-data';
+    itemsClassName = 'area-series';
+    itemClassName = 'area';
 
     _getDrawers(series: Utils.OptionsSeries[]): any {
       var xScale = <Factory.Axis>this.factoryMgr.get('x-axis');
@@ -19,6 +14,7 @@ module n3Charts.Factory.Series {
 
       var y0 = yScale.scale(yScale.scale.domain()[0]);
 
+      // This'll later allow for per-series interpolation and other things
       series.forEach((s) => {
         drawers[s.id] = d3.svg.area()
           .x((d) => xScale.scale(d.x))

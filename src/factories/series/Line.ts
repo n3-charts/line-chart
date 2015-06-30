@@ -8,14 +8,8 @@ module n3Charts.Factory.Series {
     protected itemsClassName = 'line-series';
     protected itemClassName = 'line';
 
-    constructor() {
-      super();
-    }
-
     create() {
-      var container: Container = this.factoryMgr.get('container');
-
-      this.createContainer(container.data);
+      this.createContainer(this.factoryMgr.get('container').data);
     }
 
     createContainer(parent: D3.Selection) {
@@ -64,7 +58,7 @@ module n3Charts.Factory.Series {
       svgs.enter()
         .append('g')
         .attr({
-          class: (d: Utils.OptionsSeries) => this.itemsClassName + ' ' + d.key
+          class: (d: any) => this.itemsClassName + ' ' + d.series.id
         })
         .append('path');
 

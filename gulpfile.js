@@ -2,8 +2,12 @@
 var gulp   = require('gulp');
 var $ = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
+var karma = require('karma').server;
 
 var paths = {
+  e2e: {
+    from: 'test/e2e/test_cases/**/spec.js'
+  },
   tests: {
     from: 'test/**/*.mocha.ts',
     to: '.tmp/'
@@ -16,7 +20,7 @@ var paths = {
 };
 
 gulp.task('clean:tmp', function () {
-    return gulp.src(['.tmp/', 'coverage/'], {read: false})
+    return gulp.src(['.tmp/', 'test/coverage/'], {read: false})
       .pipe($.clean());
 });
 
@@ -26,7 +30,8 @@ gulp.task('clean:build', function () {
 });
 
 gulp.task('tslint', function () {
-    return gulp.src(paths.source.from).pipe($.tslint()).pipe($.tslint.report('prose'));
+    return gulp.src(paths.source.from)
+      .pipe($.tslint()).pipe($.tslint.report('prose'));
 });
 
 gulp.task('compile:source', function () {
@@ -59,24 +64,24 @@ gulp.task('compile:tests', function () {
   .pipe(gulp.dest(paths.tests.to));
 });
 
-gulp.task('test', ['compile:tests'], function() {
-  return gulp.src([
-    'node_modules/expect.js/index.js',
-    'node_modules/angular/angular.js',
-    'node_modules/angular-mocks/angular-mocks.js',
-    'node_modules/d3/d3.min.js',
-    'build/LineChart.js',
-    paths.tests.to + 'unit/**/*.js'
-  ]).pipe($.karma({
-    configFile: 'karma.conf.js',
-    action: 'run',
-    preprocessors: {'build/LineChart.js': ['coverage']}
-  }))
-  .on('error', function() {})
+gulp.task('test', ['compile:tests'], function(done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, function() {done()});
 });
 
-gulp.task('watch', ['compile:source:concat', 'test'], function () {
-  gulp.watch([paths.tests.from, paths.source.from], [['compile:source:concat', 'test']])
+gulp.task('e2e', function() {
+  return gulp.src(["./test/e2e/test_utils.js", "./test/e2e/test_cases/**/spec.js"])
+    .pipe($.protractor.protractor({
+      configFile: "./test/e2e/protractor.config.js"
+    }))
+    .on('error', function() {})
+});
+
+var watchTasks = ['compile:source:concat', 'test', 'e2e'];
+gulp.task('watch', watchTasks, function () {
+  gulp.watch([paths.tests.from, paths.source.from, paths.e2e.from], [watchTasks])
 });
 
 gulp.task('quick-watch', ['compile:source:concat'], function () {
@@ -84,7 +89,7 @@ gulp.task('quick-watch', ['compile:source:concat'], function () {
 });
 
 gulp.task('coveralls', function() {
-  gulp.src('coverage/**/lcov.info')
+  gulp.src('test/coverage/**/lcov.info')
     .pipe($.coveralls());
 });
 
@@ -94,7 +99,7 @@ gulp.task('build', function(callback) {
   return runSequence(
     ['clean:tmp', 'clean:build'],
     ['tslint', 'compile:source:concat'],
-    'test',
+    ['test', 'e2e'],
   callback);
 });
 

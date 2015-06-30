@@ -14,7 +14,6 @@ describe('n3Charts.Utils.FactoryManager', () => {
   var factoryMgr: n3Charts.Utils.FactoryManager = undefined;
 
   beforeEach(() => {
-
     factoryMgr = new n3Charts.Utils.FactoryManager();
   });
 
