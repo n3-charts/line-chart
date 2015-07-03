@@ -1,6 +1,2 @@
-- Update README.md with new features
 - Run `./release.sh`
 - Create a release on GitHub
-- Checkout gh-pages and `bower update`
-- Update gh-pages' release note
-- Push gh-pages
