@@ -37,6 +37,7 @@ module n3Charts {
         ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
         ['series-area', Factory.Series.Area],
         ['series-line', Factory.Series.Line],
+        ['series-dot', Factory.Series.Dot],
         ['style', Factory.StyleSheet],
       ]);
 

@@ -36,12 +36,14 @@
     ];
 
     setInterval(function() {
-      $scope.examples[0].datasets.dataset0.forEach(function(datum) {
-        datum.val_0 = Math.random()*5;
-        datum.val_1 = Math.random()*5;
-      });
+      $scope.examples.forEach(function(example) {
+        example.datasets.dataset0.forEach(function(datum) {
+          datum.val_0 = Math.random()*5;
+          datum.val_1 = Math.random()*5;
+        });
 
-      $scope.examples[0].datasets = angular.copy($scope.examples[0].datasets);
+        example.datasets = angular.copy(example.datasets);
+      });
 
       $scope.$apply();
 

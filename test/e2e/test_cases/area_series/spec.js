@@ -7,7 +7,7 @@ describe('Area series', function() {
     expect(element(by.css('.chart')).isPresent()).toBe(true);
   });
 
-  it('should have two lines with proper colors', function() {
+  it('should have two areas with proper colors', function() {
     var lines = element.all(by.css('.chart .area-series'));
     expect(lines.count()).toBe(2);
 

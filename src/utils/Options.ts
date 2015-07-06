@@ -8,6 +8,7 @@ module n3Charts.Utils {
     };
 
     static SERIES_TYPES: any = {
+      DOT: 'dot',
       LINE: 'line',
       AREA: 'area',
       COLUMN: 'column'
