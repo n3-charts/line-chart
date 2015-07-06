@@ -19,6 +19,7 @@
         "./src/factories/StyleSheet.ts",
         "./src/factories/Transition.ts",
         "./src/factories/_index.ts",
+        "./src/factories/series/Area.ts",
         "./src/factories/series/Line.ts",
         "./src/factories/series/_index.ts",
         "./src/styles/Default.ts",
