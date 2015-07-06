@@ -19,6 +19,7 @@ module n3Charts.Factory {
     public svg: D3.Selection;
     public vis: D3.Selection;
     public data: D3.Selection;
+    public axes: D3.Selection;
     public dim: IDimension;
 
     constructor(private element: HTMLElement) {
@@ -66,6 +67,10 @@ module n3Charts.Factory {
       this.vis = this.svg
         .append('g')
           .attr('class', 'container');
+
+      this.axes = this.vis
+        .append('g')
+          .attr('class', 'axes');
 
       this.data = this.vis
         .append('g')

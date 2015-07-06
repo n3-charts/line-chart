@@ -27,7 +27,7 @@ module n3Charts.Utils {
 
     parseType(js:any): string[] {
       if (!js) {
-        return ["line"];
+        return ['line'];
       }
 
       if (typeof js === 'string') {

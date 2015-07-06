@@ -19,7 +19,7 @@ module n3Charts.Factory {
 
     create() {
       // Get the svg container
-      var vis: D3.Selection = this.factoryMgr.get('container').vis;
+      var vis: D3.Selection = this.factoryMgr.get('container').axes;
 
       this.createAxis(vis);
     }
