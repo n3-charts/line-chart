@@ -45,10 +45,6 @@ def info(message):
 def error(message):
   print bcolors.FAIL + message + bcolors.ENDC
 
-def debug(message):
-  if verbose:
-    print message
-
 def warn(message):
   print bcolors.WARNING + message + bcolors.ENDC
 
@@ -75,12 +71,18 @@ def get_content(path):
   return content
 
 
+def mylistdir(directory):
+  filelist = os.listdir(directory)
+  return [x for x in filelist if not (x.startswith('.'))]
+
+
 def gather_examples(tests_dir):
   examples = []
 
   with cd(tests_dir):
-    for test in os.listdir('.'):
+    for test in mylistdir('.'):
       example = {}
+      example['path'] = test
       example['name'] = os.path.basename(test)
       example['datasets'] = get_content(test + '/datasets')
       example['options'] = get_content(test + '/options')
@@ -88,41 +90,34 @@ def gather_examples(tests_dir):
 
   return examples
 
-def bootstrap():
-    parser = argparse.ArgumentParser(prog='line-chart visual regression tool')
-    parser.add_argument('-v', '--verbose', action="store_true")
-    return parser
+
+def writeInto(example, targetPath, templateLines):
+  print targetPath
+  with open(targetPath, 'w') as target:
+    for line in templateLines:
+      line = re.sub(r'%datasets%', example['datasets'], line)
+      line = re.sub(r'%options%', example['options'], line)
+      line = re.sub(r'%name%', example['name'], line)
+      target.write(line)
 
 
+def getTemplateLines(path):
+  lines = []
+  with open(path, 'r') as template:
+    line = template.read()
+    line = re.sub(r'%project_path%', project_dir + '/', line)
+    lines.append(line)
 
-args = bootstrap().parse_args()
-verbose = args.verbose
+  return lines
 
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
-tests_dir = os.path.normpath(current_dir + '/test_cases/')
+tests_dir = os.path.normpath(current_dir + '/../test_cases/')
 project_dir = '/../../'
 
-info('Creating global test file')
 examples = gather_examples(tests_dir)
 
 with cd(current_dir):
-  with open("../index.html", 'w') as target:
-    with open("index.html.tmpl", 'r') as template:
-      line = template.read()
-      line = re.sub(r'%project_path%', project_dir + '/', line)
-
-      m = re.search(r'%repeat%(.*)%repeat%', line)
-      values = []
-      for example in examples:
-        gp = m.group(1)
-        gp = re.sub(r'%datasets%', example['datasets'], gp)
-        gp = re.sub(r'%options%', example['options'], gp)
-        gp = re.sub(r'%name%', example['name'], gp)
-
-        values.append(gp)
-
-      line = re.sub(r'%repeat%(.*)%repeat%', ',\n'.join(values), line)
-      target.write(line)
-
-  info('...done')
+  templateLines = getTemplateLines("each.html.tmpl")
+  for example in examples:
+    writeInto(example, tests_dir + '/' + example['path'] + '/index.html', templateLines)

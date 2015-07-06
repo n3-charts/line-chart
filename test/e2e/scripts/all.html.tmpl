@@ -25,7 +25,6 @@
     <linechart datasets="example.datasets" options="example.options"></linechart>
   </div>
 
-  <!-- <script src="%project_path%node_modules/moment/min/moment.min.js"></script> -->
   <script src="%project_path%node_modules/angular/angular.js"></script>
   <script src="%project_path%node_modules/d3/d3.min.js"></script>
   <script src="%project_path%build/LineChart.js"></script>
@@ -36,15 +35,17 @@
       %repeat%{datasets: %datasets%, options: %options%, label: "%name%"}%repeat%
     ];
 
+    setInterval(function() {
+      $scope.examples[0].datasets.dataset0.forEach(function(datum) {
+        datum.val_0 = Math.random()*5;
+        datum.val_1 = Math.random()*5;
+      });
 
-    // setInterval(function() {
-    //     $scope.examples[0].datasets.dataset0.forEach(function(datum) {
-    //       datum.val_0 = Math.random()*5;
-    //     });
+      $scope.examples[0].datasets = angular.copy($scope.examples[0].datasets);
 
-    //     $scope.$apply();
+      $scope.$apply();
 
-    //   }, 1000);
+    }, 1000);
   });
   </script>
 </body>

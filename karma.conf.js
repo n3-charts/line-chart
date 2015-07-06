@@ -16,11 +16,14 @@ module.exports = function(config) {
     reporters: ['dots', 'coverage'],
     coverageReporter: {
       type : 'lcovonly',
-      dir : 'coverage/'
+      dir : 'test/coverage/'
+    },
+    preprocessors: {
+      'build/LineChart.js':['coverage']
     },
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_WARN,
     autoWatch: false,
     singleRun: false,
     browsers: ['Chrome'],
