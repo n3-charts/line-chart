@@ -6,7 +6,6 @@ module.exports = function(config) {
       'node_modules/expect.js/index.js',
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
-      {pattern: '.tmp/**/*.map', included: false},
       {pattern: 'src/**/*.ts', included: false},
       {pattern: 'test/**/*.ts', included: false},
       'node_modules/d3/d3.min.js',

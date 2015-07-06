@@ -67,7 +67,7 @@ describe('n3Charts.Factory.Container', () => {
       expect(visProp.getAttribute('class')).to.equal('container');
     });
 
-    it('should create a data container', () => {
+    it('should create an axes container', () => {
 
       var dataContainer: SVGElement = undefined;
 
@@ -75,6 +75,18 @@ describe('n3Charts.Factory.Container', () => {
       container.createContainer();
 
       dataContainer = <SVGElement> domElement[0].getElementsByTagName('g')[1];
+
+      expect(dataContainer.getAttribute('class')).to.equal('axes');
+    });
+
+    it('should create a data container', () => {
+
+      var dataContainer: SVGElement = undefined;
+
+      container.createRoot();
+      container.createContainer();
+
+      dataContainer = <SVGElement> domElement[0].getElementsByTagName('g')[2];
 
       expect(dataContainer.getAttribute('class')).to.equal('data');
     });

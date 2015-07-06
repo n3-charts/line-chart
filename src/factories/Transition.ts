@@ -6,10 +6,18 @@ module n3Charts.Factory {
     private _transition: D3.Transition.Transition = d3.transition();
 
     pimp(what:string):Function {
-      return {
+      var functions = {
         line: this._pimpLine,
         axis: this._pimpAxis
-      }[what];
+      };
+
+      if (!functions[what]) {
+        return () => {
+          return undefined;
+        };
+      }
+
+      return functions[what];
     }
 
     _pimpAxis(transition:D3.Transition.Transition):void {
