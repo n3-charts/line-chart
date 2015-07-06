@@ -28,3 +28,9 @@ Or just build :
 ```sh
 $ gulp
 ```
+
+Run the integration tests :
+
+```sh
+$ gulp test:e2e
+```
