@@ -59,7 +59,7 @@ module n3Charts.Utils {
       }
 
       return this.series.filter((s) => {
-        return s.type === type;
+        return s.types.indexOf(type) > -1;
       });
     }
 

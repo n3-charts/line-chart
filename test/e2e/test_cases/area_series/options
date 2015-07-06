@@ -5,7 +5,7 @@
           key: "val_0",
           label: "An area series",
           color: "#1f77b4",
-          type: "area",
+          type: ["area", "line"],
           id: 'mySeries0'
         },
         {
