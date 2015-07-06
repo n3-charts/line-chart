@@ -5,14 +5,9 @@ module n3Charts.Utils {
     public axis: string = 'y';
     public dataset: string = undefined;
     public key: string = undefined;
-    public type: string = 'line';
+    public types: string[] = ['line'];
     public id: string = undefined;
     public color: string = undefined;
-
-
-    static isValidType(type: string): Boolean {
-      return ['line', 'area', 'column'].indexOf(type) > -1;
-    }
 
     constructor(js: any) {
       if (js) {
@@ -25,9 +20,21 @@ module n3Charts.Utils {
       this.axis = js.axis;
       this.dataset = js.dataset;
       this.key = js.key;
-      this.type = js.type;
+      this.types = this.parseType(js.type);
       this.id = js.id;
       this.color = js.color;
+    }
+
+    parseType(js:any): string[] {
+      if (!js) {
+        return ['line'];
+      }
+
+      if (typeof js === 'string') {
+        return [js];
+      }
+
+      return js;
     }
 
     sanitize(js:any) {
@@ -43,7 +50,7 @@ module n3Charts.Utils {
         axis: this.axis,
         dataset: this.dataset,
         key: this.key,
-        type: this.type,
+        types: this.types,
         id: this.id,
         color: this.color
       };

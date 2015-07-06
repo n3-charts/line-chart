@@ -8,6 +8,7 @@ module n3Charts.Utils {
     };
 
     static SERIES_TYPES: any = {
+      DOT: 'dot',
       LINE: 'line',
       AREA: 'area',
       COLUMN: 'column'
@@ -59,7 +60,7 @@ module n3Charts.Utils {
       }
 
       return this.series.filter((s) => {
-        return s.type === type;
+        return s.types.indexOf(type) > -1;
       });
     }
 
