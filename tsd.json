@@ -1,14 +1,11 @@
 {
   "version": "v4",
-  "repo": "borisyankov/DefinitelyTyped",
+  "repo": "chaosmail/DefinitelyTyped",
   "ref": "master",
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "angularjs/angular.d.ts": {
-      "commit": "2d4c4679bc2b509f27435a4f9da5e2de11258571"
-    },
-    "jquery/jquery.d.ts": {
       "commit": "2d4c4679bc2b509f27435a4f9da5e2de11258571"
     },
     "mocha/mocha.d.ts": {
@@ -28,6 +25,18 @@
     },
     "jsdom/jsdom.d.ts": {
       "commit": "2d4c4679bc2b509f27435a4f9da5e2de11258571"
+    },
+    "angular-protractor/angular-protractor.d.ts": {
+      "commit": "2fe8a6fda29c3340a5e5672b1809a84c88729a30"
+    },
+    "selenium-webdriver/selenium-webdriver.d.ts": {
+      "commit": "2fe8a6fda29c3340a5e5672b1809a84c88729a30"
+    },
+    "jasmine/jasmine.d.ts": {
+      "commit": "220ada3f90a7b9e769593650e6aba824bf2f085a"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "705b4cc80bced7c0cc95575741113667d210602f"
     }
   }
 }

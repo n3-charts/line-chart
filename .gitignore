@@ -1,7 +1,6 @@
 build/
 typings/
 node_modules/
-coverage/
 .tmp/
 *.log
 *.sublime-*
