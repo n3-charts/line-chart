@@ -1,4 +1,6 @@
-/// <reference path='../typings/tsd.d.ts' />
+/// <reference path='../typings/jquery/jquery.d.ts' />
+/// <reference path='../typings/angularjs/angular.d.ts' />
+/// <reference path='../typings/d3/d3.d.ts' />
 
 /// <reference path='utils/_index.ts' />
 /// <reference path='styles/_index.ts' />
