@@ -3,7 +3,6 @@ module n3Charts {
 
   interface ILineChartScope extends ng.IScope {
     data;
-    datasets;
     options;
     styles;
   }
@@ -12,7 +11,6 @@ module n3Charts {
 
     public scope = {
       data: '=',
-      datasets: '=',
       options: '=',
       styles: '='
     };
@@ -35,6 +33,7 @@ module n3Charts {
         ['transitions', Factory.Transition],
         ['x-axis', Factory.Axis, Factory.Axis.SIDE_X],
         ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
+        ['series-column', Factory.Series.Column],
         ['series-area', Factory.Series.Area],
         ['series-line', Factory.Series.Line],
         ['series-dot', Factory.Series.Dot],
@@ -47,17 +46,17 @@ module n3Charts {
       // Trigger the create event
       eventMgr.trigger('create');
 
-      // Trigger the update event
-      scope.$watchCollection('[options, datasets]', () => {
+      // We use $watch because both options and data
+      // are objects and not arrays
+      scope.$watch('[options, data]', () => {
         // Call the update event with a copy of the options
-        // and datasets to avoid infinite digest loop
+        // and data to avoid infinite digest loop
         var options = new Utils.Options(angular.copy(scope.options));
-        var datasets = new Utils.Datasets(angular.copy(scope.datasets));
+        var data = new Utils.Data(angular.copy(scope.data));
 
-        eventMgr.trigger('update', datasets, options);
-
-        return;
-      });
+        // Trigger the update event
+        eventMgr.trigger('update', data, options);
+      }, true);
 
       // Trigger the destroy event
       scope.$on('$destroy', () => eventMgr.trigger('destroy'));

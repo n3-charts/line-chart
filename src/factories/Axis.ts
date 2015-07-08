@@ -24,7 +24,7 @@ module n3Charts.Factory {
       this.createAxis(vis);
     }
 
-    update(datasets:Utils.Datasets, options:Utils.Options) {
+    update(data:Utils.Data, options:Utils.Options) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: IDimension = container.getDimensions();
@@ -32,7 +32,7 @@ module n3Charts.Factory {
       this.scale = this.getScale(dim);
       this.axis = this.getAxis();
 
-      this.updateScaleDomain(datasets, options);
+      this.updateScaleDomain(data, options);
       this.updateAxisSize(dim);
     }
 
@@ -40,22 +40,22 @@ module n3Charts.Factory {
       this.destroyAxis();
     }
 
-    updateScaleDomain(datasets: Utils.Datasets, options: Utils.Options) {
-      this.scale.domain(this.getExtent(datasets, options));
+    updateScaleDomain(data: Utils.Data, options: Utils.Options) {
+      this.scale.domain(this.getExtent(data, options));
     }
 
     getExtentForDatasets(
-      datasets: Utils.Datasets,
+      data: Utils.Data,
       filter: (key:string) => Boolean,
       accessor: (datum, datasetKey:string) => number[]
     ) {
       var min = Number.POSITIVE_INFINITY;
       var max = Number.NEGATIVE_INFINITY;
 
-      for (var key in datasets.sets) {
+      for (var key in data.sets) {
         if (!filter(key)) { continue; };
 
-        datasets.sets[key].values.forEach((datum) => {
+        data.sets[key].values.forEach((datum) => {
           var data = accessor(datum, key);
           if (data[0] < min) { min = data[0]; }
           if (data[1] > max) { max = data[1]; }
@@ -65,7 +65,7 @@ module n3Charts.Factory {
       return [min, max];
     }
 
-    getExtent(datasets: Utils.Datasets, options: Utils.Options) {
+    getExtent(datasets: Utils.Data, options: Utils.Options) {
       if (this.isAbscissas()) {
         var abscissasKey = options.getAbsKey();
         return this.getExtentForDatasets(
@@ -120,7 +120,8 @@ module n3Charts.Factory {
 
       // Generate the Axis
       this.svg
-        .call(this.factoryMgr.get('transitions').pimp('axis'))
+        .transition()
+        .call(this.factoryMgr.get('transitions').edit)
         .call(this.axis);
     }
 
