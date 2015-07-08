@@ -1,18 +1,18 @@
 /// <reference path='../test.spec.ts' />
 
-describe('n3Charts.Utils.Datasets', () => {
-  var Datasets = undefined;
+describe('n3Charts.Utils.Data', () => {
+  var Data = undefined;
 
   beforeEach(() => {
-      Datasets = n3Charts.Utils.Datasets;
+      Data = n3Charts.Utils.Data;
   });
 
   it('should have a default', () => {
-    var ds = new Datasets();
+    var ds = new Data();
   });
 
   it('should work', () => {
-    var ds = new Datasets({
+    var ds = new Data({
       dataset0: [
         { x: 0, val_0: 0, val_1: 0, val_2: 0, val_3: 0 },
         { x: 1, val_0: 0.993, val_1: 3.894, val_2: 8.47, val_3: 14.347 },

@@ -1,79 +1,67 @@
 module n3Charts.Factory.Series {
   'use strict';
 
-  export class Line extends Utils.BaseFactory {
+  export class Line extends Utils.SeriesFactory {
 
-    public svg: D3.Selection;
-    protected containerClassName = 'line-data';
-    protected itemsClassName = 'line-series';
-    protected itemClassName = 'line';
+    static type: string = Utils.Options.SERIES_TYPES.LINE;
 
-    create() {
-      this.createContainer(this.factoryMgr.get('container').data);
+    protected containerClass: string = Line.type + '-data';
+    protected seriesClass: string = Line.type + '-series';
+    protected dataClass: string = Line.type;
+
+    update(data: Utils.Data, options: Utils.Options) {
+      super.update(data, options);
+
+      var series = options.getSeriesForType(Line.type);
+
+      this.updateSeriesContainer(series);
     }
 
-    createContainer(parent: D3.Selection) {
-      this.svg = parent
-        .append('g')
-          .attr('class', this.containerClassName);
-    }
+    updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {
 
-    _getDrawers(series: Utils.OptionsSeries[]): any {
       var xScale = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yScale = <Factory.Axis>this.factoryMgr.get('y-axis');
 
-      var drawers = {};
+      var lineData = this.data.getDatasetValues(series, this.options);
 
-      series.forEach((s) => {
-        drawers[s.id] = d3.svg.line()
-          .x((d) => xScale.scale(d.x))
-          .y((d) => yScale.scale(d.y));
-      });
+      var initLine = d3.svg.line()
+        .x((d) => xScale.scale(d.x))
+        .y(yScale.scale(0));
 
-      return drawers;
-    }
+      var updateLine = d3.svg.line()
+        .x((d) => xScale.scale(d.x))
+        .y((d) => yScale.scale(d.y));
 
-    _getSeriesToDraw(options: Utils.Options):any[] {
-      return options.getSeriesForType(Utils.Options.SERIES_TYPES.LINE);
-    }
+      var line = group.selectAll('.' + this.dataClass)
+        .data([lineData]);
 
-    _style(selection:D3.Selection):void {
-      selection.style({
-        'fill': 'none',
-        'stroke': (s) => s.series.color
-      });
-    }
-
-    update(datasets: Utils.Datasets, options: Utils.Options) {
-      var series = this._getSeriesToDraw(options);
-      var sets: {} = datasets.getValuesForSeries(series, options);
-      var drawers: {} = this._getDrawers(series);
-
-      var svgs = this.svg.selectAll('.' + this.itemsClassName)
-        .data(
-          series.map((s) => {return { series: s, set: sets[s.id] }; }),
-          (d) => d.series.id
-        );
-
-      svgs.enter()
-        .append('g')
-        .attr({
-          class: (d: any) => this.itemsClassName + ' ' + d.series.id
-        })
-        .append('path');
-
-      svgs.select('path')
-        .call(this._style)
+      line.enter()
+        .append('path')
+        .attr('class', this.dataClass)
+        .attr('d', (d) => initLine(d))
         .transition()
-        .call(this.factoryMgr.get('transitions').pimp('line'))
-        .attr({
-          class: this.itemClassName,
-          d: (s) => drawers[s.series.id](s.set)
+        .call(this.factoryMgr.get('transitions').enter)
+        .attr('d', (d) => updateLine(d));
+
+      line
+        .transition()
+        .call(this.factoryMgr.get('transitions').edit)
+        .attr('d', (d) => updateLine(d));
+
+      line.exit()
+        .transition()
+        .call(this.factoryMgr.get('transitions').exit)
+        .attr('d', (d) => initLine(d))
+        .each('end', function() {
+          d3.select(this).remove();
         });
     }
 
-    destroy() {
-      this.svg.remove();
+    styleSeries(group: D3.Selection) {
+      group.style({
+        'fill': 'none',
+        'stroke': (s: Utils.Series) => s.color
+      });
     }
   }
 }

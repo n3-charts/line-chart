@@ -1,13 +1,13 @@
 module n3Charts.Utils {
   'use strict';
 
-  export class OptionsSeries {
+  export class Series {
     public axis: string = 'y';
-    public dataset: string = undefined;
-    public key: string = undefined;
+    public dataset: string;
+    public key: string;
     public types: string[] = ['line'];
-    public id: string = undefined;
-    public color: string = undefined;
+    public id: string;
+    public color: string;
 
     constructor(js: any) {
       if (js) {
