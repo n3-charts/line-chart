@@ -2,6 +2,7 @@ module n3Charts.Utils {
   'use strict';
 
   export class Options {
+
     static DEFAULT:any = {
       series: [],
       axes: {}
@@ -14,7 +15,7 @@ module n3Charts.Utils {
       COLUMN: 'column'
     };
 
-    public series: Utils.OptionsSeries[];
+    public series: Utils.Series[];
     public axes: any;
 
     constructor(js:any) {
@@ -37,7 +38,7 @@ module n3Charts.Utils {
     }
 
     _getSaneSeries(series: any[]) {
-      return (series || []).map((s) => { return new Utils.OptionsSeries(s); });
+      return (series || []).map((s) => { return new Utils.Series(s); });
     }
 
     _getSaneAxes(axes: any) {
@@ -54,14 +55,14 @@ module n3Charts.Utils {
       return false;
     }
 
-    getSeriesForType(type: string): Utils.OptionsSeries[] {
+    getSeriesForType(type: string): Utils.Series[] {
       if (this._isValidSeriesType(type) === false) {
         throw new TypeError('Unknown series type: ' + type);
       }
 
-      return this.series.filter((s) => {
-        return s.types.indexOf(type) > -1;
-      });
+      return this.series.filter((s) =>
+        s.types.indexOf(type) > -1
+      );
     }
 
     toJS() {

@@ -1,15 +1,15 @@
 /// <reference path='../../test.spec.ts' />
 
-describe('n3Charts.Factory.Series.Line', () => {
+describe('n3Charts.Factory.Series.Column', () => {
   var domElement: JQuery = angular.element(document.body).append('<div></div>');
-  var lineSeries: n3Charts.Factory.Series.Line = undefined;
+  var columnSeries: n3Charts.Factory.Series.Column = undefined;
 
   beforeEach(() => {
     // Truncate the domElement
     domElement.children().remove();
     d3.select(domElement[0]).append('svg');
 
-    lineSeries = new n3Charts.Factory.Series.Line();
+    columnSeries = new n3Charts.Factory.Series.Column();
   });
 
   describe('createSeriesContainer', () => {
@@ -19,13 +19,13 @@ describe('n3Charts.Factory.Series.Line', () => {
       var svgProp: SVGElement = undefined;
       var parentContainer = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
 
-      expect(lineSeries.svg).to.equal(undefined);
+      expect(columnSeries.svg).to.equal(undefined);
 
-      lineSeries.createContainer(d3.select(parentContainer));
+      columnSeries.createContainer(d3.select(parentContainer));
 
-      svgProp = lineSeries.svg[0][0];
+      svgProp = columnSeries.svg[0][0];
 
-      expect(svgProp.getAttribute('class')).to.equal(n3Charts.Factory.Series.Line.type + '-data');
+      expect(svgProp.getAttribute('class')).to.equal(n3Charts.Factory.Series.Column.type + '-data');
     });
   });
 });
