@@ -54,16 +54,15 @@ module n3Charts.Utils {
       groups.exit()
         .remove();
     }
-    
+
     updateSeries(groups: D3.Selection, series: Series[]) {
       // Workaround to retrieve the D3.Selection
       // in the callback function (bound to keyword this)
       var self = this;
-      groups.each(function(d: Series, i: number){
+      groups.each(function(d: Series, i: number) {
         var group = d3.select(this);
-
         self.updateData(group, d, i, series.length);
-      })
+      });
     }
 
     updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {

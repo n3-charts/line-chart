@@ -2,7 +2,7 @@ module n3Charts.Utils {
   'use strict';
 
   export class Data {
-    
+
     public sets: any;
 
     constructor(js: any) {
@@ -13,7 +13,9 @@ module n3Charts.Utils {
 
     fromJS(js: any) {
       for (var key in js) {
-        js[key] = new Dataset(js[key], key);
+        if (js.hasOwnProperty(key)) {
+          js[key] = new Dataset(js[key], key);
+        }
       }
 
       this.sets = js;
@@ -31,22 +33,7 @@ module n3Charts.Utils {
       );
     }
 
-    getValuesForSeries(series: Series[], options: Options): {} {
-      var setsForSeries = {};
-      var key = options.getAbsKey();
-
-      series.forEach((s) => {
-        var set: Dataset = this.sets[s.dataset];
-
-        setsForSeries[s.id] = set.values.map((datum) =>
-          ({ 'x': datum[key], 'y': datum[s.key] })
-        );
-      });
-
-      return setsForSeries;
-    }
-
-    public static getMinDistance(data, scale, key='x', range?): number {
+    public static getMinDistance(data, scale, key = 'x', range?): number {
 
       return <number>d3.min(
         // Compute the minimum difference along an axis on all series

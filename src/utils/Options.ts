@@ -60,7 +60,7 @@ module n3Charts.Utils {
         throw new TypeError('Unknown series type: ' + type);
       }
 
-      return this.series.filter((s) => 
+      return this.series.filter((s) =>
         s.types.indexOf(type) > -1
       );
     }
