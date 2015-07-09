@@ -1,6 +1,6 @@
 {% extends "e2e/templates/_base.tpl.html" %}
 
-{% block name %}Line{% endblock %}
+{% block name %}Column{% endblock %}
 
 {% block options %}
 {
@@ -9,19 +9,19 @@
       axis: "y",
       dataset: "dataset0",
       key: "val_0",
-      label: "A line sinusoid",
+      label: "A first series",
       color: "#1f77b4",
-      type: "line",
+      type: "column",
       id: 'mySeries0'
     },
     {
       axis: "y",
       dataset: "dataset0",
       key: "val_1",
-      label: "Another  line sinusoid",
+      label: "Another series",
       color: "grey",
       thickness: "1px",
-      type: "line",
+      type: "column",
       id: 'mySeries1'
     }
   ],

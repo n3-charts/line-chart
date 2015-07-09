@@ -23,7 +23,7 @@ module n3Charts.Utils {
       // This methods need to be overwritten by factories
     }
 
-    update(datasets, options) {
+    update(data, options) {
       // This methods need to be overwritten by factories
     }
 

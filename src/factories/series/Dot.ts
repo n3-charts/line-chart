@@ -1,71 +1,75 @@
 module n3Charts.Factory.Series {
   'use strict';
 
-  export class Dot extends Utils.BaseFactory {
+  export class Dot extends Utils.SeriesFactory {
 
-    public svg: D3.Selection;
-    protected containerClassName = 'dot-data';
-    protected itemsClassName = 'dot-series';
-    protected itemClassName = 'dot';
+    static type: string = Utils.Options.SERIES_TYPES.DOT;
 
-    create() {
-      this.createContainer(this.factoryMgr.get('container').data);
+    protected containerClass: string = Dot.type + '-data';
+    protected seriesClass: string = Dot.type + '-series';
+    protected dataClass: string = Dot.type;
+
+    update(data: Utils.Data, options: Utils.Options) {
+      super.update(data, options);
+
+      var series = options.getSeriesForType(Dot.type);
+
+      this.updateSeriesContainer(series);
     }
 
-    createContainer(parent: D3.Selection) {
-      this.svg = parent
-        .append('g')
-          .attr('class', this.containerClassName);
-    }
-
-    _style(selection:D3.Selection):void {
-      selection.style({
-        'fill': (s) => s.series.color,
-        'stroke': 'white'
-      });
-    }
-
-    update(datasets: Utils.Datasets, options: Utils.Options) {
-      var series = options.getSeriesForType(Utils.Options.SERIES_TYPES.DOT);
-      var sets: {} = datasets.getValuesForSeries(series, options);
+    updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {
 
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
-      var svgs = this.svg.selectAll('.' + this.itemsClassName)
-        .data(
-          series.map((s) => {return { series: s, set: sets[s.id] }; }),
-          (d) => d.series.id
-        );
+      var dotsData = this.data.getDatasetValues(series, this.options);
+      var dotsRadius = 4;
 
-      var group = svgs.enter()
-        .append('g')
-        .call(this._style)
-        .attr({
-          class: (d: any) => this.itemsClassName + ' ' + d.series.id
+      var dots = group.selectAll('.' + this.dataClass)
+        .data(dotsData, (d: Utils.IPoint) => d.x);
+
+      var initPoint = (s) => {
+        s.attr({
+          r: (d) => 4,
+          cx: (d) => xAxis.scale(d.x),
+          cy: (d) => yAxis.scale(0)
         });
+      };
 
-      var dots = svgs.selectAll('.' + this.itemClassName)
-        .data((d) => (d.set));
-
-      dots.enter()
-        .append('circle')
-        .attr({
-          class: this.itemClassName,
-          r: (d) => 4
-        });
-
-      dots
-        .transition()
-        .call(this.factoryMgr.get('transitions').pimp('dot'))
-        .attr({
+      var updatePoint = (s) => {
+        s.attr({
           cx: (d) => xAxis.scale(d.x),
           cy: (d) => yAxis.scale(d.y)
         });
+      };
+
+      dots.enter()
+        .append('circle')
+        .attr('class', this.dataClass)
+        .call(initPoint)
+        .transition()
+        .call(this.factoryMgr.get('transitions').enter)
+        .call(updatePoint);
+
+      dots
+        .transition()
+        .call(this.factoryMgr.get('transitions').edit)
+        .call(updatePoint);
+
+      dots.exit()
+        .transition()
+        .call(this.factoryMgr.get('transitions').exit)
+        .call(initPoint)
+        .each('end', function() {
+          d3.select(this).remove();
+        });
     }
 
-    destroy() {
-      this.svg.remove();
+    styleSeries(group: D3.Selection) {
+      group.style({
+        'fill': (d: Utils.Series) => d.color,
+        'stroke': 'white'
+      });
     }
   }
 }

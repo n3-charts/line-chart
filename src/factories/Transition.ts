@@ -3,31 +3,38 @@ module n3Charts.Factory {
 
   export class Transition extends Utils.BaseFactory {
 
-    private _transition: D3.Transition.Transition = d3.transition();
+    static duration: number = 250;
+    static ease: string = 'cubic';
 
-    pimp(what:string):Function {
-      var functions = {
-        line: this._pimpLine,
-        axis: this._pimpAxis
-      };
+    enter(t: D3.Transition.Transition) {
+      var duration = Transition.duration;
+      var ease = Transition.ease;
+      var n = t[0].length;
+      var delay = (d, i) => n ? i / n * duration : 0;
 
-      if (!functions[what]) {
-        return () => {
-          return undefined;
-        };
-      }
-
-      return functions[what];
+      return t.duration(duration)
+        .delay(delay)
+        .ease(ease);
     }
 
-    _pimpAxis(transition:D3.Transition.Transition):void {
-      // Or whatever we want
-      // transition.delay(500);
+    edit(t: D3.Transition.Transition) {
+      var duration = Transition.duration;
+      var ease = Transition.ease;
+      var delay = 0;
+
+      return t.duration(duration)
+        .delay(delay)
+        .ease(ease);
     }
 
-    _pimpLine(transition:D3.Transition.Transition):void {
-      // Or whatever we want
-      // transition.delay(500);
+    exit(t: D3.Transition.Transition) {
+      var duration = Transition.duration;
+      var ease = Transition.ease;
+      var delay = 0;
+
+      return t.duration(duration)
+        .delay(delay)
+        .ease(ease);
     }
   }
 }

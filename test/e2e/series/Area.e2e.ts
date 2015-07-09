@@ -1,19 +1,22 @@
 /// <reference path='../test.e2e.ts' />
 
-describe('Area series', function() {
+describe('n3Charts.Factory.Series.Area', function() {
   beforeEach(function() {
     browser.get('test/e2e/templates/area.html');
   });
 
-  it('should generate a graph', function() {
-    expect(element(by.css('.chart')).isPresent()).toBe(true);
+  it('should generate a chart', function() {
+    var chart = element(by.css('.chart'));
+
+    expect(chart.isPresent()).toBe(true);
+    expect(chart.getTagName()).toBe('svg');
   });
 
-  it('should have two areas with proper colors', function() {
-    var lines = element.all(by.css('.chart .area-series'));
-    expect(lines.count()).toBe(2);
+  it('should have two areas with proper classes', function() {
+    var areas = element.all(by.css('.chart .area-series'));
 
-    expect(lines.get(0).getAttribute('class')).toBe('area-series mySeries0');
-    expect(lines.get(1).getAttribute('class')).toBe('area-series mySeries1');
+    expect(areas.count()).toBe(2);
+    expect(areas.get(0).getAttribute('class')).toBe('area-series mySeries0');
+    expect(areas.get(1).getAttribute('class')).toBe('area-series mySeries1');
   });
 });
