@@ -65,12 +65,12 @@ module n3Charts.Factory.Series {
         .call(initCol)
         .transition()
         .call(this.factoryMgr.get('transitions').enter)
-        .call(updateCol)
+        .call(updateCol);
 
       cols
         .transition()
         .call(this.factoryMgr.get('transitions').edit)
-        .call(updateCol)
+        .call(updateCol);
 
       cols.exit()
         .transition()
@@ -85,7 +85,7 @@ module n3Charts.Factory.Series {
       group.style({
         'fill': (d: Utils.Series) => d.color,
         'stroke': 'white',
-        'stroke-width': 0,
+        'stroke-width': 0
       });
     }
   }

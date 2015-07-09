@@ -34,10 +34,10 @@ module n3Charts.Factory.Series {
         .y0(yScale.scale(0))
         .y1((d) => yScale.scale(d.y));
 
-      var line = group.selectAll('.' + this.dataClass)
+      var area = group.selectAll('.' + this.dataClass)
         .data([areaData]);
 
-      line.enter()
+      area.enter()
         .append('path')
         .attr('class', this.dataClass)
         .attr('d', (d) => initArea(d))
@@ -45,12 +45,12 @@ module n3Charts.Factory.Series {
         .call(this.factoryMgr.get('transitions').enter)
         .attr('d', (d) => updateArea(d));
 
-      line
+      area
         .transition()
         .call(this.factoryMgr.get('transitions').edit)
         .attr('d', (d) => updateArea(d));
 
-      line.exit()
+      area.exit()
         .transition()
         .call(this.factoryMgr.get('transitions').exit)
         .attr('d', (d) => initArea(d))

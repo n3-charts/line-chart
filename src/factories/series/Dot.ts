@@ -50,11 +50,11 @@ module n3Charts.Factory.Series {
         .transition()
         .call(this.factoryMgr.get('transitions').enter)
         .call(updatePoint);
-      
+
       dots
         .transition()
         .call(this.factoryMgr.get('transitions').edit)
-        .call(updatePoint)
+        .call(updatePoint);
 
       dots.exit()
         .transition()

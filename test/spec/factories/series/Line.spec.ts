@@ -12,32 +12,9 @@ describe('n3Charts.Factory.Series.Line', () => {
     lineSeries = new n3Charts.Factory.Series.Line();
   });
 
-  describe('constructor()', () => {
+  describe('createSeriesContainer', () => {
 
-    it('should return an instance', () => {
-
-      lineSeries = new n3Charts.Factory.Series.Line();
-
-      expect(lineSeries).to.be.a(n3Charts.Factory.Series.Line);
-    });
-
-  });
-
-  describe('createContainer()', () => {
-
-    it('should create a vis container', () => {
-
-      var dataContainer: SVGElement = undefined;
-      var parentContainer = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
-
-      lineSeries.createContainer(d3.select(parentContainer));
-
-      dataContainer = <SVGElement> domElement[0].getElementsByTagName('g')[0];
-
-      expect(dataContainer.getAttribute('class')).to.equal('line-data');
-    });
-
-    it('should provide a svg property', () => {
+    it('svg property should be a g node with proper class', () => {
 
       var svgProp: SVGElement = undefined;
       var parentContainer = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
@@ -48,7 +25,7 @@ describe('n3Charts.Factory.Series.Line', () => {
 
       svgProp = lineSeries.svg[0][0];
 
-      expect(svgProp.getAttribute('class')).to.equal('line-data');
+      expect(svgProp.getAttribute('class')).to.equal(n3Charts.Factory.Series.Line.type + '-data');
     });
   });
 });
