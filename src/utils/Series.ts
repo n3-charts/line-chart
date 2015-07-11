@@ -5,7 +5,7 @@ module n3Charts.Utils {
     public axis: string = 'y';
     public dataset: string;
     public key: string;
-    public types: string[] = ['line'];
+    public type: string[] = ['line'];
     public id: string;
     public color: string;
 
@@ -20,7 +20,7 @@ module n3Charts.Utils {
       this.axis = js.axis;
       this.dataset = js.dataset;
       this.key = js.key;
-      this.types = this.parseType(js.type);
+      this.type = this.parseType(js.type);
       this.id = js.id;
       this.color = js.color;
     }
@@ -45,12 +45,16 @@ module n3Charts.Utils {
       return js;
     }
 
+    isAColumn() {
+      return this.type.indexOf(Utils.Options.SERIES_TYPES.COLUMN) > -1;
+    }
+
     toJS() {
       return {
         axis: this.axis,
         dataset: this.dataset,
         key: this.key,
-        types: this.types,
+        type: this.type,
         id: this.id,
         color: this.color
       };

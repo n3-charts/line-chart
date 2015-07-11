@@ -14,6 +14,12 @@ var paths = {
     from: 'src/**/*.ts',
     to: '.tmp/build/',
   },
+
+  style: {
+    from: 'src/**/*.css',
+    to: '.tmp/build/',
+  },
+
   test: {
     from: 'test/**/*.ts',
     to: '.tmp/test/',
@@ -23,7 +29,7 @@ var paths = {
     from: 'test/**/*.spec.ts',
   },
   e2e: {
-    config: 'test/config/protractor.config.js',
+    config: 'test/config/protractor.conf.js',
     from: 'test/**/*.e2e.ts',
   },
   coverage: {
@@ -75,6 +81,13 @@ gulp.task('ts:compile:source', function () {
     out: 'LineChart.js'
   }))
   .pipe(gulp.dest(paths.source.to));
+});
+
+// Copy the style file(s) (will eventually trasnpile sass or something similar)
+gulp.task('css:copy', function () {
+  return gulp
+  .src(paths.style.from)
+  .pipe(gulp.dest(paths.style.to));
 });
 
 // Compile the test files to JavaScript
@@ -142,7 +155,7 @@ gulp.task('webdriver:update', webdriverUpdate);
 
 // Run the integration tests with protractor
 gulp.task('test:e2e', [
-  'webdriver:update', 'webdriver', 'ts:lint:e2e', 'ts:compile:e2e', 'jinja:compile:e2e', 'server'
+  'webdriver:update', 'webdriver', 'ts:lint:e2e', 'ts:compile:e2e', 'jinja:compile:e2e', 'css:copy', 'server'
 ], function() {
   return gulp.src(paths.e2e.from)
     .pipe(protractor({
@@ -154,17 +167,11 @@ gulp.task('test:e2e', [
 
 // Extensive watch on the source and unit test files
 var watchTasks = [
-  'ts:lint:source', 'ts:lint:spec', 'ts:compile:source', 'test:spec'
+  'ts:lint:source', 'ts:lint:spec', 'ts:compile:source', 'test:spec', 'css:copy'
 ];
 gulp.task('watch', watchTasks, function () {
   isWatching = true;
-  gulp.watch([paths.source.from, paths.test.from], [watchTasks])
-});
-
-// Quick watch on the source files
-gulp.task('quick-watch', ['ts:compile:source'], function () {
-  isWatching = true;
-  gulp.watch([paths.source.from], [['ts:compile:source']])
+  gulp.watch([paths.source.from, paths.test.from, paths.style.from], [watchTasks])
 });
 
 // Submit code coverage to Coveralls
@@ -180,7 +187,7 @@ gulp.task('default', ['build']);
 gulp.task('build', function(callback) {
   return runSequence(
     ['clean:source', 'clean:test'],
-    ['ts:lint:source', 'ts:compile:source'],
+    ['ts:lint:source', 'ts:compile:source', 'css:copy'],
     ['ts:lint:spec', 'test:spec'],
   callback);
 });
@@ -190,7 +197,7 @@ gulp.task('build', function(callback) {
 gulp.task('travis', function(callback) {
   return runSequence(
     ['clean:source', 'clean:test'],
-    ['ts:lint:source', 'ts:compile:source'],
+    ['ts:lint:source', 'ts:compile:source', 'css:copy'],
     ['ts:lint:spec', 'test:spec'],
     ['ts:lint:e2e', 'test:e2e'],
     'coveralls',
