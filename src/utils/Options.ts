@@ -34,7 +34,11 @@ module n3Charts.Utils {
     }
 
     getAbsKey(): string {
-      return this.axes.x.key;
+      if (this.axes.x) {
+        return this.axes.x.key;
+      }
+
+      return undefined;
     }
 
     _getSaneSeries(series: any[]) {
@@ -61,7 +65,7 @@ module n3Charts.Utils {
       }
 
       return this.series.filter((s) =>
-        s.types.indexOf(type) > -1
+        s.type.indexOf(type) > -1
       );
     }
 

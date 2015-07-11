@@ -2,6 +2,7 @@
 <html lang="en" ng-app="example">
 <head>
   <title>n3-charts</title>
+  <link rel="stylesheet" type="text/css" media="screen" href="/build/styles/LineChart.css">
   <style type="text/css">
   .example {
     width: 600px;
@@ -29,8 +30,8 @@
   angular.module('example', ['n3-line-chart'])
   .controller('ExamplesCtrl', function($scope) {
     $scope.example = {
-      data: {% block data %}{}{% endblock %}, 
-      options: {% block options %}{}{% endblock %}, 
+      data: {% block data %}{}{% endblock %},
+      options: {% block options %}{}{% endblock %},
       label: "{% block name %}{% endblock %}"
     };
   });
