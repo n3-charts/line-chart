@@ -35,11 +35,15 @@ module n3Charts {
       factoryMgr.registerMany([
         ['container', Factory.Container, element[0]],
         ['tooltip', Factory.Tooltip, element[0]],
+        ['legend', Factory.Legend, element[0]],
         ['transitions', Factory.Transition],
         ['x-axis', Factory.Axis, Factory.Axis.SIDE_X],
         ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
-        ['series-column', Factory.Series.Column],
+
+        // This order is important, otherwise it can mess up with the tooltip
+        // (and you don't want to mess up with a tooltip, trust me).
         ['series-area', Factory.Series.Area],
+        ['series-column', Factory.Series.Column],
         ['series-line', Factory.Series.Line],
         ['series-dot', Factory.Series.Dot]
       ]);
@@ -68,6 +72,12 @@ module n3Charts {
 
       scope.$watch('onDatumOut', function() {
         eventMgr.on('out.directive', scope.onDatumOut);
+      });
+
+      eventMgr.on('legend-click.directive', (series) => {
+        var foundSeries = scope.options.series.filter((s) => s.id === series.id)[0];
+        foundSeries.visible = series.getToggledVisibility();
+        scope.$apply();
       });
 
       // Trigger the destroy event

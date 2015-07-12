@@ -40,7 +40,8 @@ module n3Charts.Factory.Series {
         s.attr({
           cx: (d) => xAxis.scale(d.x),
           cy: (d) => yAxis.scale(d.y)
-        });
+        })
+        .style('opacity', series.visible ? 1 : 0);
       };
 
       dots.enter()

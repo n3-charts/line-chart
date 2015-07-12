@@ -48,7 +48,8 @@ module n3Charts.Factory.Series {
       area
         .transition()
         .call(this.factoryMgr.get('transitions').edit)
-        .attr('d', (d) => updateArea(d));
+        .attr('d', (d) => updateArea(d))
+        .style('opacity', series.visible ? 1 : 0);
 
       area.exit()
         .transition()
