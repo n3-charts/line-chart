@@ -7,6 +7,11 @@
   regret that decision.
                                                                     lorem--ipsum
 */
+
+
+/* TODO : put a lil' Sass in this (two reasons : avoid at all costs global names
+ polution, and make something clean as a newborn butt. Which... isn't maybe the
+ best metaphor. */
 .axis {
   font: 10px Courier;
   shape-rendering: crispEdges;
@@ -25,6 +30,7 @@
   stroke: black;
 }
 
+/* TOOLTIP */
 .chart-tooltip {
   position: absolute;
 
@@ -89,3 +95,59 @@
   border-right: 1px solid;
   padding-right: 5px;
 }
+/*  / TOOLTIP */
+
+
+/* LEGEND */
+.chart-legend {
+  margin-left: 20px;
+}
+
+.chart-legend > .item {
+  cursor: pointer;
+  font-family: sans-serif;
+  height: 16px;
+  font-size: 0.8em;
+  font-weight: 100;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.chart-legend > .item > * {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.chart-legend > .item > .label {
+  height: 16px;
+  line-height: 17px;
+}
+
+.chart-legend > .item> .icon {
+  width: 16px;
+  border-radius: 50%;
+  height: 16px;
+  margin-right: 5px;
+  background-repeat: no-repeat;
+  background-position: 50% 25%;
+}
+
+.chart-legend > .item.column > .icon {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'><rect y='2' width='2' height='8'/><rect x='4' y='5' width='2' height='5'/><rect x='8' y='3' width='2' height='7'/></svg>");
+}
+
+.chart-legend > .item.area > .icon {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'><polygon points='0,10 2.428,3 5,6 7.625,5 10,10 10,10 0,10'/></svg>");
+}
+
+.chart-legend > .item.line > .icon {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'><polygon points='10,9.298 7.896,4.705 5.159,5.552 2.227,2.275 0,8.925 0,10 0.695,10 2.629,4.225 4.841,6.697 7.354,5.92 9.221,10 10,10'/></svg>");
+}
+
+.chart-legend > .item.dot > .icon {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'><circle cx='5' cy='6' r='2'/></svg>");
+}
+
+/* / LEGEND */
+
+
