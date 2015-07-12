@@ -46,6 +46,8 @@ module n3Charts.Factory.Series {
       dots.enter()
         .append('circle')
         .attr('class', this.dataClass)
+        .call(this.eventMgr.datumOver(series))
+        .call(this.eventMgr.datumOut(series))
         .call(initPoint)
         .transition()
         .call(this.factoryMgr.get('transitions').enter)

@@ -1,7 +1,7 @@
 module.exports = function(config) {
   var configuration = {
     basePath: '../../',
-    frameworks: ['mocha'],
+    frameworks: ['mocha', 'sinon'],
     files: [
       'node_modules/expect.js/index.js',
       'node_modules/angular/angular.js',

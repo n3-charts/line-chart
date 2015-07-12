@@ -9,7 +9,8 @@ module n3Charts.Utils {
       'create',  // on creation of the chart
       'update',  // on update of the chart
       'destroy', // on destroying the chart
-      'hover',   // on hover over a data point or column
+      'over',   // on mouse over a data point or column
+      'out',   // on mouse out of a data point or column
       'click',   // on click on a data point or column
       'focus',   // on focus of a data point from a snappy tooltip
       'toggle',  // on toggling series' visibility
@@ -41,6 +42,22 @@ module n3Charts.Utils {
 
       // Support chaining
       return this;
+    }
+
+    datumOver(series: Utils.Series) {
+      return (selection: D3.Selection) => {
+        return selection.on('mouseover', (d, i) => {
+          this.trigger('over', d, i, series);
+        });
+      };
+    }
+
+    datumOut(series: Utils.Series) {
+      return (selection: D3.Selection) => {
+        return selection.on('mouseout', (d, i) => {
+          this.trigger('out', d, i, series);
+        });
+      };
     }
   }
 }
