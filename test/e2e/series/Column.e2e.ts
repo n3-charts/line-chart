@@ -15,8 +15,9 @@ describe('n3Charts.Factory.Series.Column', function() {
   it('should have two columns with proper classes', function() {
     var cols = element.all(by.css('.chart .column-series'));
 
-    expect(cols.count()).toBe(2);
+    expect(cols.count()).toBe(3);
     expect(cols.get(0).getAttribute('class')).toBe('column-series mySeries0');
     expect(cols.get(1).getAttribute('class')).toBe('column-series mySeries1');
+    expect(cols.get(2).getAttribute('class')).toBe('column-series mySeries2');
   });
 });

@@ -3,7 +3,6 @@
 /// <reference path='../typings/d3/d3.d.ts' />
 
 /// <reference path='utils/_index.ts' />
-/// <reference path='styles/_index.ts' />
 /// <reference path='factories/_index.ts' />
 
 /// <reference path='LineChart.ts' />

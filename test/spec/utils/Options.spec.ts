@@ -9,10 +9,10 @@ describe('n3Charts.Utils.Options', () => {
 
   it('should have a default', () => {
     var options = new Options({});
-    expect(options.toJS()).to.eql({series: [], axes: []});
+    expect(options.toJS()).to.eql({series: [], axes: {}});
 
     options = new Options(undefined);
-    expect(options.toJS()).to.eql({series: [], axes: []});
+    expect(options.toJS()).to.eql({series: [], axes: {}});
   });
 
   it('should return the series per type', () => {

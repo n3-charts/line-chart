@@ -5,6 +5,8 @@ module n3Charts {
     data;
     options;
     styles;
+    onDatumOver;
+    onDatumOut;
   }
 
   export class LineChart implements ng.IDirective  {
@@ -12,7 +14,9 @@ module n3Charts {
     public scope = {
       data: '=',
       options: '=',
-      styles: '='
+      styles: '=',
+      onDatumOver: '=',
+      onDatumOut: '='
     };
 
     public restrict = 'E';
@@ -30,14 +34,14 @@ module n3Charts {
       // Note: we can apply additional arguments to each factory
       factoryMgr.registerMany([
         ['container', Factory.Container, element[0]],
+        ['tooltip', Factory.Tooltip, element[0]],
         ['transitions', Factory.Transition],
         ['x-axis', Factory.Axis, Factory.Axis.SIDE_X],
         ['y-axis', Factory.Axis, Factory.Axis.SIDE_Y],
         ['series-column', Factory.Series.Column],
         ['series-area', Factory.Series.Area],
         ['series-line', Factory.Series.Line],
-        ['series-dot', Factory.Series.Dot],
-        ['style', Factory.StyleSheet],
+        ['series-dot', Factory.Series.Dot]
       ]);
 
       // Initialize all factories
@@ -57,6 +61,14 @@ module n3Charts {
         // Trigger the update event
         eventMgr.trigger('update', data, options);
       }, true);
+
+      scope.$watch('onDatumOver', function() {
+        eventMgr.on('over.directive', scope.onDatumOver);
+      });
+
+      scope.$watch('onDatumOut', function() {
+        eventMgr.on('out.directive', scope.onDatumOut);
+      });
 
       // Trigger the destroy event
       scope.$on('$destroy', () => eventMgr.trigger('destroy'));

@@ -1,8 +1,8 @@
 /// <reference path='../test.e2e.ts' />
 
-describe('n3Charts.Factory.Series.Dot', function() {
+describe('Custom Abscissas Key', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/dot.html');
+    browser.get('test/e2e/templates/custom_abs_key.html');
   });
 
   it('should generate a chart', function() {
@@ -20,9 +20,8 @@ describe('n3Charts.Factory.Series.Dot', function() {
     expect(dots.get(1).getAttribute('class')).toBe('dot-series mySeries1');
   });
 
-  it('should trigger events on mouseover and mouseout', function() {
-    var dots = element.all(by.css('.chart .dot-series'));
-
-    // browser.actions().mouseMove(dots.get(0));
+  it('should not have NaN as cx values...', function() {
+    var dots = element.all(by.css('.dot'));
+    expect(dots.get(0).getAttribute('cx')).not.toBe('NaN');
   });
 });
