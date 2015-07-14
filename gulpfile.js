@@ -16,7 +16,7 @@ var paths = {
   },
 
   style: {
-    from: 'src/**/*.css',
+    from: 'src/**/*.scss',
     to: '.tmp/build/',
   },
 
@@ -83,10 +83,11 @@ gulp.task('ts:compile:source', function () {
   .pipe(gulp.dest(paths.source.to));
 });
 
-// Copy the style file(s) (will eventually trasnpile sass or something similar)
-gulp.task('css:copy', function () {
+// Copy the style file(s)
+gulp.task('scss:copy', function () {
   return gulp
   .src(paths.style.from)
+  .pipe($.sass())
   .pipe(gulp.dest(paths.style.to));
 });
 
@@ -155,7 +156,7 @@ gulp.task('webdriver:update', webdriverUpdate);
 
 // Run the integration tests with protractor
 gulp.task('test:e2e', [
-  'webdriver:update', 'webdriver', 'ts:lint:e2e', 'ts:compile:e2e', 'jinja:compile:e2e', 'css:copy', 'server'
+  'webdriver:update', 'webdriver', 'ts:lint:e2e', 'ts:compile:e2e', 'jinja:compile:e2e', 'scss:copy', 'server'
 ], function() {
   return gulp.src(paths.e2e.from)
     .pipe(protractor({
@@ -167,7 +168,7 @@ gulp.task('test:e2e', [
 
 // Extensive watch on the source and unit test files
 var watchTasks = [
-  'ts:lint:source', 'ts:lint:spec', 'ts:compile:source', 'test:spec', 'css:copy'
+  'ts:lint:source', 'ts:lint:spec', 'ts:compile:source', 'test:spec', 'scss:copy'
 ];
 gulp.task('watch', watchTasks, function () {
   isWatching = true;
@@ -187,7 +188,7 @@ gulp.task('default', ['build']);
 gulp.task('build', function(callback) {
   return runSequence(
     ['clean:source', 'clean:test'],
-    ['ts:lint:source', 'ts:compile:source', 'css:copy'],
+    ['ts:lint:source', 'ts:compile:source', 'scss:copy'],
     ['ts:lint:spec', 'test:spec'],
   callback);
 });
@@ -197,7 +198,7 @@ gulp.task('build', function(callback) {
 gulp.task('travis', function(callback) {
   return runSequence(
     ['clean:source', 'clean:test'],
-    ['ts:lint:source', 'ts:compile:source', 'css:copy'],
+    ['ts:lint:source', 'ts:compile:source', 'scss:copy'],
     ['ts:lint:spec', 'test:spec'],
     ['ts:lint:e2e', 'test:e2e'],
     'coveralls',

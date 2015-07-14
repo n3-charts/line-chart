@@ -3,10 +3,7 @@ module n3Charts.Factory {
 
   export class Legend extends Utils.BaseFactory {
 
-    // We might wanna find another name for this : it's not an SVG (same as for
-    // the tooltip).
-    // [lorem--ipsum]
-    private svg:D3.Selection;
+    private div:D3.Selection;
 
     constructor(private element: HTMLElement) {
       super();
@@ -17,10 +14,18 @@ module n3Charts.Factory {
     }
 
     createLegend() {
-      var svg = this.svg = d3.select(this.element)
+      this.div = d3.select(this.element)
         .append('div')
           .attr('class', 'chart-legend')
           .style('position', 'absolute');
+    }
+
+    legendClick() {
+      return (selection: D3.Selection) => {
+        return selection.on('click', (series) => {
+          this.eventMgr.trigger('legend-click', series);
+        });
+      };
     }
 
     update(data:Utils.Data, options:Utils.Options) {
@@ -30,7 +35,7 @@ module n3Charts.Factory {
 
       var init = (s) => {
         var items = s.append('div').attr({'class': 'item'})
-          .call(this.eventMgr.legendClick());
+          .call(this.legendClick());
 
         items.append('div').attr({'class': 'icon'});
         items.append('div').attr({'class': 'label'});
@@ -42,7 +47,7 @@ module n3Charts.Factory {
         s.select('.label').text((d) => d.label);
       };
 
-      var legendItems = this.svg.selectAll('.item')
+      var legendItems = this.div.selectAll('.item')
         .data(options.series);
 
       legendItems.enter().call(init);
@@ -51,7 +56,7 @@ module n3Charts.Factory {
     }
 
     destroy() {
-      this.svg.remove();
+      this.div.remove();
     }
   }
 }

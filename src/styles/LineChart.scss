@@ -1,0 +1,16 @@
+/*
+  Don't change this file unless you know what you're doing. If you file an issue
+  on GitHub and we find out it was all caused because you modified this file,
+  we'll release the kraken and you, your beloved ones, your postman, the guy who
+  delivers pizza to your house, everyone.
+  Seriously, the chart's styling is easier to change than in v1. Don't make us
+  regret that decision.
+                                                                    lorem--ipsum
+*/
+
+@import "tooltip";
+@import "legend";
+
+.chart {
+  @import "axes";
+}

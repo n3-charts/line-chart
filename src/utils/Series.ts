@@ -63,15 +63,15 @@ module n3Charts.Utils {
 
       var types = Utils.Options.SERIES_TYPES;
 
-      if (this.type.indexOf(types.AREA)) {
+      if (this.type.indexOf(types.AREA) > -1) {
         return types.AREA;
       }
 
-      if (this.type.indexOf(types.LINE)) {
+      if (this.type.indexOf(types.LINE) > -1) {
         return types.LINE;
       }
 
-      if (this.type.indexOf(types.DOT)) {
+      if (this.type.indexOf(types.DOT) > -1) {
         return types.DOT;
       }
 
