@@ -1,6 +1,6 @@
   /// <reference path='test.spec.ts' />
 
-describe('LineChart directive', () => {
+describe('n3charts.LineChart', () => {
   beforeEach(module('testUtils'));
   beforeEach(module('n3-line-chart'));
 

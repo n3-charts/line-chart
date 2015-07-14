@@ -63,13 +63,5 @@ module n3Charts.Utils {
         });
       };
     }
-
-    legendClick() {
-      return (selection: D3.Selection) => {
-        return selection.on('click', (series) => {
-          this.trigger('legend-click', series);
-        });
-      };
-    }
   }
 }

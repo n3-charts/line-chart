@@ -1,0 +1,53 @@
+.chart-tooltip {
+  position: absolute;
+
+  opacity: 0;
+  background-color: lightgrey;
+  height: 20px;
+  width: 60px;
+  margin-left: -30px;
+  border-radius: 2px;
+  font-family: sans-serif;
+  font-weight: 100;
+  color: white;
+  text-align: center;
+
+  > .arrow {
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-top-color: lightgrey;
+    border-width: 5px;
+    margin-left: -5px;
+  }
+
+  &.positive {
+    margin-top: -30px;
+  }
+
+  &.negative {
+    margin-top: 10px;
+
+    > .arrow {
+      margin-top: -30px;
+      transform: rotate(180deg);
+    }
+  }
+
+  > .abscissas, > .value {
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  > .abscissas {
+    margin-right: 5px;
+    border-right: 1px solid;
+    padding-right: 5px;
+  }
+}
