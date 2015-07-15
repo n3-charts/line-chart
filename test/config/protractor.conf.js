@@ -1,5 +1,5 @@
 exports.config = {
-  
+
   // Directly connect to the selenium server
   directConnect: true,
 
