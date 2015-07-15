@@ -1,0 +1,52 @@
+.chart-legend {
+  @mixin svg($svg) {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'>#{$svg}</svg>");
+  }
+
+  margin-left: 20px;
+
+  .item {
+    cursor: pointer;
+    font-family: sans-serif;
+    height: 16px;
+    font-size: 0.8em;
+    font-weight: 100;
+    display: inline-block;
+    margin-right: 10px;
+
+    > * {
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    > .label {
+      height: 16px;
+      line-height: 17px;
+    }
+
+    > .icon {
+      width: 16px;
+      border-radius: 50%;
+      height: 16px;
+      margin-right: 5px;
+      background-repeat: no-repeat;
+      background-position: 50% 25%;
+    }
+
+    &.column > .icon {
+      @include svg("<rect y='2' width='2' height='8'/><rect x='4' y='5' width='2' height='5'/><rect x='8' y='3' width='2' height='7'/>");
+    }
+
+    &.area > .icon {
+      @include svg("<polygon points='0,10 2.428,3 5,6 7.625,5 10,10 10,10 0,10'/>");
+    }
+
+    &.line > .icon {
+      @include svg("<polygon points='10,9.298 7.896,4.705 5.159,5.552 2.227,2.275 0,8.925 0,10 0.695,10 2.629,4.225 4.841,6.697 7.354,5.92 9.221,10 10,10'/>");
+    }
+
+    &.dot > .icon {
+      @include svg("<circle cx='5' cy='6' r='2'/>");
+    }
+  }
+}

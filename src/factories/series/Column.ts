@@ -18,7 +18,7 @@ module n3Charts.Factory.Series {
     update(data: Utils.Data, options: Utils.Options) {
       super.update(data, options);
 
-      var series = options.getSeriesForType(Column.type);
+      var series = options.getSeriesForType(Column.type).filter((s) => s.visible);
 
       this.updateColumnsWidth(series, options);
       this.updateColumnScale(series, options);
@@ -69,7 +69,8 @@ module n3Charts.Factory.Series {
           y: (d) => d.y > 0 ? yAxis.scale(d.y) : yAxis.scale(0),
           width: this.innerXScale.rangeBand(),
           height: (d) => Math.abs(yAxis.scale(0) - yAxis.scale(d.y))
-        });
+        })
+        .style('opacity', series.visible ? 1 : 0);
       };
 
       var cols = group.selectAll('.' + this.dataClass)

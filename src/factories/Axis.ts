@@ -62,7 +62,10 @@ module n3Charts.Factory {
         });
       }
 
-      return [min, max];
+      return [
+        min === Number.POSITIVE_INFINITY ? 0 : min,
+        max === Number.NEGATIVE_INFINITY ? 1 : max
+      ];
     }
 
     getExtent(datasets: Utils.Data, options: Utils.Options) {
@@ -78,7 +81,7 @@ module n3Charts.Factory {
       var datasetsForSide = [];
       var seriesForDataset = {};
       options.series.forEach((series) => {
-        if (series.axis === this.side) {
+        if (series.visible && series.axis === this.side) {
           datasetsForSide.push(series.dataset);
           if (!seriesForDataset[series.dataset]) {
             seriesForDataset[series.dataset] = [];

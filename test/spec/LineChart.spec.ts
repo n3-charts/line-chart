@@ -1,6 +1,6 @@
   /// <reference path='test.spec.ts' />
 
-describe('n3Charts.Utils.BaseFactory', () => {
+describe('n3charts.LineChart', () => {
   beforeEach(module('testUtils'));
   beforeEach(module('n3-line-chart'));
 
@@ -31,7 +31,9 @@ describe('n3Charts.Utils.BaseFactory', () => {
           {
             axis: 'y',
             dataset: 'dataset0',
+            visible: true,
             key: 'val_0',
+            label: 'pouet',
             color: '#1f77b4',
             type: ['dot'],
             id: 'mySeries0'
