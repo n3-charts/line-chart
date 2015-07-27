@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.10 - 03 July 2015
+line-chart - v1.1.10 - 27 July 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -305,8 +305,8 @@ mod.factory('n3utils', [
       },
       drawColumns: function(svg, axes, data, columnWidth, options, handlers, dispatch) {
         var colGroup, x1;
-        data = data.filter(function(s) {
-          return s.type === 'column';
+        data = data.filter(function(s, i) {
+          return s.type === 'column' && (options.series[i].visible === void 0 || options.series[i].visible);
         });
         x1 = this.getColumnAxis(data, columnWidth, options);
         data.forEach(function(s) {
@@ -886,6 +886,8 @@ mod.factory('n3utils', [
             return;
           }
           layers = straightened.filter(function(s, i) {
+            return series[i].visible === void 0 || series[i].visible;
+          }).filter(function(s, i) {
             var _ref;
             return (s.id != null) && (_ref = s.id, __indexOf.call(stack.series, _ref) >= 0);
           });
