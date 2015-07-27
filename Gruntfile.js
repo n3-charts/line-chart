@@ -166,7 +166,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('travis', ['default', 'shell:visual', 'coveralls']);
+  grunt.registerTask('travis', ['default', 'karma:unminified', 'shell:visual', 'coveralls']);
   grunt.registerTask('visual', ['concat', 'coffeelint', 'coffee', 'uglify', 'shell:visual']);
   grunt.registerTask('default', ['concat', 'coffeelint', 'coffee', 'uglify', 'karma:minified']);
   grunt.registerTask('build', ['default']);
