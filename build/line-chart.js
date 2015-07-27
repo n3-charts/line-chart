@@ -221,8 +221,11 @@ mod.factory('n3utils', [
         });
         pseudoColumns = {};
         keys = [];
-        data.forEach(function(series, i) {
-          var inAStack, index, visible, _ref;
+        data.forEach(function(series) {
+          var i, inAStack, index, visible, _ref;
+          i = options.series.map(function(d) {
+            return d.id;
+          }).indexOf(series.id);
           visible = (_ref = options.series) != null ? _ref[i].visible : void 0;
           if (visible === void 0 || visible === !false) {
             inAStack = false;
@@ -305,7 +308,7 @@ mod.factory('n3utils', [
       },
       drawColumns: function(svg, axes, data, columnWidth, options, handlers, dispatch) {
         var colGroup, x1;
-        data = data.filter(function(s, i) {
+        data = data.filter(function(s) {
           return s.type === 'column';
         });
         x1 = this.getColumnAxis(data, columnWidth, options);
@@ -317,8 +320,13 @@ mod.factory('n3utils', [
         }).attr('transform', function(s) {
           return "translate(" + x1(s) + ",0)";
         });
-        colGroup.each(function(series, i) {
-          if (options.series[i].visible === void 0 || options.series[i].visible) {
+        colGroup.each(function(series) {
+          var i, visible, _ref;
+          i = options.series.map(function(d) {
+            return d.id;
+          }).indexOf(series.id);
+          visible = (_ref = options.series) != null ? _ref[i].visible : void 0;
+          if (visible === void 0 || visible === !false) {
             return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
               'stroke': series.color,
               'fill': series.color,

@@ -81,6 +81,15 @@ describe 'column series', ->
             {series: ['series_0', 'series_1', 'series_2'], axis:'y'},
             {series: ['series_4', 'series_5'], axis:'y2'}
           ]
+          series: [
+            {id: 'series_0'}
+            {id: 'series_1'}
+            {id: 'series_2'}
+            {id: 'series_3'}
+            {id: 'series_4'}
+            {id: 'series_5'}
+            {id: 'series_6'}
+          ]
 
         data = [
           {id: 'series_0', values: [], type: "column"}

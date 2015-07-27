@@ -229,7 +229,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         pseudoColumns = {}
         keys = []
-        data.forEach (series, i) ->
+        data.forEach (series) ->
+          i = options.series.map((d) -> d.id).indexOf(series.id)
           visible = options.series?[i].visible
           if visible is undefined or visible is not false
             inAStack = false
@@ -312,7 +313,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       drawColumns: (svg, axes, data, columnWidth, options, handlers, dispatch) ->
 
         # filter the data to retrieve only series of type column
-        data = data.filter (s, i) -> s.type is 'column'
+        data = data.filter (s) -> s.type is 'column'
 
         x1 = this.getColumnAxis(data, columnWidth, options)
 
@@ -324,9 +325,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .attr('class', (s) -> 'columnGroup series_' + s.index)
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
-        colGroup.each (series, i) ->
-          # only draw visible series
-          if (options.series[i].visible is undefined or options.series[i].visible)
+        colGroup.each (series) ->
+          # only draw visible series to avoid with="NaN" errors
+          i = options.series.map((d) -> d.id).indexOf(series.id)
+          visible = options.series?[i].visible
+          if visible is undefined or visible is not false
             d3.select(this).selectAll("rect")
               .data(series.values)
               .enter().append("rect")
