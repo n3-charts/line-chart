@@ -311,9 +311,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
       drawColumns: (svg, axes, data, columnWidth, options, handlers, dispatch) ->
 
-        # filter the data to retrieve only visible series of type column
-        data = data.filter (s, i) ->
-          s.type is 'column' and (options.series[i].visible is undefined or options.series[i].visible)
+        # filter the data to retrieve only series of type column
+        data = data.filter (s, i) -> s.type is 'column'
 
         x1 = this.getColumnAxis(data, columnWidth, options)
 
@@ -325,39 +324,41 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .attr('class', (s) -> 'columnGroup series_' + s.index)
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
-        colGroup.each (series) ->
-          d3.select(this).selectAll("rect")
-            .data(series.values)
-            .enter().append("rect")
-              .style({
-                'stroke': series.color
-                'fill': series.color
-                'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
-                'stroke-width': '1px'
-                'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
-              })
-              .attr(
-                width: columnWidth
-                x: (d) -> axes.xScale(d.x)
-                height: (d) ->
-                  return axes[d.axis + 'Scale'].range()[0] if d.y is 0
-                  return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
-                y: (d) ->
-                  if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
-              )
-              .on('click': (d, i) -> dispatch.click(d, i))
-              .on('mouseover', (d, i) ->
-                dispatch.hover(d, i)
-                handlers.onMouseOver?(svg, {
-                  series: series
-                  x: axes.xScale(d.x)
-                  y: axes[d.axis + 'Scale'](d.y0 + d.y)
-                  datum: d
-                }, options.axes)
-              )
-              .on('mouseout', (d) ->
-                handlers.onMouseOut?(svg)
-              )
+        colGroup.each (series, i) ->
+          # only draw visible series
+          if (options.series[i].visible is undefined or options.series[i].visible)
+            d3.select(this).selectAll("rect")
+              .data(series.values)
+              .enter().append("rect")
+                .style({
+                  'stroke': series.color
+                  'fill': series.color
+                  'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
+                  'stroke-width': '1px'
+                  'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
+                })
+                .attr(
+                  width: columnWidth
+                  x: (d) -> axes.xScale(d.x)
+                  height: (d) ->
+                    return axes[d.axis + 'Scale'].range()[0] if d.y is 0
+                    return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
+                  y: (d) ->
+                    if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
+                )
+                .on('click': (d, i) -> dispatch.click(d, i))
+                .on('mouseover', (d, i) ->
+                  dispatch.hover(d, i)
+                  handlers.onMouseOver?(svg, {
+                    series: series
+                    x: axes.xScale(d.x)
+                    y: axes[d.axis + 'Scale'](d.y0 + d.y)
+                    datum: d
+                  }, options.axes)
+                )
+                .on('mouseout', (d) ->
+                  handlers.onMouseOut?(svg)
+                )
 
         return this
 # ----
