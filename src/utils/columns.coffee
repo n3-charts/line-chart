@@ -25,7 +25,7 @@
           seriesData.map (series) ->
             # Compute delta
             return series.values
-              # Look at all sclaed values on the axis
+              # Look at all scaled values on the axis
               .map((d) -> scale(d[key]))
               # Select only columns in the visible range
               .filter((e) ->
@@ -49,7 +49,7 @@
 
         {pseudoColumns, keys} = this.getPseudoColumns(seriesData, options)
 
-        # iner width of the chart area
+        # inner width of the chart area
         innerWidth = dimensions.width - dimensions.left - dimensions.right
 
         colData = seriesData
@@ -84,7 +84,10 @@
           return x1(index) - keys.length*columnWidth/2
 
       drawColumns: (svg, axes, data, columnWidth, options, handlers, dispatch) ->
-        data = data.filter (s) -> s.type is 'column'
+
+        # filter the data to retrieve only visible series of type column
+        data = data.filter (s, i) ->
+          s.type is 'column' and (options.series[i].visible is undefined or options.series[i].visible)
 
         x1 = this.getColumnAxis(data, columnWidth, options)
 
