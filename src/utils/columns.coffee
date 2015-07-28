@@ -36,7 +36,7 @@
               .reduce((prev, cur, i, arr) ->
                 # Get the difference from the current value
                 # with the previous value in the array
-                diff = if i > 0 then cur - arr[i - 1] else Number.MAX_VALUE
+                diff = if i > 0 then Math.max(cur - arr[i - 1], 0) else Number.MAX_VALUE
                 # Return the new difference if it is smaller
                 # than the previous difference
                 return if diff < prev then diff else prev
@@ -70,7 +70,9 @@
         # number of series to display
         nSeries = keys.length
 
-        return parseInt((delta - options.columnsHGap) / nSeries)
+        return if options.columnsHGap > delta
+          then parseInt((delta - options.columnsHGap) / nSeries)
+          else parseInt(delta / nSeries)
 
       getColumnAxis: (data, columnWidth, options) ->
         {pseudoColumns, keys} = this.getPseudoColumns(data, options)
