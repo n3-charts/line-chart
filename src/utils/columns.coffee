@@ -70,8 +70,8 @@
         # number of series to display
         nSeries = keys.length
 
-        return if options.columnsHGap > delta
-          then parseInt((delta - options.columnsHGap) / nSeries)
+        return if options.columnsHGap < delta \
+          then parseInt((delta - options.columnsHGap) / nSeries) \
           else parseInt(delta / nSeries)
 
       getColumnAxis: (data, columnWidth, options) ->
