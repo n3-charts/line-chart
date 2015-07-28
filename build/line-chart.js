@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.10 - 27 July 2015
+line-chart - v1.1.10 - 28 July 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -262,7 +262,7 @@ mod.factory('n3utils', [
             }
           }).reduce(function(prev, cur, i, arr) {
             var diff;
-            diff = i > 0 ? cur - arr[i - 1] : Number.MAX_VALUE;
+            diff = i > 0 ? Math.max(cur - arr[i - 1], 0) : Number.MAX_VALUE;
             if (diff < prev) {
               return diff;
             } else {
@@ -291,7 +291,11 @@ mod.factory('n3utils', [
           delta = 0.25 * innerWidth;
         }
         nSeries = keys.length;
-        return parseInt((delta - options.columnsHGap) / nSeries);
+        if (options.columnsHGap < delta) {
+          return parseInt((delta - options.columnsHGap) / nSeries);
+        } else {
+          return parseInt(delta / nSeries);
+        }
       },
       getColumnAxis: function(data, columnWidth, options) {
         var keys, pseudoColumns, x1, _ref;
