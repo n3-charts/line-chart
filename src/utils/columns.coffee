@@ -71,8 +71,8 @@
         nSeries = keys.length
 
         return if options.columnsHGap < delta \
-          then parseInt((delta - options.columnsHGap) / nSeries) \
-          else parseInt(delta / nSeries)
+          then Math.max(1.0, (delta - options.columnsHGap) / nSeries) \
+          else Math.max(1.0, delta*0.8 / nSeries)
 
       getColumnAxis: (data, columnWidth, options) ->
         {pseudoColumns, keys} = this.getPseudoColumns(data, options)
