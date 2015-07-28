@@ -292,9 +292,9 @@ mod.factory('n3utils', [
         }
         nSeries = keys.length;
         if (options.columnsHGap < delta) {
-          return parseInt((delta - options.columnsHGap) / nSeries);
+          return Math.max(1.0, (delta - options.columnsHGap) / nSeries);
         } else {
-          return parseInt(delta / nSeries);
+          return Math.max(1.0, delta * 0.8 / nSeries);
         }
       },
       getColumnAxis: function(data, columnWidth, options) {
