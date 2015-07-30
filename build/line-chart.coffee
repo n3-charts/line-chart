@@ -1141,11 +1141,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.axes = this.sanitizeAxes(options.axes, this.haveSecondYAxis(options.series))
         options.tooltip = this.sanitizeTooltip(options.tooltip)
         options.margin = this.sanitizeMargins(options.margin)
-        
+
         options.lineMode or= this.getDefaultOptions().lineMode
         options.tension = if /^\d+(\.\d+)?$/.test(options.tension) then options.tension \
           else this.getDefaultOptions().tension
-        
+
         options.drawLegend = options.drawLegend isnt false
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
@@ -1258,26 +1258,37 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return axesOptions
 
-      sanitizeExtrema: (options) ->
-        min = this.getSanitizedNumber(options.min)
-        if min?
-          options.min = min
-        else
-          delete options.min
+      sanitizeExtrema: (axisOptions) ->
+        for extremum in ['min', 'max']
+          originalValue = axisOptions[extremum]
+          if originalValue?
+            axisOptions[extremum] = this.sanitizeExtremum(extremum, axisOptions)
 
-        max = this.getSanitizedNumber(options.max)
-        if max?
-          options.max = max
-        else
-          delete options.max
+            if ! axisOptions[extremum]?
+              $log.warn("Invalid #{extremum} value '#{originalValue}' (parsed as #{axisOptions[extremum]}), ignoring it.")
 
-      getSanitizedNumber: (value) ->
+      sanitizeExtremum: (name, axisOptions) ->
+        sanitizer = this.sanitizeNumber
+
+        if axisOptions.type == 'date'
+          sanitizer = this.sanitizeDate
+
+        return sanitizer(axisOptions[name])
+
+      sanitizeDate: (value) ->
+        return undefined unless value?
+
+        if ! (value instanceof Date) || isNaN(value.valueOf()) # see http://stackoverflow.com/questions/10589732
+          return undefined
+
+        return value
+
+      sanitizeNumber: (value) ->
         return undefined unless value?
 
         number = parseFloat(value)
 
         if isNaN(number)
-          $log.warn("Invalid extremum value : #{value}, deleting it.")
           return undefined
 
         return number
@@ -1288,7 +1299,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.type or= 'linear'
 
         if options.ticksRotate?
-          options.ticksRotate = this.getSanitizedNumber(options.ticksRotate)
+          options.ticksRotate = this.sanitizeNumber(options.ticksRotate)
 
         if options.zoomable?
           options.zoomable = options.zoomable or false
@@ -1304,7 +1315,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           if options.type is 'date'
             # Use d3.time.format as formatter
             options.ticksFormatter = d3.time.format(options.ticksFormat)
-            
+
           else
             # Use d3.format as formatter
             options.ticksFormatter = d3.format(options.ticksFormat)
@@ -1319,13 +1330,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           if options.type is 'date'
             # Use d3.time.format as formatter
             options.tooltipFormatter = d3.time.format(options.tooltipFormat)
-            
+
           else
             # Use d3.format as formatter
             options.tooltipFormatter = d3.format(options.tooltipFormat)
-        
+
         if options.ticksInterval?
-          options.ticksInterval = this.getSanitizedNumber(options.ticksInterval)
+          options.ticksInterval = this.sanitizeNumber(options.ticksInterval)
 
         this.sanitizeExtrema(options)
 
