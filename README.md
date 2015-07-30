@@ -222,11 +222,6 @@ Install dev dependencies :
 $ npm install
 ```
 
-Install components :
-```sh
-$ bower install
-```
-
 Watch :
 ```sh
 $ grunt watch
@@ -239,6 +234,7 @@ $ grunt
 
 Or run the visual tests, too :
 ```sh
+$ pip install pillow
 $ grunt travis
 ```
 
