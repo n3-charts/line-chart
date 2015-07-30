@@ -1263,29 +1263,50 @@ mod.factory('n3utils', [
         }
         return axesOptions;
       },
-      sanitizeExtrema: function(options) {
-        var max, min;
-        min = this.getSanitizedNumber(options.min);
-        if (min != null) {
-          options.min = min;
-        } else {
-          delete options.min;
+      sanitizeExtrema: function(axisOptions) {
+        var extremum, originalValue, _i, _len, _ref, _results;
+        _ref = ['min', 'max'];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          extremum = _ref[_i];
+          originalValue = axisOptions[extremum];
+          if (originalValue != null) {
+            axisOptions[extremum] = this.sanitizeExtremum(extremum, axisOptions);
+            if (axisOptions[extremum] == null) {
+              _results.push($log.warn("Invalid " + extremum + " value '" + originalValue + "' (parsed as " + axisOptions[extremum] + "), ignoring it."));
+            } else {
+              _results.push(void 0);
+            }
+          } else {
+            _results.push(void 0);
+          }
         }
-        max = this.getSanitizedNumber(options.max);
-        if (max != null) {
-          return options.max = max;
-        } else {
-          return delete options.max;
-        }
+        return _results;
       },
-      getSanitizedNumber: function(value) {
+      sanitizeExtremum: function(name, axisOptions) {
+        var sanitizer;
+        sanitizer = this.sanitizeNumber;
+        if (axisOptions.type === 'date') {
+          sanitizer = this.sanitizeDate;
+        }
+        return sanitizer(axisOptions[name]);
+      },
+      sanitizeDate: function(value) {
+        if (value == null) {
+          return void 0;
+        }
+        if (!(value instanceof Date) || isNaN(value.valueOf())) {
+          return void 0;
+        }
+        return value;
+      },
+      sanitizeNumber: function(value) {
         var number;
         if (value == null) {
           return void 0;
         }
         number = parseFloat(value);
         if (isNaN(number)) {
-          $log.warn("Invalid extremum value : " + value + ", deleting it.");
           return void 0;
         }
         return number;
@@ -1298,7 +1319,7 @@ mod.factory('n3utils', [
         }
         options.type || (options.type = 'linear');
         if (options.ticksRotate != null) {
-          options.ticksRotate = this.getSanitizedNumber(options.ticksRotate);
+          options.ticksRotate = this.sanitizeNumber(options.ticksRotate);
         }
         if (options.zoomable != null) {
           options.zoomable = options.zoomable || false;
@@ -1324,7 +1345,7 @@ mod.factory('n3utils', [
           }
         }
         if (options.ticksInterval != null) {
-          options.ticksInterval = this.getSanitizedNumber(options.ticksInterval);
+          options.ticksInterval = this.sanitizeNumber(options.ticksInterval);
         }
         this.sanitizeExtrema(options);
         return options;
