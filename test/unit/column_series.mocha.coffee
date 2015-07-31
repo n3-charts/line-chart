@@ -81,6 +81,15 @@ describe 'column series', ->
             {series: ['series_0', 'series_1', 'series_2'], axis:'y'},
             {series: ['series_4', 'series_5'], axis:'y2'}
           ]
+          series: [
+            {id: 'series_0'}
+            {id: 'series_1'}
+            {id: 'series_2'}
+            {id: 'series_3'}
+            {id: 'series_4'}
+            {id: 'series_5'}
+            {id: 'series_6'}
+          ]
 
         data = [
           {id: 'series_0', values: [], type: "column"}
@@ -198,8 +207,8 @@ describe 'column series', ->
 
     cols_0 = element.childrenByClass('columnGroup')[0].children()
     cols_1 = element.childrenByClass('columnGroup')[1].children()
-    expect(cols_0[0].getAttribute('width')).to.equal('54')
-    expect(cols_1[0].getAttribute('width')).to.equal('54')
+    expect(cols_0[0].getAttribute('width')).to.equal('54.5')
+    expect(cols_1[0].getAttribute('width')).to.equal('54.5')
 
   it 'should draw zero value columns with full height and opacity to zero', ->
     outerScope.$apply ->

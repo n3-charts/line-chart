@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.10 - 03 July 2015
+line-chart - v1.1.10 - 28 July 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -229,7 +229,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         pseudoColumns = {}
         keys = []
-        data.forEach (series, i) ->
+        data.forEach (series) ->
+          i = options.series.map((d) -> d.id).indexOf(series.id)
           visible = options.series?[i].visible
           if visible is undefined or visible is not false
             inAStack = false
@@ -251,7 +252,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           seriesData.map (series) ->
             # Compute delta
             return series.values
-              # Look at all sclaed values on the axis
+              # Look at all scaled values on the axis
               .map((d) -> scale(d[key]))
               # Select only columns in the visible range
               .filter((e) ->
@@ -261,7 +262,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               .reduce((prev, cur, i, arr) ->
                 # Get the difference from the current value
                 # with the previous value in the array
-                diff = if i > 0 then cur - arr[i - 1] else Number.MAX_VALUE
+                diff = if i > 0 then Math.max(cur - arr[i - 1], 0) else Number.MAX_VALUE
                 # Return the new difference if it is smaller
                 # than the previous difference
                 return if diff < prev then diff else prev
@@ -275,7 +276,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         {pseudoColumns, keys} = this.getPseudoColumns(seriesData, options)
 
-        # iner width of the chart area
+        # inner width of the chart area
         innerWidth = dimensions.width - dimensions.left - dimensions.right
 
         colData = seriesData
@@ -295,7 +296,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         # number of series to display
         nSeries = keys.length
 
-        return parseInt((delta - options.columnsHGap) / nSeries)
+        return if options.columnsHGap < delta \
+          then Math.max(1.0, (delta - options.columnsHGap) / nSeries) \
+          else Math.max(1.0, delta*0.8 / nSeries)
 
       getColumnAxis: (data, columnWidth, options) ->
         {pseudoColumns, keys} = this.getPseudoColumns(data, options)
@@ -310,6 +313,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           return x1(index) - keys.length*columnWidth/2
 
       drawColumns: (svg, axes, data, columnWidth, options, handlers, dispatch) ->
+
+        # filter the data to retrieve only series of type column
         data = data.filter (s) -> s.type is 'column'
 
         x1 = this.getColumnAxis(data, columnWidth, options)
@@ -323,38 +328,42 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
         colGroup.each (series) ->
-          d3.select(this).selectAll("rect")
-            .data(series.values)
-            .enter().append("rect")
-              .style({
-                'stroke': series.color
-                'fill': series.color
-                'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
-                'stroke-width': '1px'
-                'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
-              })
-              .attr(
-                width: columnWidth
-                x: (d) -> axes.xScale(d.x)
-                height: (d) ->
-                  return axes[d.axis + 'Scale'].range()[0] if d.y is 0
-                  return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
-                y: (d) ->
-                  if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
-              )
-              .on('click': (d, i) -> dispatch.click(d, i))
-              .on('mouseover', (d, i) ->
-                dispatch.hover(d, i)
-                handlers.onMouseOver?(svg, {
-                  series: series
-                  x: axes.xScale(d.x)
-                  y: axes[d.axis + 'Scale'](d.y0 + d.y)
-                  datum: d
-                }, options.axes)
-              )
-              .on('mouseout', (d) ->
-                handlers.onMouseOut?(svg)
-              )
+          # only draw visible series to avoid with="NaN" errors
+          i = options.series.map((d) -> d.id).indexOf(series.id)
+          visible = options.series?[i].visible
+          if visible is undefined or visible is not false
+            d3.select(this).selectAll("rect")
+              .data(series.values)
+              .enter().append("rect")
+                .style({
+                  'stroke': series.color
+                  'fill': series.color
+                  'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
+                  'stroke-width': '1px'
+                  'fill-opacity': (d) -> if d.y is 0 then 0 else 0.7
+                })
+                .attr(
+                  width: columnWidth
+                  x: (d) -> axes.xScale(d.x)
+                  height: (d) ->
+                    return axes[d.axis + 'Scale'].range()[0] if d.y is 0
+                    return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
+                  y: (d) ->
+                    if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
+                )
+                .on('click': (d, i) -> dispatch.click(d, i))
+                .on('mouseover', (d, i) ->
+                  dispatch.hover(d, i)
+                  handlers.onMouseOver?(svg, {
+                    series: series
+                    x: axes.xScale(d.x)
+                    y: axes[d.axis + 'Scale'](d.y0 + d.y)
+                    datum: d
+                  }, options.axes)
+                )
+                .on('mouseout', (d) ->
+                  handlers.onMouseOut?(svg)
+                )
 
         return this
 # ----
@@ -897,7 +906,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         options.stacks.forEach (stack) ->
           return unless stack.series.length > 0
-          layers = straightened.filter (s, i) -> s.id? and s.id in stack.series
+          layers = straightened
+            .filter (s, i) -> series[i].visible is undefined or series[i].visible
+            .filter (s, i) -> s.id? and s.id in stack.series
           layout(layers)
 
         return straightened

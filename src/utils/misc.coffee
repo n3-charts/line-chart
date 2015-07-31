@@ -214,7 +214,9 @@
 
         options.stacks.forEach (stack) ->
           return unless stack.series.length > 0
-          layers = straightened.filter (s, i) -> s.id? and s.id in stack.series
+          layers = straightened
+            .filter (s, i) -> series[i].visible is undefined or series[i].visible
+            .filter (s, i) -> s.id? and s.id in stack.series
           layout(layers)
 
         return straightened

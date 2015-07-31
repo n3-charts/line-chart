@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.10 - 03 July 2015
+line-chart - v1.1.10 - 28 July 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -221,8 +221,11 @@ mod.factory('n3utils', [
         });
         pseudoColumns = {};
         keys = [];
-        data.forEach(function(series, i) {
-          var inAStack, index, visible, _ref;
+        data.forEach(function(series) {
+          var i, inAStack, index, visible, _ref;
+          i = options.series.map(function(d) {
+            return d.id;
+          }).indexOf(series.id);
           visible = (_ref = options.series) != null ? _ref[i].visible : void 0;
           if (visible === void 0 || visible === !false) {
             inAStack = false;
@@ -259,7 +262,7 @@ mod.factory('n3utils', [
             }
           }).reduce(function(prev, cur, i, arr) {
             var diff;
-            diff = i > 0 ? cur - arr[i - 1] : Number.MAX_VALUE;
+            diff = i > 0 ? Math.max(cur - arr[i - 1], 0) : Number.MAX_VALUE;
             if (diff < prev) {
               return diff;
             } else {
@@ -288,7 +291,11 @@ mod.factory('n3utils', [
           delta = 0.25 * innerWidth;
         }
         nSeries = keys.length;
-        return parseInt((delta - options.columnsHGap) / nSeries);
+        if (options.columnsHGap < delta) {
+          return Math.max(1.0, (delta - options.columnsHGap) / nSeries);
+        } else {
+          return Math.max(1.0, delta * 0.8 / nSeries);
+        }
       },
       getColumnAxis: function(data, columnWidth, options) {
         var keys, pseudoColumns, x1, _ref;
@@ -318,57 +325,64 @@ mod.factory('n3utils', [
           return "translate(" + x1(s) + ",0)";
         });
         colGroup.each(function(series) {
-          return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
-            'stroke': series.color,
-            'fill': series.color,
-            'stroke-opacity': function(d) {
-              if (d.y === 0) {
-                return '0';
-              } else {
-                return '1';
+          var i, visible, _ref;
+          i = options.series.map(function(d) {
+            return d.id;
+          }).indexOf(series.id);
+          visible = (_ref = options.series) != null ? _ref[i].visible : void 0;
+          if (visible === void 0 || visible === !false) {
+            return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
+              'stroke': series.color,
+              'fill': series.color,
+              'stroke-opacity': function(d) {
+                if (d.y === 0) {
+                  return '0';
+                } else {
+                  return '1';
+                }
+              },
+              'stroke-width': '1px',
+              'fill-opacity': function(d) {
+                if (d.y === 0) {
+                  return 0;
+                } else {
+                  return 0.7;
+                }
               }
-            },
-            'stroke-width': '1px',
-            'fill-opacity': function(d) {
-              if (d.y === 0) {
-                return 0;
-              } else {
-                return 0.7;
+            }).attr({
+              width: columnWidth,
+              x: function(d) {
+                return axes.xScale(d.x);
+              },
+              height: function(d) {
+                if (d.y === 0) {
+                  return axes[d.axis + 'Scale'].range()[0];
+                }
+                return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0));
+              },
+              y: function(d) {
+                if (d.y === 0) {
+                  return 0;
+                } else {
+                  return axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y));
+                }
               }
-            }
-          }).attr({
-            width: columnWidth,
-            x: function(d) {
-              return axes.xScale(d.x);
-            },
-            height: function(d) {
-              if (d.y === 0) {
-                return axes[d.axis + 'Scale'].range()[0];
+            }).on({
+              'click': function(d, i) {
+                return dispatch.click(d, i);
               }
-              return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0));
-            },
-            y: function(d) {
-              if (d.y === 0) {
-                return 0;
-              } else {
-                return axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y));
-              }
-            }
-          }).on({
-            'click': function(d, i) {
-              return dispatch.click(d, i);
-            }
-          }).on('mouseover', function(d, i) {
-            dispatch.hover(d, i);
-            return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
-              series: series,
-              x: axes.xScale(d.x),
-              y: axes[d.axis + 'Scale'](d.y0 + d.y),
-              datum: d
-            }, options.axes) : void 0;
-          }).on('mouseout', function(d) {
-            return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
-          });
+            }).on('mouseover', function(d, i) {
+              dispatch.hover(d, i);
+              return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
+                series: series,
+                x: axes.xScale(d.x),
+                y: axes[d.axis + 'Scale'](d.y0 + d.y),
+                datum: d
+              }, options.axes) : void 0;
+            }).on('mouseout', function(d) {
+              return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
+            });
+          }
         });
         return this;
       },
@@ -886,6 +900,8 @@ mod.factory('n3utils', [
             return;
           }
           layers = straightened.filter(function(s, i) {
+            return series[i].visible === void 0 || series[i].visible;
+          }).filter(function(s, i) {
             var _ref;
             return (s.id != null) && (_ref = s.id, __indexOf.call(stack.series, _ref) >= 0);
           });
