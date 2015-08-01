@@ -106,6 +106,29 @@ The `series` key must be an array which contains objects with the following prop
 + `visible` : optional, can be either `true` or `false`. Default is true. Defines whether the series is initially visible. Will be updated if the series gets hidden or shown through a click on the legend.
 + `dotSize` : optional, must be an numerical value. Default is `2`. Will be ignored if the series type is not `area` or `line`, or if `drawDots` is set to `false`.
 
+##### Stacks
+With the optional `stacks` key one can stack multiple series into a single stacked series. It must contain an array of objects with following properties :
+
++ `series` : mandatory, array containing the series ids of the series that should be stacked together
++ `axis` : optional, the axis on which the new stacked series should be displayed. Valid values are `y` or `y2`. Default is `y`
+
+> Please note, that when using stacks we need to define an `id` identifier on each series that we want to include in a stack.
+
+Here is the example of a stack configuration of column series.
+
+```js
+$scope.options = {
+  stacks: [
+    {axis: 'y', series: ['id_0', 'id_1', 'id_2']}
+  ],
+  series: [
+    {id: 'id_0', y: 'y_0', type: 'column'},
+    {id: 'id_1', y: 'y_1', type: 'column'},
+    {id: 'id_2', y: 'y_2', type: 'column'}
+  ]
+}
+```
+
 ##### Tooltip
 The `tooltip` must be an object which contains the following properties :
  + `mode` : can be set to `none`, `axes`, or `scrubber`. It can also be set to `scrubber`, which displays tooltips for all series. Default is `scrubber`.
