@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.11 - 01 August 2015
+line-chart - v1.1.11 - 02 August 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -63,19 +63,17 @@ directive('linechart', [
         _u.createContent(svg, id, options, handlers);
         if (dataPerSeries.length) {
           columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options);
-          _u.drawArea(svg, axes, dataPerSeries, options, handlers).drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers, dispatch).drawLines(svg, axes, dataPerSeries, options, handlers);
-          if (options.drawDots) {
-            _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch);
-          }
+          _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
         }
         if (options.drawLegend) {
           _u.drawLegend(svg, options.series, dimensions, handlers, dispatch);
         }
         if (options.tooltip.mode === 'scrubber') {
-          return _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
+          _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
         } else if (options.tooltip.mode !== 'none') {
-          return _u.addTooltips(svg, dimensions, options.axes);
+          _u.addTooltips(svg, dimensions, options.axes);
         }
+        return _u.setZoom(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
       };
       updateEvents = function() {
         if (scope.oldclick) {
@@ -169,7 +167,7 @@ mod.factory('n3utils', [
         return pattern.append('path').attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
       },
       drawArea: function(svg, scales, data, options) {
-        var areaSeries, drawers;
+        var areaGroup, areaJoin, areaSeries, drawers;
         areaSeries = data.filter(function(series) {
           return series.type === 'area';
         });
@@ -178,21 +176,28 @@ mod.factory('n3utils', [
           y: this.createLeftAreaDrawer(scales, options.lineMode, options.tension),
           y2: this.createRightAreaDrawer(scales, options.lineMode, options.tension)
         };
-        svg.select('.content').selectAll('.areaGroup').data(areaSeries).enter().append('g').attr('class', function(s) {
+        areaJoin = svg.select('.content').selectAll('.areaGroup').data(areaSeries);
+        areaGroup = areaJoin.enter().append('g').attr('class', function(s) {
           return 'areaGroup ' + 'series_' + s.index;
-        }).append('path').attr('class', 'area').style('fill', function(s) {
-          if (s.striped !== true) {
-            return s.color;
-          }
-          return "url(#areaPattern_" + s.index + ")";
-        }).style('opacity', function(s) {
-          if (s.striped) {
-            return '1';
-          } else {
-            return '0.3';
-          }
-        }).attr('d', function(d) {
-          return drawers[d.axis](d.values);
+        });
+        areaJoin.each(function(series) {
+          var dataJoin;
+          dataJoin = d3.select(this).selectAll('path').data([series]);
+          dataJoin.enter().append('path').attr('class', 'area');
+          return dataJoin.style('fill', function(s) {
+            if (s.striped !== true) {
+              return s.color;
+            }
+            return "url(#areaPattern_" + s.index + ")";
+          }).style('opacity', function(s) {
+            if (s.striped) {
+              return '1';
+            } else {
+              return '0.3';
+            }
+          }).attr('d', function(d) {
+            return drawers[d.axis](d.values);
+          });
         });
         return this;
       },
@@ -311,7 +316,7 @@ mod.factory('n3utils', [
         };
       },
       drawColumns: function(svg, axes, data, columnWidth, options, handlers, dispatch) {
-        var colGroup, x1;
+        var colGroup, colJoin, x1;
         data = data.filter(function(s) {
           return s.type === 'column';
         });
@@ -319,19 +324,37 @@ mod.factory('n3utils', [
         data.forEach(function(s) {
           return s.xOffset = x1(s) + columnWidth * .5;
         });
-        colGroup = svg.select('.content').selectAll('.columnGroup').data(data).enter().append("g").attr('class', function(s) {
+        colJoin = svg.select('.content').selectAll('.columnGroup').data(data);
+        colGroup = colJoin.enter().append("g").attr('class', function(s) {
           return 'columnGroup series_' + s.index;
-        }).attr('transform', function(s) {
+        });
+        colJoin.attr('transform', function(s) {
           return "translate(" + x1(s) + ",0)";
         });
-        colGroup.each(function(series) {
-          var i, visible, _ref;
+        colJoin.each(function(series) {
+          var dataJoin, i, visible, _ref;
           i = options.series.map(function(d) {
             return d.id;
           }).indexOf(series.id);
           visible = (_ref = options.series) != null ? _ref[i].visible : void 0;
           if (visible === void 0 || visible === !false) {
-            return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
+            dataJoin = d3.select(this).selectAll("rect").data(series.values);
+            dataJoin.enter().append("rect").on({
+              'click': function(d, i) {
+                return dispatch.click(d, i);
+              }
+            }).on('mouseover', function(d, i) {
+              dispatch.hover(d, i);
+              return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
+                series: series,
+                x: axes.xScale(d.x),
+                y: axes[d.axis + 'Scale'](d.y0 + d.y),
+                datum: d
+              }, options.axes) : void 0;
+            }).on('mouseout', function(d) {
+              return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
+            });
+            return dataJoin.style({
               'stroke': series.color,
               'fill': series.color,
               'stroke-opacity': function(d) {
@@ -367,62 +390,49 @@ mod.factory('n3utils', [
                   return axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y));
                 }
               }
-            }).on({
-              'click': function(d, i) {
-                return dispatch.click(d, i);
-              }
-            }).on('mouseover', function(d, i) {
-              dispatch.hover(d, i);
-              return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
-                series: series,
-                x: axes.xScale(d.x),
-                y: axes[d.axis + 'Scale'](d.y0 + d.y),
-                datum: d
-              }, options.axes) : void 0;
-            }).on('mouseout', function(d) {
-              return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
             });
           }
         });
         return this;
       },
       drawDots: function(svg, axes, data, options, handlers, dispatch) {
-        var dotGroup;
-        dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
+        var dotGroup, dotJoin;
+        dotJoin = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
           var _ref;
           return ((_ref = s.type) === 'line' || _ref === 'area') && s.drawDots;
-        })).enter().append('g');
-        dotGroup.attr({
-          "class": function(s) {
-            return "dotGroup series_" + s.index;
-          },
-          fill: function(s) {
-            return s.color;
-          }
-        }).selectAll('.dot').data(function(d) {
-          return d.values;
-        }).enter().append('circle').attr({
-          'class': 'dot',
-          'r': function(d) {
-            return d.dotSize;
-          },
-          'cx': function(d) {
-            return axes.xScale(d.x);
-          },
-          'cy': function(d) {
-            return axes[d.axis + 'Scale'](d.y + d.y0);
-          }
-        }).style({
-          'stroke': 'white',
-          'stroke-width': '2px'
-        }).on({
-          'click': function(d, i) {
-            return dispatch.click(d, i);
-          }
-        }).on({
-          'mouseover': function(d, i) {
-            return dispatch.hover(d, i);
-          }
+        }));
+        dotGroup = dotJoin.enter().append('g').attr('class', function(s) {
+          return "dotGroup series_" + s.index;
+        });
+        dotJoin.attr('fill', function(s) {
+          return s.color;
+        });
+        dotJoin.each(function(series) {
+          var dataJoin;
+          dataJoin = d3.select(this).selectAll('.dot').data(series.values);
+          dataJoin.enter().append('circle').attr('class', 'dot').on({
+            'click': function(d, i) {
+              return dispatch.click(d, i);
+            }
+          }).on({
+            'mouseover': function(d, i) {
+              return dispatch.hover(d, i);
+            }
+          });
+          return dataJoin.attr({
+            'r': function(d) {
+              return d.dotSize;
+            },
+            'cx': function(d) {
+              return axes.xScale(d.x);
+            },
+            'cy': function(d) {
+              return axes[d.axis + 'Scale'](d.y + d.y0);
+            }
+          }).style({
+            'stroke': 'white',
+            'stroke-width': '2px'
+          });
         });
         if (options.tooltip.mode !== 'none') {
           dotGroup.on('mouseover', function(series) {
@@ -451,6 +461,27 @@ mod.factory('n3utils', [
         var events;
         events = ['focus', 'hover', 'click', 'toggle'];
         return d3.dispatch.apply(this, events);
+      },
+      setZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
+        var self, zoomListener, _ref;
+        self = this;
+        zoomListener = d3.behavior.zoom().on("zoom", function() {
+          svg.selectAll('.x.axis').call(axes.xAxis);
+          if (data.length) {
+            columnWidth = self.getBestColumnWidth(axes, dimensions, data, options);
+            return self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch);
+          }
+        });
+        if (options.axes.x.zoomable != null) {
+          zoomListener.x(axes.xScale);
+        }
+        if (options.axes.y.zoomable != null) {
+          zoomListener.y(axes.yScale);
+        }
+        if (((_ref = options.axes.y2) != null ? _ref.zoomable : void 0) != null) {
+          zoomListener.y(axes.y2Scale);
+        }
+        return svg.call(zoomListener);
       },
       computeLegendLayout: function(svg, series, dimensions) {
         var cumul, i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
@@ -604,35 +635,39 @@ mod.factory('n3utils', [
         return isVisible;
       },
       drawLines: function(svg, scales, data, options, handlers) {
-        var drawers, interpolateData, lineGroup;
+        var drawers, interpolateData, lineGroup, lineJoin;
         drawers = {
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension),
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
         };
-        lineGroup = svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
+        lineJoin = svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
           var _ref;
           return (_ref = s.type) === 'line' || _ref === 'area';
-        })).enter().append('g');
-        lineGroup.style('stroke', function(s) {
-          return s.color;
-        }).attr('class', function(s) {
+        }));
+        lineGroup = lineJoin.enter().append('g').attr('class', function(s) {
           return "lineGroup series_" + s.index;
-        }).append('path').attr({
-          "class": 'line',
-          d: function(d) {
+        });
+        lineJoin.style('stroke', function(s) {
+          return s.color;
+        });
+        lineJoin.each(function(series) {
+          var dataJoin;
+          dataJoin = d3.select(this).selectAll('path').data([series]);
+          dataJoin.enter().append('path').attr('class', 'line');
+          return dataJoin.attr('d', function(d) {
             return drawers[d.axis](d.values);
-          }
-        }).style({
-          'fill': 'none',
-          'stroke-width': function(s) {
-            return s.thickness;
-          },
-          'stroke-dasharray': function(s) {
-            if (s.lineMode === 'dashed') {
-              return '10,3';
+          }).style({
+            'fill': 'none',
+            'stroke-width': function(s) {
+              return s.thickness;
+            },
+            'stroke-dasharray': function(s) {
+              if (s.lineMode === 'dashed') {
+                return '10,3';
+              }
+              return void 0;
             }
-            return void 0;
-          }
+          });
         });
         if (options.tooltip.interpolate) {
           interpolateData = function(series) {
@@ -838,6 +873,12 @@ mod.factory('n3utils', [
         }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
           return handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth);
         });
+      },
+      drawData: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
+        this.drawArea(svg, axes, data, options, handlers).drawColumns(svg, axes, data, columnWidth, options, handlers, dispatch).drawLines(svg, axes, data, options, handlers);
+        if (options.drawDots) {
+          return this.drawDots(svg, axes, data, options, handlers, dispatch);
+        }
       },
       getDataPerSeries: function(data, options) {
         var axes, layout, series, straightened;
@@ -1182,6 +1223,9 @@ mod.factory('n3utils', [
         options.type || (options.type = 'linear');
         if (options.ticksRotate != null) {
           options.ticksRotate = this.getSanitizedNumber(options.ticksRotate);
+        }
+        if (options.zoomable != null) {
+          options.zoomable = options.zoomable || false;
         }
         if (options.labelFunction != null) {
           options.ticksFormatter = options.labelFunction;

@@ -41,18 +41,26 @@
           y: this.createLeftAreaDrawer(scales, options.lineMode, options.tension)
           y2: this.createRightAreaDrawer(scales, options.lineMode, options.tension)
 
-        svg.select('.content').selectAll('.areaGroup')
+        areaJoin = svg.select('.content').selectAll('.areaGroup')
           .data(areaSeries)
-          .enter().append('g')
-            .attr('class', (s) -> 'areaGroup ' + 'series_' + s.index)
-            .append('path')
-              .attr('class', 'area')
-              .style('fill', (s) ->
-                return s.color if s.striped isnt true
-                return "url(#areaPattern_#{s.index})"
-              )
-              .style('opacity', (s) -> if s.striped then '1' else '0.3')
-              .attr('d', (d) -> drawers[d.axis](d.values))
+
+        areaGroup = areaJoin.enter()
+          .append('g')
+          .attr('class', (s) -> 'areaGroup ' + 'series_' + s.index)
+        
+        areaJoin.each (series) ->
+          dataJoin = d3.select(this).selectAll('path')
+            .data([series])
+
+          dataJoin.enter().append('path')
+            .attr('class', 'area')
+          
+          dataJoin.style('fill', (s) ->
+              return s.color if s.striped isnt true
+              return "url(#areaPattern_#{s.index})"
+            )
+            .style('opacity', (s) -> if s.striped then '1' else '0.3')
+            .attr('d', (d) -> drawers[d.axis](d.values))
 
         return this
 
