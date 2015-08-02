@@ -162,6 +162,14 @@
             handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth)
           )
 
+      drawData: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
+        this
+          .drawArea(svg, axes, data, options, handlers)
+          .drawColumns(svg, axes, data, columnWidth, options, handlers, dispatch)
+          .drawLines(svg, axes, data, options, handlers)
+
+        if options.drawDots
+          this.drawDots(svg, axes, data, options, handlers, dispatch)
 
       getDataPerSeries: (data, options) ->
         series = options.series
