@@ -243,3 +243,60 @@ describe 'event handling', ->
       secondLegendItem.click()
       expect(clicked[1]).to.equal(1)
       expect(clicked[2]).to.equal(true)
+
+    it 'should handle x zoom events', ->
+
+      outerScope.$apply ->
+        outerScope.options =
+          margin:
+            {left: 0, bottom: 0, top: 0, right: 0}
+          axes:
+            x: {zoomable: true}
+          series: [
+            {y: 'value', type: 'column'}
+          ]
+
+      columnGroup = element.childByClass('columnGroup')
+      expect(columnGroup.children()[0].getAttribute('x')).to.equal('129')
+      expect(columnGroup.children()[0].getAttribute('y')).to.equal('456')
+      expect(columnGroup.children()[0].getAttribute('width')).to.equal('123')
+      expect(columnGroup.children()[0].getAttribute('height')).to.equal('44')
+
+      glass = element.childByClass('glass').domElement
+
+      fakeMouse.wheel(glass, 0, -10)
+      
+      columnGroup = element.childByClass('columnGroup')
+      expect(columnGroup.children()[0].getAttribute('x')).to.equal('130')
+      expect(columnGroup.children()[0].getAttribute('y')).to.equal('456')
+      expect(columnGroup.children()[0].getAttribute('width')).to.equal('125')
+      expect(columnGroup.children()[0].getAttribute('height')).to.equal('44')
+
+    it 'should handle x and y zoom events', ->
+
+      outerScope.$apply ->
+        outerScope.options =
+          margin:
+            {left: 0, bottom: 0, top: 0, right: 0}
+          axes:
+            x: {zoomable: true}
+            y: {zoomable: true}
+          series: [
+            {y: 'value', type: 'column'}
+          ]
+
+      columnGroup = element.childByClass('columnGroup')
+      expect(columnGroup.children()[0].getAttribute('x')).to.equal('129')
+      expect(columnGroup.children()[0].getAttribute('y')).to.equal('456')
+      expect(columnGroup.children()[0].getAttribute('width')).to.equal('123')
+      expect(columnGroup.children()[0].getAttribute('height')).to.equal('44')
+
+      glass = element.childByClass('glass').domElement
+
+      fakeMouse.wheel(glass, 0, -10)
+      
+      columnGroup = element.childByClass('columnGroup')
+      expect(columnGroup.children()[0].getAttribute('x')).to.equal('130')
+      expect(columnGroup.children()[0].getAttribute('y')).to.equal('462')
+      expect(columnGroup.children()[0].getAttribute('width')).to.equal('125')
+      expect(columnGroup.children()[0].getAttribute('height')).to.equal('38')
