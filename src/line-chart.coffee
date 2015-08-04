@@ -64,6 +64,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
 
+      _u.createFocus(svg, dimensions, options)
       _u.setZoom(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
     updateEvents = ->
