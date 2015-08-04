@@ -54,12 +54,13 @@ describe 'chart initialization', ->
       chart = element.childByClass('chart')
       content = chart.child('svg').children()[0].children()
 
-      expect(content.length).to.equal(7)
+      expect(content.length).to.equal(8)
       expect(content[0].getAttribute('class')).to.equal('patterns')
       expect(content[1].getAttribute('class')).to.equal('x axis')
       expect(content[2].getAttribute('class')).to.equal('y axis')
       expect(content[5].getAttribute('id')).to.equal('xTooltip')
       expect(content[6].getAttribute('id')).to.equal('yTooltip')
+      expect(content[7].getAttribute('class')).to.equal('focus-container')
 
     it 'should generate properly the main elements for axes tooltip', ->
       outerScope.$apply ->
@@ -81,7 +82,7 @@ describe 'chart initialization', ->
       chart = element.childByClass('chart')
       content = chart.child('svg').children()[0].children()
 
-      expect(content.length).to.equal(9)
+      expect(content.length).to.equal(10)
       expect(content[0].getAttribute('class')).to.equal('patterns')
       expect(content[1].getAttribute('class')).to.equal('x axis')
       expect(content[2].getAttribute('class')).to.equal('y axis')
@@ -91,6 +92,7 @@ describe 'chart initialization', ->
       expect(content[6].getAttribute('id')).to.equal('xTooltip')
       expect(content[7].getAttribute('id')).to.equal('yTooltip')
       expect(content[8].getAttribute('id')).to.equal('y2Tooltip')
+      expect(content[9].getAttribute('class')).to.equal('focus-container')
 
     it 'should create a clipping path for the content', ->
       chart = element.childByClass('chart')
