@@ -263,7 +263,6 @@ describe 'event handling', ->
       expect(columnGroup.children()[0].getAttribute('height')).to.equal('44')
 
       glass = element.childByClass('glass').domElement
-
       fakeMouse.wheel(glass, 0, -10)
       
       columnGroup = element.childByClass('columnGroup')
@@ -292,7 +291,6 @@ describe 'event handling', ->
       expect(columnGroup.children()[0].getAttribute('height')).to.equal('44')
 
       glass = element.childByClass('glass').domElement
-
       fakeMouse.wheel(glass, 0, -10)
       
       columnGroup = element.childByClass('columnGroup')
