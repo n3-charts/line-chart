@@ -40,7 +40,7 @@ describe 'chart initialization (old module name)', ->
 
   it 'should create one svg element', ->
     # this is the template's div
-    expect(element.domElement.nodeName).to.equal 'DIV'
+    expect(element.domElement.nodeName).to.equal('DIV')
     chart = element.childByClass('chart')
     expect(chart).not.to.equal(undefined)
 
@@ -50,12 +50,13 @@ describe 'chart initialization (old module name)', ->
     chart = element.childByClass('chart')
     content = chart.child('svg').children()[0].children()
 
-    expect(content.length).to.equal 7
-    expect(content[0].getAttribute('class')).to.equal 'patterns'
-    expect(content[1].getAttribute('class')).to.equal 'x axis'
-    expect(content[2].getAttribute('class')).to.equal 'y axis'
-    expect(content[5].getAttribute('id')).to.equal 'xTooltip'
-    expect(content[6].getAttribute('id')).to.equal 'yTooltip'
+    expect(content.length).to.equal(8)
+    expect(content[0].getAttribute('class')).to.equal('patterns')
+    expect(content[1].getAttribute('class')).to.equal('x axis')
+    expect(content[2].getAttribute('class')).to.equal('y axis')
+    expect(content[5].getAttribute('id')).to.equal('xTooltip')
+    expect(content[6].getAttribute('id')).to.equal('yTooltip')
+    expect(content[7].getAttribute('class')).to.equal('focus-container')
 
   it 'should generate properly the main elements', ->
     outerScope.$apply ->
@@ -77,14 +78,14 @@ describe 'chart initialization (old module name)', ->
     chart = element.childByClass('chart')
     content = chart.child('svg').children()[0].children()
 
-    expect(content.length).to.equal 9
-    expect(content[0].getAttribute('class')).to.equal 'patterns'
-    expect(content[1].getAttribute('class')).to.equal 'x axis'
-    expect(content[2].getAttribute('class')).to.equal 'y axis'
-    expect(content[3].getAttribute('class')).to.equal 'y2 axis'
-    expect(content[4].getAttribute('class')).to.equal 'content'
-    expect(content[5].getAttribute('class')).to.equal 'legend'
-    expect(content[6].getAttribute('id')).to.equal 'xTooltip'
-    expect(content[7].getAttribute('id')).to.equal 'yTooltip'
-    expect(content[8].getAttribute('id')).to.equal 'y2Tooltip'
-
+    expect(content.length).to.equal(10)
+    expect(content[0].getAttribute('class')).to.equal('patterns')
+    expect(content[1].getAttribute('class')).to.equal('x axis')
+    expect(content[2].getAttribute('class')).to.equal('y axis')
+    expect(content[3].getAttribute('class')).to.equal('y2 axis')
+    expect(content[4].getAttribute('class')).to.equal('content')
+    expect(content[5].getAttribute('class')).to.equal('legend')
+    expect(content[6].getAttribute('id')).to.equal('xTooltip')
+    expect(content[7].getAttribute('id')).to.equal('yTooltip')
+    expect(content[8].getAttribute('id')).to.equal('y2Tooltip')
+    expect(content[9].getAttribute('class')).to.equal('focus-container')

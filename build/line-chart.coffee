@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.11 - 01 August 2015
+line-chart - v1.1.11 - 05 August 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -60,14 +60,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       if dataPerSeries.length
         columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options)
-
-        _u
-          .drawArea(svg, axes, dataPerSeries, options, handlers)
-          .drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
-          .drawLines(svg, axes, dataPerSeries, options, handlers)
-
-        if options.drawDots
-          _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch)
+        _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
       if options.drawLegend
         _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
@@ -76,6 +69,9 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
       else if options.tooltip.mode isnt 'none'
         _u.addTooltips(svg, dimensions, options.axes)
+
+      _u.createFocus(svg, dimensions, options)
+      _u.setZoom(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
     updateEvents = ->
 
@@ -189,18 +185,26 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           y: this.createLeftAreaDrawer(scales, options.lineMode, options.tension)
           y2: this.createRightAreaDrawer(scales, options.lineMode, options.tension)
 
-        svg.select('.content').selectAll('.areaGroup')
+        areaJoin = svg.select('.content').selectAll('.areaGroup')
           .data(areaSeries)
-          .enter().append('g')
-            .attr('class', (s) -> 'areaGroup ' + 'series_' + s.index)
-            .append('path')
-              .attr('class', 'area')
-              .style('fill', (s) ->
-                return s.color if s.striped isnt true
-                return "url(#areaPattern_#{s.index})"
-              )
-              .style('opacity', (s) -> if s.striped then '1' else '0.3')
-              .attr('d', (d) -> drawers[d.axis](d.values))
+
+        areaGroup = areaJoin.enter()
+          .append('g')
+          .attr('class', (s) -> 'areaGroup ' + 'series_' + s.index)
+        
+        areaJoin.each (series) ->
+          dataJoin = d3.select(this).selectAll('path')
+            .data([series])
+
+          dataJoin.enter().append('path')
+            .attr('class', 'area')
+          
+          dataJoin.style('fill', (s) ->
+              return s.color if s.striped isnt true
+              return "url(#areaPattern_#{s.index})"
+            )
+            .style('opacity', (s) -> if s.striped then '1' else '0.3')
+            .attr('d', (d) -> drawers[d.axis](d.values))
 
         return this
 
@@ -321,21 +325,39 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         data.forEach (s) -> s.xOffset = x1(s) + columnWidth*.5
 
-        colGroup = svg.select('.content').selectAll('.columnGroup')
+        colJoin = svg.select('.content').selectAll('.columnGroup')
           .data(data)
-          .enter().append("g")
-            .attr('class', (s) -> 'columnGroup series_' + s.index)
-            .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
-        colGroup.each (series) ->
+        colGroup = colJoin.enter().append("g")
+            .attr('class', (s) -> 'columnGroup series_' + s.index)
+        
+        colJoin.attr('transform', (s) -> "translate(" + x1(s) + ",0)")
+
+        colJoin.each (series) ->
           # only draw visible series to avoid with="NaN" errors
           i = options.series.map((d) -> d.id).indexOf(series.id)
           visible = options.series?[i].visible
           if visible is undefined or visible is not false
-            d3.select(this).selectAll("rect")
+            dataJoin = d3.select(this).selectAll("rect")
               .data(series.values)
-              .enter().append("rect")
-                .style({
+            
+            dataJoin.enter()
+              .append("rect")
+              .on('click': (d, i) -> dispatch.click(d, i))
+              .on('mouseover', (d, i) ->
+                dispatch.hover(d, i)
+                handlers.onMouseOver?(svg, {
+                  series: series
+                  x: axes.xScale(d.x)
+                  y: axes[d.axis + 'Scale'](d.y0 + d.y)
+                  datum: d
+                }, options.axes)
+              )
+              .on('mouseout', (d) ->
+                handlers.onMouseOut?(svg)
+              )
+
+            dataJoin.style({
                   'stroke': series.color
                   'fill': series.color
                   'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
@@ -351,19 +373,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                   y: (d) ->
                     if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
                 )
-                .on('click': (d, i) -> dispatch.click(d, i))
-                .on('mouseover', (d, i) ->
-                  dispatch.hover(d, i)
-                  handlers.onMouseOver?(svg, {
-                    series: series
-                    x: axes.xScale(d.x)
-                    y: axes[d.axis + 'Scale'](d.y0 + d.y)
-                    datum: d
-                  }, options.axes)
-                )
-                .on('mouseout', (d) ->
-                  handlers.onMouseOut?(svg)
-                )
 
         return this
 # ----
@@ -371,17 +380,26 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 # src/utils/dots.coffee
       drawDots: (svg, axes, data, options, handlers, dispatch) ->
-        dotGroup = svg.select('.content').selectAll('.dotGroup')
-          .data data.filter (s) -> s.type in ['line', 'area'] and s.drawDots
-          .enter().append('g')
-        dotGroup.attr(
-            class: (s) -> "dotGroup series_#{s.index}"
-            fill: (s) -> s.color
-          )
-          .selectAll('.dot').data (d) -> d.values
-            .enter().append('circle')
-            .attr(
-              'class': 'dot'
+        dotJoin = svg.select('.content').selectAll('.dotGroup')
+          .data(data.filter (s) -> s.type in ['line', 'area'] and s.drawDots)
+        
+        dotGroup = dotJoin.enter()
+          .append('g')
+          .attr('class', (s) -> "dotGroup series_#{s.index}")
+        
+        dotJoin.attr('fill', (s) -> s.color)
+
+        dotJoin.each (series) ->
+
+          dataJoin = d3.select(this).selectAll('.dot')
+            .data(series.values)
+
+          dataJoin.enter().append('circle')
+            .attr('class', 'dot')
+            .on('click': (d, i) -> dispatch.click(d, i))
+            .on('mouseover': (d, i) -> dispatch.hover(d, i))
+          
+          dataJoin.attr(
               'r': (d) -> d.dotSize
               'cx': (d) -> axes.xScale(d.x)
               'cy': (d) -> axes[d.axis + 'Scale'](d.y + d.y0)
@@ -390,8 +408,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               'stroke': 'white'
               'stroke-width': '2px'
             )
-            .on('click': (d, i) -> dispatch.click(d, i))
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
 
         if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->
@@ -427,6 +443,69 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         ]
 
         return d3.dispatch.apply(this, events)
+
+      resetZoom: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) ->
+        zoom.scale(1)
+        zoom.translate([0, 0])
+
+        if options.axes.x.zoomable?
+          svg.selectAll('.x.axis').call(axes.xAxis)
+
+        if options.axes.y.zoomable?
+          svg.selectAll('.y.axis').call(axes.yAxis)
+
+        if options.axes.y2?.zoomable?
+          svg.selectAll('.y2.axis').call(axes.y2Axis)
+
+        if data.length
+          columnWidth = this.getBestColumnWidth(axes, dimensions, data, options)
+          this.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
+
+      setZoom: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
+        self = this
+        
+        zoomHandler = () ->
+            zoomed = false
+
+            if options.axes.x.zoomable?
+              svg.selectAll('.x.axis').call(axes.xAxis)
+              zoomed = true
+
+            if options.axes.y.zoomable?
+              svg.selectAll('.y.axis').call(axes.yAxis)
+              zoomed = true
+
+            if options.axes.y2?.zoomable?
+              svg.selectAll('.y2.axis').call(axes.y2Axis)
+              zoomed = true
+
+            if data.length
+              columnWidth = self.getBestColumnWidth(axes, dimensions, data, options)
+              self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
+
+            if zoomed
+              self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
+
+        zoom = this.getZoomListener(axes, options, zoomHandler)
+        svg.call(zoom)
+
+      getZoomListener: (axes, options, zoomHandler) ->
+
+        zoomListener = d3.behavior.zoom()
+
+        if zoomHandler?
+          zoomListener.on("zoom", zoomHandler)
+
+        if options.axes.x?.zoomable?
+          zoomListener.x(axes.xScale)
+
+        if options.axes.y?.zoomable?
+          zoomListener.y(axes.yScale)
+        
+        if options.axes.y2?.zoomable?
+          zoomListener.y(axes.y2Scale)
+
+        return zoomListener
 # ----
 
 
@@ -607,23 +686,33 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension)
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
 
-        lineGroup = svg.select('.content').selectAll('.lineGroup')
-          .data data.filter (s) -> s.type in ['line', 'area']
-          .enter().append('g')
-        lineGroup.style('stroke', (s) -> s.color)
-        .attr('class', (s) -> "lineGroup series_#{s.index}")
-        .append('path')
-          .attr(
-            class: 'line'
-            d: (d) -> drawers[d.axis](d.values)
-          )
-          .style(
-            'fill': 'none'
-            'stroke-width': (s) -> s.thickness
-            'stroke-dasharray': (s) ->
-              return '10,3' if s.lineMode is 'dashed'
-              return undefined
-          )
+        lineJoin = svg.select('.content').selectAll('.lineGroup')
+          .data(data.filter (s) -> s.type in ['line', 'area'])
+        
+        lineGroup = lineJoin.enter()
+          .append('g')
+          .attr('class', (s) -> "lineGroup series_#{s.index}")
+        
+        lineJoin.style('stroke', (s) -> s.color)
+
+        lineJoin.each (series) ->
+          dataJoin = d3.select(this).selectAll('path')
+            .data([series])
+
+          dataJoin.enter()
+            .append('path')
+            .attr('class', 'line')
+
+          dataJoin
+            .attr('d', (d) -> drawers[d.axis](d.values))
+            .style(
+              'fill': 'none'
+              'stroke-width': (s) -> s.thickness
+              'stroke-dasharray': (s) ->
+                return '10,3' if s.lineMode is 'dashed'
+                return undefined
+            )
+
         if options.tooltip.interpolate
           interpolateData = (series) ->
             target = d3.select(d3.event.target)
@@ -667,8 +756,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             }, options.axes)
 
           lineGroup
-            .on 'mousemove', interpolateData
-            .on 'mouseout', (d) -> handlers.onMouseOut?(svg)
+            .on('mousemove', interpolateData)
+            .on('mouseout', (d) -> handlers.onMouseOut?(svg))
 
         return this
 
@@ -775,6 +864,51 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         if options.hideOverflow
           content.attr('clip-path', "url(#content-clip-#{id})")
 
+      createZoomResetIcon: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) ->
+        self = this
+        path = 'M22.646,19.307c0.96-1.583,1.523-3.435,1.524-5.421C24.169,8.093,19.478,3.401,13.688,3.399C7.897,3.401,3.204,8.093,3.204,13.885c0,5.789,4.693,10.481,10.484,10.481c1.987,0,3.839-0.563,5.422-1.523l7.128,7.127l3.535-3.537L22.646,19.307zM13.688,20.369c-3.582-0.008-6.478-2.904-6.484-6.484c0.006-3.582,2.903-6.478,6.484-6.486c3.579,0.008,6.478,2.904,6.484,6.486C20.165,17.465,17.267,20.361,13.688,20.369zM8.854,11.884v4.001l9.665-0.001v-3.999L8.854,11.884z'
+
+        iconJoin = d3.select('.focus-container')
+          .selectAll('.icon.zoom-reset')
+          .data([1])
+
+        icon = iconJoin.enter()
+          .append('g')
+          .attr('class', 'icon zoom-reset')
+          .on('click', () ->
+            self.resetZoom(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
+            d3.select(this).remove()
+          )
+          .on('mouseenter', () ->
+            d3.select(this).style('fill', 'steelblue')
+          )
+          .on('mouseout', () ->
+            d3.select(this).style('fill', 'black')
+          )
+
+        icon.append('path').attr('d', path)
+
+        left = dimensions.width - dimensions.left - dimensions.right - 24
+        top = 2
+        scale = 0.7
+
+        iconJoin
+          .style({
+            'fill': 'black'
+            'stroke': 'white'
+            'stroke-width': 1.5
+          })
+          .attr({
+            opacity: 1
+            transform: "translate(#{left}, #{top}) scale(#{scale})"
+          })
+
+      createFocus: (svg, dimensions, options) ->
+        glass = svg.append('g')
+          .attr(
+            'class': 'focus-container'
+          )
+
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
         that = this
 
@@ -854,6 +988,14 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth)
           )
 
+      drawData: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
+        this
+          .drawArea(svg, axes, data, options, handlers)
+          .drawColumns(svg, axes, data, columnWidth, options, handlers, dispatch)
+          .drawLines(svg, axes, data, options, handlers)
+
+        if options.drawDots
+          this.drawDots(svg, axes, data, options, handlers, dispatch)
 
       getDataPerSeries: (data, options) ->
         series = options.series
@@ -1147,6 +1289,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         if options.ticksRotate?
           options.ticksRotate = this.getSanitizedNumber(options.ticksRotate)
+
+        if options.zoomable?
+          options.zoomable = options.zoomable or false
 
         # labelFunction is deprecated and will be remvoed in 2.x
         # please use ticksFormatter instead

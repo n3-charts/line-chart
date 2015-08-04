@@ -62,7 +62,7 @@ describe 'thumbnail mode', ->
       ]
 
     svgGroup = element.child('svg').children()[0]
-    expect(svgGroup.children().length).to.equal(2)
+    expect(svgGroup.children().length).to.equal(3)
     expect(svgGroup.childByClass('patterns')).not.to.equal(undefined)
     expect(svgGroup.childByClass('content')).not.to.equal(undefined)
 

@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.11 - 01 August 2015
+line-chart - v1.1.11 - 05 August 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -63,19 +63,18 @@ directive('linechart', [
         _u.createContent(svg, id, options, handlers);
         if (dataPerSeries.length) {
           columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options);
-          _u.drawArea(svg, axes, dataPerSeries, options, handlers).drawColumns(svg, axes, dataPerSeries, columnWidth, options, handlers, dispatch).drawLines(svg, axes, dataPerSeries, options, handlers);
-          if (options.drawDots) {
-            _u.drawDots(svg, axes, dataPerSeries, options, handlers, dispatch);
-          }
+          _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
         }
         if (options.drawLegend) {
           _u.drawLegend(svg, options.series, dimensions, handlers, dispatch);
         }
         if (options.tooltip.mode === 'scrubber') {
-          return _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
+          _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
         } else if (options.tooltip.mode !== 'none') {
-          return _u.addTooltips(svg, dimensions, options.axes);
+          _u.addTooltips(svg, dimensions, options.axes);
         }
+        _u.createFocus(svg, dimensions, options);
+        return _u.setZoom(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
       };
       updateEvents = function() {
         if (scope.oldclick) {
@@ -169,7 +168,7 @@ mod.factory('n3utils', [
         return pattern.append('path').attr('d', "M60 40 l0 10 l-10 10 l -10 0 z");
       },
       drawArea: function(svg, scales, data, options) {
-        var areaSeries, drawers;
+        var areaGroup, areaJoin, areaSeries, drawers;
         areaSeries = data.filter(function(series) {
           return series.type === 'area';
         });
@@ -178,21 +177,28 @@ mod.factory('n3utils', [
           y: this.createLeftAreaDrawer(scales, options.lineMode, options.tension),
           y2: this.createRightAreaDrawer(scales, options.lineMode, options.tension)
         };
-        svg.select('.content').selectAll('.areaGroup').data(areaSeries).enter().append('g').attr('class', function(s) {
+        areaJoin = svg.select('.content').selectAll('.areaGroup').data(areaSeries);
+        areaGroup = areaJoin.enter().append('g').attr('class', function(s) {
           return 'areaGroup ' + 'series_' + s.index;
-        }).append('path').attr('class', 'area').style('fill', function(s) {
-          if (s.striped !== true) {
-            return s.color;
-          }
-          return "url(#areaPattern_" + s.index + ")";
-        }).style('opacity', function(s) {
-          if (s.striped) {
-            return '1';
-          } else {
-            return '0.3';
-          }
-        }).attr('d', function(d) {
-          return drawers[d.axis](d.values);
+        });
+        areaJoin.each(function(series) {
+          var dataJoin;
+          dataJoin = d3.select(this).selectAll('path').data([series]);
+          dataJoin.enter().append('path').attr('class', 'area');
+          return dataJoin.style('fill', function(s) {
+            if (s.striped !== true) {
+              return s.color;
+            }
+            return "url(#areaPattern_" + s.index + ")";
+          }).style('opacity', function(s) {
+            if (s.striped) {
+              return '1';
+            } else {
+              return '0.3';
+            }
+          }).attr('d', function(d) {
+            return drawers[d.axis](d.values);
+          });
         });
         return this;
       },
@@ -311,7 +317,7 @@ mod.factory('n3utils', [
         };
       },
       drawColumns: function(svg, axes, data, columnWidth, options, handlers, dispatch) {
-        var colGroup, x1;
+        var colGroup, colJoin, x1;
         data = data.filter(function(s) {
           return s.type === 'column';
         });
@@ -319,19 +325,37 @@ mod.factory('n3utils', [
         data.forEach(function(s) {
           return s.xOffset = x1(s) + columnWidth * .5;
         });
-        colGroup = svg.select('.content').selectAll('.columnGroup').data(data).enter().append("g").attr('class', function(s) {
+        colJoin = svg.select('.content').selectAll('.columnGroup').data(data);
+        colGroup = colJoin.enter().append("g").attr('class', function(s) {
           return 'columnGroup series_' + s.index;
-        }).attr('transform', function(s) {
+        });
+        colJoin.attr('transform', function(s) {
           return "translate(" + x1(s) + ",0)";
         });
-        colGroup.each(function(series) {
-          var i, visible, _ref;
+        colJoin.each(function(series) {
+          var dataJoin, i, visible, _ref;
           i = options.series.map(function(d) {
             return d.id;
           }).indexOf(series.id);
           visible = (_ref = options.series) != null ? _ref[i].visible : void 0;
           if (visible === void 0 || visible === !false) {
-            return d3.select(this).selectAll("rect").data(series.values).enter().append("rect").style({
+            dataJoin = d3.select(this).selectAll("rect").data(series.values);
+            dataJoin.enter().append("rect").on({
+              'click': function(d, i) {
+                return dispatch.click(d, i);
+              }
+            }).on('mouseover', function(d, i) {
+              dispatch.hover(d, i);
+              return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
+                series: series,
+                x: axes.xScale(d.x),
+                y: axes[d.axis + 'Scale'](d.y0 + d.y),
+                datum: d
+              }, options.axes) : void 0;
+            }).on('mouseout', function(d) {
+              return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
+            });
+            return dataJoin.style({
               'stroke': series.color,
               'fill': series.color,
               'stroke-opacity': function(d) {
@@ -367,62 +391,49 @@ mod.factory('n3utils', [
                   return axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y));
                 }
               }
-            }).on({
-              'click': function(d, i) {
-                return dispatch.click(d, i);
-              }
-            }).on('mouseover', function(d, i) {
-              dispatch.hover(d, i);
-              return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
-                series: series,
-                x: axes.xScale(d.x),
-                y: axes[d.axis + 'Scale'](d.y0 + d.y),
-                datum: d
-              }, options.axes) : void 0;
-            }).on('mouseout', function(d) {
-              return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
             });
           }
         });
         return this;
       },
       drawDots: function(svg, axes, data, options, handlers, dispatch) {
-        var dotGroup;
-        dotGroup = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
+        var dotGroup, dotJoin;
+        dotJoin = svg.select('.content').selectAll('.dotGroup').data(data.filter(function(s) {
           var _ref;
           return ((_ref = s.type) === 'line' || _ref === 'area') && s.drawDots;
-        })).enter().append('g');
-        dotGroup.attr({
-          "class": function(s) {
-            return "dotGroup series_" + s.index;
-          },
-          fill: function(s) {
-            return s.color;
-          }
-        }).selectAll('.dot').data(function(d) {
-          return d.values;
-        }).enter().append('circle').attr({
-          'class': 'dot',
-          'r': function(d) {
-            return d.dotSize;
-          },
-          'cx': function(d) {
-            return axes.xScale(d.x);
-          },
-          'cy': function(d) {
-            return axes[d.axis + 'Scale'](d.y + d.y0);
-          }
-        }).style({
-          'stroke': 'white',
-          'stroke-width': '2px'
-        }).on({
-          'click': function(d, i) {
-            return dispatch.click(d, i);
-          }
-        }).on({
-          'mouseover': function(d, i) {
-            return dispatch.hover(d, i);
-          }
+        }));
+        dotGroup = dotJoin.enter().append('g').attr('class', function(s) {
+          return "dotGroup series_" + s.index;
+        });
+        dotJoin.attr('fill', function(s) {
+          return s.color;
+        });
+        dotJoin.each(function(series) {
+          var dataJoin;
+          dataJoin = d3.select(this).selectAll('.dot').data(series.values);
+          dataJoin.enter().append('circle').attr('class', 'dot').on({
+            'click': function(d, i) {
+              return dispatch.click(d, i);
+            }
+          }).on({
+            'mouseover': function(d, i) {
+              return dispatch.hover(d, i);
+            }
+          });
+          return dataJoin.attr({
+            'r': function(d) {
+              return d.dotSize;
+            },
+            'cx': function(d) {
+              return axes.xScale(d.x);
+            },
+            'cy': function(d) {
+              return axes[d.axis + 'Scale'](d.y + d.y0);
+            }
+          }).style({
+            'stroke': 'white',
+            'stroke-width': '2px'
+          });
         });
         if (options.tooltip.mode !== 'none') {
           dotGroup.on('mouseover', function(series) {
@@ -451,6 +462,70 @@ mod.factory('n3utils', [
         var events;
         events = ['focus', 'hover', 'click', 'toggle'];
         return d3.dispatch.apply(this, events);
+      },
+      resetZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) {
+        var _ref;
+        zoom.scale(1);
+        zoom.translate([0, 0]);
+        if (options.axes.x.zoomable != null) {
+          svg.selectAll('.x.axis').call(axes.xAxis);
+        }
+        if (options.axes.y.zoomable != null) {
+          svg.selectAll('.y.axis').call(axes.yAxis);
+        }
+        if (((_ref = options.axes.y2) != null ? _ref.zoomable : void 0) != null) {
+          svg.selectAll('.y2.axis').call(axes.y2Axis);
+        }
+        if (data.length) {
+          columnWidth = this.getBestColumnWidth(axes, dimensions, data, options);
+          return this.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch);
+        }
+      },
+      setZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
+        var self, zoom, zoomHandler;
+        self = this;
+        zoomHandler = function() {
+          var zoomed, _ref;
+          zoomed = false;
+          if (options.axes.x.zoomable != null) {
+            svg.selectAll('.x.axis').call(axes.xAxis);
+            zoomed = true;
+          }
+          if (options.axes.y.zoomable != null) {
+            svg.selectAll('.y.axis').call(axes.yAxis);
+            zoomed = true;
+          }
+          if (((_ref = options.axes.y2) != null ? _ref.zoomable : void 0) != null) {
+            svg.selectAll('.y2.axis').call(axes.y2Axis);
+            zoomed = true;
+          }
+          if (data.length) {
+            columnWidth = self.getBestColumnWidth(axes, dimensions, data, options);
+            self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch);
+          }
+          if (zoomed) {
+            return self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom);
+          }
+        };
+        zoom = this.getZoomListener(axes, options, zoomHandler);
+        return svg.call(zoom);
+      },
+      getZoomListener: function(axes, options, zoomHandler) {
+        var zoomListener, _ref, _ref1, _ref2;
+        zoomListener = d3.behavior.zoom();
+        if (zoomHandler != null) {
+          zoomListener.on("zoom", zoomHandler);
+        }
+        if (((_ref = options.axes.x) != null ? _ref.zoomable : void 0) != null) {
+          zoomListener.x(axes.xScale);
+        }
+        if (((_ref1 = options.axes.y) != null ? _ref1.zoomable : void 0) != null) {
+          zoomListener.y(axes.yScale);
+        }
+        if (((_ref2 = options.axes.y2) != null ? _ref2.zoomable : void 0) != null) {
+          zoomListener.y(axes.y2Scale);
+        }
+        return zoomListener;
       },
       computeLegendLayout: function(svg, series, dimensions) {
         var cumul, i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
@@ -604,35 +679,39 @@ mod.factory('n3utils', [
         return isVisible;
       },
       drawLines: function(svg, scales, data, options, handlers) {
-        var drawers, interpolateData, lineGroup;
+        var drawers, interpolateData, lineGroup, lineJoin;
         drawers = {
           y: this.createLeftLineDrawer(scales, options.lineMode, options.tension),
           y2: this.createRightLineDrawer(scales, options.lineMode, options.tension)
         };
-        lineGroup = svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
+        lineJoin = svg.select('.content').selectAll('.lineGroup').data(data.filter(function(s) {
           var _ref;
           return (_ref = s.type) === 'line' || _ref === 'area';
-        })).enter().append('g');
-        lineGroup.style('stroke', function(s) {
-          return s.color;
-        }).attr('class', function(s) {
+        }));
+        lineGroup = lineJoin.enter().append('g').attr('class', function(s) {
           return "lineGroup series_" + s.index;
-        }).append('path').attr({
-          "class": 'line',
-          d: function(d) {
+        });
+        lineJoin.style('stroke', function(s) {
+          return s.color;
+        });
+        lineJoin.each(function(series) {
+          var dataJoin;
+          dataJoin = d3.select(this).selectAll('path').data([series]);
+          dataJoin.enter().append('path').attr('class', 'line');
+          return dataJoin.attr('d', function(d) {
             return drawers[d.axis](d.values);
-          }
-        }).style({
-          'fill': 'none',
-          'stroke-width': function(s) {
-            return s.thickness;
-          },
-          'stroke-dasharray': function(s) {
-            if (s.lineMode === 'dashed') {
-              return '10,3';
+          }).style({
+            'fill': 'none',
+            'stroke-width': function(s) {
+              return s.thickness;
+            },
+            'stroke-dasharray': function(s) {
+              if (s.lineMode === 'dashed') {
+                return '10,3';
+              }
+              return void 0;
             }
-            return void 0;
-          }
+          });
         });
         if (options.tooltip.interpolate) {
           interpolateData = function(series) {
@@ -780,6 +859,38 @@ mod.factory('n3utils', [
           return content.attr('clip-path', "url(#content-clip-" + id + ")");
         }
       },
+      createZoomResetIcon: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) {
+        var icon, iconJoin, left, path, scale, self, top;
+        self = this;
+        path = 'M22.646,19.307c0.96-1.583,1.523-3.435,1.524-5.421C24.169,8.093,19.478,3.401,13.688,3.399C7.897,3.401,3.204,8.093,3.204,13.885c0,5.789,4.693,10.481,10.484,10.481c1.987,0,3.839-0.563,5.422-1.523l7.128,7.127l3.535-3.537L22.646,19.307zM13.688,20.369c-3.582-0.008-6.478-2.904-6.484-6.484c0.006-3.582,2.903-6.478,6.484-6.486c3.579,0.008,6.478,2.904,6.484,6.486C20.165,17.465,17.267,20.361,13.688,20.369zM8.854,11.884v4.001l9.665-0.001v-3.999L8.854,11.884z';
+        iconJoin = d3.select('.focus-container').selectAll('.icon.zoom-reset').data([1]);
+        icon = iconJoin.enter().append('g').attr('class', 'icon zoom-reset').on('click', function() {
+          self.resetZoom(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom);
+          return d3.select(this).remove();
+        }).on('mouseenter', function() {
+          return d3.select(this).style('fill', 'steelblue');
+        }).on('mouseout', function() {
+          return d3.select(this).style('fill', 'black');
+        });
+        icon.append('path').attr('d', path);
+        left = dimensions.width - dimensions.left - dimensions.right - 24;
+        top = 2;
+        scale = 0.7;
+        return iconJoin.style({
+          'fill': 'black',
+          'stroke': 'white',
+          'stroke-width': 1.5
+        }).attr({
+          opacity: 1,
+          transform: "translate(" + left + ", " + top + ") scale(" + scale + ")"
+        });
+      },
+      createFocus: function(svg, dimensions, options) {
+        var glass;
+        return glass = svg.append('g').attr({
+          'class': 'focus-container'
+        });
+      },
       createGlass: function(svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) {
         var glass, scrubberGroup, that;
         that = this;
@@ -838,6 +949,12 @@ mod.factory('n3utils', [
         }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
           return handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth);
         });
+      },
+      drawData: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
+        this.drawArea(svg, axes, data, options, handlers).drawColumns(svg, axes, data, columnWidth, options, handlers, dispatch).drawLines(svg, axes, data, options, handlers);
+        if (options.drawDots) {
+          return this.drawDots(svg, axes, data, options, handlers, dispatch);
+        }
       },
       getDataPerSeries: function(data, options) {
         var axes, layout, series, straightened;
@@ -1182,6 +1299,9 @@ mod.factory('n3utils', [
         options.type || (options.type = 'linear');
         if (options.ticksRotate != null) {
           options.ticksRotate = this.getSanitizedNumber(options.ticksRotate);
+        }
+        if (options.zoomable != null) {
+          options.zoomable = options.zoomable || false;
         }
         if (options.labelFunction != null) {
           options.ticksFormatter = options.labelFunction;

@@ -179,6 +179,9 @@
         if options.ticksRotate?
           options.ticksRotate = this.getSanitizedNumber(options.ticksRotate)
 
+        if options.zoomable?
+          options.zoomable = options.zoomable or false
+
         # labelFunction is deprecated and will be remvoed in 2.x
         # please use ticksFormatter instead
         if options.labelFunction?

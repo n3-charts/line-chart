@@ -114,31 +114,26 @@ utils.factory 'fakeMouse', ->
 
     return path
 
-  bubbleUp = (element, type) ->
+  bubbleUp = (element, type, args) ->
     element = element.domElement || element
-    dispatch(elm, type) for elm in eventPath(element)
+    dispatch(elm, type, args) for elm in eventPath(element)
 
+  # Dispatch a WheelEvent on the HtmlNode element
+  wheel = (element, deltaX, deltaY) ->
+    deltaX = deltaX || 0.0
+    deltaY = deltaY || 0.0
+    args = {deltaX: deltaX, deltaY: deltaY, deltaMode: WheelEvent.DOM_DELTA_PIXEL}
+    type = 'wheel'
+    event = new WheelEvent(type, angular.extend(defaults, args))
 
-  dispatch = (element, type) ->
+    element.dispatchEvent(event)
+    return event
+
+  # Dispatch a MouseEvent of type type on the HtmlNode element
+  dispatch = (element, type, args) ->
     element = element.domElement || element
-    event = document.createEvent("MouseEvent")
-    event.initMouseEvent(
-      type,
-      true
-      true
-      defaults.view
-      defaults.detail
-      defaults.screenX
-      defaults.screenY
-      defaults.clientX
-      defaults.clientY
-      defaults.ctrl
-      defaults.alt
-      defaults.shift
-      defaults.meta
-      defaults.button
-      defaults.relatedTarget
-    )
+    args = args || {}
+    event = new MouseEvent(type, angular.extend(defaults, args))
 
     element.dispatchEvent(event)
     return event
@@ -154,6 +149,7 @@ utils.factory 'fakeMouse', ->
     hoverOut: (element) -> bubbleUp(element, 'mouseout')
     mouseOver: (element) -> dispatch(element, 'mouseover')
     mouseMove: (element) -> dispatch(element, 'mousemove')
+    wheel: wheel
   }
 
 utils.factory 'focus', ->
