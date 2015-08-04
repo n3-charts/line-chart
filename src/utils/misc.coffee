@@ -83,6 +83,51 @@
         if options.hideOverflow
           content.attr('clip-path', "url(#content-clip-#{id})")
 
+      createZoomResetIcon: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) ->
+        self = this
+        path = 'M22.646,19.307c0.96-1.583,1.523-3.435,1.524-5.421C24.169,8.093,19.478,3.401,13.688,3.399C7.897,3.401,3.204,8.093,3.204,13.885c0,5.789,4.693,10.481,10.484,10.481c1.987,0,3.839-0.563,5.422-1.523l7.128,7.127l3.535-3.537L22.646,19.307zM13.688,20.369c-3.582-0.008-6.478-2.904-6.484-6.484c0.006-3.582,2.903-6.478,6.484-6.486c3.579,0.008,6.478,2.904,6.484,6.486C20.165,17.465,17.267,20.361,13.688,20.369zM8.854,11.884v4.001l9.665-0.001v-3.999L8.854,11.884z'
+
+        iconJoin = d3.select('.focus-container')
+          .selectAll('.icon.zoom-reset')
+          .data([1])
+
+        icon = iconJoin.enter()
+          .append('g')
+          .attr('class', 'icon zoom-reset')
+          .on('click', () ->
+            self.resetZoom(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
+            d3.select(this).remove()
+          )
+          .on('mouseenter', () ->
+            d3.select(this).style('fill', 'steelblue')
+          )
+          .on('mouseout', () ->
+            d3.select(this).style('fill', 'black')
+          )
+
+        icon.append('path').attr('d', path)
+
+        left = dimensions.width - dimensions.left - dimensions.right - 24
+        top = 2
+        scale = 0.7
+
+        iconJoin
+          .style({
+            'fill': 'black'
+            'stroke': 'white'
+            'stroke-width': 1.5
+          })
+          .attr({
+            opacity: 1
+            transform: "translate(#{left}, #{top}) scale(#{scale})"
+          })
+
+      createFocus: (svg, dimensions, options) ->
+        glass = svg.append('g')
+          .attr(
+            'class': 'focus-container'
+          )
+
       createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
         that = this
 
@@ -162,6 +207,14 @@
             handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth)
           )
 
+      drawData: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
+        this
+          .drawArea(svg, axes, data, options, handlers)
+          .drawColumns(svg, axes, data, columnWidth, options, handlers, dispatch)
+          .drawLines(svg, axes, data, options, handlers)
+
+        if options.drawDots
+          this.drawDots(svg, axes, data, options, handlers, dispatch)
 
       getDataPerSeries: (data, options) ->
         series = options.series

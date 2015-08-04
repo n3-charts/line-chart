@@ -1,15 +1,24 @@
       drawDots: (svg, axes, data, options, handlers, dispatch) ->
-        dotGroup = svg.select('.content').selectAll('.dotGroup')
-          .data data.filter (s) -> s.type in ['line', 'area'] and s.drawDots
-          .enter().append('g')
-        dotGroup.attr(
-            class: (s) -> "dotGroup series_#{s.index}"
-            fill: (s) -> s.color
-          )
-          .selectAll('.dot').data (d) -> d.values
-            .enter().append('circle')
-            .attr(
-              'class': 'dot'
+        dotJoin = svg.select('.content').selectAll('.dotGroup')
+          .data(data.filter (s) -> s.type in ['line', 'area'] and s.drawDots)
+        
+        dotGroup = dotJoin.enter()
+          .append('g')
+          .attr('class', (s) -> "dotGroup series_#{s.index}")
+        
+        dotJoin.attr('fill', (s) -> s.color)
+
+        dotJoin.each (series) ->
+
+          dataJoin = d3.select(this).selectAll('.dot')
+            .data(series.values)
+
+          dataJoin.enter().append('circle')
+            .attr('class', 'dot')
+            .on('click': (d, i) -> dispatch.click(d, i))
+            .on('mouseover': (d, i) -> dispatch.hover(d, i))
+          
+          dataJoin.attr(
               'r': (d) -> d.dotSize
               'cx': (d) -> axes.xScale(d.x)
               'cy': (d) -> axes[d.axis + 'Scale'](d.y + d.y0)
@@ -18,8 +27,6 @@
               'stroke': 'white'
               'stroke-width': '2px'
             )
-            .on('click': (d, i) -> dispatch.click(d, i))
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
 
         if options.tooltip.mode isnt 'none'
           dotGroup.on('mouseover', (series) ->

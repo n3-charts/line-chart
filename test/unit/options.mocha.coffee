@@ -366,6 +366,22 @@ describe 'options', ->
       expect(computed.y.ticksRotate).to.equal(40.25)
       expect(computed.y2.ticksRotate).to.equal(-45.00)
 
+    it 'should not set default zoomable value if undefined', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            type: 'linear'
+      ).axes
+      expect(computed.x.zoomable).to.equal(undefined)
+
+    it 'should preserve the given zoomable value if defined and valid', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            zoomable: true
+      ).axes
+      expect(computed.x.zoomable).to.equal(true)
+
   describe 'series', ->
     it 'should throw an error if twice the same id is found', ->
       expect(->n3utils.sanitizeSeriesOptions([

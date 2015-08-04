@@ -95,21 +95,39 @@
 
         data.forEach (s) -> s.xOffset = x1(s) + columnWidth*.5
 
-        colGroup = svg.select('.content').selectAll('.columnGroup')
+        colJoin = svg.select('.content').selectAll('.columnGroup')
           .data(data)
-          .enter().append("g")
-            .attr('class', (s) -> 'columnGroup series_' + s.index)
-            .attr('transform', (s) -> "translate(" + x1(s) + ",0)")
 
-        colGroup.each (series) ->
+        colGroup = colJoin.enter().append("g")
+            .attr('class', (s) -> 'columnGroup series_' + s.index)
+        
+        colJoin.attr('transform', (s) -> "translate(" + x1(s) + ",0)")
+
+        colJoin.each (series) ->
           # only draw visible series to avoid with="NaN" errors
           i = options.series.map((d) -> d.id).indexOf(series.id)
           visible = options.series?[i].visible
           if visible is undefined or visible is not false
-            d3.select(this).selectAll("rect")
+            dataJoin = d3.select(this).selectAll("rect")
               .data(series.values)
-              .enter().append("rect")
-                .style({
+            
+            dataJoin.enter()
+              .append("rect")
+              .on('click': (d, i) -> dispatch.click(d, i))
+              .on('mouseover', (d, i) ->
+                dispatch.hover(d, i)
+                handlers.onMouseOver?(svg, {
+                  series: series
+                  x: axes.xScale(d.x)
+                  y: axes[d.axis + 'Scale'](d.y0 + d.y)
+                  datum: d
+                }, options.axes)
+              )
+              .on('mouseout', (d) ->
+                handlers.onMouseOut?(svg)
+              )
+
+            dataJoin.style({
                   'stroke': series.color
                   'fill': series.color
                   'stroke-opacity': (d) -> if d.y is 0 then '0' else '1'
@@ -124,19 +142,6 @@
                     return Math.abs(axes[d.axis + 'Scale'](d.y0 + d.y) - axes[d.axis + 'Scale'](d.y0))
                   y: (d) ->
                     if d.y is 0 then 0 else axes[d.axis + 'Scale'](Math.max(0, d.y0 + d.y))
-                )
-                .on('click': (d, i) -> dispatch.click(d, i))
-                .on('mouseover', (d, i) ->
-                  dispatch.hover(d, i)
-                  handlers.onMouseOver?(svg, {
-                    series: series
-                    x: axes.xScale(d.x)
-                    y: axes[d.axis + 'Scale'](d.y0 + d.y)
-                    datum: d
-                  }, options.axes)
-                )
-                .on('mouseout', (d) ->
-                  handlers.onMouseOut?(svg)
                 )
 
         return this
