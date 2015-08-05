@@ -39,5 +39,9 @@
     "matchdep": "*",
     "phantomjs": "~1.9.7-5",
     "sinon": "~1.9.1"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "test": "grunt"
   }
 }
