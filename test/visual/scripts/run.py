@@ -52,7 +52,7 @@ def error(message):
 
 def debug(message):
   if verbose:
-    print message
+    print "[DBUG] " + message
 
 def warn(message):
   print bcolors.WARNING + message + bcolors.ENDC
@@ -72,7 +72,8 @@ def sanitize_test_cases():
     dirs = []
 
     for test in tests:
-      if test == '.tmp':
+      if test.startswith('.'):
+        debug("Ignoring invisible folder '" + test + "'.")
         continue
 
       if sanitize_test_case(test):
