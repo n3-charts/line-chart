@@ -1,0 +1,17 @@
+series: [
+  {
+    y: "y",
+    label: "y"
+  }
+],
+axes: {
+  x: {
+    key: "x",
+    type: "date",
+    min: new Date('2014-01-01'),
+    max: new Date('2016-01-01'),
+    ticksFormatter: function formatDate(date) {
+        return [date.getMonth() + 1, date.getFullYear()].join('/');
+    }
+  }
+}
