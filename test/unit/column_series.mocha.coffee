@@ -149,7 +149,78 @@ describe 'column series', ->
             type: 'column'
           ]
 
+    it 'should compute the proper y values of a stack', ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, y_0: 10, y_1: 10, y_2: 10}
+        ]
+        outerScope.options =
+          stacks: [
+            {axis: 'y', series: ['id_0', 'id_1', 'id_2']}
+          ]
+          series: [
+            {id: 'id_0', y: 'y_0', type: 'column'}
+            {id: 'id_1', y: 'y_1', type: 'column'}
+            {id: 'id_2', y: 'y_2', type: 'column'}
+          ]
+      content = element.childByClass('content')
+      col_0 = content.children()[0].children()[0]
+      col_1 = content.children()[1].children()[0]
+      col_2 = content.children()[2].children()[0]
 
+      expect(col_0.getAttribute('y')).to.equal('450')
+      expect(col_1.getAttribute('y')).to.equal('225')
+      expect(col_2.getAttribute('y')).to.equal('0')
+    
+    it 'should update the y values of a stack when the visibility of a series changes', ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, y_0: 10, y_1: 10, y_2: 10}
+        ]
+        outerScope.options =
+          stacks: [
+            {axis: 'y', series: ['id_0', 'id_1', 'id_2']}
+          ]
+          series: [
+            {id: 'id_0', y: 'y_0', type: 'column'}
+            {id: 'id_1', y: 'y_1', type: 'column'}
+            {id: 'id_2', y: 'y_2', type: 'column'}
+          ]
+      
+      element.childrenByClass('legendItem')[0].click()
+      
+      content = element.childByClass('content')
+      col_0 = content.children()[0].children()[0]
+      col_1 = content.children()[1].children()[0]
+      col_2 = content.children()[2].children()[0]
+
+      expect(col_0).to.equal(undefined)
+      expect(col_1.getAttribute('y')).to.equal('450')
+      expect(col_2.getAttribute('y')).to.equal('0')
+
+      element.childrenByClass('legendItem')[0].click()
+      element.childrenByClass('legendItem')[1].click()
+      
+      content = element.childByClass('content')
+      col_0 = content.children()[0].children()[0]
+      col_1 = content.children()[1].children()[0]
+      col_2 = content.children()[2].children()[0]
+
+      expect(col_0.getAttribute('y')).to.equal('450')
+      expect(col_1).to.equal(undefined)
+      expect(col_2.getAttribute('y')).to.equal('0')
+
+      element.childrenByClass('legendItem')[1].click()
+      element.childrenByClass('legendItem')[2].click()
+      
+      content = element.childByClass('content')
+      col_0 = content.children()[0].children()[0]
+      col_1 = content.children()[1].children()[0]
+      col_2 = content.children()[2].children()[0]
+
+      expect(col_0.getAttribute('y')).to.equal('450')
+      expect(col_1.getAttribute('y')).to.equal('0')
+      expect(col_2).to.equal(undefined)
 
   it 'should draw columns', ->
     content = element.childByClass('content')
