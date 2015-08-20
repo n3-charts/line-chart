@@ -80,6 +80,86 @@ describe 'scales', ->
       computedXTicks = xticks.map (t) -> t.domElement.textContent
       expect(computedXTicks).to.eql(['0', '2'])
 
+  describe 'inner ticks', ->
+    beforeEach ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, value: 4}
+          {x: 1, value: 8}
+        ]
+        outerScope.options =
+          axes:
+            x: {}
+            y: {}
+            y2: {}
+          series: [
+            {y: 'value'}
+            {y: 'value', axis: 'y'}
+            {y: 'value', axis: 'y2'}
+          ]
+
+    it 'should render the ticks visible', ->
+      xticks = element.childByClass('x axis').children('line')
+      yticks = element.childByClass('x axis').children('line')
+      y2ticks = element.childByClass('x axis').children('line')
+
+      expect(xticks[0].getAttribute('stroke')).to.equal(null)
+      expect(yticks[0].getAttribute('stroke')).to.equal(null)
+      expect(y2ticks[0].getAttribute('stroke')).to.equal(null)
+
+      outerScope.$apply ->
+        outerScope.options.axes.x.innerTicks = true
+        outerScope.options.axes.y.innerTicks = true
+        outerScope.options.axes.y2.innerTicks = true
+
+      xticks = element.childByClass('x axis').children('line')
+      yticks = element.childByClass('x axis').children('line')
+      y2ticks = element.childByClass('x axis').children('line')
+
+      expect(xticks[0].getAttribute('stroke')).to.equal('#000')
+      expect(yticks[0].getAttribute('stroke')).to.equal('#000')
+      expect(y2ticks[0].getAttribute('stroke')).to.equal('#000')
+
+  describe 'grid', ->
+    beforeEach ->
+      outerScope.$apply ->
+        outerScope.data = [
+          {x: 0, value: 4}
+          {x: 1, value: 8}
+        ]
+        outerScope.options =
+          axes:
+            x: {}
+            y: {}
+            y2: {}
+          series: [
+            {y: 'value'}
+            {y: 'value', axis: 'y'}
+            {y: 'value', axis: 'y2'}
+          ]
+
+    it 'should render the grid visible', ->
+      xgrid = element.childByClass('x grid').children('line')
+      ygrid = element.childByClass('x grid').children('line')
+      y2grid = element.childByClass('x grid').children('line')
+
+      expect(xgrid[0]).to.equal(undefined)
+      expect(ygrid[0]).to.equal(undefined)
+      expect(y2grid[0]).to.equal(undefined)
+
+      outerScope.$apply ->
+        outerScope.options.axes.x.grid = true
+        outerScope.options.axes.y.grid = true
+        outerScope.options.axes.y2.grid = true
+
+      xgrid = element.childByClass('x grid').children('line')
+      ygrid = element.childByClass('x grid').children('line')
+      y2grid = element.childByClass('x grid').children('line')
+
+      expect(xgrid[0].getAttribute('stroke')).to.equal('#eee')
+      expect(ygrid[0].getAttribute('stroke')).to.equal('#eee')
+      expect(y2grid[0].getAttribute('stroke')).to.equal('#eee')
+
   describe 'tick values', ->
     beforeEach ->
       outerScope.$apply ->

@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.11 - 08 August 2015
+line-chart - v1.1.11 - 20 August 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -1304,6 +1304,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         if options.zoomable?
           options.zoomable = options.zoomable or false
 
+        if options.innerTicks?
+          options.innerTicks = options.innerTicks or false
+
         # labelFunction is deprecated and will be remvoed in 2.x
         # please use ticksFormatter instead
         if options.labelFunction?
@@ -1401,14 +1404,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           andAddThemIf: (conditions) ->
             if !!conditions.all
 
-              if !!conditions.x
-                svg.append('g')
-                  .attr('class', 'x axis')
-                  .attr('transform', 'translate(0,' + height + ')')
-                  .call(xAxis)
-                  .call(style)
-
               if !!conditions.y
+                svg.append('g')
+                  .attr('class', 'y grid')
                 svg.append('g')
                   .attr('class', 'y axis')
                   .call(yAxis)
@@ -1416,9 +1414,22 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
               if createY2Axis and !!conditions.y2
                 svg.append('g')
+                  .attr('class', 'y2 grid')
+                  .attr('transform', 'translate(' + width + ', 0)')
+                svg.append('g')
                   .attr('class', 'y2 axis')
                   .attr('transform', 'translate(' + width + ', 0)')
                   .call(y2Axis)
+                  .call(style)
+
+              if !!conditions.x
+                svg.append('g')
+                  .attr('class', 'x grid')
+                  .attr('transform', 'translate(0,' + height + ')')
+                svg.append('g')
+                  .attr('class', 'x axis')
+                  .attr('transform', 'translate(0,' + height + ')')
+                  .call(xAxis)
                   .call(style)
 
             return {
@@ -1442,6 +1453,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         axis = d3.svg.axis()
           .scale(scale)
           .orient(sides[key])
+          .innerTickSize(4)
           .tickFormat(o?.ticksFormatter)
 
         return axis unless o?
@@ -1460,12 +1472,37 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return axis
 
+      setDefaultStroke: (selection) ->
+        selection
+          .attr('stroke', '#000')
+          .attr('stroke-width', 1)
+          .style('shape-rendering', 'crispEdges')
+
+      setDefaultGrid: (selection) ->
+        selection
+          .attr('stroke', '#eee')
+          .attr('stroke-width', 1)
+          .style('shape-rendering', 'crispEdges')
+
       setScalesDomain: (scales, data, series, svg, options) ->
         this.setXScale(scales.xScale, data, series, options.axes)
 
         axis = svg.selectAll('.x.axis')
           .call(scales.xAxis)
-        
+
+        if options.axes.x.innerTicks?
+          axis.selectAll('.tick>line')
+            .call(this.setDefaultStroke)
+
+        if options.axes.x.grid?
+          height = options.margin.height - options.margin.top - options.margin.bottom
+          xGrid = scales.xAxis
+            .tickSize(-height, 0, 0)
+          grid = svg.selectAll('.x.grid')
+            .call(xGrid)
+          grid.selectAll('.tick>line')
+            .call(this.setDefaultGrid)
+
         if options.axes.x.ticksRotate?
           axis.selectAll('.tick>text')
             .attr('dy', null)
@@ -1477,23 +1514,47 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           scales.yScale.domain(yDomain).nice()
           axis = svg.selectAll('.y.axis')
             .call(scales.yAxis)
-          
+
+          if options.axes.y.innerTicks?
+            axis.selectAll('.tick>line')
+              .call(this.setDefaultStroke)
+
           if options.axes.y.ticksRotate?
             axis.selectAll('.tick>text')
               .attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)')
               .style('text-anchor', 'end')
+
+          if options.axes.y.grid?
+            width = options.margin.width - options.margin.left - options.margin.right
+            yGrid = scales.yAxis
+              .tickSize(-width, 0, 0)
+            grid = svg.selectAll('.y.grid')
+              .call(yGrid)
+            grid.selectAll('.tick>line')
+              .call(this.setDefaultGrid)
 
         if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
           y2Domain = this.getVerticalDomain(options, data, series, 'y2')
           scales.y2Scale.domain(y2Domain).nice()
           axis = svg.selectAll('.y2.axis')
             .call(scales.y2Axis)
+          if options.axes.y2.innerTicks?
+            axis.selectAll('.tick>line')
+              .call(this.setDefaultStroke)
           
           if options.axes.y2.ticksRotate?
             axis.selectAll('.tick>text')
               .attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)')
               .style('text-anchor', 'start')
 
+          if options.axes.y2.grid?
+            width = options.margin.width - options.margin.left - options.margin.right
+            y2Grid = scales.y2Axis
+              .tickSize(-width, 0, 0)
+            grid = svg.selectAll('.y2.grid')
+              .call(y2Grid)
+            grid.selectAll('.tick>line')
+              .call(this.setDefaultGrid)
 
       getVerticalDomain: (options, data, series, key) ->
         return [] unless o = options.axes[key]
