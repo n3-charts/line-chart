@@ -48,7 +48,7 @@ Options must be an object with a series array. It should look like this :
 $scope.options = {
   axes: {
     x: {key: 'x', ticksFormat: '.2f', type: 'linear', min: 0, max: 10, ticks: 2},
-    y: {type: 'linear', min: 0, max: 1, ticks: 5},
+    y: {type: 'linear', min: 0, max: 1, ticks: 5, innerTicks: true, grid: true},
     y2: {type: 'linear', min: 0, max: 1, ticks: [1, 2, 3, 4]}
   },
   margin: {
@@ -81,6 +81,8 @@ The `axes` keys can be undefined. Otherwise, it can contain an `x̀` key with th
  + `max` : optional, forces the axis maximum value (default is computed from data)
  + `ticks` : optional, configures the axis' ticks (can be either a number or an array, more on this [here][3])
  + `ticksInterval` : optional, configures the step size of tick values if `ticks` is set to a range or time range function (e.g. d3.time.minute), more on this [here][4]
+ + `innerTicks` : optional, can be either `true` or `false` and displays a small line for every tick when set to `true` (default is `false`)
+ + `grid` : optional, can be either `true` or `false` and displays a grid lines for every tick when set to `true` (default is `false`)
  + `zoomable` : optional, can be either `true` or `false` and enables zooming and panning for this axes when set to `true` (default is `false`)
 
 It can also contain, according to your series configuration, a `y` and a `y2` key with the following properties :
