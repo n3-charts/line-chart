@@ -193,6 +193,9 @@
         if options.zoomable?
           options.zoomable = options.zoomable or false
 
+        if options.innerTicks?
+          options.innerTicks = options.innerTicks or false
+
         # labelFunction is deprecated and will be remvoed in 2.x
         # please use ticksFormatter instead
         if options.labelFunction?
