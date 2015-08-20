@@ -404,6 +404,38 @@ describe 'options', ->
       ).axes
       expect(computed.x.zoomable).to.equal(true)
 
+    it 'should not set default innerTicks value if undefined', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            type: 'linear'
+      ).axes
+      expect(computed.x.innerTicks).to.equal(undefined)
+
+    it 'should preserve the given innerTicks value if defined and valid', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            innerTicks: true
+      ).axes
+      expect(computed.x.innerTicks).to.equal(true)
+
+    it 'should not set default grid value if undefined', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            type: 'linear'
+      ).axes
+      expect(computed.x.grid).to.equal(undefined)
+
+    it 'should preserve the given grid value if defined and valid', ->
+      computed = n3utils.sanitizeOptions(
+        axes:
+          x:
+            grid: true
+      ).axes
+      expect(computed.x.grid).to.equal(true)
+
     describe 'of type date', ->
       min = new Date('2015-01-01')
       max = new Date('2016-01-01')

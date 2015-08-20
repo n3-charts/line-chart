@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.11 - 08 August 2015
+line-chart - v1.1.11 - 20 August 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -1324,6 +1324,9 @@ mod.factory('n3utils', [
         if (options.zoomable != null) {
           options.zoomable = options.zoomable || false;
         }
+        if (options.innerTicks != null) {
+          options.innerTicks = options.innerTicks || false;
+        }
         if (options.labelFunction != null) {
           options.ticksFormatter = options.labelFunction;
         }
@@ -1399,14 +1402,17 @@ mod.factory('n3utils', [
           y2Axis: y2Axis,
           andAddThemIf: function(conditions) {
             if (!!conditions.all) {
-              if (!!conditions.x) {
-                svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis).call(style);
-              }
               if (!!conditions.y) {
+                svg.append('g').attr('class', 'y grid');
                 svg.append('g').attr('class', 'y axis').call(yAxis).call(style);
               }
               if (createY2Axis && !!conditions.y2) {
+                svg.append('g').attr('class', 'y2 grid').attr('transform', 'translate(' + width + ', 0)');
                 svg.append('g').attr('class', 'y2 axis').attr('transform', 'translate(' + width + ', 0)').call(y2Axis).call(style);
+              }
+              if (!!conditions.x) {
+                svg.append('g').attr('class', 'x grid').attr('transform', 'translate(0,' + height + ')');
+                svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis).call(style);
               }
             }
             return {
@@ -1428,7 +1434,7 @@ mod.factory('n3utils', [
           y2: 'right'
         };
         o = options[key];
-        axis = d3.svg.axis().scale(scale).orient(sides[key]).tickFormat(o != null ? o.ticksFormatter : void 0);
+        axis = d3.svg.axis().scale(scale).orient(sides[key]).innerTickSize(4).tickFormat(o != null ? o.ticksFormatter : void 0);
         if (o == null) {
           return axis;
         }
@@ -1441,10 +1447,25 @@ mod.factory('n3utils', [
         }
         return axis;
       },
+      setDefaultStroke: function(selection) {
+        return selection.attr('stroke', '#000').attr('stroke-width', 1).style('shape-rendering', 'crispEdges');
+      },
+      setDefaultGrid: function(selection) {
+        return selection.attr('stroke', '#eee').attr('stroke-width', 1).style('shape-rendering', 'crispEdges');
+      },
       setScalesDomain: function(scales, data, series, svg, options) {
-        var axis, y2Domain, yDomain;
+        var axis, grid, height, width, xGrid, y2Domain, y2Grid, yDomain, yGrid;
         this.setXScale(scales.xScale, data, series, options.axes);
         axis = svg.selectAll('.x.axis').call(scales.xAxis);
+        if (options.axes.x.innerTicks != null) {
+          axis.selectAll('.tick>line').call(this.setDefaultStroke);
+        }
+        if (options.axes.x.grid != null) {
+          height = options.margin.height - options.margin.top - options.margin.bottom;
+          xGrid = scales.xAxis.tickSize(-height, 0, 0);
+          grid = svg.selectAll('.x.grid').call(xGrid);
+          grid.selectAll('.tick>line').call(this.setDefaultGrid);
+        }
         if (options.axes.x.ticksRotate != null) {
           axis.selectAll('.tick>text').attr('dy', null).attr('transform', 'translate(0,5) rotate(' + options.axes.x.ticksRotate + ' 0,6)').style('text-anchor', options.axes.x.ticksRotate >= 0 ? 'start' : 'end');
         }
@@ -1454,8 +1475,17 @@ mod.factory('n3utils', [
           yDomain = this.getVerticalDomain(options, data, series, 'y');
           scales.yScale.domain(yDomain).nice();
           axis = svg.selectAll('.y.axis').call(scales.yAxis);
+          if (options.axes.y.innerTicks != null) {
+            axis.selectAll('.tick>line').call(this.setDefaultStroke);
+          }
           if (options.axes.y.ticksRotate != null) {
             axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y.ticksRotate + ' -6,0)').style('text-anchor', 'end');
+          }
+          if (options.axes.y.grid != null) {
+            width = options.margin.width - options.margin.left - options.margin.right;
+            yGrid = scales.yAxis.tickSize(-width, 0, 0);
+            grid = svg.selectAll('.y.grid').call(yGrid);
+            grid.selectAll('.tick>line').call(this.setDefaultGrid);
           }
         }
         if ((series.filter(function(s) {
@@ -1464,8 +1494,17 @@ mod.factory('n3utils', [
           y2Domain = this.getVerticalDomain(options, data, series, 'y2');
           scales.y2Scale.domain(y2Domain).nice();
           axis = svg.selectAll('.y2.axis').call(scales.y2Axis);
+          if (options.axes.y2.innerTicks != null) {
+            axis.selectAll('.tick>line').call(this.setDefaultStroke);
+          }
           if (options.axes.y2.ticksRotate != null) {
-            return axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)').style('text-anchor', 'start');
+            axis.selectAll('.tick>text').attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)').style('text-anchor', 'start');
+          }
+          if (options.axes.y2.grid != null) {
+            width = options.margin.width - options.margin.left - options.margin.right;
+            y2Grid = scales.y2Axis.tickSize(-width, 0, 0);
+            grid = svg.selectAll('.y2.grid').call(y2Grid);
+            return grid.selectAll('.tick>line').call(this.setDefaultGrid);
           }
         }
       },
