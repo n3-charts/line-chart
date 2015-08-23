@@ -112,6 +112,11 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     # Deprecated: this will be removed in 2.x
     scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents)
 
+    # Clean up the listeners when directive is destroyed
+    scope.$on('$destroy', () ->
+      $window.removeEventListener('resize', window_resize)
+    )
+
     return
 
   return {
