@@ -114,17 +114,20 @@
             dataJoin.enter()
               .append("rect")
               .on('click': (d, i) -> dispatch.click(d, i))
+              .on('mouseenter', (d, i) -> dispatch.mouseenter(d, i))
               .on('mouseover', (d, i) ->
-                dispatch.hover(d, i)
                 handlers.onMouseOver?(svg, {
                   series: series
                   x: axes.xScale(d.x)
                   y: axes[d.axis + 'Scale'](d.y0 + d.y)
                   datum: d
                 }, options.axes)
+                dispatch.hover(d, i)
+                dispatch.mouseover(d, i)
               )
-              .on('mouseout', (d) ->
+              .on('mouseout', (d, i) ->
                 handlers.onMouseOut?(svg)
+                dispatch.mouseout(d, i)
               )
 
             dataJoin.style({

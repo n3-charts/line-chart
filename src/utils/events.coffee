@@ -3,6 +3,9 @@
         events = [
           'focus',
           'hover',
+          'mouseenter',
+          'mouseover',
+          'mouseout',
           'click',
           'toggle'
         ]

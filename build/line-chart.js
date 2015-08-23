@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.11 - 23 August 2015
+line-chart - v1.1.11 - 11 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -91,6 +91,21 @@ directive('linechart', [
         } else {
           dispatch.on('hover', null);
         }
+        if (scope.mouseenter) {
+          dispatch.on('mouseenter', scope.mouseenter);
+        } else {
+          dispatch.on('mouseenter', null);
+        }
+        if (scope.mouseover) {
+          dispatch.on('mouseover', scope.mouseover);
+        } else {
+          dispatch.on('mouseover', null);
+        }
+        if (scope.mouseout) {
+          dispatch.on('mouseout', scope.mouseout);
+        } else {
+          dispatch.on('mouseout', null);
+        }
         if (scope.oldfocus) {
           dispatch.on('focus', scope.oldfocus);
         } else if (scope.focus) {
@@ -115,6 +130,7 @@ directive('linechart', [
       scope.$watch('data', scope.redraw, true);
       scope.$watch('options', scope.redraw, true);
       scope.$watchCollection('[click, hover, focus, toggle]', updateEvents);
+      scope.$watchCollection('[mouseenter, mouseover, mouseout]', updateEvents);
       scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents);
       scope.$on('$destroy', function() {
         return $window.removeEventListener('resize', window_resize);
@@ -132,7 +148,10 @@ directive('linechart', [
         click: '=onClick',
         hover: '=onHover',
         focus: '=onFocus',
-        toggle: '=onToggle'
+        toggle: '=onToggle',
+        mouseenter: '=onMouseenter',
+        mouseover: '=onMouseover',
+        mouseout: '=onMouseout'
       },
       template: '<div></div>',
       link: link
@@ -347,16 +366,24 @@ mod.factory('n3utils', [
               'click': function(d, i) {
                 return dispatch.click(d, i);
               }
+            }).on('mouseenter', function(d, i) {
+              return dispatch.mouseenter(d, i);
             }).on('mouseover', function(d, i) {
+              if (typeof handlers.onMouseOver === "function") {
+                handlers.onMouseOver(svg, {
+                  series: series,
+                  x: axes.xScale(d.x),
+                  y: axes[d.axis + 'Scale'](d.y0 + d.y),
+                  datum: d
+                }, options.axes);
+              }
               dispatch.hover(d, i);
-              return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
-                series: series,
-                x: axes.xScale(d.x),
-                y: axes[d.axis + 'Scale'](d.y0 + d.y),
-                datum: d
-              }, options.axes) : void 0;
-            }).on('mouseout', function(d) {
-              return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
+              return dispatch.mouseover(d, i);
+            }).on('mouseout', function(d, i) {
+              if (typeof handlers.onMouseOut === "function") {
+                handlers.onMouseOut(svg);
+              }
+              return dispatch.mouseout(d, i);
             });
             return dataJoin.style({
               'stroke': series.color,
@@ -419,8 +446,17 @@ mod.factory('n3utils', [
               return dispatch.click(d, i);
             }
           }).on({
+            'mouseenter': function(d, i) {
+              return dispatch.mouseenter(d, i);
+            }
+          }).on({
             'mouseover': function(d, i) {
-              return dispatch.hover(d, i);
+              dispatch.hover(d, i);
+              return dispatch.mouseover(d, i);
+            }
+          }).on({
+            'mouseout': function(d, i) {
+              return dispatch.mouseout(d, i);
             }
           });
           return dataJoin.attr({
@@ -463,72 +499,60 @@ mod.factory('n3utils', [
       },
       getEventDispatcher: function() {
         var events;
-        events = ['focus', 'hover', 'click', 'toggle'];
+        events = ['focus', 'hover', 'mouseenter', 'mouseover', 'mouseout', 'click', 'toggle'];
         return d3.dispatch.apply(this, events);
       },
       resetZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) {
-        var _ref;
         zoom.scale(1);
         zoom.translate([0, 0]);
-        if (options.axes.x.zoomable != null) {
-          svg.selectAll('.x.axis').call(axes.xAxis);
-        }
-        if (options.axes.y.zoomable != null) {
-          svg.selectAll('.y.axis').call(axes.yAxis);
-        }
-        if (((_ref = options.axes.y2) != null ? _ref.zoomable : void 0) != null) {
-          svg.selectAll('.y2.axis').call(axes.y2Axis);
-        }
-        if (data.length) {
-          columnWidth = this.getBestColumnWidth(axes, dimensions, data, options);
-          return this.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch);
-        }
+        return this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, false)();
       },
-      setZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
-        var self, zoom, zoomHandler;
+      getZoomHandler: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) {
+        var self;
         self = this;
-        zoomHandler = function() {
-          var zoomed, _ref;
+        return function() {
+          var zoomed;
           zoomed = false;
-          if (options.axes.x.zoomable != null) {
-            svg.selectAll('.x.axis').call(axes.xAxis);
-            zoomed = true;
-          }
-          if (options.axes.y.zoomable != null) {
-            svg.selectAll('.y.axis').call(axes.yAxis);
-            zoomed = true;
-          }
-          if (((_ref = options.axes.y2) != null ? _ref.zoomable : void 0) != null) {
-            svg.selectAll('.y2.axis').call(axes.y2Axis);
-            zoomed = true;
-          }
+          ['x', 'y', 'y2'].forEach(function(axis) {
+            var _ref;
+            if (((_ref = options.axes[axis]) != null ? _ref.zoomable : void 0) != null) {
+              svg.selectAll("." + axis + ".axis").call(axes["" + axis + "Axis"]);
+              return zoomed = true;
+            }
+          });
           if (data.length) {
             columnWidth = self.getBestColumnWidth(axes, dimensions, data, options);
             self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch);
           }
-          if (zoomed) {
+          if (zoom && zoomed) {
             return self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom);
           }
         };
-        zoom = this.getZoomListener(axes, options, zoomHandler);
-        return svg.call(zoom);
       },
-      getZoomListener: function(axes, options, zoomHandler) {
-        var zoomListener, _ref, _ref1, _ref2;
-        zoomListener = d3.behavior.zoom();
-        if (zoomHandler != null) {
-          zoomListener.on("zoom", zoomHandler);
+      setZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
+        var zoom;
+        zoom = this.getZoomListener(axes, options);
+        if (zoom) {
+          zoom.on("zoom", this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom));
+          return svg.call(zoom);
         }
-        if (((_ref = options.axes.x) != null ? _ref.zoomable : void 0) != null) {
-          zoomListener.x(axes.xScale);
+      },
+      getZoomListener: function(axes, options) {
+        var zoom, zoomable;
+        zoomable = false;
+        zoom = d3.behavior.zoom();
+        ['x', 'y', 'y2'].forEach(function(axis) {
+          var _ref;
+          if ((_ref = options.axes[axis]) != null ? _ref.zoomable : void 0) {
+            zoom[axis](axes["" + axis + "Scale"]);
+            return zoomable = true;
+          }
+        });
+        if (zoomable) {
+          return zoom;
+        } else {
+          return false;
         }
-        if (((_ref1 = options.axes.y) != null ? _ref1.zoomable : void 0) != null) {
-          zoomListener.y(axes.yScale);
-        }
-        if (((_ref2 = options.axes.y2) != null ? _ref2.zoomable : void 0) != null) {
-          zoomListener.y(axes.y2Scale);
-        }
-        return zoomListener;
       },
       computeLegendLayout: function(svg, series, dimensions) {
         var cumul, i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
