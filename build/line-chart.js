@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.11 - 20 August 2015
+line-chart - v1.1.11 - 23 August 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -116,6 +116,9 @@ directive('linechart', [
       scope.$watch('options', scope.redraw, true);
       scope.$watchCollection('[click, hover, focus, toggle]', updateEvents);
       scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents);
+      scope.$on('$destroy', function() {
+        return $window.removeEventListener('resize', window_resize);
+      });
     };
     return {
       replace: true,
