@@ -364,10 +364,10 @@ mod.factory('n3utils', [
             dataJoin = d3.select(this).selectAll("rect").data(series.values);
             dataJoin.enter().append("rect").on({
               'click': function(d, i) {
-                return dispatch.click(d, i);
+                return dispatch.click(d, i, series);
               }
             }).on('mouseenter', function(d, i) {
-              return dispatch.mouseenter(d, i);
+              return dispatch.mouseenter(d, i, series);
             }).on('mouseover', function(d, i) {
               if (typeof handlers.onMouseOver === "function") {
                 handlers.onMouseOver(svg, {
@@ -377,13 +377,13 @@ mod.factory('n3utils', [
                   datum: d
                 }, options.axes);
               }
-              dispatch.hover(d, i);
-              return dispatch.mouseover(d, i);
+              dispatch.hover(d, i, series);
+              return dispatch.mouseover(d, i, series);
             }).on('mouseout', function(d, i) {
               if (typeof handlers.onMouseOut === "function") {
                 handlers.onMouseOut(svg);
               }
-              return dispatch.mouseout(d, i);
+              return dispatch.mouseout(d, i, series);
             });
             return dataJoin.style({
               'stroke': series.color,
@@ -443,20 +443,20 @@ mod.factory('n3utils', [
           dataJoin = d3.select(this).selectAll('.dot').data(series.values);
           dataJoin.enter().append('circle').attr('class', 'dot').on({
             'click': function(d, i) {
-              return dispatch.click(d, i);
+              return dispatch.click(d, i, series);
             }
           }).on({
             'mouseenter': function(d, i) {
-              return dispatch.mouseenter(d, i);
+              return dispatch.mouseenter(d, i, series);
             }
           }).on({
             'mouseover': function(d, i) {
-              dispatch.hover(d, i);
-              return dispatch.mouseover(d, i);
+              dispatch.hover(d, i, series);
+              return dispatch.mouseover(d, i, series);
             }
           }).on({
             'mouseout': function(d, i) {
-              return dispatch.mouseout(d, i);
+              return dispatch.mouseout(d, i, series);
             }
           });
           return dataJoin.attr({
