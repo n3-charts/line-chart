@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.11 - 23 August 2015
+line-chart - v1.1.11 - 11 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -91,6 +91,21 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       else
         dispatch.on('hover', null)
 
+      if scope.mouseenter
+        dispatch.on('mouseenter', scope.mouseenter)
+      else
+        dispatch.on('mouseenter', null)
+
+      if scope.mouseover
+        dispatch.on('mouseover', scope.mouseover)
+      else
+        dispatch.on('mouseover', null)
+
+      if scope.mouseout
+        dispatch.on('mouseout', scope.mouseout)
+      else
+        dispatch.on('mouseout', null)
+
       # Deprecated: this will be removed in 2.x
       if scope.oldfocus
         dispatch.on('focus', scope.oldfocus)
@@ -114,6 +129,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     scope.$watch('data', scope.redraw, true)
     scope.$watch('options', scope.redraw , true)
     scope.$watchCollection('[click, hover, focus, toggle]', updateEvents)
+    scope.$watchCollection('[mouseenter, mouseover, mouseout]', updateEvents)
 
     # Deprecated: this will be removed in 2.x
     scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents)
@@ -133,7 +149,8 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       # Deprecated: this will be removed in 2.x
       oldclick: '=click',  oldhover: '=hover',  oldfocus: '=focus',
       # Events
-      click: '=onClick',  hover: '=onHover',  focus: '=onFocus',  toggle: '=onToggle'
+      click: '=onClick',  hover: '=onHover',  focus: '=onFocus',  toggle: '=onToggle',
+      mouseenter: '=onMouseenter',  mouseover: '=onMouseover',  mouseout: '=onMouseout'
     template: '<div></div>'
     link: link
   }
@@ -349,17 +366,20 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             dataJoin.enter()
               .append("rect")
               .on('click': (d, i) -> dispatch.click(d, i))
+              .on('mouseenter', (d, i) -> dispatch.mouseenter(d, i))
               .on('mouseover', (d, i) ->
-                dispatch.hover(d, i)
                 handlers.onMouseOver?(svg, {
                   series: series
                   x: axes.xScale(d.x)
                   y: axes[d.axis + 'Scale'](d.y0 + d.y)
                   datum: d
                 }, options.axes)
+                dispatch.hover(d, i)
+                dispatch.mouseover(d, i)
               )
-              .on('mouseout', (d) ->
+              .on('mouseout', (d, i) ->
                 handlers.onMouseOut?(svg)
+                dispatch.mouseout(d, i)
               )
 
             dataJoin.style({
@@ -402,7 +422,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           dataJoin.enter().append('circle')
             .attr('class', 'dot')
             .on('click': (d, i) -> dispatch.click(d, i))
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
+            .on('mouseenter': (d, i) -> dispatch.mouseenter(d, i))
+            .on('mouseover': (d, i) ->
+              dispatch.hover(d, i)
+              dispatch.mouseover(d, i)
+            )
+            .on('mouseout': (d, i) -> dispatch.mouseout(d, i))
           
           dataJoin.attr(
               'r': (d) -> d.dotSize
@@ -439,10 +464,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 # src/utils/events.coffee
       getEventDispatcher: () ->
-        
+
         events = [
           'focus',
           'hover',
+          'mouseenter',
+          'mouseover',
+          'mouseout',
           'click',
           'toggle'
         ]
@@ -453,64 +481,44 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         zoom.scale(1)
         zoom.translate([0, 0])
 
-        if options.axes.x.zoomable?
-          svg.selectAll('.x.axis').call(axes.xAxis)
+        this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, false)()
 
-        if options.axes.y.zoomable?
-          svg.selectAll('.y.axis').call(axes.yAxis)
+      getZoomHandler: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) ->
+        self = this
 
-        if options.axes.y2?.zoomable?
-          svg.selectAll('.y2.axis').call(axes.y2Axis)
+        return ->
+          zoomed = false
 
-        if data.length
-          columnWidth = this.getBestColumnWidth(axes, dimensions, data, options)
-          this.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
+          [ 'x', 'y', 'y2' ].forEach (axis) ->
+            if options.axes[axis]?.zoomable?
+              svg.selectAll(".#{axis}.axis").call(axes["#{axis}Axis"])
+              zoomed = true
+
+          if data.length
+            columnWidth = self.getBestColumnWidth(axes, dimensions, data, options)
+            self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
+
+          if zoom and zoomed
+            self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
 
       setZoom: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
-        self = this
-        
-        zoomHandler = () ->
-            zoomed = false
+        zoom = this.getZoomListener(axes, options)
 
-            if options.axes.x.zoomable?
-              svg.selectAll('.x.axis').call(axes.xAxis)
-              zoomed = true
+        if zoom
+          zoom.on("zoom", this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom))
+          svg.call(zoom)
 
-            if options.axes.y.zoomable?
-              svg.selectAll('.y.axis').call(axes.yAxis)
-              zoomed = true
+      getZoomListener: (axes, options) ->
+        zoomable = false
+        zoom = d3.behavior.zoom()
 
-            if options.axes.y2?.zoomable?
-              svg.selectAll('.y2.axis').call(axes.y2Axis)
-              zoomed = true
+        [ 'x', 'y', 'y2' ].forEach (axis) ->
+          if options.axes[axis]?.zoomable
+            zoom[axis](axes["#{axis}Scale"])
+            zoomable = true
 
-            if data.length
-              columnWidth = self.getBestColumnWidth(axes, dimensions, data, options)
-              self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
+        return if zoomable then zoom else false
 
-            if zoomed
-              self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
-
-        zoom = this.getZoomListener(axes, options, zoomHandler)
-        svg.call(zoom)
-
-      getZoomListener: (axes, options, zoomHandler) ->
-
-        zoomListener = d3.behavior.zoom()
-
-        if zoomHandler?
-          zoomListener.on("zoom", zoomHandler)
-
-        if options.axes.x?.zoomable?
-          zoomListener.x(axes.xScale)
-
-        if options.axes.y?.zoomable?
-          zoomListener.y(axes.yScale)
-        
-        if options.axes.y2?.zoomable?
-          zoomListener.y(axes.y2Scale)
-
-        return zoomListener
 # ----
 
 

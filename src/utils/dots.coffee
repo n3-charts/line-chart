@@ -16,7 +16,12 @@
           dataJoin.enter().append('circle')
             .attr('class', 'dot')
             .on('click': (d, i) -> dispatch.click(d, i))
-            .on('mouseover': (d, i) -> dispatch.hover(d, i))
+            .on('mouseenter': (d, i) -> dispatch.mouseenter(d, i))
+            .on('mouseover': (d, i) ->
+              dispatch.hover(d, i)
+              dispatch.mouseover(d, i)
+            )
+            .on('mouseout': (d, i) -> dispatch.mouseout(d, i))
           
           dataJoin.attr(
               'r': (d) -> d.dotSize

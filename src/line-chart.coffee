@@ -85,6 +85,21 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       else
         dispatch.on('hover', null)
 
+      if scope.mouseenter
+        dispatch.on('mouseenter', scope.mouseenter)
+      else
+        dispatch.on('mouseenter', null)
+
+      if scope.mouseover
+        dispatch.on('mouseover', scope.mouseover)
+      else
+        dispatch.on('mouseover', null)
+
+      if scope.mouseout
+        dispatch.on('mouseout', scope.mouseout)
+      else
+        dispatch.on('mouseout', null)
+
       # Deprecated: this will be removed in 2.x
       if scope.oldfocus
         dispatch.on('focus', scope.oldfocus)
@@ -108,6 +123,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
     scope.$watch('data', scope.redraw, true)
     scope.$watch('options', scope.redraw , true)
     scope.$watchCollection('[click, hover, focus, toggle]', updateEvents)
+    scope.$watchCollection('[mouseenter, mouseover, mouseout]', updateEvents)
 
     # Deprecated: this will be removed in 2.x
     scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents)
@@ -127,7 +143,8 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       # Deprecated: this will be removed in 2.x
       oldclick: '=click',  oldhover: '=hover',  oldfocus: '=focus',
       # Events
-      click: '=onClick',  hover: '=onHover',  focus: '=onFocus',  toggle: '=onToggle'
+      click: '=onClick',  hover: '=onHover',  focus: '=onFocus',  toggle: '=onToggle',
+      mouseenter: '=onMouseenter',  mouseover: '=onMouseover',  mouseout: '=onMouseout'
     template: '<div></div>'
     link: link
   }
