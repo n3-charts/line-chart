@@ -45,7 +45,7 @@
         zoom = d3.behavior.zoom()
 
         [ 'x', 'y', 'y2' ].forEach (axis) ->
-          if options.axes[axis]?.zoomable?
+          if options.axes[axis]?.zoomable
             zoom[axis](axes["#{axis}Scale"])
             zoomable = true
 

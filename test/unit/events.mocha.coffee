@@ -264,7 +264,7 @@ describe 'event handling', ->
 
       glass = element.childByClass('glass').domElement
       fakeMouse.wheel(glass, 0, -10)
-      
+
       columnGroup = element.childByClass('columnGroup')
       expect(columnGroup.children()[0].getAttribute('x')).to.equal('130')
       expect(columnGroup.children()[0].getAttribute('y')).to.equal('456')
@@ -292,9 +292,34 @@ describe 'event handling', ->
 
       glass = element.childByClass('glass').domElement
       fakeMouse.wheel(glass, 0, -10)
-      
+
       columnGroup = element.childByClass('columnGroup')
       expect(columnGroup.children()[0].getAttribute('x')).to.equal('130')
       expect(columnGroup.children()[0].getAttribute('y')).to.equal('462')
       expect(columnGroup.children()[0].getAttribute('width')).to.equal('125')
       expect(columnGroup.children()[0].getAttribute('height')).to.equal('38')
+
+    it 'should ignore zoom events by default', ->
+
+      getColumn = -> element.childByClass('columnGroup').children()[0]
+
+      outerScope.$apply ->
+        outerScope.options =
+          margin:
+            {left: 0, bottom: 0, top: 0, right: 0}
+          axes:
+            x: {zoomable: false}
+            y: {zoomable: false}
+          series: [
+            {y: 'value', type: 'column'}
+          ]
+
+      originalPosition =
+        x: getColumn().getAttribute('x')
+        y: getColumn().getAttribute('y')
+
+      glass = element.childByClass('glass').domElement
+      fakeMouse.wheel(glass, 0, -10)
+
+      expect(getColumn().getAttribute('x')).to.equal(originalPosition.x)
+      expect(getColumn().getAttribute('y')).to.equal(originalPosition.y)
