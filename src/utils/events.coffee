@@ -1,5 +1,5 @@
       getEventDispatcher: () ->
-        
+
         events = [
           'focus',
           'hover',
@@ -13,61 +13,40 @@
         zoom.scale(1)
         zoom.translate([0, 0])
 
-        if options.axes.x.zoomable?
-          svg.selectAll('.x.axis').call(axes.xAxis)
+        this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, false)()
 
-        if options.axes.y.zoomable?
-          svg.selectAll('.y.axis').call(axes.yAxis)
+      getZoomHandler: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) ->
+        self = this
 
-        if options.axes.y2?.zoomable?
-          svg.selectAll('.y2.axis').call(axes.y2Axis)
+        return ->
+          zoomed = false
 
-        if data.length
-          columnWidth = this.getBestColumnWidth(axes, dimensions, data, options)
-          this.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
+          [ 'x', 'y', 'y2' ].forEach (axis) ->
+            if options.axes[axis]?.zoomable?
+              svg.selectAll(".#{axis}.axis").call(axes["#{axis}Axis"])
+              zoomed = true
+
+          if data.length
+            columnWidth = self.getBestColumnWidth(axes, dimensions, data, options)
+            self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
+
+          if zoom and zoomed
+            self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
 
       setZoom: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
-        self = this
-        
-        zoomHandler = () ->
-            zoomed = false
+        zoom = this.getZoomListener(axes, options)
 
-            if options.axes.x.zoomable?
-              svg.selectAll('.x.axis').call(axes.xAxis)
-              zoomed = true
+        if zoom
+          zoom.on("zoom", this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom))
+          svg.call(zoom)
 
-            if options.axes.y.zoomable?
-              svg.selectAll('.y.axis').call(axes.yAxis)
-              zoomed = true
+      getZoomListener: (axes, options) ->
+        zoomable = false
+        zoom = d3.behavior.zoom()
 
-            if options.axes.y2?.zoomable?
-              svg.selectAll('.y2.axis').call(axes.y2Axis)
-              zoomed = true
+        [ 'x', 'y', 'y2' ].forEach (axis) ->
+          if options.axes[axis]?.zoomable
+            zoom[axis](axes["#{axis}Scale"])
+            zoomable = true
 
-            if data.length
-              columnWidth = self.getBestColumnWidth(axes, dimensions, data, options)
-              self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch)
-
-            if zoomed
-              self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
-
-        zoom = this.getZoomListener(axes, options, zoomHandler)
-        svg.call(zoom)
-
-      getZoomListener: (axes, options, zoomHandler) ->
-
-        zoomListener = d3.behavior.zoom()
-
-        if zoomHandler?
-          zoomListener.on("zoom", zoomHandler)
-
-        if options.axes.x?.zoomable?
-          zoomListener.x(axes.xScale)
-
-        if options.axes.y?.zoomable?
-          zoomListener.y(axes.yScale)
-        
-        if options.axes.y2?.zoomable?
-          zoomListener.y(axes.y2Scale)
-
-        return zoomListener
+        return if zoomable then zoom else false
