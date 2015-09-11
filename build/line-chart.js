@@ -1611,7 +1611,7 @@ mod.factory('n3utils', [
       },
       setXScale: function(xScale, data, series, axesOptions) {
         var domain, o;
-        domain = this.xExtent(data, axesOptions.x.key);
+        domain = this.xExtent(data, axesOptions.x.key, axesOptions.x.type);
         if (series.filter(function(s) {
           return s.type === 'column';
         }).length) {
@@ -1626,16 +1626,21 @@ mod.factory('n3utils', [
         }
         return xScale.domain(domain);
       },
-      xExtent: function(data, key) {
-        var from, to, _ref;
+      xExtent: function(data, key, type) {
+        var delta, from, to, _ref;
         _ref = d3.extent(data, function(d) {
           return d[key];
         }), from = _ref[0], to = _ref[1];
         if (from === to) {
-          if (from > 0) {
-            return [0, from * 2];
+          if (type === 'date') {
+            delta = 24 * 60 * 60 * 1000;
+            return [new Date(+from - delta), new Date(+to + delta)];
           } else {
-            return [from * 2, 0];
+            if (from > 0) {
+              return [0, from * 2];
+            } else {
+              return [from * 2, 0];
+            }
           }
         }
         return [from, to];
@@ -1644,8 +1649,8 @@ mod.factory('n3utils', [
         var step;
         step = this.getAverageStep(data, field);
         if (angular.isDate(domain[0])) {
-          domain[0] = new Date(domain[0].getTime() - step);
-          return domain[1] = new Date(domain[1].getTime() + step);
+          domain[0] = new Date(+domain[0] - step);
+          return domain[1] = new Date(+domain[1] + step);
         } else {
           domain[0] = domain[0] - step;
           return domain[1] = domain[1] + step;
