@@ -890,7 +890,7 @@ mod.factory('n3utils', [
         var icon, iconJoin, left, path, scale, self, top;
         self = this;
         path = 'M22.646,19.307c0.96-1.583,1.523-3.435,1.524-5.421C24.169,8.093,19.478,3.401,13.688,3.399C7.897,3.401,3.204,8.093,3.204,13.885c0,5.789,4.693,10.481,10.484,10.481c1.987,0,3.839-0.563,5.422-1.523l7.128,7.127l3.535-3.537L22.646,19.307zM13.688,20.369c-3.582-0.008-6.478-2.904-6.484-6.484c0.006-3.582,2.903-6.478,6.484-6.486c3.579,0.008,6.478,2.904,6.484,6.486C20.165,17.465,17.267,20.361,13.688,20.369zM8.854,11.884v4.001l9.665-0.001v-3.999L8.854,11.884z';
-        iconJoin = d3.select('.focus-container').selectAll('.icon.zoom-reset').data([1]);
+        iconJoin = svg.select('.focus-container').selectAll('.icon.zoom-reset').data([1]);
         icon = iconJoin.enter().append('g').attr('class', 'icon zoom-reset').on('click', function() {
           self.resetZoom(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom);
           return d3.select(this).remove();
