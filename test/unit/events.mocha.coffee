@@ -16,6 +16,9 @@ describe 'event handling', ->
       expect(dispatch).to.have.property("hover")
       expect(dispatch).to.have.property("click")
       expect(dispatch).to.have.property("toggle")
+      expect(dispatch).to.have.property("mouseenter")
+      expect(dispatch).to.have.property("mouseover")
+      expect(dispatch).to.have.property("mouseout")
 
   describe 'rendering', ->
     element = undefined
@@ -54,6 +57,9 @@ describe 'event handling', ->
           on-hover='hovered'
           on-focus='focused'
           on-toggle='toggled'
+          on-mouseenter='mouseentered'
+          on-mouseover='mouseovered'
+          on-mouseout='mouseouted'
         ></linechart>
       </div>
       """
@@ -323,3 +329,42 @@ describe 'event handling', ->
 
       expect(getColumn().getAttribute('x')).to.equal(originalPosition.x)
       expect(getColumn().getAttribute('y')).to.equal(originalPosition.y)
+
+    it 'should dispatch a mouseenter, mouseover and mouseout events when hovering over a dot', ->
+
+      mouseenter = undefined
+      mouseover = undefined
+      mouseout = undefined
+
+      outerScope.$apply ->
+        outerScope.options =
+          series: [
+            {y: 'value', color: '#4682b4'}
+            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+          ]
+          tooltip: {mode: 'axes'}
+        outerScope.mouseentered = (d, i) -> mouseenter = [d, i]
+        outerScope.mouseovered = (d, i) -> mouseover = [d, i]
+        outerScope.mouseouted = (d, i) -> mouseout = [d, i]
+
+      dotGroup = element.childByClass('dotGroup')
+
+      fakeMouse.mouseEnter(dotGroup.children()[0].domElement)
+      expect(mouseenter[0].x).to.equal(0)
+      expect(mouseenter[0].y).to.equal(4)
+      expect(mouseenter[1]).to.equal(0)
+
+      expect(mouseover).to.equal(undefined)
+      expect(mouseout).to.equal(undefined)
+
+      fakeMouse.mouseOver(dotGroup.children()[0].domElement)
+      expect(mouseover[0].x).to.equal(0)
+      expect(mouseover[0].y).to.equal(4)
+      expect(mouseover[1]).to.equal(0)
+
+      expect(mouseout).to.equal(undefined)
+
+      fakeMouse.mouseOut(dotGroup.children()[0].domElement)
+      expect(mouseout[0].x).to.equal(0)
+      expect(mouseout[0].y).to.equal(4)
+      expect(mouseout[1]).to.equal(0)

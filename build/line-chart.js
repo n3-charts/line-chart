@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.11 - 23 August 2015
+line-chart - v1.1.11 - 11 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -91,6 +91,21 @@ directive('linechart', [
         } else {
           dispatch.on('hover', null);
         }
+        if (scope.mouseenter) {
+          dispatch.on('mouseenter', scope.mouseenter);
+        } else {
+          dispatch.on('mouseenter', null);
+        }
+        if (scope.mouseover) {
+          dispatch.on('mouseover', scope.mouseover);
+        } else {
+          dispatch.on('mouseover', null);
+        }
+        if (scope.mouseout) {
+          dispatch.on('mouseout', scope.mouseout);
+        } else {
+          dispatch.on('mouseout', null);
+        }
         if (scope.oldfocus) {
           dispatch.on('focus', scope.oldfocus);
         } else if (scope.focus) {
@@ -115,6 +130,7 @@ directive('linechart', [
       scope.$watch('data', scope.redraw, true);
       scope.$watch('options', scope.redraw, true);
       scope.$watchCollection('[click, hover, focus, toggle]', updateEvents);
+      scope.$watchCollection('[mouseenter, mouseover, mouseout]', updateEvents);
       scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents);
       scope.$on('$destroy', function() {
         return $window.removeEventListener('resize', window_resize);
@@ -132,7 +148,10 @@ directive('linechart', [
         click: '=onClick',
         hover: '=onHover',
         focus: '=onFocus',
-        toggle: '=onToggle'
+        toggle: '=onToggle',
+        mouseenter: '=onMouseenter',
+        mouseover: '=onMouseover',
+        mouseout: '=onMouseout'
       },
       template: '<div></div>',
       link: link
@@ -345,18 +364,26 @@ mod.factory('n3utils', [
             dataJoin = d3.select(this).selectAll("rect").data(series.values);
             dataJoin.enter().append("rect").on({
               'click': function(d, i) {
-                return dispatch.click(d, i);
+                return dispatch.click(d, i, series);
               }
+            }).on('mouseenter', function(d, i) {
+              return dispatch.mouseenter(d, i, series);
             }).on('mouseover', function(d, i) {
-              dispatch.hover(d, i);
-              return typeof handlers.onMouseOver === "function" ? handlers.onMouseOver(svg, {
-                series: series,
-                x: axes.xScale(d.x),
-                y: axes[d.axis + 'Scale'](d.y0 + d.y),
-                datum: d
-              }, options.axes) : void 0;
-            }).on('mouseout', function(d) {
-              return typeof handlers.onMouseOut === "function" ? handlers.onMouseOut(svg) : void 0;
+              if (typeof handlers.onMouseOver === "function") {
+                handlers.onMouseOver(svg, {
+                  series: series,
+                  x: axes.xScale(d.x),
+                  y: axes[d.axis + 'Scale'](d.y0 + d.y),
+                  datum: d
+                }, options.axes);
+              }
+              dispatch.hover(d, i, series);
+              return dispatch.mouseover(d, i, series);
+            }).on('mouseout', function(d, i) {
+              if (typeof handlers.onMouseOut === "function") {
+                handlers.onMouseOut(svg);
+              }
+              return dispatch.mouseout(d, i, series);
             });
             return dataJoin.style({
               'stroke': series.color,
@@ -416,11 +443,20 @@ mod.factory('n3utils', [
           dataJoin = d3.select(this).selectAll('.dot').data(series.values);
           dataJoin.enter().append('circle').attr('class', 'dot').on({
             'click': function(d, i) {
-              return dispatch.click(d, i);
+              return dispatch.click(d, i, series);
+            }
+          }).on({
+            'mouseenter': function(d, i) {
+              return dispatch.mouseenter(d, i, series);
             }
           }).on({
             'mouseover': function(d, i) {
-              return dispatch.hover(d, i);
+              dispatch.hover(d, i, series);
+              return dispatch.mouseover(d, i, series);
+            }
+          }).on({
+            'mouseout': function(d, i) {
+              return dispatch.mouseout(d, i, series);
             }
           });
           return dataJoin.attr({
@@ -463,72 +499,60 @@ mod.factory('n3utils', [
       },
       getEventDispatcher: function() {
         var events;
-        events = ['focus', 'hover', 'click', 'toggle'];
+        events = ['focus', 'hover', 'mouseenter', 'mouseover', 'mouseout', 'click', 'toggle'];
         return d3.dispatch.apply(this, events);
       },
       resetZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) {
-        var _ref;
         zoom.scale(1);
         zoom.translate([0, 0]);
-        if (options.axes.x.zoomable != null) {
-          svg.selectAll('.x.axis').call(axes.xAxis);
-        }
-        if (options.axes.y.zoomable != null) {
-          svg.selectAll('.y.axis').call(axes.yAxis);
-        }
-        if (((_ref = options.axes.y2) != null ? _ref.zoomable : void 0) != null) {
-          svg.selectAll('.y2.axis').call(axes.y2Axis);
-        }
-        if (data.length) {
-          columnWidth = this.getBestColumnWidth(axes, dimensions, data, options);
-          return this.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch);
-        }
+        return this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, false)();
       },
-      setZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
-        var self, zoom, zoomHandler;
+      getZoomHandler: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom) {
+        var self;
         self = this;
-        zoomHandler = function() {
-          var zoomed, _ref;
+        return function() {
+          var zoomed;
           zoomed = false;
-          if (options.axes.x.zoomable != null) {
-            svg.selectAll('.x.axis').call(axes.xAxis);
-            zoomed = true;
-          }
-          if (options.axes.y.zoomable != null) {
-            svg.selectAll('.y.axis').call(axes.yAxis);
-            zoomed = true;
-          }
-          if (((_ref = options.axes.y2) != null ? _ref.zoomable : void 0) != null) {
-            svg.selectAll('.y2.axis').call(axes.y2Axis);
-            zoomed = true;
-          }
+          ['x', 'y', 'y2'].forEach(function(axis) {
+            var _ref;
+            if (((_ref = options.axes[axis]) != null ? _ref.zoomable : void 0) != null) {
+              svg.selectAll("." + axis + ".axis").call(axes["" + axis + "Axis"]);
+              return zoomed = true;
+            }
+          });
           if (data.length) {
             columnWidth = self.getBestColumnWidth(axes, dimensions, data, options);
             self.drawData(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch);
           }
-          if (zoomed) {
+          if (zoom && zoomed) {
             return self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom);
           }
         };
-        zoom = this.getZoomListener(axes, options, zoomHandler);
-        return svg.call(zoom);
       },
-      getZoomListener: function(axes, options, zoomHandler) {
-        var zoomListener, _ref, _ref1, _ref2;
-        zoomListener = d3.behavior.zoom();
-        if (zoomHandler != null) {
-          zoomListener.on("zoom", zoomHandler);
+      setZoom: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
+        var zoom;
+        zoom = this.getZoomListener(axes, options);
+        if (zoom) {
+          zoom.on("zoom", this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom));
+          return svg.call(zoom);
         }
-        if (((_ref = options.axes.x) != null ? _ref.zoomable : void 0) != null) {
-          zoomListener.x(axes.xScale);
+      },
+      getZoomListener: function(axes, options) {
+        var zoom, zoomable;
+        zoomable = false;
+        zoom = d3.behavior.zoom();
+        ['x', 'y', 'y2'].forEach(function(axis) {
+          var _ref;
+          if ((_ref = options.axes[axis]) != null ? _ref.zoomable : void 0) {
+            zoom[axis](axes["" + axis + "Scale"]);
+            return zoomable = true;
+          }
+        });
+        if (zoomable) {
+          return zoom;
+        } else {
+          return false;
         }
-        if (((_ref1 = options.axes.y) != null ? _ref1.zoomable : void 0) != null) {
-          zoomListener.y(axes.yScale);
-        }
-        if (((_ref2 = options.axes.y2) != null ? _ref2.zoomable : void 0) != null) {
-          zoomListener.y(axes.y2Scale);
-        }
-        return zoomListener;
       },
       computeLegendLayout: function(svg, series, dimensions) {
         var cumul, i, j, leftLayout, leftWidths, padding, rightLayout, rightWidths, that, w;
@@ -866,7 +890,7 @@ mod.factory('n3utils', [
         var icon, iconJoin, left, path, scale, self, top;
         self = this;
         path = 'M22.646,19.307c0.96-1.583,1.523-3.435,1.524-5.421C24.169,8.093,19.478,3.401,13.688,3.399C7.897,3.401,3.204,8.093,3.204,13.885c0,5.789,4.693,10.481,10.484,10.481c1.987,0,3.839-0.563,5.422-1.523l7.128,7.127l3.535-3.537L22.646,19.307zM13.688,20.369c-3.582-0.008-6.478-2.904-6.484-6.484c0.006-3.582,2.903-6.478,6.484-6.486c3.579,0.008,6.478,2.904,6.484,6.486C20.165,17.465,17.267,20.361,13.688,20.369zM8.854,11.884v4.001l9.665-0.001v-3.999L8.854,11.884z';
-        iconJoin = d3.select('.focus-container').selectAll('.icon.zoom-reset').data([1]);
+        iconJoin = svg.select('.focus-container').selectAll('.icon.zoom-reset').data([1]);
         icon = iconJoin.enter().append('g').attr('class', 'icon zoom-reset').on('click', function() {
           self.resetZoom(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom);
           return d3.select(this).remove();
@@ -1587,7 +1611,7 @@ mod.factory('n3utils', [
       },
       setXScale: function(xScale, data, series, axesOptions) {
         var domain, o;
-        domain = this.xExtent(data, axesOptions.x.key);
+        domain = this.xExtent(data, axesOptions.x.key, axesOptions.x.type);
         if (series.filter(function(s) {
           return s.type === 'column';
         }).length) {
@@ -1602,16 +1626,21 @@ mod.factory('n3utils', [
         }
         return xScale.domain(domain);
       },
-      xExtent: function(data, key) {
-        var from, to, _ref;
+      xExtent: function(data, key, type) {
+        var delta, from, to, _ref;
         _ref = d3.extent(data, function(d) {
           return d[key];
         }), from = _ref[0], to = _ref[1];
         if (from === to) {
-          if (from > 0) {
-            return [0, from * 2];
+          if (type === 'date') {
+            delta = 24 * 60 * 60 * 1000;
+            return [new Date(+from - delta), new Date(+to + delta)];
           } else {
-            return [from * 2, 0];
+            if (from > 0) {
+              return [0, from * 2];
+            } else {
+              return [from * 2, 0];
+            }
           }
         }
         return [from, to];
@@ -1620,8 +1649,8 @@ mod.factory('n3utils', [
         var step;
         step = this.getAverageStep(data, field);
         if (angular.isDate(domain[0])) {
-          domain[0] = new Date(domain[0].getTime() - step);
-          return domain[1] = new Date(domain[1].getTime() + step);
+          domain[0] = new Date(+domain[0] - step);
+          return domain[1] = new Date(+domain[1] + step);
         } else {
           domain[0] = domain[0] - step;
           return domain[1] = domain[1] + step;
