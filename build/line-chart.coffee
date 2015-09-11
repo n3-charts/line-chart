@@ -1625,7 +1625,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         return [minY, maxY]
 
       setXScale: (xScale, data, series, axesOptions) ->
-        domain = this.xExtent(data, axesOptions.x.key)
+        domain = this.xExtent(data, axesOptions.x.key, axesOptions.x.type)
         if series.filter((s) -> s.type is 'column').length
           this.adjustXDomainForColumns(domain, data, axesOptions.x.key)
 
@@ -1635,14 +1635,16 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         xScale.domain(domain)
 
-      xExtent: (data, key) ->
+      xExtent: (data, key, type) ->
         [from, to] = d3.extent(data, (d) -> d[key])
 
         if from is to
-          if from > 0
-            return [0, from*2]
+          if type is 'date'
+            # delta of 1 day
+            delta = 24*60*60*1000
+            return [new Date(+from - delta), new Date(+to + delta)]
           else
-            return [from*2, 0]
+            return if from > 0 then [0, from*2] else [from*2, 0]
 
         return [from, to]
 
@@ -1650,8 +1652,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         step = this.getAverageStep(data, field)
 
         if angular.isDate(domain[0])
-          domain[0] = new Date(domain[0].getTime() - step)
-          domain[1] = new Date(domain[1].getTime() + step)
+          domain[0] = new Date(+domain[0] - step)
+          domain[1] = new Date(+domain[1] + step)
         else
           domain[0] = domain[0] - step
           domain[1] = domain[1] + step
