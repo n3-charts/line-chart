@@ -12,7 +12,7 @@ if [ "$?" -eq 1 ]; then
 fi
 
 VERSION_NAME=""
-OLD_VERSION=`grep version package.json | tr -d ' ' | egrep -o '(\d+\.?)+'`
+OLD_VERSION=`grep version package.json | tr -d ' ' | grep -e '(\d+\.?)+' -P -o`
 
 increment() {
   regex="([0-9]+).([0-9]+).([0-9]+)"
