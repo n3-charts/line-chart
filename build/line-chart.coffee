@@ -45,7 +45,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
       axes = _u
-        .createAxes(svg, dimensions, options.axes)
+        .createAxes(svg, dimensions, options)
         .andAddThemIf({
           all: !isThumbnail
           x: true
@@ -63,7 +63,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
       if options.drawLegend
-        _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
+        _u.drawLegend(svg, options, dimensions, handlers, dispatch)
 
       if options.tooltip.mode is 'scrubber'
         _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
@@ -158,7 +158,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
 # ----
 
-# /tmp/utils.coffee
+# C:/tmp/utils.coffee
 mod = angular.module('n3charts.utils', [])
 
 mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootScope) ->
@@ -568,8 +568,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return widths
 
-      drawLegend: (svg, series, dimensions, handlers, dispatch) ->
+      drawLegend: (svg, options, dimensions, handlers, dispatch) ->
         that = this
+        series = options.series
+        fontFamily = options.fontFamily ? 'Courier, monospace'
+        fontSize = options.fontSize ? 10
         legend = svg.append('g').attr('class', 'legend')
 
         d = 16
@@ -632,8 +635,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             item.append('text')
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
-                'font-family': 'Courier'
-                'font-size': 10
+                'font-family': fontFamily
+                'font-size': fontSize
                 'transform': 'translate(13, 4)'
                 'text-rendering': 'geometric-precision'
               )
@@ -1363,7 +1366,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # src/utils/scales.coffee
-      createAxes: (svg, dimensions, axesOptions) ->
+      createAxes: (svg, dimensions, options) ->
+        axesOptions = options.axes
         createY2Axis = axesOptions.y2?
 
         width = dimensions.width
@@ -1395,10 +1399,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         y2.clamp(true)
         y2Axis = this.createAxis(y2, 'y2', axesOptions)
 
-
+        fontFamily = options.fontFamily ? 'Courier, monospace'
+        fontSize = options.fontSize ? 10
+        
         style = (group) ->
           group.style(
-            'font': '10px Courier'
+            'font-family': fontFamily
+            'font-size': fontSize
             'shape-rendering': 'crispEdges'
           )
 

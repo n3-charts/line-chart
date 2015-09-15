@@ -39,7 +39,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
       axes = _u
-        .createAxes(svg, dimensions, options.axes)
+        .createAxes(svg, dimensions, options)
         .andAddThemIf({
           all: !isThumbnail
           x: true
@@ -57,7 +57,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
       if options.drawLegend
-        _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
+        _u.drawLegend(svg, options, dimensions, handlers, dispatch)
 
       if options.tooltip.mode is 'scrubber'
         _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)

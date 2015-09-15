@@ -51,7 +51,7 @@ directive('linechart', [
             return s.axis === key && s.visible !== false;
           })).length > 0;
         };
-        axes = _u.createAxes(svg, dimensions, options.axes).andAddThemIf({
+        axes = _u.createAxes(svg, dimensions, options).andAddThemIf({
           all: !isThumbnail,
           x: true,
           y: fn('y'),
@@ -66,7 +66,7 @@ directive('linechart', [
           _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
         }
         if (options.drawLegend) {
-          _u.drawLegend(svg, options.series, dimensions, handlers, dispatch);
+          _u.drawLegend(svg, options, dimensions, handlers, dispatch);
         }
         if (options.tooltip.mode === 'scrubber') {
           _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
@@ -599,9 +599,12 @@ mod.factory('n3utils', [
         }
         return widths;
       },
-      drawLegend: function(svg, series, dimensions, handlers, dispatch) {
-        var d, groups, legend, that, translateLegends;
+      drawLegend: function(svg, options, dimensions, handlers, dispatch) {
+        var d, fontFamily, fontSize, groups, legend, series, that, translateLegends, _ref, _ref1;
         that = this;
+        series = options.series;
+        fontFamily = (_ref = options.fontFamily) != null ? _ref : 'Courier, monospace';
+        fontSize = (_ref1 = options.fontSize) != null ? _ref1 : 10;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
@@ -628,7 +631,7 @@ mod.factory('n3utils', [
             return '1';
           }
         }).each(function(s) {
-          var item, _ref;
+          var item, _ref2;
           item = d3.select(this);
           item.append('circle').attr({
             'fill': s.color,
@@ -638,7 +641,7 @@ mod.factory('n3utils', [
           });
           item.append('path').attr({
             'clip-path': 'url(#legend-clip)',
-            'fill-opacity': (_ref = s.type) === 'area' || _ref === 'column' ? '1' : '0',
+            'fill-opacity': (_ref2 = s.type) === 'area' || _ref2 === 'column' ? '1' : '0',
             'fill': 'white',
             'stroke': 'white',
             'stroke-width': '2px',
@@ -654,15 +657,15 @@ mod.factory('n3utils', [
             'class': function(d, i) {
               return "legendText series_" + i;
             },
-            'font-family': 'Courier',
-            'font-size': 10,
+            'font-family': fontFamily,
+            'font-size': fontSize,
             'transform': 'translate(13, 4)',
             'text-rendering': 'geometric-precision'
           }).text(s.label || s.y);
         });
         translateLegends = function() {
-          var left, right, _ref;
-          _ref = that.computeLegendLayout(svg, series, dimensions), left = _ref[0], right = _ref[1];
+          var left, right, _ref2;
+          _ref2 = that.computeLegendLayout(svg, series, dimensions), left = _ref2[0], right = _ref2[1];
           return groups.attr({
             'transform': function(s, i) {
               if (s.axis === 'y') {
@@ -1381,8 +1384,9 @@ mod.factory('n3utils', [
         this.sanitizeExtrema(options);
         return options;
       },
-      createAxes: function(svg, dimensions, axesOptions) {
-        var createY2Axis, height, style, width, x, xAxis, y, y2, y2Axis, yAxis;
+      createAxes: function(svg, dimensions, options) {
+        var axesOptions, createY2Axis, fontFamily, fontSize, height, style, width, x, xAxis, y, y2, y2Axis, yAxis, _ref, _ref1;
+        axesOptions = options.axes;
         createY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
         height = dimensions.height;
@@ -1411,9 +1415,12 @@ mod.factory('n3utils', [
         }
         y2.clamp(true);
         y2Axis = this.createAxis(y2, 'y2', axesOptions);
+        fontFamily = (_ref = options.fontFamily) != null ? _ref : 'Courier, monospace';
+        fontSize = (_ref1 = options.fontSize) != null ? _ref1 : 10;
         style = function(group) {
           group.style({
-            'font': '10px Courier',
+            'font-family': fontFamily,
+            'font-size': fontSize,
             'shape-rendering': 'crispEdges'
           });
           return group.selectAll('path').style({

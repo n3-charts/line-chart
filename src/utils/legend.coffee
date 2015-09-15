@@ -43,8 +43,11 @@
 
         return widths
 
-      drawLegend: (svg, series, dimensions, handlers, dispatch) ->
+      drawLegend: (svg, options, dimensions, handlers, dispatch) ->
         that = this
+        series = options.series
+        fontFamily = options.fontFamily ? 'Courier, monospace'
+        fontSize = options.fontSize ? 10
         legend = svg.append('g').attr('class', 'legend')
 
         d = 16
@@ -107,8 +110,8 @@
             item.append('text')
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
-                'font-family': 'Courier'
-                'font-size': 10
+                'font-family': fontFamily
+                'font-size': fontSize
                 'transform': 'translate(13, 4)'
                 'text-rendering': 'geometric-precision'
               )
