@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.12 - 12 September 2015
+line-chart - v1.1.12 - 15 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -364,10 +364,10 @@ mod.factory('n3utils', [
             dataJoin = d3.select(this).selectAll("rect").data(series.values);
             dataJoin.enter().append("rect").on({
               'click': function(d, i) {
-                return dispatch.click(d, i, series);
+                return dispatch.click(d, i, series, d.raw);
               }
             }).on('mouseenter', function(d, i) {
-              return dispatch.mouseenter(d, i, series);
+              return dispatch.mouseenter(d, i, series, d.raw);
             }).on('mouseover', function(d, i) {
               if (typeof handlers.onMouseOver === "function") {
                 handlers.onMouseOver(svg, {
@@ -377,13 +377,13 @@ mod.factory('n3utils', [
                   datum: d
                 }, options.axes);
               }
-              dispatch.hover(d, i, series);
-              return dispatch.mouseover(d, i, series);
+              dispatch.hover(d, i, series, d.raw);
+              return dispatch.mouseover(d, i, series, d.raw);
             }).on('mouseout', function(d, i) {
               if (typeof handlers.onMouseOut === "function") {
                 handlers.onMouseOut(svg);
               }
-              return dispatch.mouseout(d, i, series);
+              return dispatch.mouseout(d, i, series, d.raw);
             });
             return dataJoin.style({
               'stroke': series.color,
@@ -443,20 +443,20 @@ mod.factory('n3utils', [
           dataJoin = d3.select(this).selectAll('.dot').data(series.values);
           dataJoin.enter().append('circle').attr('class', 'dot').on({
             'click': function(d, i) {
-              return dispatch.click(d, i, series);
+              return dispatch.click(d, i, series, d.raw);
             }
           }).on({
             'mouseenter': function(d, i) {
-              return dispatch.mouseenter(d, i, series);
+              return dispatch.mouseenter(d, i, series, d.raw);
             }
           }).on({
             'mouseover': function(d, i) {
               dispatch.hover(d, i, series);
-              return dispatch.mouseover(d, i, series);
+              return dispatch.mouseover(d, i, series, d.raw);
             }
           }).on({
             'mouseout': function(d, i) {
-              return dispatch.mouseout(d, i, series);
+              return dispatch.mouseout(d, i, series, d.raw);
             }
           });
           return dataJoin.attr({
@@ -1023,7 +1023,8 @@ mod.factory('n3utils', [
               x: row[options.axes.x.key],
               y: row[s.y],
               y0: 0,
-              axis: s.axis || 'y'
+              axis: s.axis || 'y',
+              raw: row
             };
             if (s.dotSize != null) {
               d.dotSize = s.dotSize;
@@ -1726,7 +1727,7 @@ mod.factory('n3utils', [
           dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert]);
           text = v.x + ' : ' + v.y;
           if (options.tooltip.formatter) {
-            text = options.tooltip.formatter(v.x, v.y, options.series[index]);
+            text = options.tooltip.formatter(v.x, v.y, options.series[index], v.raw);
           }
           right = item.select('.rightTT');
           rText = right.select('text');

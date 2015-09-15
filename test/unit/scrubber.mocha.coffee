@@ -143,7 +143,7 @@ describe 'scrubber tooltip', ->
 
 
     it 'should show tooltips with custom tooltip function', ->
-      cb = sinon.spy((x, y, series) -> 'pouet')
+      cb = sinon.spy((x, y, series, raw) -> 'pouet')
 
       outerScope.$apply ->
         outerScope.options =
@@ -167,6 +167,6 @@ describe 'scrubber tooltip', ->
       expect(tooltips[2].innerHTML()).to.equal('pouet')
       expect(tooltips[3].innerHTML()).to.equal('pouet')
 
-      expect(cb.args[0]).to.eql([0, 4, outerScope.options.series[0]])
-      expect(cb.args[1]).to.eql([0, 4, outerScope.options.series[1]])
+      expect(cb.args[0]).to.eql([0, 4, outerScope.options.series[0], {x: 0, value: 4}])
+      expect(cb.args[1]).to.eql([0, 4, outerScope.options.series[1], {x: 0, value: 4}])
 
