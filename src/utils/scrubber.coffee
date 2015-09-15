@@ -47,12 +47,11 @@
           yInvert = axes.yScale.invert(y)
 
           v = that.getClosestPoint(series.values, xInvert)
-
           dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert])
 
           text = v.x + ' : ' + v.y
           if options.tooltip.formatter
-            text = options.tooltip.formatter(v.x, v.y, options.series[index])
+            text = options.tooltip.formatter(v.x, v.y, options.series[index], v.raw)
 
           right = item.select('.rightTT')
           rText = right.select('text')
