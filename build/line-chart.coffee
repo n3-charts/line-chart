@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.12 - 21 September 2015
+line-chart - v1.1.12 - 24 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -45,7 +45,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
       axes = _u
-        .createAxes(vis, dimensions, options.axes)
+        .createAxes(vis, dimensions, options)
         .andAddThemIf({
           all: !isThumbnail
           x: true
@@ -63,7 +63,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.drawData(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
       if options.drawLegend
-        _u.drawLegend(vis, options.series, dimensions, handlers, dispatch)
+        _u.drawLegend(vis, options, dimensions, handlers, dispatch)
 
       if options.tooltip.mode is 'scrubber'
         _u.createGlass(svg, vis, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
@@ -160,7 +160,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
 # ----
 
-# /tmp/utils.coffee
+# C:/tmp/utils.coffee
 mod = angular.module('n3charts.utils', [])
 
 mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootScope) ->
@@ -570,8 +570,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
         return widths
 
-      drawLegend: (svg, series, dimensions, handlers, dispatch) ->
+      drawLegend: (svg, options, dimensions, handlers, dispatch) ->
         that = this
+        series = options.series
         legend = svg.append('g').attr('class', 'legend')
 
         d = 16
@@ -634,10 +635,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             item.append('text')
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
-                'font-family': 'Courier'
-                'font-size': 10
                 'transform': 'translate(13, 4)'
                 'text-rendering': 'geometric-precision'
+              )
+              .style(
+                'font-family': options.fontFamily
+                'font-size': options.fontSize
               )
               .text(s.label || s.y)
 
@@ -1167,7 +1170,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
         options.hideOverflow = options.hideOverflow or false
-
+        options.fontFamily = options.fontFamily ? 'Courier, monospace'
+        options.fontSize = options.fontSize ? '10px'
+        
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()
 
@@ -1366,7 +1371,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # src/utils/scales.coffee
-      createAxes: (svg, dimensions, axesOptions) ->
+      createAxes: (svg, dimensions, options) ->
+        axesOptions = options.axes
         createY2Axis = axesOptions.y2?
 
         width = dimensions.width
@@ -1398,10 +1404,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         y2.clamp(true)
         y2Axis = this.createAxis(y2, 'y2', axesOptions)
 
-
         style = (group) ->
           group.style(
-            'font': '10px Courier'
+            'font-family': options.fontFamily
+            'font-size': options.fontSize
             'shape-rendering': 'crispEdges'
           )
 

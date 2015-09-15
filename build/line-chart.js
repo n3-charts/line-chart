@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.12 - 21 September 2015
+line-chart - v1.1.12 - 24 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -51,7 +51,7 @@ directive('linechart', [
             return s.axis === key && s.visible !== false;
           })).length > 0;
         };
-        axes = _u.createAxes(vis, dimensions, options.axes).andAddThemIf({
+        axes = _u.createAxes(vis, dimensions, options).andAddThemIf({
           all: !isThumbnail,
           x: true,
           y: fn('y'),
@@ -66,7 +66,7 @@ directive('linechart', [
           _u.drawData(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
         }
         if (options.drawLegend) {
-          _u.drawLegend(vis, options.series, dimensions, handlers, dispatch);
+          _u.drawLegend(vis, options, dimensions, handlers, dispatch);
         }
         if (options.tooltip.mode === 'scrubber') {
           _u.createGlass(svg, vis, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
@@ -606,9 +606,10 @@ mod.factory('n3utils', [
         }
         return widths;
       },
-      drawLegend: function(svg, series, dimensions, handlers, dispatch) {
-        var d, groups, legend, that, translateLegends;
+      drawLegend: function(svg, options, dimensions, handlers, dispatch) {
+        var d, groups, legend, series, that, translateLegends;
         that = this;
+        series = options.series;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
@@ -661,10 +662,11 @@ mod.factory('n3utils', [
             'class': function(d, i) {
               return "legendText series_" + i;
             },
-            'font-family': 'Courier',
-            'font-size': 10,
             'transform': 'translate(13, 4)',
             'text-rendering': 'geometric-precision'
+          }).style({
+            'font-family': options.fontFamily,
+            'font-size': options.fontSize
           }).text(s.label || s.y);
         });
         translateLegends = function() {
@@ -1146,7 +1148,7 @@ mod.factory('n3utils', [
         };
       },
       sanitizeOptions: function(options, mode) {
-        var defaultMargin;
+        var defaultMargin, _ref, _ref1;
         if (options == null) {
           options = {};
         }
@@ -1171,6 +1173,8 @@ mod.factory('n3utils', [
           options.columnsHGap = 5;
         }
         options.hideOverflow = options.hideOverflow || false;
+        options.fontFamily = (_ref = options.fontFamily) != null ? _ref : 'Courier, monospace';
+        options.fontSize = (_ref1 = options.fontSize) != null ? _ref1 : '10px';
         defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
         options.series = angular.extend(this.getDefaultOptions().series, options.series);
         options.axes = angular.extend(this.getDefaultOptions().axes, options.axes);
@@ -1389,8 +1393,9 @@ mod.factory('n3utils', [
         this.sanitizeExtrema(options);
         return options;
       },
-      createAxes: function(svg, dimensions, axesOptions) {
-        var createY2Axis, height, style, width, x, xAxis, y, y2, y2Axis, yAxis;
+      createAxes: function(svg, dimensions, options) {
+        var axesOptions, createY2Axis, height, style, width, x, xAxis, y, y2, y2Axis, yAxis;
+        axesOptions = options.axes;
         createY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
         height = dimensions.height;
@@ -1421,7 +1426,8 @@ mod.factory('n3utils', [
         y2Axis = this.createAxis(y2, 'y2', axesOptions);
         style = function(group) {
           group.style({
-            'font': '10px Courier',
+            'font-family': options.fontFamily,
+            'font-size': options.fontSize,
             'shape-rendering': 'crispEdges'
           });
           return group.selectAll('path').style({
