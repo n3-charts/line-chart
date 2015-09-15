@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.12 - 12 September 2015
+line-chart - v1.1.12 - 15 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -365,8 +365,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             
             dataJoin.enter()
               .append("rect")
-              .on('click': (d, i) -> dispatch.click(d, i, series))
-              .on('mouseenter', (d, i) -> dispatch.mouseenter(d, i, series))
+              .on('click': (d, i) -> dispatch.click(d, i, series, d.raw))
+              .on('mouseenter', (d, i) -> dispatch.mouseenter(d, i, series, d.raw))
               .on('mouseover', (d, i) ->
                 handlers.onMouseOver?(svg, {
                   series: series
@@ -374,12 +374,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
                   y: axes[d.axis + 'Scale'](d.y0 + d.y)
                   datum: d
                 }, options.axes)
-                dispatch.hover(d, i, series)
-                dispatch.mouseover(d, i, series)
+                dispatch.hover(d, i, series, d.raw)
+                dispatch.mouseover(d, i, series, d.raw)
               )
               .on('mouseout', (d, i) ->
                 handlers.onMouseOut?(svg)
-                dispatch.mouseout(d, i, series)
+                dispatch.mouseout(d, i, series, d.raw)
               )
 
             dataJoin.style({
@@ -421,13 +421,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           dataJoin.enter().append('circle')
             .attr('class', 'dot')
-            .on('click': (d, i) -> dispatch.click(d, i, series))
-            .on('mouseenter': (d, i) -> dispatch.mouseenter(d, i, series))
+            .on('click': (d, i) -> dispatch.click(d, i, series, d.raw))
+            .on('mouseenter': (d, i) -> dispatch.mouseenter(d, i, series, d.raw))
             .on('mouseover': (d, i) ->
               dispatch.hover(d, i, series)
-              dispatch.mouseover(d, i, series)
+              dispatch.mouseover(d, i, series, d.raw)
             )
-            .on('mouseout': (d, i) -> dispatch.mouseout(d, i, series))
+            .on('mouseout': (d, i) -> dispatch.mouseout(d, i, series, d.raw))
           
           dataJoin.attr(
               'r': (d) -> d.dotSize
@@ -1047,6 +1047,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               y: row[s.y]
               y0: 0
               axis: s.axis || 'y'
+              raw: row
 
             d.dotSize = s.dotSize if s.dotSize?
             seriesData.values.push(d)
@@ -1725,12 +1726,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           yInvert = axes.yScale.invert(y)
 
           v = that.getClosestPoint(series.values, xInvert)
-
           dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert])
 
           text = v.x + ' : ' + v.y
           if options.tooltip.formatter
-            text = options.tooltip.formatter(v.x, v.y, options.series[index])
+            text = options.tooltip.formatter(v.x, v.y, options.series[index], v.raw)
 
           right = item.select('.rightTT')
           rText = right.select('text')

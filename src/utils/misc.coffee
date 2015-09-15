@@ -253,6 +253,7 @@
               y: row[s.y]
               y0: 0
               axis: s.axis || 'y'
+              raw: row
 
             d.dotSize = s.dotSize if s.dotSize?
             seriesData.values.push(d)

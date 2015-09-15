@@ -31,7 +31,10 @@ describe 'misc', ->
       {
         index: 0
         name: 'value'
-        values: [{x: 0, y0: 0, y: 4, axis: 'y2', dotSize: 5}, {x: 2, y0: 0, y: 8, axis: 'y2', dotSize: 5}]
+        values: [
+          {x: 0, y0: 0, y: 4, axis: 'y2', dotSize: 5, raw: {x: 0, foo: 4.154, value: 4}}
+          {x: 2, y0: 0, y: 8, axis: 'y2', dotSize: 5, raw: {x: 2, foo: 3.14, value: 8}}
+        ]
         color: 'steelblue'
         axis: 'y2'
         type: 'line'
@@ -44,7 +47,11 @@ describe 'misc', ->
         id: 'id_1'
         index: 1
         name: 'foo'
-        values: [{x: 0, y0: 0, y: 4.154, axis: 'y', dotSize: 2}, {x: 1, y0: 0, y: 8.15485, axis: 'y', dotSize: 2}, {x: 2, y0: 0, y: 3.14, axis: 'y', dotSize: 2} ]
+        values: [
+          {x: 0, y0: 0, y: 4.154, axis: 'y', dotSize: 2, raw: {x: 0, foo: 4.154, value: 4}}
+          {x: 1, y0: 0, y: 8.15485, axis: 'y', dotSize: 2, raw: {x: 1, foo: 8.15485}}
+          {x: 2, y0: 0, y: 3.14, axis: 'y', dotSize: 2, raw: {x: 2, foo: 3.14, value: 8}}
+        ]
         color: 'red'
         axis: 'y'
         type: 'area'
@@ -82,7 +89,11 @@ describe 'misc', ->
         index: 0
         id: 'id_0'
         name: 'value'
-        values: [{x: 0, y0: 0, y: 4, axis: 'y', dotSize: 2}, {x: 1, y0: 0, y: 2, axis: 'y', dotSize: 2}, {x: 2, y0: 0, y: 8, axis: 'y', dotSize: 2}]
+        values: [
+          {x: 0, y0: 0, y: 4, axis: 'y', dotSize: 2, raw: {x: 0, foo: 4.154, value: 4}}
+          {x: 1, y0: 0, y: 2, axis: 'y', dotSize: 2, raw: {x: 1, foo: 8.15485, value: 2}}
+          {x: 2, y0: 0, y: 8, axis: 'y', dotSize: 2, raw: {x: 2, foo: 3.14, value: 8}}
+        ]
         color: 'steelblue'
         axis: 'y'
         type: 'line'
@@ -95,7 +106,11 @@ describe 'misc', ->
         index: 1
         id: 'id_1'
         name: 'foo'
-        values: [{x: 0, y0: 4, y: 4.154, axis: 'y'}, {x: 1, y0: 2, y: 8.15485, axis: 'y'}, {x: 2, y0: 8, y: 3.14, axis: 'y'}]
+        values: [
+          {x: 0, y0: 4, y: 4.154, axis: 'y', raw: {x: 0, foo: 4.154, value: 4}}
+          {x: 1, y0: 2, y: 8.15485, axis: 'y', raw: {x: 1, foo: 8.15485, value: 2}}
+          {x: 2, y0: 8, y: 3.14, axis: 'y', raw: {x: 2, foo: 3.14, value: 8}}
+        ]
         color: 'red'
         axis: 'y'
         type: 'area'
