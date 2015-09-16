@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.12 - 15 September 2015
+line-chart - v1.1.12 - 16 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -158,7 +158,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
 # ----
 
-# /tmp/utils.coffee
+# d:/tmp/utils.coffee
 mod = angular.module('n3charts.utils', [])
 
 mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootScope) ->
