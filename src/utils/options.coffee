@@ -56,6 +56,8 @@
         margin = {}
 
         for opt, value of options
+          if !options.hasOwnProperty(opt)
+            continue
           if opt in attrs
             margin[opt] = parseFloat(value)
 

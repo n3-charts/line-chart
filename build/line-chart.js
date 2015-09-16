@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.12 - 15 September 2015
+line-chart - v1.1.12 - 20 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -1176,6 +1176,9 @@ mod.factory('n3utils', [
         margin = {};
         for (opt in options) {
           value = options[opt];
+          if (!options.hasOwnProperty(opt)) {
+            continue;
+          }
           if (__indexOf.call(attrs, opt) >= 0) {
             margin[opt] = parseFloat(value);
           }
@@ -1822,6 +1825,9 @@ mod.factory('n3utils', [
           neighbours = [];
           for (x in abscissas) {
             sides = abscissas[x];
+            if (!abscissas.hasOwnProperty(x)) {
+              continue;
+            }
             if (sides[side].length === 0) {
               continue;
             }
@@ -1831,6 +1837,9 @@ mod.factory('n3utils', [
               foundNeighbour = false;
               for (y in neighboursForX) {
                 neighbourhood = neighboursForX[y];
+                if (!neighboursForX.hasOwnProperty(y)) {
+                  continue;
+                }
                 if ((+y - h <= (_ref = p.y) && _ref <= +y + h)) {
                   neighbourhood.push(p);
                   foundNeighbour = true;
@@ -1849,8 +1858,14 @@ mod.factory('n3utils', [
           step = 20;
           for (abs in neighboursForAbscissas) {
             xNeighbours = neighboursForAbscissas[abs];
+            if (!neighboursForAbscissas.hasOwnProperty(abs)) {
+              continue;
+            }
             for (y in xNeighbours) {
               neighbours = xNeighbours[y];
+              if (!xNeighbours.hasOwnProperty(y)) {
+                continue;
+              }
               n = neighbours.length;
               if (n === 1) {
                 neighbours[0].labelOffset = 0;
