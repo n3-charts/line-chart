@@ -67,6 +67,36 @@ describe 'options', ->
       o = n3utils.sanitizeOptions(hideOverflow: true)
       expect(o.hideOverflow).to.equal(true)
 
+  describe 'fontFamily', ->
+    it 'should set default fontFamily value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.fontFamily).to.equal('Courier, monospace')
+
+    it 'should preserve the given fontFamily value if defined and valid', ->
+      o = n3utils.sanitizeOptions(fontFamily: 'Gill, Helvetica, sans-serif')
+      expect(o.fontFamily).to.equal('Gill, Helvetica, sans-serif')
+
+    it 'should preserve the given fontFamily value if it is an empty string', ->
+      o = n3utils.sanitizeOptions(fontFamily: '')
+      expect(o.fontFamily).to.equal('')
+
+  describe 'fontSize', ->
+    it 'should set default fontSize value if undefined or invalid', ->
+      o = n3utils.sanitizeOptions()
+      expect(o.fontSize).to.equal(10)
+
+    it 'should preserve the given fontSize value if it is a valid number', ->
+      o = n3utils.sanitizeOptions(fontSize: 16)
+      expect(o.fontSize).to.equal(16)
+
+    it 'should preserve the given fontSize value if it is a valid string', ->
+      o = n3utils.sanitizeOptions(fontSize: 'x-large')
+      expect(o.fontSize).to.equal('x-large')
+
+    it 'should preserve the given fontSize value if it is an empty string', ->
+      o = n3utils.sanitizeOptions(fontSize: '')
+      expect(o.fontSize).to.equal('')
+
   describe 'tooltip', ->
     it 'should set default tooltip.mode if undefined or invalid', ->
       o = n3utils.sanitizeOptions()

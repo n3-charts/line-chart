@@ -600,11 +600,9 @@ mod.factory('n3utils', [
         return widths;
       },
       drawLegend: function(svg, options, dimensions, handlers, dispatch) {
-        var d, fontFamily, fontSize, groups, legend, series, that, translateLegends, _ref, _ref1;
+        var d, groups, legend, series, that, translateLegends;
         that = this;
         series = options.series;
-        fontFamily = (_ref = options.fontFamily) != null ? _ref : 'Courier, monospace';
-        fontSize = (_ref1 = options.fontSize) != null ? _ref1 : 10;
         legend = svg.append('g').attr('class', 'legend');
         d = 16;
         svg.select('defs').append('svg:clipPath').attr('id', 'legend-clip').append('circle').attr('r', d / 2);
@@ -631,7 +629,7 @@ mod.factory('n3utils', [
             return '1';
           }
         }).each(function(s) {
-          var item, _ref2;
+          var item, _ref;
           item = d3.select(this);
           item.append('circle').attr({
             'fill': s.color,
@@ -641,7 +639,7 @@ mod.factory('n3utils', [
           });
           item.append('path').attr({
             'clip-path': 'url(#legend-clip)',
-            'fill-opacity': (_ref2 = s.type) === 'area' || _ref2 === 'column' ? '1' : '0',
+            'fill-opacity': (_ref = s.type) === 'area' || _ref === 'column' ? '1' : '0',
             'fill': 'white',
             'stroke': 'white',
             'stroke-width': '2px',
@@ -657,15 +655,15 @@ mod.factory('n3utils', [
             'class': function(d, i) {
               return "legendText series_" + i;
             },
-            'font-family': fontFamily,
-            'font-size': fontSize,
+            'font-family': options.fontFamily,
+            'font-size': options.fontSize,
             'transform': 'translate(13, 4)',
             'text-rendering': 'geometric-precision'
           }).text(s.label || s.y);
         });
         translateLegends = function() {
-          var left, right, _ref2;
-          _ref2 = that.computeLegendLayout(svg, series, dimensions), left = _ref2[0], right = _ref2[1];
+          var left, right, _ref;
+          _ref = that.computeLegendLayout(svg, series, dimensions), left = _ref[0], right = _ref[1];
           return groups.attr({
             'transform': function(s, i) {
               if (s.axis === 'y') {
@@ -1141,7 +1139,7 @@ mod.factory('n3utils', [
         };
       },
       sanitizeOptions: function(options, mode) {
-        var defaultMargin;
+        var defaultMargin, _ref, _ref1;
         if (options == null) {
           options = {};
         }
@@ -1166,6 +1164,8 @@ mod.factory('n3utils', [
           options.columnsHGap = 5;
         }
         options.hideOverflow = options.hideOverflow || false;
+        options.fontFamily = (_ref = options.fontFamily) != null ? _ref : 'Courier, monospace';
+        options.fontSize = (_ref1 = options.fontSize) != null ? _ref1 : 10;
         defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
         options.series = angular.extend(this.getDefaultOptions().series, options.series);
         options.axes = angular.extend(this.getDefaultOptions().axes, options.axes);
@@ -1385,7 +1385,7 @@ mod.factory('n3utils', [
         return options;
       },
       createAxes: function(svg, dimensions, options) {
-        var axesOptions, createY2Axis, fontFamily, fontSize, height, style, width, x, xAxis, y, y2, y2Axis, yAxis, _ref, _ref1;
+        var axesOptions, createY2Axis, height, style, width, x, xAxis, y, y2, y2Axis, yAxis;
         axesOptions = options.axes;
         createY2Axis = axesOptions.y2 != null;
         width = dimensions.width;
@@ -1415,12 +1415,10 @@ mod.factory('n3utils', [
         }
         y2.clamp(true);
         y2Axis = this.createAxis(y2, 'y2', axesOptions);
-        fontFamily = (_ref = options.fontFamily) != null ? _ref : 'Courier, monospace';
-        fontSize = (_ref1 = options.fontSize) != null ? _ref1 : 10;
         style = function(group) {
           group.style({
-            'font-family': fontFamily,
-            'font-size': fontSize,
+            'font-family': options.fontFamily,
+            'font-size': options.fontSize,
             'shape-rendering': 'crispEdges'
           });
           return group.selectAll('path').style({

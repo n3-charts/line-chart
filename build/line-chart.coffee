@@ -571,8 +571,6 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       drawLegend: (svg, options, dimensions, handlers, dispatch) ->
         that = this
         series = options.series
-        fontFamily = options.fontFamily ? 'Courier, monospace'
-        fontSize = options.fontSize ? 10
         legend = svg.append('g').attr('class', 'legend')
 
         d = 16
@@ -635,8 +633,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             item.append('text')
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
-                'font-family': fontFamily
-                'font-size': fontSize
+                'font-family': options.fontFamily
+                'font-size': options.fontSize
                 'transform': 'translate(13, 4)'
                 'text-rendering': 'geometric-precision'
               )
@@ -1167,7 +1165,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.drawDots = options.drawDots isnt false
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
         options.hideOverflow = options.hideOverflow or false
-
+        options.fontFamily = options.fontFamily ? 'Courier, monospace'
+        options.fontSize = options.fontSize ? 10
+        
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()
 
@@ -1399,13 +1399,10 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         y2.clamp(true)
         y2Axis = this.createAxis(y2, 'y2', axesOptions)
 
-        fontFamily = options.fontFamily ? 'Courier, monospace'
-        fontSize = options.fontSize ? 10
-        
         style = (group) ->
           group.style(
-            'font-family': fontFamily
-            'font-size': fontSize
+            'font-family': options.fontFamily
+            'font-size': options.fontSize
             'shape-rendering': 'crispEdges'
           )
 

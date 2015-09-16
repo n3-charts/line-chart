@@ -31,13 +31,10 @@
         y2.clamp(true)
         y2Axis = this.createAxis(y2, 'y2', axesOptions)
 
-        fontFamily = options.fontFamily ? 'Courier, monospace'
-        fontSize = options.fontSize ? 10
-        
         style = (group) ->
           group.style(
-            'font-family': fontFamily
-            'font-size': fontSize
+            'font-family': options.fontFamily
+            'font-size': options.fontSize
             'shape-rendering': 'crispEdges'
           )
 
