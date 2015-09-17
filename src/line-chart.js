@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.12 - 17 September 2015
+line-chart - v1.1.12 - 16 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -1175,10 +1175,10 @@ mod.factory('n3utils', [
         attrs = ['top', 'right', 'bottom', 'left'];
         margin = {};
         for (opt in options) {
-          value = options[opt];
           if (!options.hasOwnProperty(opt)) {
             continue;
           }
+          value = options[opt];
           if (__indexOf.call(attrs, opt) >= 0) {
             margin[opt] = parseFloat(value);
           }
@@ -1824,10 +1824,10 @@ mod.factory('n3utils', [
           var foundNeighbour, neighbourhood, neighbours, neighboursForX, p, sides, x, y, _ref;
           neighbours = [];
           for (x in abscissas) {
-            sides = abscissas[x];
             if (!abscissas.hasOwnProperty(x)) {
               continue;
             }
+            sides = abscissas[x];
             if (sides[side].length === 0) {
               continue;
             }
@@ -1836,10 +1836,10 @@ mod.factory('n3utils', [
               p = sides[side].pop();
               foundNeighbour = false;
               for (y in neighboursForX) {
-                neighbourhood = neighboursForX[y];
                 if (!neighboursForX.hasOwnProperty(y)) {
                   continue;
                 }
+                neighbourhood = neighboursForX[y];
                 if ((+y - h <= (_ref = p.y) && _ref <= +y + h)) {
                   neighbourhood.push(p);
                   foundNeighbour = true;
@@ -1857,15 +1857,15 @@ mod.factory('n3utils', [
           var abs, n, neighbours, start, step, xNeighbours, y;
           step = 20;
           for (abs in neighboursForAbscissas) {
-            xNeighbours = neighboursForAbscissas[abs];
             if (!neighboursForAbscissas.hasOwnProperty(abs)) {
               continue;
             }
+            xNeighbours = neighboursForAbscissas[abs];
             for (y in xNeighbours) {
-              neighbours = xNeighbours[y];
               if (!xNeighbours.hasOwnProperty(y)) {
                 continue;
               }
+              neighbours = xNeighbours[y];
               n = neighbours.length;
               if (n === 1) {
                 neighbours[0].labelOffset = 0;

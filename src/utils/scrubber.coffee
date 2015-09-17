@@ -175,6 +175,8 @@
         getNeighbours = (side) ->
           neighbours = []
           for x, sides of abscissas
+            if !abscissas.hasOwnProperty(x)
+              continue
             if sides[side].length is 0
               continue
 
@@ -183,6 +185,8 @@
               p = sides[side].pop()
               foundNeighbour = false
               for y, neighbourhood of neighboursForX
+                if !neighboursForX.hasOwnProperty(y)
+                  continue
                 if +y - h <= p.y <= +y + h
                   neighbourhood.push(p)
                   foundNeighbour = true
@@ -195,7 +199,11 @@
         offset = (neighboursForAbscissas) ->
           step = 20
           for abs, xNeighbours of neighboursForAbscissas
+            if !neighboursForAbscissas.hasOwnProperty(abs)
+              continue
             for y, neighbours of xNeighbours
+              if !xNeighbours.hasOwnProperty(y)
+                continue
               n = neighbours.length
               if n is 1
                 neighbours[0].labelOffset = 0
