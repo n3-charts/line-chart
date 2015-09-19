@@ -17,8 +17,23 @@ describe 'scrubber tooltip', ->
       n3utils.preventOverlapping(positions)
 
       expect(positions).to.eql([
-        {x: 120, y: 410, side: "left", labelOffset: 10}
-        {x: 120, y: 410, side: "left", labelOffset: -10}
+        {x: 120, y: 410, side: "left", labelOffset: -12}
+        {x: 120, y: 410, side: "left", labelOffset: 12}
+      ])
+
+    it 'should offset two tooltips that overlap when there exists a non overlapping point', ->
+      positions = [
+        {x: 120, y: 410, side: "left"}
+        {x: 120, y: 300, side: "left"}
+        {x: 120, y: 410, side: "left"}
+      ]
+
+      n3utils.preventOverlapping(positions)
+
+      expect(positions).to.eql([
+        {x: 120, y: 410, side: "left", labelOffset: -12}
+        {x: 120, y: 300, side: "left", labelOffset: 0}
+        {x: 120, y: 410, side: "left", labelOffset: 12}
       ])
 
     it 'should offset three tooltips that overlap', ->
@@ -31,11 +46,27 @@ describe 'scrubber tooltip', ->
       n3utils.preventOverlapping(positions)
 
       expect(positions).to.eql([
-        {x: 120, y: 410, side: "right", labelOffset: 20}
+        {x: 120, y: 410, side: "right", labelOffset: -24}
         {x: 120, y: 410, side: "right", labelOffset: 0}
-        {x: 120, y: 410, side: "right", labelOffset: -20}
+        {x: 120, y: 410, side: "right", labelOffset: 24}
       ])
 
+    it 'should offset four tooltips of unsorted y values that slightly overlap', ->
+      positions = [
+        {x: 0, y: 10, side: "right"}
+        {x: 0, y: 30, side: "right"}
+        {x: 0, y: 15, side: "right"}
+        {x: 0, y: 20, side: "right"}
+      ]
+
+      n3utils.preventOverlapping(positions)
+
+      expect(positions).to.eql([
+        {x: 0, y: 10, side: "right", labelOffset: -19}
+        {x: 0, y: 30, side: "right", labelOffset: 33}
+        {x: 0, y: 15, side: "right", labelOffset: 0}
+        {x: 0, y: 20, side: "right", labelOffset: 19}
+      ])
 
   describe 'rendering', ->
     element = undefined
