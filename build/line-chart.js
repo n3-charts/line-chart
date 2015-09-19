@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.12 - 15 September 2015
+line-chart - v1.1.12 - 19 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -1807,7 +1807,7 @@ mod.factory('n3utils', [
       },
       preventOverlapping: function(positions) {
         var abscissas, getNeighbours, h, offset;
-        h = 18;
+        h = 20;
         abscissas = {};
         positions.forEach(function(p) {
           var _name;
@@ -1818,35 +1818,42 @@ mod.factory('n3utils', [
           return abscissas[p.x][p.side].push(p);
         });
         getNeighbours = function(side) {
-          var foundNeighbour, neighbourhood, neighbours, neighboursForX, p, sides, x, y, _ref;
+          var neighbours, neighboursForX, sides, x;
           neighbours = [];
           for (x in abscissas) {
             sides = abscissas[x];
-            if (sides[side].length === 0) {
-              continue;
-            }
             neighboursForX = {};
-            while (sides[side].length > 0) {
-              p = sides[side].pop();
+            sides[side].sort(function(a, b) {
+              return a.y > b.y;
+            });
+            sides[side].forEach(function(p) {
+              var foundNeighbour, maxY, minY, mult, neighbourhood, y, _ref;
               foundNeighbour = false;
               for (y in neighboursForX) {
                 neighbourhood = neighboursForX[y];
-                if ((+y - h <= (_ref = p.y) && _ref <= +y + h)) {
+                mult = d3.max([neighbourhood.length / 2, 1]);
+                minY = d3.min(neighbourhood, function(d) {
+                  return d.y;
+                }) - h;
+                maxY = d3.max(neighbourhood, function(d) {
+                  return d.y;
+                }) + h * mult;
+                if ((minY <= (_ref = p.y) && _ref <= maxY)) {
                   neighbourhood.push(p);
                   foundNeighbour = true;
                 }
               }
               if (!foundNeighbour) {
-                neighboursForX[p.y] = [p];
+                return neighboursForX[p.y] = [p];
               }
-            }
+            });
             neighbours.push(neighboursForX);
           }
           return neighbours;
         };
         offset = function(neighboursForAbscissas) {
           var abs, n, neighbours, start, step, xNeighbours, y;
-          step = 20;
+          step = 24;
           for (abs in neighboursForAbscissas) {
             xNeighbours = neighboursForAbscissas[abs];
             for (y in xNeighbours) {
@@ -1856,16 +1863,21 @@ mod.factory('n3utils', [
                 neighbours[0].labelOffset = 0;
                 continue;
               }
-              neighbours = neighbours.sort(function(a, b) {
-                return a.y - b.y;
-              });
               if (n % 2 === 0) {
                 start = -(step / 2) * (n / 2);
               } else {
                 start = -(n - 1) / 2 * step;
               }
               neighbours.forEach(function(neighbour, i) {
-                return neighbour.labelOffset = start + step * i;
+                var delta;
+                if (n === 2) {
+                  delta = Math.pow(-1, i) * (neighbours[1].y - neighbours[0].y) * 0.5;
+                } else if (n % 2 === 0) {
+                  delta = neighbours[1].y - neighbour.y;
+                } else {
+                  delta = neighbours[n / 2 << 0].y - neighbour.y;
+                }
+                return neighbour.labelOffset = start + step * i + delta;
               });
             }
           }

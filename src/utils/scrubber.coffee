@@ -165,25 +165,28 @@
 
 
       preventOverlapping: (positions) ->
-        h = 18
-
+        h = 20
         abscissas = {}
         positions.forEach (p) ->
           abscissas[p.x] or= {left: [], right: []}
           abscissas[p.x][p.side].push(p)
 
+        # get neighbouring positions from the axis
+        # side 'left' or 'right'
         getNeighbours = (side) ->
           neighbours = []
           for x, sides of abscissas
-            if sides[side].length is 0
-              continue
-
             neighboursForX = {}
-            while sides[side].length > 0
-              p = sides[side].pop()
+            # Sort the positions by there y value
+            sides[side].sort((a, b) -> a.y > b.y)
+            # loop through the positions
+            sides[side].forEach (p) ->
               foundNeighbour = false
               for y, neighbourhood of neighboursForX
-                if +y - h <= p.y <= +y + h
+                mult = d3.max([neighbourhood.length / 2, 1])
+                minY = d3.min(neighbourhood, (d) -> d.y) - h
+                maxY = d3.max(neighbourhood, (d) -> d.y) + h * mult
+                if minY <= p.y <= maxY
                   neighbourhood.push(p)
                   foundNeighbour = true
 
@@ -193,20 +196,31 @@
           return neighbours
 
         offset = (neighboursForAbscissas) ->
-          step = 20
+          step = 24
           for abs, xNeighbours of neighboursForAbscissas
             for y, neighbours of xNeighbours
               n = neighbours.length
               if n is 1
                 neighbours[0].labelOffset = 0
                 continue
-              neighbours = neighbours.sort (a, b) -> a.y - b.y
+
               if n%2 is 0
                 start = -(step/2)*(n/2)
               else
                 start = -(n-1)/2*step
 
-              neighbours.forEach (neighbour, i) -> neighbour.labelOffset = start + step*i
+              neighbours.forEach (neighbour, i) ->
+                # Make sure we have the same distance between the tooltips
+                # center around the half distance
+                if n is 2
+                  delta = Math.pow(-1, i) * (neighbours[1].y - neighbours[0].y) * 0.5
+                # center around the labelOffset 0
+                else if n%2 is 0
+                  delta = neighbours[1].y - neighbour.y
+                # center around the middle position
+                else
+                  delta = neighbours[n / 2 << 0].y - neighbour.y
+                neighbour.labelOffset = start + step*i + delta
           return
 
 
