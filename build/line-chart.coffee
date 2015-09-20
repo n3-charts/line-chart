@@ -985,6 +985,9 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           item.append('circle')
             .attr(
               'class': "scrubberDot series_#{i}"
+            )
+            .style(
+              'pointer-events': 'none'
               'fill': 'white'
               'stroke': s.color
               'stroke-width': '2px'
