@@ -1,12 +1,11 @@
 describe 'event handling', ->
+  n3utils = undefined
   beforeEach module 'n3-line-chart'
   beforeEach module 'testUtils'
+  beforeEach inject (_n3utils_) ->
+    n3utils = _n3utils_
 
   describe 'utils', ->
-    n3utils = undefined
-
-    beforeEach inject (_n3utils_) ->
-      n3utils = _n3utils_
 
     it 'should create a dispatcher with event attrs', ->
 
@@ -89,141 +88,35 @@ describe 'event handling', ->
           ]
           tooltip: {mode: 'axes', interpolate: false}
 
-      sinon.stub(d3, 'mouse', -> [0, 0])
+      fakeMouse.position([0, 0])
 
     afterEach ->
       d3.mouse.restore()
 
-    it 'should dispatch a click event when clicked on a dot', ->
-
-      clicked = undefined
-
-      outerScope.$apply ->
-        outerScope.options =
-          series: [
-            {y: 'value', color: '#4682b4'}
-            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
-          ]
-          tooltip: {mode: 'axes'}
-        outerScope.clicked = (d, i) ->
-          clicked = [d, i]
-
-      dotGroup = element.childByClass('dotGroup')
-
-      dotGroup.children()[0].click()
-      expect(clicked[0].x).to.equal(0)
-      expect(clicked[0].y).to.equal(4)
-      expect(clicked[1]).to.equal(0)
-
-      dotGroup.children()[1].click()
-      expect(clicked[0].x).to.equal(1)
-      expect(clicked[0].y).to.equal(8)
-      expect(clicked[1]).to.equal(1)
-
-    it 'should dispatch a click event when clicked on a column', ->
-
-      clicked = undefined
-
-      outerScope.$apply ->
-        outerScope.options =
-          series: [
-            {y: 'value', color: '#4682b4'}
-            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
-          ]
-          tooltip: {mode: 'axes'}
-        outerScope.clicked = (d, i) ->
-          clicked = [d, i]
-
-      columnGroup = element.childByClass('columnGroup')
-
-      columnGroup.children()[0].click()
-      expect(clicked[0].x).to.equal(0)
-      expect(clicked[0].y).to.equal(4)
-      expect(clicked[1]).to.equal(0)
-
-      columnGroup.children()[1].click()
-      expect(clicked[0].x).to.equal(1)
-      expect(clicked[0].y).to.equal(8)
-      expect(clicked[1]).to.equal(1)
-
-    it 'should dispatch a hover event when hovering over a dot', ->
-
-      hovered = undefined
-
-      outerScope.$apply ->
-        outerScope.options =
-          series: [
-            {y: 'value', color: '#4682b4'}
-            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
-          ]
-          tooltip: {mode: 'axes'}
-        outerScope.hovered = (d, i) ->
-          hovered = [d, i]
-
-      dotGroup = element.childByClass('dotGroup')
-
-      fakeMouse.hoverIn(dotGroup.children()[0].domElement)
-      expect(hovered[0].x).to.equal(0)
-      expect(hovered[0].y).to.equal(4)
-      expect(hovered[1]).to.equal(0)
-
-      fakeMouse.hoverIn(dotGroup.children()[1].domElement)
-      expect(hovered[0].x).to.equal(1)
-      expect(hovered[0].y).to.equal(8)
-      expect(hovered[1]).to.equal(1)
-
-    it 'should dispatch a hover event when hovering over a column', ->
-
-      hovered = undefined
-
-      outerScope.$apply ->
-        outerScope.options =
-          series: [
-            {y: 'value', color: '#4682b4'}
-            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
-          ]
-          tooltip: {mode: 'axes'}
-        outerScope.hovered = (d, i) ->
-          hovered = [d, i]
-
-      columnGroup = element.childByClass('columnGroup')
-
-      fakeMouse.hoverIn(columnGroup.children()[0].domElement)
-      expect(hovered[0].x).to.equal(0)
-      expect(hovered[0].y).to.equal(4)
-      expect(hovered[1]).to.equal(0)
-
-      fakeMouse.hoverIn(columnGroup.children()[1].domElement)
-      expect(hovered[0].x).to.equal(1)
-      expect(hovered[0].y).to.equal(8)
-      expect(hovered[1]).to.equal(1)
-
     it 'should dispatch a focus event when scrubber is displayed', ->
-
-      focused = []
+      focus = sinon.spy((d, i, pos, series, raw) -> 'pouet')
 
       outerScope.$apply ->
         outerScope.options =
-          series: [
-            {y: 'value', color: '#4682b4'}
-            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
-          ]
+          series: [{y: 'value'}]
           tooltip: {mode: 'scrubber'}
-        outerScope.focused = (d, i) ->
-          focused.push([d, i])
+        outerScope.focused = focus
 
-      glass = element.childByClass('glass')
+      dotGroup = element.childByClass('dotGroup')
+      dot = dotGroup.children()[0]
+      x = +dot.getAttribute("cx") + outerScope.options.margin.left
+      y = +dot.getAttribute("cy") + outerScope.options.margin.top
+      data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+      pos = [x, y]
+      posInverted = [data[0].values[0].x, data[0].values[0].y]
+      args = [data[0].values[0], 0, posInverted, data[0], data[0].values[0].raw]
 
-      fakeMouse.hoverIn(glass)
-      fakeMouse.mouseMove(glass)
-      flushD3()
-
-      expect(focused[0][0].x).to.equal(focused[1][0].x)
-      expect(focused[0][1]).to.equal(focused[0][1])
+      fakeMouse.position(pos)
+      fakeMouse.mouseMove(dot.domElement)
+      expect(focus.calledWith.apply(focus, args)).to.equal(true)
 
     it 'should dispatch a toggle event when clicked on a legend', ->
-
-      clicked = undefined
+      cb = sinon.spy((d, i, visibility) -> 'pouet')
 
       outerScope.$apply ->
         outerScope.options =
@@ -231,24 +124,19 @@ describe 'event handling', ->
             {y: 'value', color: '#4682b4'}
             {y: 'value', axis: 'y2', type: 'column', color: '#4682b4', visible: false}
           ]
-          tooltip: {mode: 'axes'}
-        outerScope.toggled = (d, i, visibility) ->
-          clicked = [d, i, visibility]
+        outerScope.toggled = cb
 
       firstLegendItem = element.childrenByClass('legendItem')[0]
       secondLegendItem = element.childrenByClass('legendItem')[1]
 
       firstLegendItem.click()
-      expect(clicked[1]).to.equal(0)
-      expect(clicked[2]).to.equal(false)
+      expect(cb.calledWith(outerScope.options.series[0], 0, false)).to.equal(true)
 
       firstLegendItem.click()
-      expect(clicked[1]).to.equal(0)
-      expect(clicked[2]).to.equal(true)
+      expect(cb.calledWith(outerScope.options.series[0], 0, true)).to.equal(true)
 
       secondLegendItem.click()
-      expect(clicked[1]).to.equal(1)
-      expect(clicked[2]).to.equal(true)
+      expect(cb.calledWith(outerScope.options.series[1], 1, true)).to.equal(true)
 
     it 'should handle x zoom events', ->
 
@@ -268,8 +156,7 @@ describe 'event handling', ->
       expect(columnGroup.children()[0].getAttribute('width')).to.equal('123')
       expect(columnGroup.children()[0].getAttribute('height')).to.equal('44')
 
-      glass = element.childByClass('glass').domElement
-      fakeMouse.wheel(glass, 0, -10)
+      fakeMouse.wheel(columnGroup.domElement, 0, -10)
 
       columnGroup = element.childByClass('columnGroup')
       expect(columnGroup.children()[0].getAttribute('x')).to.equal('130')
@@ -296,8 +183,7 @@ describe 'event handling', ->
       expect(columnGroup.children()[0].getAttribute('width')).to.equal('123')
       expect(columnGroup.children()[0].getAttribute('height')).to.equal('44')
 
-      glass = element.childByClass('glass').domElement
-      fakeMouse.wheel(glass, 0, -10)
+      fakeMouse.wheel(columnGroup.domElement, 0, -10)
 
       columnGroup = element.childByClass('columnGroup')
       expect(columnGroup.children()[0].getAttribute('x')).to.equal('130')
@@ -324,47 +210,260 @@ describe 'event handling', ->
         x: getColumn().getAttribute('x')
         y: getColumn().getAttribute('y')
 
-      glass = element.childByClass('glass').domElement
-      fakeMouse.wheel(glass, 0, -10)
+      columnGroup = element.childByClass('columnGroup')
+      fakeMouse.wheel(columnGroup.domElement, 0, -10)
 
       expect(getColumn().getAttribute('x')).to.equal(originalPosition.x)
       expect(getColumn().getAttribute('y')).to.equal(originalPosition.y)
 
-    it 'should dispatch a mouseenter, mouseover and mouseout events when hovering over a dot', ->
+    describe 'tooltip mode scrubber', ->
 
-      mouseenter = undefined
-      mouseover = undefined
-      mouseout = undefined
+      it 'should dispatch a click event when clicked on a dot', ->
+        clicked = sinon.spy((d, i, series, raw) -> 'pouet')
 
-      outerScope.$apply ->
-        outerScope.options =
-          series: [
-            {y: 'value', color: '#4682b4'}
-            {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
-          ]
-          tooltip: {mode: 'axes'}
-        outerScope.mouseentered = (d, i) -> mouseenter = [d, i]
-        outerScope.mouseovered = (d, i) -> mouseover = [d, i]
-        outerScope.mouseouted = (d, i) -> mouseout = [d, i]
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'scrubber'}
+          outerScope.clicked = clicked
 
-      dotGroup = element.childByClass('dotGroup')
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
-      fakeMouse.mouseEnter(dotGroup.children()[0].domElement)
-      expect(mouseenter[0].x).to.equal(0)
-      expect(mouseenter[0].y).to.equal(4)
-      expect(mouseenter[1]).to.equal(0)
+        dotGroup.children()[0].click()
+        expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
 
-      expect(mouseover).to.equal(undefined)
-      expect(mouseout).to.equal(undefined)
+      it 'should dispatch a click event when clicked on a column', ->
+        clicked = sinon.spy((d, i, series, raw) -> 'pouet')
 
-      fakeMouse.mouseOver(dotGroup.children()[0].domElement)
-      expect(mouseover[0].x).to.equal(0)
-      expect(mouseover[0].y).to.equal(4)
-      expect(mouseover[1]).to.equal(0)
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'scrubber'}
+          outerScope.clicked = clicked
 
-      expect(mouseout).to.equal(undefined)
+        columnGroup = element.childByClass('columnGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
 
-      fakeMouse.mouseOut(dotGroup.children()[0].domElement)
-      expect(mouseout[0].x).to.equal(0)
-      expect(mouseout[0].y).to.equal(4)
-      expect(mouseout[1]).to.equal(0)
+        columnGroup.children()[0].click()
+        expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
+
+      it 'should dispatch a hover event when hovering over a dot', ->
+        hovered = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'scrubber'}
+          outerScope.hovered = hovered
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.hoverIn(dotGroup.children()[0].domElement)
+        expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
+
+      it 'should dispatch a hover event when hovering over a column', ->
+        hovered = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'scrubber'}
+          outerScope.hovered = hovered
+
+        columnGroup = element.childByClass('columnGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
+
+        fakeMouse.hoverIn(columnGroup.children()[0].domElement)
+        expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
+
+      it 'should dispatch a mouseenter events when hovering over a dot', ->
+        mouseenter = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [{y: 'value'}]
+            tooltip: {mode: 'scrubber'}
+          outerScope.mouseentered = mouseenter
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.mouseEnter(dotGroup.children()[0].domElement)
+        expect(mouseenter.calledWith.apply(mouseenter, args)).to.equal(true)
+
+      it 'should dispatch a mouseover events when hovering over a dot', ->
+        mouseover = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [{y: 'value'}]
+            tooltip: {mode: 'scrubber'}
+          outerScope.mouseovered = mouseover
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.mouseOver(dotGroup.children()[0].domElement)
+        expect(mouseover.calledWith.apply(mouseover, args)).to.equal(true)
+
+      it 'should dispatch a mouseout events when hovering over a dot', ->
+        mouseout = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [{y: 'value'}]
+            tooltip: {mode: 'scrubber'}
+          outerScope.mouseouted = mouseout
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.mouseOut(dotGroup.children()[0].domElement)
+        expect(mouseout.calledWith.apply(mouseout, args)).to.equal(true)
+
+    describe 'tooltip mode axes', ->
+
+      it 'should dispatch a click event when clicked on a dot', ->
+        clicked = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'axes'}
+          outerScope.clicked = clicked
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        dotGroup.children()[0].click()
+        expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
+
+      it 'should dispatch a click event when clicked on a column', ->
+        clicked = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'axes'}
+          outerScope.clicked = clicked
+
+        columnGroup = element.childByClass('columnGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
+
+        columnGroup.children()[0].click()
+        expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
+
+      it 'should dispatch a hover event when hovering over a dot', ->
+        hovered = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'axes'}
+          outerScope.hovered = hovered
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.hoverIn(dotGroup.children()[0].domElement)
+        expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
+
+      it 'should dispatch a hover event when hovering over a column', ->
+        hovered = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [
+              {y: 'value', color: '#4682b4'}
+              {y: 'value', axis: 'y2', type: 'column', color: '#4682b4'}
+            ]
+            tooltip: {mode: 'axes'}
+          outerScope.hovered = hovered
+
+        columnGroup = element.childByClass('columnGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
+
+        fakeMouse.hoverIn(columnGroup.children()[0].domElement)
+        expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
+
+      it 'should dispatch a mouseenter events when hovering over a dot', ->
+        mouseenter = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [{y: 'value'}]
+            tooltip: {mode: 'axes'}
+          outerScope.mouseentered = mouseenter
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.mouseEnter(dotGroup.children()[0].domElement)
+        expect(mouseenter.calledWith.apply(mouseenter, args)).to.equal(true)
+
+      it 'should dispatch a mouseover events when hovering over a dot', ->
+        mouseover = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [{y: 'value'}]
+            tooltip: {mode: 'axes'}
+          outerScope.mouseovered = mouseover
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.mouseOver(dotGroup.children()[0].domElement)
+        expect(mouseover.calledWith.apply(mouseover, args)).to.equal(true)
+
+      it 'should dispatch a mouseout events when hovering over a dot', ->
+        mouseout = sinon.spy((d, i, series, raw) -> 'pouet')
+
+        outerScope.$apply ->
+          outerScope.options =
+            series: [{y: 'value'}]
+            tooltip: {mode: 'axes'}
+          outerScope.mouseouted = mouseout
+
+        dotGroup = element.childByClass('dotGroup')
+        data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
+        args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
+
+        fakeMouse.mouseOut(dotGroup.children()[0].domElement)
+        expect(mouseout.calledWith.apply(mouseout, args)).to.equal(true)
