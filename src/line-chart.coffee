@@ -34,12 +34,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       _u.clean(element[0])
 
-      svg = _u.bootstrap(element[0], id, dimensions)
+      [svg, vis] = _u.bootstrap(element[0], id, dimensions)
 
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
       axes = _u
-        .createAxes(svg, dimensions, options.axes)
+        .createAxes(vis, dimensions, options.axes)
         .andAddThemIf({
           all: !isThumbnail
           x: true
@@ -48,24 +48,24 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         })
 
       if dataPerSeries.length
-        _u.setScalesDomain(axes, scope.data, options.series, svg, options)
+        _u.setScalesDomain(axes, scope.data, options.series, vis, options)
 
-      _u.createContent(svg, id, options, handlers)
+      _u.createContent(vis, id, options, handlers)
 
       if dataPerSeries.length
         columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options)
-        _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
+        _u.drawData(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
       if options.drawLegend
-        _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
+        _u.drawLegend(vis, options.series, dimensions, handlers, dispatch)
 
       if options.tooltip.mode is 'scrubber'
-        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
+        _u.createGlass(svg, vis, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
       else if options.tooltip.mode isnt 'none'
-        _u.addTooltips(svg, dimensions, options.axes)
+        _u.addTooltips(vis, dimensions, options.axes)
 
-      _u.createFocus(svg, dimensions, options)
-      _u.setZoom(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
+      _u.createFocus(vis, dimensions, options)
+      _u.setZoom(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
     updateEvents = ->
 

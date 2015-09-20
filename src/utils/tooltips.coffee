@@ -1,7 +1,8 @@
       getTooltipHandlers: (options) ->
         if options.tooltip.mode is 'scrubber'
           return {
-            onChartHover: angular.bind(this, this.showScrubber)
+            onChartMove: angular.bind(this, this.showScrubber)
+            onChartOut: angular.bind(this, this.hideScrubber)
           }
         else
           return {
