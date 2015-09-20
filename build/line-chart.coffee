@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.12 - 15 September 2015
+line-chart - v1.1.12 - 20 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -158,7 +158,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
 # ----
 
-# /tmp/utils.coffee
+# d:/tmp/utils.coffee
 mod = angular.module('n3charts.utils', [])
 
 mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootScope) ->
@@ -1181,6 +1181,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         margin = {}
 
         for opt, value of options
+          if !options.hasOwnProperty(opt)
+            continue
           if opt in attrs
             margin[opt] = parseFloat(value)
 
@@ -1854,6 +1856,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         getNeighbours = (side) ->
           neighbours = []
           for x, sides of abscissas
+            if !abscissas.hasOwnProperty(x)
+              continue
             if sides[side].length is 0
               continue
 
@@ -1862,6 +1866,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               p = sides[side].pop()
               foundNeighbour = false
               for y, neighbourhood of neighboursForX
+                if !neighboursForX.hasOwnProperty(y)
+                  continue
                 if +y - h <= p.y <= +y + h
                   neighbourhood.push(p)
                   foundNeighbour = true
@@ -1874,7 +1880,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         offset = (neighboursForAbscissas) ->
           step = 20
           for abs, xNeighbours of neighboursForAbscissas
+            if !neighboursForAbscissas.hasOwnProperty(abs)
+              continue
             for y, neighbours of xNeighbours
+              if !xNeighbours.hasOwnProperty(y)
+                continue
               n = neighbours.length
               if n is 1
                 neighbours[0].labelOffset = 0
