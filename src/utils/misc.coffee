@@ -191,6 +191,9 @@
           item.append('circle')
             .attr(
               'class': "scrubberDot series_#{i}"
+            )
+            .style(
+              'pointer-events': 'none'
               'fill': 'white'
               'stroke': s.color
               'stroke-width': '2px'
