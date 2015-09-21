@@ -20,7 +20,7 @@ directive('linechart', [
   'n3utils', '$window', '$timeout', function(n3utils, $window, $timeout) {
     var link;
     link = function(scope, element, attrs, ctrl) {
-      var dispatch, id, initialHandlers, isUpdatingOptions, promise, updateEvents, window_resize, _u;
+      var dispatch, id, initialHandlers, isUpdatingOptions, on_resize, promise, updateEvents, _ref, _u;
       _u = n3utils;
       dispatch = _u.getEventDispatcher();
       id = _u.uuid();
@@ -120,20 +120,27 @@ directive('linechart', [
         }
       };
       promise = void 0;
-      window_resize = function() {
+      on_resize = function() {
         if (promise != null) {
           $timeout.cancel(promise);
         }
         return promise = $timeout(scope.redraw, 1);
       };
-      $window.addEventListener('resize', window_resize);
+      if ((_ref = element[0].parentElement) != null) {
+        _ref.addEventListener('resize', on_resize);
+      }
+      $window.addEventListener('resize', on_resize);
       scope.$watch('data', scope.redraw, true);
       scope.$watch('options', scope.redraw, true);
       scope.$watchCollection('[click, hover, focus, toggle]', updateEvents);
       scope.$watchCollection('[mouseenter, mouseover, mouseout]', updateEvents);
       scope.$watchCollection('[oldclick, oldhover, oldfocus]', updateEvents);
       scope.$on('$destroy', function() {
-        return $window.removeEventListener('resize', window_resize);
+        var _ref1;
+        if ((_ref1 = element[0].parentElement) != null) {
+          _ref1.removeEventListener('resize', on_resize);
+        }
+        return $window.removeEventListener('resize', on_resize);
       });
     };
     return {
