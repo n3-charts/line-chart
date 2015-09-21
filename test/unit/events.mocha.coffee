@@ -231,10 +231,16 @@ describe 'event handling', ->
           outerScope.clicked = clicked
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         dotGroup.children()[0].click()
+        flushD3();
         expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
 
       it 'should dispatch a click event when clicked on a column', ->
@@ -250,10 +256,16 @@ describe 'event handling', ->
           outerScope.clicked = clicked
 
         columnGroup = element.childByClass('columnGroup')
+        col = columnGroup.children()[0]
+        x = +col.getAttribute("cx") + outerScope.options.margin.left
+        y = +col.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
 
+        fakeMouse.position(pos)
         columnGroup.children()[0].click()
+        flushD3();
         expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
 
       it 'should dispatch a hover event when hovering over a dot', ->
@@ -269,10 +281,16 @@ describe 'event handling', ->
           outerScope.hovered = hovered
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.hoverIn(dotGroup.children()[0].domElement)
+        flushD3();
         expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
 
       it 'should dispatch a hover event when hovering over a column', ->
@@ -288,10 +306,16 @@ describe 'event handling', ->
           outerScope.hovered = hovered
 
         columnGroup = element.childByClass('columnGroup')
+        col = columnGroup.children()[0]
+        x = +col.getAttribute("cx") + outerScope.options.margin.left
+        y = +col.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.hoverIn(columnGroup.children()[0].domElement)
+        flushD3();
         expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
 
       it 'should dispatch a mouseenter events when hovering over a dot', ->
@@ -304,10 +328,16 @@ describe 'event handling', ->
           outerScope.mouseentered = mouseenter
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.mouseEnter(dotGroup.children()[0].domElement)
+        flushD3();
         expect(mouseenter.calledWith.apply(mouseenter, args)).to.equal(true)
 
       it 'should dispatch a mouseover events when hovering over a dot', ->
@@ -320,10 +350,16 @@ describe 'event handling', ->
           outerScope.mouseovered = mouseover
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.mouseOver(dotGroup.children()[0].domElement)
+        flushD3();
         expect(mouseover.calledWith.apply(mouseover, args)).to.equal(true)
 
       it 'should dispatch a mouseout events when hovering over a dot', ->
@@ -336,10 +372,16 @@ describe 'event handling', ->
           outerScope.mouseouted = mouseout
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.mouseOut(dotGroup.children()[0].domElement)
+        flushD3();
         expect(mouseout.calledWith.apply(mouseout, args)).to.equal(true)
 
     describe 'tooltip mode axes', ->
@@ -357,10 +399,16 @@ describe 'event handling', ->
           outerScope.clicked = clicked
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         dotGroup.children()[0].click()
+        flushD3();
         expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
 
       it 'should dispatch a click event when clicked on a column', ->
@@ -376,10 +424,16 @@ describe 'event handling', ->
           outerScope.clicked = clicked
 
         columnGroup = element.childByClass('columnGroup')
+        col = columnGroup.children()[0]
+        x = +col.getAttribute("cx") + outerScope.options.margin.left
+        y = +col.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
 
+        fakeMouse.position(pos)
         columnGroup.children()[0].click()
+        flushD3();
         expect(clicked.calledWith.apply(clicked, args)).to.equal(true)
 
       it 'should dispatch a hover event when hovering over a dot', ->
@@ -395,10 +449,16 @@ describe 'event handling', ->
           outerScope.hovered = hovered
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.hoverIn(dotGroup.children()[0].domElement)
+        flushD3();
         expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
 
       it 'should dispatch a hover event when hovering over a column', ->
@@ -414,10 +474,16 @@ describe 'event handling', ->
           outerScope.hovered = hovered
 
         columnGroup = element.childByClass('columnGroup')
+        col = columnGroup.children()[0]
+        x = +col.getAttribute("cx") + outerScope.options.margin.left
+        y = +col.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[1].values[0], 0, data[1], data[1].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.hoverIn(columnGroup.children()[0].domElement)
+        flushD3();
         expect(hovered.calledWith.apply(hovered, args)).to.equal(true)
 
       it 'should dispatch a mouseenter events when hovering over a dot', ->
@@ -430,10 +496,16 @@ describe 'event handling', ->
           outerScope.mouseentered = mouseenter
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.mouseEnter(dotGroup.children()[0].domElement)
+        flushD3();
         expect(mouseenter.calledWith.apply(mouseenter, args)).to.equal(true)
 
       it 'should dispatch a mouseover events when hovering over a dot', ->
@@ -446,10 +518,16 @@ describe 'event handling', ->
           outerScope.mouseovered = mouseover
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
-
+      
+        fakeMouse.position(pos)
         fakeMouse.mouseOver(dotGroup.children()[0].domElement)
+        flushD3();
         expect(mouseover.calledWith.apply(mouseover, args)).to.equal(true)
 
       it 'should dispatch a mouseout events when hovering over a dot', ->
@@ -462,8 +540,14 @@ describe 'event handling', ->
           outerScope.mouseouted = mouseout
 
         dotGroup = element.childByClass('dotGroup')
+        dot = dotGroup.children()[0]
+        x = +dot.getAttribute("cx") + outerScope.options.margin.left
+        y = +dot.getAttribute("cy") + outerScope.options.margin.top
+        pos = [x, y]
         data = n3utils.getDataPerSeries(outerScope.data, outerScope.options)
         args = [data[0].values[0], 0, data[0], data[0].values[0].raw]
 
+        fakeMouse.position(pos)
         fakeMouse.mouseOut(dotGroup.children()[0].domElement)
+        flushD3();
         expect(mouseout.calledWith.apply(mouseout, args)).to.equal(true)
