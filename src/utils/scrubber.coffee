@@ -1,13 +1,19 @@
-      showScrubber: (svg, glass, axes, data, options, dispatch, columnWidth) ->
-        that = this
-        glass.on('mousemove', ->
+      showScrubber: (svg, pos, axes, data, options, dispatch, columnWidth) ->
+        left = options.margin.left
+        right = options.margin.width - options.margin.right
+        top = options.margin.top
+        bottom = options.margin.height - options.margin.bottom
+
+        if (left <= pos[0] <= right) && (top <= pos[1] <= bottom)
+          pos[0] -= options.margin.left
+          pos[1] -= options.margin.top
           svg.selectAll('.glass-container').attr('opacity', 1)
-          that.updateScrubber(svg, d3.mouse(this), axes, data, options, dispatch, columnWidth)
-        )
-        glass.on('mouseout', ->
-          glass.on('mousemove', null)
-          svg.selectAll('.glass-container').attr('opacity', 0)
-        )
+          this.updateScrubber(svg, pos, axes, data, options, dispatch, columnWidth)
+        else
+          this.hideScrubber(svg, pos, axes, data, options, dispatch, columnWidth)
+
+      hideScrubber: (svg, pos, axes, data, options, dispatch, columnWidth) ->
+        svg.selectAll('.glass-container').attr('opacity', 0)
 
       getClosestPoint: (values, xValue) ->
         # Create a bisector
@@ -47,7 +53,7 @@
           yInvert = axes.yScale.invert(y)
 
           v = that.getClosestPoint(series.values, xInvert)
-          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert])
+          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert], series, v.raw)
 
           text = v.x + ' : ' + v.y
           if options.tooltip.formatter

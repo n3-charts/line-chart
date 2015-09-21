@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.12 - 19 September 2015
+line-chart - v1.1.12 - 21 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -40,12 +40,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
       _u.clean(element[0])
 
-      svg = _u.bootstrap(element[0], id, dimensions)
+      [svg, vis] = _u.bootstrap(element[0], id, dimensions)
 
       fn = (key) -> (options.series.filter (s) -> s.axis is key and s.visible isnt false).length > 0
 
       axes = _u
-        .createAxes(svg, dimensions, options.axes)
+        .createAxes(vis, dimensions, options.axes)
         .andAddThemIf({
           all: !isThumbnail
           x: true
@@ -54,24 +54,24 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         })
 
       if dataPerSeries.length
-        _u.setScalesDomain(axes, scope.data, options.series, svg, options)
+        _u.setScalesDomain(axes, scope.data, options.series, vis, options)
 
-      _u.createContent(svg, id, options, handlers)
+      _u.createContent(vis, id, options, handlers)
 
       if dataPerSeries.length
         columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options)
-        _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
+        _u.drawData(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
       if options.drawLegend
-        _u.drawLegend(svg, options.series, dimensions, handlers, dispatch)
+        _u.drawLegend(vis, options.series, dimensions, handlers, dispatch)
 
       if options.tooltip.mode is 'scrubber'
-        _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
+        _u.createGlass(svg, vis, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth)
       else if options.tooltip.mode isnt 'none'
-        _u.addTooltips(svg, dimensions, options.axes)
+        _u.addTooltips(vis, dimensions, options.axes)
 
-      _u.createFocus(svg, dimensions, options)
-      _u.setZoom(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
+      _u.createFocus(vis, dimensions, options)
+      _u.setZoom(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
     updateEvents = ->
 
@@ -424,7 +424,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .on('click': (d, i) -> dispatch.click(d, i, series, d.raw))
             .on('mouseenter': (d, i) -> dispatch.mouseenter(d, i, series, d.raw))
             .on('mouseover': (d, i) ->
-              dispatch.hover(d, i, series)
+              dispatch.hover(d, i, series, d.raw)
               dispatch.mouseover(d, i, series, d.raw)
             )
             .on('mouseout': (d, i) -> dispatch.mouseout(d, i, series, d.raw))
@@ -845,15 +845,17 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         width = dimensions.width
         height = dimensions.height
 
-        svg = d3.select(element).append('svg')
+        svg = d3.select(element)
+          .append('svg')
           .attr(
             width: width
             height: height
           )
-          .append('g')
+        
+        vis = svg.append('g')
             .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')')
 
-        defs = svg.append('defs')
+        defs = vis.append('defs')
           .attr('class', 'patterns')
         
         # Add a clipPath for the content area
@@ -868,7 +870,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               'height': height - dimensions.top - dimensions.bottom
             })
 
-        return svg
+        return [svg, vis]
 
       createContent: (svg, id, options) ->
         content = svg.append('g')
@@ -917,15 +919,15 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           })
 
       createFocus: (svg, dimensions, options) ->
-        glass = svg.append('g')
+        focus = svg.append('g')
           .attr(
             'class': 'focus-container'
           )
 
-      createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
+      createGlass: (svg, vis, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
         that = this
 
-        glass = svg.append('g')
+        glass = vis.append('g')
           .attr(
             'class': 'glass-container'
             'opacity': 0
@@ -983,22 +985,21 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           item.append('circle')
             .attr(
               'class': "scrubberDot series_#{i}"
+            )
+            .style(
+              'pointer-events': 'none'
               'fill': 'white'
               'stroke': s.color
               'stroke-width': '2px'
               'r': 4
             )
 
-        glass.append('rect')
-          .attr(
-            class: 'glass'
-            width: dimensions.width - dimensions.left - dimensions.right
-            height: dimensions.height - dimensions.top - dimensions.bottom
+        svg
+          .on('mousemove', ->
+            handlers.onChartMove(vis, d3.mouse(this), axes, data, options, dispatch, columnWidth)
           )
-          .style('fill', 'white')
-          .style('fill-opacity', 0.000001)
-          .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth)
+          .on('mouseout', ->
+            handlers.onChartOut(vis, d3.mouse(this), axes, data, options, dispatch, columnWidth)
           )
 
       drawData: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
@@ -1677,16 +1678,22 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
 
 # src/utils/scrubber.coffee
-      showScrubber: (svg, glass, axes, data, options, dispatch, columnWidth) ->
-        that = this
-        glass.on('mousemove', ->
+      showScrubber: (svg, pos, axes, data, options, dispatch, columnWidth) ->
+        left = options.margin.left
+        right = options.margin.width - options.margin.right
+        top = options.margin.top
+        bottom = options.margin.height - options.margin.bottom
+
+        if (left <= pos[0] <= right) && (top <= pos[1] <= bottom)
+          pos[0] -= options.margin.left
+          pos[1] -= options.margin.top
           svg.selectAll('.glass-container').attr('opacity', 1)
-          that.updateScrubber(svg, d3.mouse(this), axes, data, options, dispatch, columnWidth)
-        )
-        glass.on('mouseout', ->
-          glass.on('mousemove', null)
-          svg.selectAll('.glass-container').attr('opacity', 0)
-        )
+          this.updateScrubber(svg, pos, axes, data, options, dispatch, columnWidth)
+        else
+          this.hideScrubber(svg, pos, axes, data, options, dispatch, columnWidth)
+
+      hideScrubber: (svg, pos, axes, data, options, dispatch, columnWidth) ->
+        svg.selectAll('.glass-container').attr('opacity', 0)
 
       getClosestPoint: (values, xValue) ->
         # Create a bisector
@@ -1726,7 +1733,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           yInvert = axes.yScale.invert(y)
 
           v = that.getClosestPoint(series.values, xInvert)
-          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert])
+          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert], series, v.raw)
 
           text = v.x + ' : ' + v.y
           if options.tooltip.formatter
@@ -1915,7 +1922,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       getTooltipHandlers: (options) ->
         if options.tooltip.mode is 'scrubber'
           return {
-            onChartHover: angular.bind(this, this.showScrubber)
+            onChartMove: angular.bind(this, this.showScrubber)
+            onChartOut: angular.bind(this, this.hideScrubber)
           }
         else
           return {

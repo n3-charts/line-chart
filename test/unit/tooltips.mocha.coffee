@@ -191,14 +191,6 @@ describe 'tooltip', ->
           tooltip: {mode: 'scrubber', interpolate: false}
         }
 
-    it 'should create a glass', ->
-      expect(element.childByClass('glass')).not.to.equal(undefined)
-
-    it 'should change the legend on mouse over', inject (fakeMouse) ->
-      glass = element.childByClass('glass')
-
-      fakeMouse.hoverIn(glass.domElement)
-
   it 'should compute the closest abscissa', inject (n3utils) ->
     v = n3utils.getClosestPoint([
       {x: 0}
