@@ -114,11 +114,12 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         dispatch.on('toggle', null)
 
     promise = undefined
-    window_resize = ->
+    on_resize = ->
       $timeout.cancel(promise) if promise?
       promise = $timeout(scope.redraw, 1)
 
-    $window.addEventListener('resize', window_resize)
+    element[0].parentElement?.addEventListener('resize', on_resize)
+    $window.addEventListener('resize', on_resize)
 
     scope.$watch('data', scope.redraw, true)
     scope.$watch('options', scope.redraw , true)
@@ -130,7 +131,8 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
 
     # Clean up the listeners when directive is destroyed
     scope.$on('$destroy', () ->
-      $window.removeEventListener('resize', window_resize)
+      element[0].parentElement?.removeEventListener('resize', on_resize)
+      $window.removeEventListener('resize', on_resize)
     )
 
     return
