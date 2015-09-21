@@ -137,12 +137,16 @@ describe 'scrubber tooltip', ->
       expect(tooltips.length).to.equal(2)
 
     it 'should show tooltips', ->
-      glass = element.childByClass('glass')
+      dotGroup = element.childByClass('dotGroup')
+      dot = dotGroup.children()[0]
+      x = +dot.getAttribute("cx") + outerScope.options.margin.left
+      y = +dot.getAttribute("cy") + outerScope.options.margin.top
+      pos = [x, y]
 
-      fakeMouse.hoverIn(glass)
-      fakeMouse.mouseMove(glass)
+      fakeMouse.position(pos)
+      fakeMouse.mouseMove(dot.domElement)
       flushD3()
-      expect(d3.mouse.callCount).to.equal(1)
+      expect(d3.mouse.called).to.equal(true)
 
       tooltips = element.childrenByClass('scrubberText')
 
@@ -161,10 +165,14 @@ describe 'scrubber tooltip', ->
           ]
           tooltip: {mode: 'scrubber'}
 
-      glass = element.childByClass('glass')
+      dotGroup = element.childByClass('dotGroup')
+      dot = dotGroup.children()[0]
+      x = +dot.getAttribute("cx") + outerScope.options.margin.left
+      y = +dot.getAttribute("cy") + outerScope.options.margin.top
+      pos = [x, y]
 
-      fakeMouse.hoverIn(glass)
-      fakeMouse.mouseMove(glass)
+      fakeMouse.position(pos)
+      fakeMouse.mouseMove(dot.domElement)
       flushD3()
 
       tooltips = element.childrenByClass('scrubberItem')
@@ -184,10 +192,15 @@ describe 'scrubber tooltip', ->
           ]
           tooltip: {mode: 'scrubber', interpolate: false, formatter: cb}
 
-      glass = element.childByClass('glass')
+      dotGroup = element.childByClass('dotGroup')
+      dot = dotGroup.children()[0]
+      x = +dot.getAttribute("cx") + outerScope.options.margin.left
+      y = +dot.getAttribute("cy") + outerScope.options.margin.top
+      pos = [x, y]
 
-      fakeMouse.hoverIn(glass)
-      fakeMouse.mouseMove(glass)
+      fakeMouse.position(pos)
+      fakeMouse.mouseMove(dot.domElement)
+
       flushD3()
       expect(d3.mouse.callCount).to.equal(1)
 

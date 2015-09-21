@@ -51,15 +51,17 @@
         width = dimensions.width
         height = dimensions.height
 
-        svg = d3.select(element).append('svg')
+        svg = d3.select(element)
+          .append('svg')
           .attr(
             width: width
             height: height
           )
-          .append('g')
+        
+        vis = svg.append('g')
             .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')')
 
-        defs = svg.append('defs')
+        defs = vis.append('defs')
           .attr('class', 'patterns')
         
         # Add a clipPath for the content area
@@ -74,7 +76,7 @@
               'height': height - dimensions.top - dimensions.bottom
             })
 
-        return svg
+        return [svg, vis]
 
       createContent: (svg, id, options) ->
         content = svg.append('g')
@@ -123,15 +125,15 @@
           })
 
       createFocus: (svg, dimensions, options) ->
-        glass = svg.append('g')
+        focus = svg.append('g')
           .attr(
             'class': 'focus-container'
           )
 
-      createGlass: (svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
+      createGlass: (svg, vis, dimensions, handlers, axes, data, options, dispatch, columnWidth) ->
         that = this
 
-        glass = svg.append('g')
+        glass = vis.append('g')
           .attr(
             'class': 'glass-container'
             'opacity': 0
@@ -189,22 +191,21 @@
           item.append('circle')
             .attr(
               'class': "scrubberDot series_#{i}"
+            )
+            .style(
+              'pointer-events': 'none'
               'fill': 'white'
               'stroke': s.color
               'stroke-width': '2px'
               'r': 4
             )
 
-        glass.append('rect')
-          .attr(
-            class: 'glass'
-            width: dimensions.width - dimensions.left - dimensions.right
-            height: dimensions.height - dimensions.top - dimensions.bottom
+        svg
+          .on('mousemove', ->
+            handlers.onChartMove(vis, d3.mouse(this), axes, data, options, dispatch, columnWidth)
           )
-          .style('fill', 'white')
-          .style('fill-opacity', 0.000001)
-          .on('mouseover', ->
-            handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth)
+          .on('mouseout', ->
+            handlers.onChartOut(vis, d3.mouse(this), axes, data, options, dispatch, columnWidth)
           )
 
       drawData: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->

@@ -134,9 +134,16 @@ utils.factory 'fakeMouse', ->
     element = element.domElement || element
     args = args || {}
     event = new MouseEvent(type, angular.extend(defaults, args))
-
     element.dispatchEvent(event)
     return event
+
+  setPosition = (pos) ->
+    pos = pos || [0, 0]
+
+    if d3.mouse.restore
+      d3.mouse.restore()
+
+    sinon.stub(d3, 'mouse', -> pos)
 
   return {
     clickOn: (element, bubbles) ->
@@ -145,12 +152,13 @@ utils.factory 'fakeMouse', ->
       else
         dispatch(element, 'click')
 
+    position: (pos) -> setPosition(pos)
     hoverIn: (element) -> bubbleUp(element, 'mouseover')
     hoverOut: (element) -> bubbleUp(element, 'mouseout')
     mouseEnter: (element) -> bubbleUp(element, 'mouseenter')
-    mouseOver: (element) -> dispatch(element, 'mouseover')
-    mouseMove: (element) -> dispatch(element, 'mousemove')
-    mouseOut: (element) -> dispatch(element, 'mouseout')
+    mouseOver: (element, args) -> dispatch(element, 'mouseover', args)
+    mouseMove: (element, args) -> dispatch(element, 'mousemove', args)
+    mouseOut: (element, args) -> dispatch(element, 'mouseout', args)
     wheel: wheel
   }
 

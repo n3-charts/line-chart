@@ -18,7 +18,7 @@
             .on('click': (d, i) -> dispatch.click(d, i, series, d.raw))
             .on('mouseenter': (d, i) -> dispatch.mouseenter(d, i, series, d.raw))
             .on('mouseover': (d, i) ->
-              dispatch.hover(d, i, series)
+              dispatch.hover(d, i, series, d.raw)
               dispatch.mouseover(d, i, series, d.raw)
             )
             .on('mouseout': (d, i) -> dispatch.mouseout(d, i, series, d.raw))

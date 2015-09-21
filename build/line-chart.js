@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.12 - 19 September 2015
+line-chart - v1.1.12 - 21 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -38,43 +38,43 @@ directive('linechart', [
         }
       };
       scope.update = function() {
-        var axes, columnWidth, dataPerSeries, dimensions, fn, handlers, isThumbnail, options, svg;
+        var axes, columnWidth, dataPerSeries, dimensions, fn, handlers, isThumbnail, options, svg, vis, _ref;
         options = _u.sanitizeOptions(scope.options, attrs.mode);
         handlers = angular.extend(initialHandlers, _u.getTooltipHandlers(options));
         dataPerSeries = _u.getDataPerSeries(scope.data, options);
         dimensions = _u.getDimensions(options, element, attrs);
         isThumbnail = attrs.mode === 'thumbnail';
         _u.clean(element[0]);
-        svg = _u.bootstrap(element[0], id, dimensions);
+        _ref = _u.bootstrap(element[0], id, dimensions), svg = _ref[0], vis = _ref[1];
         fn = function(key) {
           return (options.series.filter(function(s) {
             return s.axis === key && s.visible !== false;
           })).length > 0;
         };
-        axes = _u.createAxes(svg, dimensions, options.axes).andAddThemIf({
+        axes = _u.createAxes(vis, dimensions, options.axes).andAddThemIf({
           all: !isThumbnail,
           x: true,
           y: fn('y'),
           y2: fn('y2')
         });
         if (dataPerSeries.length) {
-          _u.setScalesDomain(axes, scope.data, options.series, svg, options);
+          _u.setScalesDomain(axes, scope.data, options.series, vis, options);
         }
-        _u.createContent(svg, id, options, handlers);
+        _u.createContent(vis, id, options, handlers);
         if (dataPerSeries.length) {
           columnWidth = _u.getBestColumnWidth(axes, dimensions, dataPerSeries, options);
-          _u.drawData(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
+          _u.drawData(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
         }
         if (options.drawLegend) {
-          _u.drawLegend(svg, options.series, dimensions, handlers, dispatch);
+          _u.drawLegend(vis, options.series, dimensions, handlers, dispatch);
         }
         if (options.tooltip.mode === 'scrubber') {
-          _u.createGlass(svg, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
+          _u.createGlass(svg, vis, dimensions, handlers, axes, dataPerSeries, options, dispatch, columnWidth);
         } else if (options.tooltip.mode !== 'none') {
-          _u.addTooltips(svg, dimensions, options.axes);
+          _u.addTooltips(vis, dimensions, options.axes);
         }
-        _u.createFocus(svg, dimensions, options);
-        return _u.setZoom(svg, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
+        _u.createFocus(vis, dimensions, options);
+        return _u.setZoom(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch);
       };
       updateEvents = function() {
         if (scope.oldclick) {
@@ -451,7 +451,7 @@ mod.factory('n3utils', [
             }
           }).on({
             'mouseover': function(d, i) {
-              dispatch.hover(d, i, series);
+              dispatch.hover(d, i, series, d.raw);
               return dispatch.mouseover(d, i, series, d.raw);
             }
           }).on({
@@ -862,22 +862,23 @@ mod.factory('n3utils', [
         });
       },
       bootstrap: function(element, id, dimensions) {
-        var defs, height, svg, width;
+        var defs, height, svg, vis, width;
         d3.select(element).classed('chart', true);
         width = dimensions.width;
         height = dimensions.height;
         svg = d3.select(element).append('svg').attr({
           width: width,
           height: height
-        }).append('g').attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')');
-        defs = svg.append('defs').attr('class', 'patterns');
+        });
+        vis = svg.append('g').attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')');
+        defs = vis.append('defs').attr('class', 'patterns');
         defs.append('clipPath').attr('class', 'content-clip').attr('id', "content-clip-" + id).append('rect').attr({
           'x': 0,
           'y': 0,
           'width': width - dimensions.left - dimensions.right,
           'height': height - dimensions.top - dimensions.bottom
         });
-        return svg;
+        return [svg, vis];
       },
       createContent: function(svg, id, options) {
         var content;
@@ -913,15 +914,15 @@ mod.factory('n3utils', [
         });
       },
       createFocus: function(svg, dimensions, options) {
-        var glass;
-        return glass = svg.append('g').attr({
+        var focus;
+        return focus = svg.append('g').attr({
           'class': 'focus-container'
         });
       },
-      createGlass: function(svg, dimensions, handlers, axes, data, options, dispatch, columnWidth) {
+      createGlass: function(svg, vis, dimensions, handlers, axes, data, options, dispatch, columnWidth) {
         var glass, scrubberGroup, that;
         that = this;
-        glass = svg.append('g').attr({
+        glass = vis.append('g').attr({
           'class': 'glass-container',
           'opacity': 0
         });
@@ -962,19 +963,19 @@ mod.factory('n3utils', [
             'text-rendering': 'geometric-precision'
           })).text(s.label || s.y);
           return item.append('circle').attr({
-            'class': "scrubberDot series_" + i,
+            'class': "scrubberDot series_" + i
+          }).style({
+            'pointer-events': 'none',
             'fill': 'white',
             'stroke': s.color,
             'stroke-width': '2px',
             'r': 4
           });
         });
-        return glass.append('rect').attr({
-          "class": 'glass',
-          width: dimensions.width - dimensions.left - dimensions.right,
-          height: dimensions.height - dimensions.top - dimensions.bottom
-        }).style('fill', 'white').style('fill-opacity', 0.000001).on('mouseover', function() {
-          return handlers.onChartHover(svg, d3.select(this), axes, data, options, dispatch, columnWidth);
+        return svg.on('mousemove', function() {
+          return handlers.onChartMove(vis, d3.mouse(this), axes, data, options, dispatch, columnWidth);
+        }).on('mouseout', function() {
+          return handlers.onChartOut(vis, d3.mouse(this), axes, data, options, dispatch, columnWidth);
         });
       },
       drawData: function(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) {
@@ -1676,17 +1677,23 @@ mod.factory('n3utils', [
           return s.axis !== 'y2';
         });
       },
-      showScrubber: function(svg, glass, axes, data, options, dispatch, columnWidth) {
-        var that;
-        that = this;
-        glass.on('mousemove', function() {
+      showScrubber: function(svg, pos, axes, data, options, dispatch, columnWidth) {
+        var bottom, left, right, top, _ref, _ref1;
+        left = options.margin.left;
+        right = options.margin.width - options.margin.right;
+        top = options.margin.top;
+        bottom = options.margin.height - options.margin.bottom;
+        if (((left <= (_ref = pos[0]) && _ref <= right)) && ((top <= (_ref1 = pos[1]) && _ref1 <= bottom))) {
+          pos[0] -= options.margin.left;
+          pos[1] -= options.margin.top;
           svg.selectAll('.glass-container').attr('opacity', 1);
-          return that.updateScrubber(svg, d3.mouse(this), axes, data, options, dispatch, columnWidth);
-        });
-        return glass.on('mouseout', function() {
-          glass.on('mousemove', null);
-          return svg.selectAll('.glass-container').attr('opacity', 0);
-        });
+          return this.updateScrubber(svg, pos, axes, data, options, dispatch, columnWidth);
+        } else {
+          return this.hideScrubber(svg, pos, axes, data, options, dispatch, columnWidth);
+        }
+      },
+      hideScrubber: function(svg, pos, axes, data, options, dispatch, columnWidth) {
+        return svg.selectAll('.glass-container').attr('opacity', 0);
       },
       getClosestPoint: function(values, xValue) {
         var d, d0, d1, i, xBisector;
@@ -1724,7 +1731,7 @@ mod.factory('n3utils', [
           xInvert = axes.xScale.invert(x);
           yInvert = axes.yScale.invert(y);
           v = that.getClosestPoint(series.values, xInvert);
-          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert]);
+          dispatch.focus(v, series.values.indexOf(v), [xInvert, yInvert], series, v.raw);
           text = v.x + ' : ' + v.y;
           if (options.tooltip.formatter) {
             text = options.tooltip.formatter(v.x, v.y, options.series[index], v.raw);
@@ -1889,7 +1896,8 @@ mod.factory('n3utils', [
       getTooltipHandlers: function(options) {
         if (options.tooltip.mode === 'scrubber') {
           return {
-            onChartHover: angular.bind(this, this.showScrubber)
+            onChartMove: angular.bind(this, this.showScrubber),
+            onChartOut: angular.bind(this, this.hideScrubber)
           };
         } else {
           return {
