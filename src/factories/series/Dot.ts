@@ -3,19 +3,7 @@ module n3Charts.Factory.Series {
 
   export class Dot extends Utils.SeriesFactory {
 
-    static type: string = Utils.Options.SERIES_TYPES.DOT;
-
-    protected containerClass: string = Dot.type + '-data';
-    protected seriesClass: string = Dot.type + '-series';
-    protected dataClass: string = Dot.type;
-
-    update(data: Utils.Data, options: Utils.Options) {
-      super.update(data, options);
-
-      var series = options.getSeriesForType(Dot.type);
-
-      this.updateSeriesContainer(series);
-    }
+    public type: string = Utils.Options.SERIES_TYPES.DOT;
 
     updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {
 
@@ -25,7 +13,7 @@ module n3Charts.Factory.Series {
       var dotsData = this.data.getDatasetValues(series, this.options);
       var dotsRadius = 4;
 
-      var dots = group.selectAll('.' + this.dataClass)
+      var dots = group.selectAll('.' + this.type)
         .data(dotsData, (d: Utils.IPoint) => d.x);
 
       var initPoint = (s) => {
@@ -46,9 +34,11 @@ module n3Charts.Factory.Series {
 
       dots.enter()
         .append('circle')
-        .attr('class', this.dataClass)
+        .attr('class', this.type)
+        .call(this.eventMgr.datumEnter(series))
         .call(this.eventMgr.datumOver(series))
-        .call(this.eventMgr.datumOut(series))
+        .call(this.eventMgr.datumMove(series))
+        .call(this.eventMgr.datumLeave(series))
         .call(initPoint)
         .transition()
         .call(this.factoryMgr.get('transitions').enter)

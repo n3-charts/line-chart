@@ -4,10 +4,10 @@ module n3Charts.Utils {
   export class SeriesFactory extends BaseFactory {
 
     public svg: D3.Selection;
+    public type: string;
 
-    protected containerClass: string;
-    protected seriesClass: string;
-    protected dataClass: string;
+    static containerClassSuffix: string = '-data';
+    static seriesClassSuffix: string = '-series';
 
     protected data: Data;
     protected options: Options;
@@ -15,6 +15,10 @@ module n3Charts.Utils {
     update(data, options) {
       this.data = data;
       this.options = options;
+
+      var series = options.getSeriesByType(this.type).filter((s) => s.visible);
+
+      this.updateSeriesContainer(series);
     }
 
     create() {
@@ -28,14 +32,14 @@ module n3Charts.Utils {
     createContainer(parent: D3.Selection) {
       this.svg = parent
         .append('g')
-        .attr('class', this.containerClass);
+        .attr('class', this.type + SeriesFactory.containerClassSuffix);
     }
 
     updateSeriesContainer(series: Series[]) {
 
       // Create a data join
       var groups = this.svg
-        .selectAll('.' + this.seriesClass)
+        .selectAll('.' + this.type + SeriesFactory.seriesClassSuffix)
         // Use the series id as key for the join
         .data(series, (d: Series) => d.id);
 
@@ -43,7 +47,9 @@ module n3Charts.Utils {
       groups.enter()
         .append('g')
         .attr({
-          class: (d: Series) => this.seriesClass + ' ' + d.id
+          class: (d: Series) => {
+            return this.type + SeriesFactory.seriesClassSuffix + ' ' + d.id;
+          }
         });
 
       // Update all existing series groups

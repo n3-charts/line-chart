@@ -9,9 +9,12 @@ module n3Charts.Utils {
       'create',  // on creation of the chart
       'update',  // on update of the chart
       'destroy', // on destroying the chart
+      'enter',   // on mouse enter a data point or column
       'over',   // on mouse over a data point or column
-      'out',   // on mouse out of a data point or column
+      'move',   // on mouse move a data point or column
+      'leave',   // on mouse leave of a data point or column
       'click',   // on click on a data point or column
+      'dblclick',   // on double click on a data point or column
       'legend-click',   // on click on a legend item
       'legend-over',   // on mouse over on a legend item
       'legend-out',   // on mouse out on a legend item
@@ -31,7 +34,7 @@ module n3Charts.Utils {
       return this;
     }
 
-    on(event:string, callback:() => void) : EventManager {
+    on(event:string, callback:(any?) => void) : EventManager {
       // Register an event listener
       // TODO We need to add an $apply() in here
       this._dispatch.on(event, callback);
@@ -48,6 +51,14 @@ module n3Charts.Utils {
       return this;
     }
 
+    datumEnter(series: Utils.Series) {
+        return (selection: D3.Selection) => {
+            return selection.on('mouseenter', (d, i) => {
+                this.trigger('over', d, i, series);
+            });
+        };
+    }
+
     datumOver(series: Utils.Series) {
       return (selection: D3.Selection) => {
         return selection.on('mouseover', (d, i) => {
@@ -56,10 +67,18 @@ module n3Charts.Utils {
       };
     }
 
-    datumOut(series: Utils.Series) {
+    datumMove(series: Utils.Series) {
+        return (selection: D3.Selection) => {
+            return selection.on('mousemove', (d, i) => {
+                this.trigger('over', d, i, series);
+            });
+        };
+    }
+
+    datumLeave(series: Utils.Series) {
       return (selection: D3.Selection) => {
-        return selection.on('mouseout', (d, i) => {
-          this.trigger('out', d, i, series);
+        return selection.on('mouseleave', (d, i) => {
+          this.trigger('leave', d, i, series);
         });
       };
     }
