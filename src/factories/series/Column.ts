@@ -3,11 +3,7 @@ module n3Charts.Factory.Series {
 
   export class Column extends Utils.SeriesFactory {
 
-    static type: string = Utils.Options.SERIES_TYPES.COLUMN;
-
-    protected containerClass: string = Column.type + '-data';
-    protected seriesClass: string = Column.type + '-series';
-    protected dataClass: string = Column.type;
+    public type: string = Utils.Options.SERIES_TYPES.COLUMN;
 
     private gapFactor: number = 0.2;
     private outerPadding: number = (this.gapFactor / 2) * 3;
@@ -18,7 +14,7 @@ module n3Charts.Factory.Series {
     update(data: Utils.Data, options: Utils.Options) {
       super.update(data, options);
 
-      var series = options.getSeriesForType(Column.type).filter((s) => s.visible);
+      var series = options.getSeriesByType(this.type).filter((s) => s.visible);
 
       this.updateColumnsWidth(series, options);
       this.updateColumnScale(series, options);
@@ -73,14 +69,16 @@ module n3Charts.Factory.Series {
         .style('opacity', series.visible ? 1 : 0);
       };
 
-      var cols = group.selectAll('.' + this.dataClass)
+      var cols = group.selectAll('.' + this.type)
         .data(colsData, (d: Utils.IPoint) => d.x);
 
       cols.enter()
         .append('rect')
-        .attr('class', this.dataClass)
+        .attr('class', this.type)
+        .call(this.eventMgr.datumEnter(series))
         .call(this.eventMgr.datumOver(series))
-        .call(this.eventMgr.datumOut(series))
+        .call(this.eventMgr.datumMove(series))
+        .call(this.eventMgr.datumLeave(series))
         .call(initCol)
         .transition()
         .call(this.factoryMgr.get('transitions').enter)

@@ -14,7 +14,7 @@ module n3Charts.Factory {
     create() {
       this.createTooltip();
       this.eventMgr.on('over.tooltip', this.show.bind(this));
-      this.eventMgr.on('out.tooltip', this.hide.bind(this));
+      this.eventMgr.on('leave.tooltip', this.hide.bind(this));
     }
 
     createTooltip() {

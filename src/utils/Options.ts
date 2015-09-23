@@ -5,48 +5,77 @@ module n3Charts.Utils {
 
     static DEFAULT:any = {
       series: [],
-      axes: {}
+      axes: {
+        x: {},
+        y: {}
+      }
     };
 
-    static SERIES_TYPES: any = {
+    static SERIES_TYPES = {
       DOT: 'dot',
       LINE: 'line',
       AREA: 'area',
       COLUMN: 'column'
     };
 
-    public series: Utils.Series[];
+    public series: Series[];
     public axes: any;
 
     constructor(js:any) {
-      this.fromJS(js || Options.DEFAULT);
-      this.sanitize();
+      this.parseJS(js || Options.DEFAULT);
     }
 
-    fromJS(js:any) {
-      this.series = js.series;
-      this.axes = js.axes;
+    parseJS(js:any) {
+      this.series = this.parseSeries(js);
+      this.axes = this.parseAxes(js);
     }
 
-    sanitize() {
-      this.series = this._getSaneSeries(this.series);
-      this.axes = this._getSaneAxes(this.axes);
+    parseSeries(js: any) {
+      var series = Options.DEFAULT.series;
+
+      if (js.hasOwnProperty('series')) {
+        angular.extend(series, js.series);
+      }
+
+      return this.sanitizeSeries(series);
+    }
+
+    parseAxes(js: any) {
+      var axes = Options.DEFAULT.axes;
+
+      if (js.hasOwnProperty('axes')) {
+        angular.extend(axes, js.axes);
+      }
+
+      return this.sanitizeAxes(axes);
+    }
+
+    getByAxisSide(side: string) {
+      if ([Factory.Axis.SIDE_X, Factory.Axis.SIDE_Y].indexOf(side) === -1) {
+        throw new TypeError('Cannot get axis side : ' + side);
+      }
+
+      return this.axes[side];
     }
 
     getAbsKey(): string {
-      if (this.axes.x) {
-        return this.axes.x.key;
+      if (!this.axes[Factory.Axis.SIDE_X]) {
+        throw new TypeError('Cannot find abs key : ' + Factory.Axis.SIDE_X);
       }
 
-      return undefined;
+      return this.axes[Factory.Axis.SIDE_X].key;
     }
 
-    _getSaneSeries(series: any[]) {
-      return (series || []).map((s) => { return new Utils.Series(s); });
+    sanitizeSeries(series: any[]) {
+      return (series || []).map((s) => new Series(s));
     }
 
-    _getSaneAxes(axes: any) {
-      return axes || {};
+    sanitizeAxes(axes: any) {
+      // Map operation over an object, that returns a new object
+      return Object.keys(axes || {}).reduce((prev, key) => {
+        prev[key] = new AxisOptions(axes[key]);
+        return prev;
+      }, {});
     }
 
     _isValidSeriesType(type:string): Boolean {
@@ -59,7 +88,7 @@ module n3Charts.Utils {
       return false;
     }
 
-    getSeriesForType(type: string): Utils.Series[] {
+    getSeriesByType(type: string): Series[] {
       if (this._isValidSeriesType(type) === false) {
         throw new TypeError('Unknown series type: ' + type);
       }
@@ -67,13 +96,6 @@ module n3Charts.Utils {
       return this.series.filter((s) =>
         s.type.indexOf(type) > -1
       );
-    }
-
-    toJS() {
-      return {
-        series: this.series,
-        axes: this.axes
-      };
     }
   }
 }

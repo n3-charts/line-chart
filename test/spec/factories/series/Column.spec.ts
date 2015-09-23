@@ -13,19 +13,27 @@ describe('n3Charts.Factory.Series.Column', () => {
   });
 
   describe('createSeriesContainer', () => {
+    var container: SVGElement;
 
-    it('svg property should be a g node with proper class', () => {
+    beforeEach(() => {
+        container = <SVGElement>domElement[0].getElementsByTagName('svg')[0];
+        columnSeries.createContainer(d3.select(container));
+    });
 
-      var svgProp: SVGElement = undefined;
-      var parentContainer = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
+    it('should create a <g> container', () => {
+        var testing = columnSeries.svg[0][0].tagName;
+        var expected = 'g';
 
-      expect(columnSeries.svg).to.equal(undefined);
+        expect(testing).to.equal(expected);
+    });
 
-      columnSeries.createContainer(d3.select(parentContainer));
+    it('should define a proper class', () => {
+        var containerSuffix = n3Charts.Utils.SeriesFactory.containerClassSuffix;
 
-      svgProp = columnSeries.svg[0][0];
+        var testing = columnSeries.svg[0][0].getAttribute('class');
+        var expected = columnSeries.type + containerSuffix;
 
-      expect(svgProp.getAttribute('class')).to.equal(n3Charts.Factory.Series.Column.type + '-data');
+        expect(testing).to.equal(expected);
     });
   });
 });
