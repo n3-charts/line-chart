@@ -21,77 +21,91 @@ module n3Charts.Utils {
     public series: Series[];
     public axes: any;
 
-    constructor(js:any = {}) {
-      this.parse(js || Options.DEFAULT);
+    constructor(js?:any) {
+      this.parse(js);
     }
 
-    parse(js:any) {
-      this.series = this.parseSeries(js.series || {});
-      this.axes = this.parseAxes(js.axes || []);
+    parse(js?:any) {
+      var options = Options.DEFAULT;
+
+      angular.extend(options, js);
+
+      this.series = this.parseSeries(options.series);
+      this.axes = this.parseAxes(options.axes);
     }
 
     parseSeries(jsSeries: any) {
+      // Type check because of <any> type
+      if (!angular.isArray(jsSeries)) {
+        throw TypeError('Series option must be an array.');
+      }
+
       var series = Options.DEFAULT.series;
 
+      // Extend the default series option
       angular.extend(series, jsSeries);
 
       return this.sanitizeSeries(series);
     }
 
-    parseAxes(js: any) {
+    parseAxes(jsAxes: any) {
+      // Type check because of <any> type
+      if (!angular.isObject(jsAxes)) {
+        throw TypeError('Axes option must be an object.');
+      }
+
       var axes = Options.DEFAULT.axes;
 
-       angular.extend(axes, js.axes);
+      // Extend the default axes option
+      angular.extend(axes, jsAxes);
 
       return this.sanitizeAxes(axes);
     }
 
-    getByAxisSide(side: string) {
-      if ([Factory.Axis.SIDE_X, Factory.Axis.SIDE_Y].indexOf(side) === -1) {
-        throw new TypeError('Cannot get axis side : ' + side);
-      }
-
-      return this.axes[side];
+    sanitizeSeries(rawSeries: any[]) {
+      return (rawSeries).map((s) => new Series(s));
     }
 
-    getAbsKey(): string {
-      if (!this.axes[Factory.Axis.SIDE_X]) {
-        throw new TypeError('Cannot find abs key : ' + Factory.Axis.SIDE_X);
-      }
-
-      return this.axes[Factory.Axis.SIDE_X].key;
-    }
-
-    sanitizeSeries(series: any[]) {
-      return (series || []).map((s) => new Series(s));
-    }
-
-    sanitizeAxes(axes: any) {
+    sanitizeAxes(rawAxes: any) {
       // Map operation over an object, that returns a new object
-      return Object.keys(axes || {}).reduce((prev, key) => {
-        prev[key] = new AxisOptions(axes[key]);
+      return Object.keys(rawAxes).reduce((prev, key) => {
+        prev[key] = new AxisOptions(rawAxes[key]);
         return prev;
       }, {});
     }
 
-    _isValidSeriesType(type:string): Boolean {
-      for (var key in Options.SERIES_TYPES) {
-        if (Options.SERIES_TYPES[key] === type) {
-          return true;
-        }
+    isValidAxisSide(side:string): Boolean {
+      return d3.values(Factory.Axis).indexOf(side) === -1
+        ? false : true;
+    }
+
+    isValidSeriesType(type:string): Boolean {
+      return d3.values(Options.SERIES_TYPES).indexOf(type) === -1
+        ? false : true;
+    }
+
+    getAbsKey(): string {
+      if (!this.axes[Factory.Axis.SIDE.X]) {
+        throw new TypeError('Cannot find abs key : ' + Factory.Axis.SIDE.X);
       }
 
-      return false;
+      return this.axes[Factory.Axis.SIDE.X].key;
+    }
+
+    getByAxisSide(side: string) {
+        if (!this.isValidAxisSide(side)) {
+            throw new TypeError('Cannot get axis side : ' + side);
+        }
+
+        return this.axes[side];
     }
 
     getSeriesByType(type: string): Series[] {
-      if (this._isValidSeriesType(type) === false) {
+      if (!this.isValidSeriesType(type)) {
         throw new TypeError('Unknown series type: ' + type);
       }
 
-      return this.series.filter((s) =>
-        s.type.indexOf(type) > -1
-      );
+      return this.series.filter((series) => series.type.indexOf(type) !== -1);
     }
 
     public static uuid(): string {
