@@ -64,7 +64,9 @@ $scope.options = {
   drawLegend: true,
   drawDots: true,
   hideOverflow: false,
-  columnsHGap: 5
+  columnsHGap: 5,
+  fontFamily: "'Gill Sans', Helvetica, sans-serif",
+  fontSize: '12px'
 }
 ```
 ##### Axes
@@ -169,6 +171,8 @@ The `drawLegend` and `drawDots` are optional. They respectively enable/disable t
 The `columnsHGap` is optional (default is `5`). Sets the space between two columns. If you haven't any column series on your chart but are wondering why this option doesn't do anything, please don't send me an email.
 
 If `hideOverflow` is set to `true`, the series will be clipped to the chart area to avoid displaying negative values for certain `lineModes` (e.g. `cardinal`). See [issue #120][7] about that.
+
+The `fontFamily` and `fontSize` are optional. They default to "Courier, monospace" and "10px". 
 
 #### Mode
 The mode can be set to 'thumbnail' (default is empty string). If so, the chart will take as much space as it can, and it will only display the series. No axes, no legend, no tooltips. Furthermore, the lines or areas will be drawn without dots. This is convenient for sparklines.

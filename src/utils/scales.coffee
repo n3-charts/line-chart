@@ -1,4 +1,5 @@
-      createAxes: (svg, dimensions, axesOptions) ->
+      createAxes: (svg, dimensions, options) ->
+        axesOptions = options.axes
         createY2Axis = axesOptions.y2?
 
         width = dimensions.width
@@ -30,10 +31,10 @@
         y2.clamp(true)
         y2Axis = this.createAxis(y2, 'y2', axesOptions)
 
-
         style = (group) ->
           group.style(
-            'font': '10px Courier'
+            'font-family': options.fontFamily
+            'font-size': options.fontSize
             'shape-rendering': 'crispEdges'
           )
 
