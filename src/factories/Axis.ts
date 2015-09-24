@@ -6,13 +6,15 @@ module n3Charts.Factory {
     public svg: D3.Selection;
     public scale: D3.Scale.Scale;
     public axis: D3.Svg.Axis;
-    public static SIDE_X: string = 'x';
-    public static SIDE_Y: string = 'y';
+    public static SIDE = {
+      X: 'x',
+      Y: 'y'
+    };
 
     constructor(public side: string) {
       super();
 
-      if ([Axis.SIDE_X, Axis.SIDE_Y].indexOf(side) === -1) {
+      if (d3.values(Axis.SIDE).indexOf(side) === -1) {
         throw new TypeError('Wrong axis side : ' + side);
       }
     }
@@ -49,9 +51,9 @@ module n3Charts.Factory {
     }
 
     updateScaleRange(dim: IDimension) {
-      if (this.side === Axis.SIDE_X) {
+      if (this.isAbscissas()) {
         this.scale.range([0, dim.innerWidth]);
-      } else if (this.side === Axis.SIDE_Y) {
+      } else {
         this.scale.range([dim.innerHeight, 0]);
       }
     }
@@ -117,7 +119,7 @@ module n3Charts.Factory {
     }
 
     isAbscissas() {
-      return this.side === Axis.SIDE_X;
+      return this.side === Axis.SIDE.X;
     }
 
     createAxis(vis: D3.Selection) {
@@ -128,19 +130,19 @@ module n3Charts.Factory {
     }
 
     updateAxisOrientation() {
-      if (this.side === Axis.SIDE_X) {
+      if (this.isAbscissas()) {
         this.axis.orient('bottom');
-      } else if (this.side === Axis.SIDE_Y) {
+      } else {
         this.axis.orient('left');
       }
     }
 
     updateAxisContainer(dim: IDimension) {
       // Move the axis container to the correct position
-      if (this.side === Axis.SIDE_X) {
+      if (this.isAbscissas()) {
         this.svg
           .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
-      } else if (this.side === Axis.SIDE_Y) {
+      } else {
         this.svg
           .attr('transform', 'translate(0, 0)');
       }

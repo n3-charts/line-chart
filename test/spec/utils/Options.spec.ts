@@ -17,6 +17,90 @@ describe('n3Charts.Utils.Options', () => {
     });
   });
 
+  describe('parse', () => {
+    beforeEach(() => {
+      options = new Options();
+    });
+
+    it('should call parseSeries function with series property', () => {
+      var arg = { series: ['foo', 'bar'] };
+      var spy = sinon.spy(options, 'parseSeries');
+
+      options.parse(arg);
+
+      var testing = spy.calledWith(arg.series);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should call parseSeries function with default arguments', () => {
+      var arg = { foo: 'bar' };
+      var spy = sinon.spy(options, 'parseSeries');
+
+      options.parse(arg);
+
+      var testing = spy.calledWith(Options.DEFAULT.series);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should create an array as series property', () => {
+      options.parse();
+
+      var testing = angular.isArray(options.series);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should call parseAxes function with axes property', () => {
+      var arg = { axes: { 'foo': 'bar' } };
+      var spy = sinon.spy(options, 'parseAxes');
+
+      options.parse(arg);
+
+      var testing = spy.calledWith(arg.axes);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should call parseAxes function with default arguments', () => {
+      var arg = { foo: 'bar' };
+      var spy = sinon.spy(options, 'parseAxes');
+
+      options.parse(arg);
+
+      var testing = spy.calledWith(Options.DEFAULT.axes);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should create an object as axes property', () => {
+      options.parse();
+
+      var testing = angular.isObject(options.axes);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+  });
+
+  describe('parseSeries', () => {
+    beforeEach(() => {
+      options = new Options();
+    });
+  });
+
+  describe('parseAxes', () => {
+    beforeEach(() => {
+        options = new Options();
+    });
+  });
+
   describe('getSeriesByType', () => {
     beforeEach(() => {
       options = new Options({
