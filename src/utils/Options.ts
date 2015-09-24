@@ -120,7 +120,7 @@ module n3Charts.Utils {
     }
 
     isValidAxisSide(side:string): Boolean {
-      return d3.values(Factory.Axis).indexOf(side) === -1
+      return d3.values(Factory.Axis.SIDE).indexOf(side) === -1
         ? false : true;
     }
 
