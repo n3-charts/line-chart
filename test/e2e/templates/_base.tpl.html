@@ -11,17 +11,13 @@
     margin: 10px auto;
     padding: 10px;
   }
-
-  .example .label {
-    font-family: monospace;
-    font-weight: 100;
-  }
-
   </style>
 </head>
 
 <body ng-controller='ExamplesCtrl'>
-  <linechart data="example.data" options="example.options"></linechart>
+  <div class="example">
+    <linechart data="example.data" options="example.options"></linechart>
+  </div>
 
   <script src="/angular/angular.js"></script>
   <script src="/d3/d3.min.js"></script>
