@@ -11,11 +11,11 @@ module n3Charts.Utils {
       DATE: 'date'
     };
 
-    constructor(js: any) {
-      this.parseJS(js);
+    constructor(js: any = {}) {
+      this.parse(js);
     }
 
-    parseJS(js: any) {
+    parse(js: any) {
       this.type = js.type;
       this.key = js.key;
     }
