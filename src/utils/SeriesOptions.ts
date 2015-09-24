@@ -1,7 +1,7 @@
 module n3Charts.Utils {
   'use strict';
 
-  export class Series {
+  export class SeriesOptions {
     public axis: string = 'y';
     public dataset: string;
     public key: string;
@@ -44,7 +44,7 @@ module n3Charts.Utils {
     }
 
     isAColumn() {
-      return this.type.indexOf(Utils.Options.SERIES_TYPES.COLUMN) > -1;
+      return this.type.indexOf(Options.SERIES_TYPES.COLUMN) > -1;
     }
 
     getMainType() {
@@ -52,7 +52,7 @@ module n3Charts.Utils {
         return this.type[0];
       }
 
-      var types = Utils.Options.SERIES_TYPES;
+      var types = Options.SERIES_TYPES;
 
       if (this.type.indexOf(types.AREA) !== -1) {
         return types.AREA;

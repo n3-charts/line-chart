@@ -21,7 +21,7 @@ module n3Charts.Factory.Series {
       this.updateSeriesContainer(series);
     }
 
-    updateColumnsWidth(series: Utils.Series[], options: Utils.Options) {
+    updateColumnsWidth(series: Utils.SeriesOptions[], options: Utils.Options) {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
 
       var colsDatasets = this.data.getDatasets(series, options);
@@ -30,7 +30,7 @@ module n3Charts.Factory.Series {
       this.columnsWidth = delta < Number.MAX_VALUE ? delta / series.length : 10;
     }
 
-    updateColumnScale(series: Utils.Series[], options: Utils.Options) {
+    updateColumnScale(series: Utils.SeriesOptions[], options: Utils.Options) {
       var halfWidth = this.columnsWidth * series.length / 2;
 
       this.innerXScale = d3.scale.ordinal()
@@ -38,11 +38,11 @@ module n3Charts.Factory.Series {
         .rangeBands([-halfWidth, halfWidth], 0, 0.1);
     }
 
-    getTooltipPosition(series: Utils.Series) {
+    getTooltipPosition(series: Utils.SeriesOptions) {
       return this.innerXScale(series.id) + this.innerXScale.rangeBand() / 2;
     }
 
-    updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {
+    updateData(group: D3.Selection, series: Utils.SeriesOptions, index: number, numSeries: number) {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
@@ -100,9 +100,9 @@ module n3Charts.Factory.Series {
 
     styleSeries(group: D3.Selection) {
       group.style({
-        'fill': (d: Utils.Series) => d.color,
+        'fill': (d: Utils.SeriesOptions) => d.color,
         'fill-opacity': 0.5,
-        'stroke': (d: Utils.Series) => d.color,
+        'stroke': (d: Utils.SeriesOptions) => d.color,
         'stroke-width': 1
       });
     }

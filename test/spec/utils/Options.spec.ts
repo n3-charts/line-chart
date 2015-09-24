@@ -3,6 +3,9 @@
 describe('n3Charts.Utils.Options', () => {
   // Type Shortcut
   var Options = n3Charts.Utils.Options;
+  var SeriesOptions = n3Charts.Utils.SeriesOptions;
+  var AxisOptions = n3Charts.Utils.AxisOptions;
+  var Axis = n3Charts.Factory.Axis;
   // Placeholder for module instance
   var options: n3Charts.Utils.Options;
 
@@ -46,10 +49,21 @@ describe('n3Charts.Utils.Options', () => {
       expect(testing).to.equal(expected);
     });
 
-    it('should create an array as series property', () => {
+    it('should create an empty array as series property when called without arguments', () => {
       options.parse();
 
       var testing = angular.isArray(options.series);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should create an array of series as series property', () => {
+      var arg = { series: [{foo: 'bar'}] };
+
+      options.parse(arg);
+
+      var testing = options.series[0] instanceof SeriesOptions;
       var expected = true;
 
       expect(testing).to.equal(expected);
@@ -79,10 +93,28 @@ describe('n3Charts.Utils.Options', () => {
       expect(testing).to.equal(expected);
     });
 
-    it('should create an object as axes property', () => {
+    it('should create an axes property when called without arguments', () => {
       options.parse();
 
       var testing = angular.isObject(options.axes);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should create an axes property with x axis options', () => {
+      options.parse();
+
+      var testing = options.axes[Axis.SIDE.X] instanceof AxisOptions;
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should create an axes property with y axis options', () => {
+      options.parse();
+
+      var testing = options.axes[Axis.SIDE.Y] instanceof AxisOptions;
       var expected = true;
 
       expect(testing).to.equal(expected);
@@ -93,11 +125,77 @@ describe('n3Charts.Utils.Options', () => {
     beforeEach(() => {
       options = new Options();
     });
+
+    it('should throw a type error when series argument is not an array', () => {
+      var arg = { foo: 'bar' };
+
+      expect(() => {
+        options.parseSeries(arg);
+      }).to.throwError();
+    });
+
+    it('should call sanitizeSeries function with default arguments', () => {
+      var arg = [];
+      var spy = sinon.spy(options, 'sanitizeSeries');
+
+      options.parseSeries(arg);
+
+      var testing = spy.calledWith(Options.DEFAULT.series);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should call sanitizeSeries function and merge arguments with default options', () => {
+      var arg = ['foo'];
+      var mergedArgsWithDefault = ['foo'];
+      var spy = sinon.spy(options, 'sanitizeSeries');
+
+      options.parseSeries(arg);
+
+      var testing = spy.calledWith(mergedArgsWithDefault);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
   });
 
   describe('parseAxes', () => {
     beforeEach(() => {
-        options = new Options();
+      options = new Options();
+    });
+
+    it('should throw a type error when axes argument is not an object', () => {
+      var arg = 'foo';
+
+      expect(() => {
+        options.parseAxes(arg);
+      }).to.throwError();
+    });
+
+    it('should call sanitizeAxes function with default arguments', () => {
+      var arg = {};
+      var spy = sinon.spy(options, 'sanitizeAxes');
+
+      options.parseAxes(arg);
+
+      var testing = spy.calledWith(Options.DEFAULT.axes);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should call sanitizeAxes function and merge arguments with default options', () => {
+      var arg = {x: 'foo'};
+      var mergedArgsWithDefault = { x: 'foo', y: {} };
+      var spy = sinon.spy(options, 'sanitizeAxes');
+
+      options.parseAxes(arg);
+
+      var testing = spy.calledWith(mergedArgsWithDefault);
+      var expected = true;
+
+      expect(testing).to.equal(expected);
     });
   });
 
@@ -105,27 +203,27 @@ describe('n3Charts.Utils.Options', () => {
     beforeEach(() => {
       options = new Options({
         series: [
-        {
-          axis: 'y',
-          dataset: 'dataset0',
-          key: 'val_0',
-          id: 'mySeries_0',
-          type: 'line'
-        },
-        {
-          axis: 'y',
-          dataset: 'dataset2',
-          key: 'val_1',
-          id: 'mySeries_1',
-          type: 'area'
-        },
-        {
-          axis: 'y',
-          dataset: 'dataset1',
-          key: 'val_1',
-          id: 'mySeries_2',
-          type: 'line'
-        }
+          {
+            axis: 'y',
+            dataset: 'dataset0',
+            key: 'val_0',
+            id: 'mySeries_0',
+            type: 'line'
+          },
+          {
+            axis: 'y',
+            dataset: 'dataset2',
+            key: 'val_1',
+            id: 'mySeries_1',
+            type: 'area'
+          },
+          {
+            axis: 'y',
+            dataset: 'dataset1',
+            key: 'val_1',
+            id: 'mySeries_2',
+            type: 'line'
+          }
         ]
       });
     });
