@@ -28,8 +28,9 @@ module n3Charts.Utils {
     getDatasetValues(series: Series, options: Options): IPoint[] {
       var xKey = options.getAbsKey();
 
-      return this.sets[series.dataset].values.map((d: any) =>
-        ({ 'x': d[xKey], 'y': d[series.key] })
+      return this.sets[series.dataset].values.map((d: any) => {
+          return { 'x': d[xKey], 'y': d[series.key] };
+        }
       );
     }
 

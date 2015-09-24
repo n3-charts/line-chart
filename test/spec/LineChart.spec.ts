@@ -1,4 +1,4 @@
-  /// <reference path='test.spec.ts' />
+/// <reference path='test.spec.ts' />
 
 describe('n3charts.LineChart', () => {
   beforeEach(module('testUtils'));
@@ -11,8 +11,10 @@ describe('n3charts.LineChart', () => {
   beforeEach(inject((directive) => {
     var generated = directive.create(
       '<linechart ' +
+      'on-datum-enter="myEnterCb" ' +
       'on-datum-over="myOverCb" ' +
-      'on-datum-out="myOutCb" ' +
+      'on-datum-move="myMoveCb" ' +
+      'on-datum-leave="myLeaveCb" ' +
       'data="myData" ' +
       'options="myOptions"' +
       '></linechart>'
@@ -23,8 +25,10 @@ describe('n3charts.LineChart', () => {
     outerScope = generated.outerScope;
 
     outerScope.$apply(function() {
+      outerScope.myEnterCb = sinon.spy();
       outerScope.myOverCb = sinon.spy();
-      outerScope.myOutCb = sinon.spy();
+      outerScope.myMoveCb = sinon.spy();
+      outerScope.myLeaveCb = sinon.spy();
 
       outerScope.myOptions = {
         series: [
@@ -50,34 +54,4 @@ describe('n3charts.LineChart', () => {
       };
     });
   }));
-
-  describe('events', () => {
-    it('should have mouseover & mouseout', inject((fakeMouse) => {
-      var dots = element.children('.dot');
-
-      dots[0].mouseOver();
-      expect(outerScope.myOverCb.callCount).to.equal(1);
-      expect(outerScope.myOverCb.args[0]).to.eql([
-        { x: 0, y: 0 }, 0, outerScope.myOptions.series[0]
-      ]);
-
-      dots[0].mouseOut();
-      expect(outerScope.myOutCb.callCount).to.equal(1);
-      expect(outerScope.myOutCb.args[0]).to.eql([
-        { x: 0, y: 0 }, 0, outerScope.myOptions.series[0]
-      ]);
-
-      dots[1].mouseOver();
-      expect(outerScope.myOverCb.callCount).to.equal(2);
-      expect(outerScope.myOverCb.args[1]).to.eql([
-        { x: 1, y: 1 }, 1, outerScope.myOptions.series[0]
-      ]);
-
-      dots[1].mouseOut();
-      expect(outerScope.myOutCb.callCount).to.equal(2);
-      expect(outerScope.myOutCb.args[1]).to.eql([
-        { x: 1, y: 1 }, 1, outerScope.myOptions.series[0]
-      ]);
-    }));
-  });
 });

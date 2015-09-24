@@ -13,11 +13,11 @@ module n3Charts.Utils {
 
     constructor(js: any) {
       if (js) {
-        this.fromJS(this.sanitize(js));
+        this.parseJS(this.sanitize(js));
       }
     }
 
-    fromJS(js: any) {
+    parseJS(js: any) {
       this.axis = js.axis;
       this.dataset = js.dataset;
       this.key = js.key;
@@ -63,31 +63,19 @@ module n3Charts.Utils {
 
       var types = Utils.Options.SERIES_TYPES;
 
-      if (this.type.indexOf(types.AREA) > -1) {
+      if (this.type.indexOf(types.AREA) !== -1) {
         return types.AREA;
       }
 
-      if (this.type.indexOf(types.LINE) > -1) {
+      if (this.type.indexOf(types.LINE) !== -1) {
         return types.LINE;
       }
 
-      if (this.type.indexOf(types.DOT) > -1) {
+      if (this.type.indexOf(types.DOT) !== -1) {
         return types.DOT;
       }
 
       return this.type[0];
-    }
-
-    toJS() {
-      return {
-        axis: this.axis,
-        dataset: this.dataset,
-        key: this.key,
-        label: this.label,
-        type: this.type,
-        id: this.id,
-        color: this.color
-      };
     }
   }
 }

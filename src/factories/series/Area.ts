@@ -3,43 +3,31 @@ module n3Charts.Factory.Series {
 
   export class Area extends Utils.SeriesFactory {
 
-    static type: string = Utils.Options.SERIES_TYPES.AREA;
-
-    protected containerClass: string = Area.type + '-data';
-    protected seriesClass: string = Area.type + '-series';
-    protected dataClass: string = Area.type;
-
-    update(data: Utils.Data, options: Utils.Options) {
-      super.update(data, options);
-
-      var series = options.getSeriesForType(Area.type);
-
-      this.updateSeriesContainer(series);
-    }
+    public type: string = Utils.Options.SERIES_TYPES.AREA;
 
     updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {
 
-      var xScale = <Factory.Axis>this.factoryMgr.get('x-axis');
-      var yScale = <Factory.Axis>this.factoryMgr.get('y-axis');
+      var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
+      var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
       var areaData = this.data.getDatasetValues(series, this.options);
 
       var initArea = d3.svg.area()
-        .x((d) => xScale.scale(d.x))
-        .y0(yScale.scale(0))
-        .y1((d) => yScale.scale(0));
+        .x((d) => xAxis.scale(d.x))
+        .y0(yAxis.scale(0))
+        .y1((d) => yAxis.scale(0));
 
       var updateArea = d3.svg.area()
-        .x((d) => xScale.scale(d.x))
-        .y0(yScale.scale(0))
-        .y1((d) => yScale.scale(d.y));
+        .x((d) => xAxis.scale(d.x))
+        .y0(yAxis.scale(0))
+        .y1((d) => yAxis.scale(d.y));
 
-      var area = group.selectAll('.' + this.dataClass)
+      var area = group.selectAll('.' + this.type)
         .data([areaData]);
 
       area.enter()
         .append('path')
-        .attr('class', this.dataClass)
+        .attr('class', this.type)
         .attr('d', (d) => initArea(d))
         .transition()
         .call(this.factoryMgr.get('transitions').enter)

@@ -33,6 +33,10 @@
       background-position: 50% 25%;
     }
 
+    &.hidden {
+      opacity: 0.4;
+    }
+
     &.column > .icon {
       @include svg("<rect y='2' width='2' height='8'/><rect x='4' y='5' width='2' height='5'/><rect x='8' y='3' width='2' height='7'/>");
     }
@@ -49,4 +53,5 @@
       @include svg("<circle cx='5' cy='6' r='2'/>");
     }
   }
+
 }

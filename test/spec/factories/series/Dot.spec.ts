@@ -2,7 +2,7 @@
 
 describe('n3Charts.Factory.Series.Dot', () => {
   var domElement: JQuery = angular.element(document.body).append('<div></div>');
-  var dotSeries: n3Charts.Factory.Series.Dot = undefined;
+  var dotSeries: n3Charts.Factory.Series.Dot;
 
   beforeEach(() => {
     // Truncate the domElement
@@ -13,19 +13,27 @@ describe('n3Charts.Factory.Series.Dot', () => {
   });
 
   describe('createSeriesContainer', () => {
+    var container: SVGElement;
 
-    it('svg property should be a g node with proper class', () => {
+    beforeEach(() => {
+      container = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
+      dotSeries.createContainer(d3.select(container));
+    });
 
-      var svgProp: SVGElement = undefined;
-      var parentContainer = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
+    it('should create a <g> container', () => {
+      var testing = dotSeries.svg[0][0].tagName;
+      var expected = 'g';
 
-      expect(dotSeries.svg).to.equal(undefined);
+      expect(testing).to.equal(expected);
+    });
 
-      dotSeries.createContainer(d3.select(parentContainer));
+    it('should define a proper class', () => {
+        var containerSuffix = n3Charts.Utils.SeriesFactory.containerClassSuffix;
 
-      svgProp = dotSeries.svg[0][0];
+        var testing = dotSeries.svg[0][0].getAttribute('class');
+        var expected = dotSeries.type + containerSuffix;
 
-      expect(svgProp.getAttribute('class')).to.equal(n3Charts.Factory.Series.Dot.type + '-data');
+        expect(testing).to.equal(expected);
     });
   });
 });
