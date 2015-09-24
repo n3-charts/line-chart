@@ -35,19 +35,19 @@ module n3Charts.Utils {
         .attr('class', this.type + SeriesFactory.containerClassSuffix);
     }
 
-    updateSeriesContainer(series: Series[]) {
+    updateSeriesContainer(series: SeriesOptions[]) {
 
       // Create a data join
       var groups = this.svg
         .selectAll('.' + this.type + SeriesFactory.seriesClassSuffix)
         // Use the series id as key for the join
-        .data(series, (d: Series) => d.id);
+        .data(series, (d: SeriesOptions) => d.id);
 
       // Create a new group for every new series
       groups.enter()
         .append('g')
         .attr({
-          class: (d: Series) => {
+          class: (d: SeriesOptions) => {
             return this.type + SeriesFactory.seriesClassSuffix + ' ' + d.id;
           }
         });
@@ -61,17 +61,17 @@ module n3Charts.Utils {
         .remove();
     }
 
-    updateSeries(groups: D3.Selection, series: Series[]) {
+    updateSeries(groups: D3.Selection, series: SeriesOptions[]) {
       // Workaround to retrieve the D3.Selection
       // in the callback function (bound to keyword this)
       var self = this;
-      groups.each(function(d: Series, i: number) {
+      groups.each(function(d: SeriesOptions, i: number) {
         var group = d3.select(this);
         self.updateData(group, d, i, series.length);
       });
     }
 
-    updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {
+    updateData(group: D3.Selection, series: SeriesOptions, index: number, numSeries: number) {
       // we need to overwrite this
     }
 

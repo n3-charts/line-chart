@@ -41,7 +41,7 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    show(datum:any, index:number, series: Utils.Series) {
+    show(datum:any, index:number, series: Utils.SeriesOptions) {
       this.updateTooltipContent(datum, index, series);
       this.updateTooltipPosition(datum, index, series);
 
@@ -53,7 +53,7 @@ module n3Charts.Factory {
       return;
     }
 
-    updateTooltipContent(datum: any, index: number, series: Utils.Series) {
+    updateTooltipContent(datum: any, index: number, series: Utils.SeriesOptions) {
       this.svg.select('.abscissas').text(datum.x);
       this.svg.select('.value').text(datum.y);
 
@@ -61,7 +61,7 @@ module n3Charts.Factory {
       this.svg.select('.arrow').style('border-top-color', series.color);
     }
 
-    updateTooltipPosition(datum: any, index: number, series: Utils.Series) {
+    updateTooltipPosition(datum: any, index: number, series: Utils.SeriesOptions) {
       var xScale = this.factoryMgr.get('x-axis').scale;
       var yScale = this.factoryMgr.get('y-axis').scale;
 

@@ -1,6 +1,19 @@
 module n3Charts.Utils {
   'use strict';
 
+  export interface IAxes {
+    x: AxisOptions;
+    y: AxisOptions;
+    y2?: AxisOptions;
+  };
+
+  export interface IMargin {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+  }
+
   export class Options {
 
     static DEFAULT:any = {
@@ -8,6 +21,12 @@ module n3Charts.Utils {
       axes: {
         x: {},
         y: {}
+      },
+      margin: {
+        top: 0,
+        left: 40,
+        bottom: 40,
+        right: 0
       }
     };
 
@@ -18,60 +37,86 @@ module n3Charts.Utils {
       COLUMN: 'column'
     };
 
-    public series: Series[];
-    public axes: any;
+    public series: SeriesOptions[];
+    public axes: IAxes;
+    public margin: IMargin;
 
     constructor(js?:any) {
       this.parse(js);
     }
 
     parse(js?:any) {
-      var options = Options.DEFAULT;
+      var options = <any>{};
 
-      angular.extend(options, js);
+      // Extend the default options
+      angular.extend(options, Options.DEFAULT, js);
 
       this.series = this.parseSeries(options.series);
       this.axes = this.parseAxes(options.axes);
+      this.margin = this.parseMargin(options.margin);
     }
 
-    parseSeries(jsSeries: any) {
+    parseMargin(jsMargin: any): IMargin {
+      // Type check because of <any> type
+      if (!angular.isObject(jsMargin)) {
+        throw TypeError('Margin option must be an object.');
+      }
+
+      var margin = {};
+
+      // Extend the default margin options
+      angular.extend(margin, Options.DEFAULT.margin, jsMargin);
+
+      return this.sanitizeMargin(margin);
+    }
+
+    parseSeries(jsSeries: any): SeriesOptions[] {
       // Type check because of <any> type
       if (!angular.isArray(jsSeries)) {
         throw TypeError('Series option must be an array.');
       }
 
-      var series = Options.DEFAULT.series;
+      var series = [];
 
-      // Extend the default series option
-      angular.extend(series, jsSeries);
+      // Extend the default series options
+      angular.extend(series, Options.DEFAULT.series, jsSeries);
 
       return this.sanitizeSeries(series);
     }
 
-    parseAxes(jsAxes: any) {
+    parseAxes(jsAxes: any): IAxes {
       // Type check because of <any> type
       if (!angular.isObject(jsAxes)) {
         throw TypeError('Axes option must be an object.');
       }
 
-      var axes = Options.DEFAULT.axes;
+      var axes = {};
 
-      // Extend the default axes option
-      angular.extend(axes, jsAxes);
+      // Extend the default axes options
+      angular.extend(axes, Options.DEFAULT.axes, jsAxes);
 
       return this.sanitizeAxes(axes);
     }
 
-    sanitizeSeries(rawSeries: any[]) {
-      return (rawSeries).map((s) => new Series(s));
+    sanitizeSeries(series: any[]) {
+      return (series).map((s) => new SeriesOptions(s));
     }
 
-    sanitizeAxes(rawAxes: any) {
-      // Map operation over an object, that returns a new object
-      return Object.keys(rawAxes).reduce((prev, key) => {
-        prev[key] = new AxisOptions(rawAxes[key]);
+    sanitizeAxes(axes: any) {
+      // Map object keys and return a new object
+      return <IAxes> Object.keys(axes).reduce((prev, key) => {
+        prev[key] = new AxisOptions(axes[key]);
         return prev;
       }, {});
+    }
+
+    sanitizeMargin(margin) {
+      return <IMargin> {
+        top: parseFloat(margin.top),
+        left: parseFloat(margin.left),
+        bottom: parseFloat(margin.bottom),
+        right: parseFloat(margin.right)
+      };
     }
 
     isValidAxisSide(side:string): Boolean {
@@ -100,7 +145,7 @@ module n3Charts.Utils {
         return this.axes[side];
     }
 
-    getSeriesByType(type: string): Series[] {
+    getSeriesByType(type: string): SeriesOptions[] {
       if (!this.isValidSeriesType(type)) {
         throw new TypeError('Unknown series type: ' + type);
       }

@@ -21,11 +21,11 @@ module n3Charts.Utils {
       this.sets = js;
     }
 
-    getDatasets(series: Series[], options: Options): IPoint[][] {
-      return series.map((d: Series) => this.getDatasetValues(d, options));
+    getDatasets(series: SeriesOptions[], options: Options): IPoint[][] {
+      return series.map((d: SeriesOptions) => this.getDatasetValues(d, options));
     }
 
-    getDatasetValues(series: Series, options: Options): IPoint[] {
+    getDatasetValues(series: SeriesOptions, options: Options): IPoint[] {
       var xKey = options.getAbsKey();
 
       return this.sets[series.dataset].values.map((d: any) => {
@@ -41,7 +41,7 @@ module n3Charts.Utils {
         data.map(series => {
           // Compute minimum delta
           return series
-            // Look at all sclaed values on the axis
+            // Look at all scaled values on the axis
             .map((d) => scale(d[key]))
             // Select only columns in the visible range
             .filter((d) => {
