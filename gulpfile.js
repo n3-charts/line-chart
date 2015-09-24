@@ -145,9 +145,12 @@ gulp.task('server', $.serve({
 );
 
 // Serving files via `gulp serve`
-gulp.task('serve', function(){
+gulp.task('serve', function(callback){
   isWatching = true;
-  gulp.run('server');
+  return runSequence(
+    ['ts:compile:source', 'scss:copy', 'jinja:compile:e2e'],
+    ['server'],
+  callback);
 });
 
 // Update webdriver and selenium

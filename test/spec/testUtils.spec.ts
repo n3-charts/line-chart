@@ -18,7 +18,7 @@ utils.factory('directive', function($compile, $rootScope, fakeMouse) {
       document.body.innerHTML = '';
     },
     addToDOM: function(wrappedElement) {
-      $(document.body).append(wrappedElement.aElement);
+      jQuery(document.body).append(wrappedElement.aElement);
     },
     create: function(html, preHook) {
       var elm = angular.element(html);

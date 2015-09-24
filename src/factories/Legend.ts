@@ -33,18 +33,20 @@ module n3Charts.Factory {
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: IDimension = container.getDimensions();
 
-      var init = (s) => {
-        var items = s.append('div').attr({'class': 'item'})
+      var init = (series) => {
+        var items = series.append('div').attr({'class': 'item'})
           .call(this.legendClick());
 
         items.append('div').attr({'class': 'icon'});
         items.append('div').attr({'class': 'label'});
       };
 
-      var update = (s) => {
-        s.attr('class', (d) => 'item ' + d.getMainType());
-        s.select('.icon').style('background-color', (d) => d.color);
-        s.select('.label').text((d) => d.label);
+      var update = (series) => {
+        series
+          .attr('class', (d) => 'item ' + d.getMainType())
+          .classed('hidden', (d) => !d.visible);
+        series.select('.icon').style('background-color', (d) => d.color);
+        series.select('.label').text((d) => d.label);
       };
 
       var legendItems = this.div.selectAll('.item')

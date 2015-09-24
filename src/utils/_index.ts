@@ -5,4 +5,5 @@
 /// <reference path='Dataset.ts' />
 /// <reference path='Data.ts' />
 /// <reference path='Series.ts' />
+/// <reference path='AxisOptions.ts' />
 /// <reference path='Options.ts' />

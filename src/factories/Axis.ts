@@ -12,7 +12,7 @@ module n3Charts.Factory {
     constructor(public side: string) {
       super();
 
-      if ([Axis.SIDE_X, Axis.SIDE_Y].indexOf(side) < 0) {
+      if ([Axis.SIDE_X, Axis.SIDE_Y].indexOf(side) === -1) {
         throw new TypeError('Wrong axis side : ' + side);
       }
     }
@@ -29,19 +29,35 @@ module n3Charts.Factory {
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: IDimension = container.getDimensions();
 
-      this.scale = this.getScale(dim);
-      this.axis = this.getAxis();
+      // Get the [min, max] extent of the axis
+      var extent = this.getExtent(data, options);
 
-      this.updateScaleDomain(data, options);
-      this.updateAxisSize(dim);
+      // Get the options for the axis
+      var axisOptions = options.getByAxisSide(this.side);
+
+      this.scale = this.getScale(axisOptions);
+      this.updateScaleRange(dim);
+      this.updateScaleDomain(extent);
+
+      this.axis = this.getAxis(this.scale);
+      this.updateAxisOrientation();
+      this.updateAxisContainer(dim);
     }
 
     destroy() {
       this.destroyAxis();
     }
 
-    updateScaleDomain(data: Utils.Data, options: Utils.Options) {
-      this.scale.domain(this.getExtent(data, options));
+    updateScaleRange(dim: IDimension) {
+      if (this.side === Axis.SIDE_X) {
+        this.scale.range([0, dim.innerWidth]);
+      } else if (this.side === Axis.SIDE_Y) {
+        this.scale.range([dim.innerHeight, 0]);
+      }
+    }
+
+    updateScaleDomain(extent: Number[]) {
+      this.scale.domain(extent);
     }
 
     getExtentForDatasets(
@@ -111,7 +127,15 @@ module n3Charts.Factory {
           .attr('class', 'axis ' + this.side + '-axis');
     }
 
-    updateAxisSize(dim: IDimension) {
+    updateAxisOrientation() {
+      if (this.side === Axis.SIDE_X) {
+        this.axis.orient('bottom');
+      } else if (this.side === Axis.SIDE_Y) {
+        this.axis.orient('left');
+      }
+    }
+
+    updateAxisContainer(dim: IDimension) {
       // Move the axis container to the correct position
       if (this.side === Axis.SIDE_X) {
         this.svg
@@ -121,7 +145,7 @@ module n3Charts.Factory {
           .attr('transform', 'translate(0, 0)');
       }
 
-      // Generate the Axis
+      // Redraw the Axis
       this.svg
         .transition()
         .call(this.factoryMgr.get('transitions').edit)
@@ -133,31 +157,21 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    getScale(dim: IDimension): D3.Scale.Scale {
-      // Create a d3.scale object
-      var scale = d3.scale.linear();
+    getScale(options: Utils.AxisOptions): D3.Scale.Scale {
+      // Create and return a D3 Scale
+      var scale: D3.Scale.Scale;
 
-      if (this.side === Axis.SIDE_X) {
-        scale.range([0, dim.innerWidth]);
-      } else if (this.side === Axis.SIDE_Y) {
-        scale.range([dim.innerHeight, 0]);
+      if (options.type === Utils.AxisOptions.TYPE.DATE) {
+        return d3.time.scale();
       }
 
-      return scale;
+      return d3.scale.linear();
     }
 
-    getAxis(): D3.Svg.Axis {
-      // Create a d3 axis generator
-      var axis = d3.svg.axis()
-        .scale(this.scale);
-
-      if (this.side === Axis.SIDE_X) {
-        axis.orient('bottom');
-      } else if (this.side === Axis.SIDE_Y) {
-        axis.orient('left');
-      }
-
-      return axis;
+    getAxis(scale: D3.Scale.Scale): D3.Svg.Axis {
+      // Create and return a D3 Axis generator
+      return d3.svg.axis()
+        .scale(scale);
     }
   }
 }

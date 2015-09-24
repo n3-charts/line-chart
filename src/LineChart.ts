@@ -5,8 +5,10 @@ module n3Charts {
     data;
     options;
     styles;
+    onDatumEnter;
     onDatumOver;
-    onDatumOut;
+    onDatumMove;
+    onDatumLeave;
   }
 
   export class LineChart implements ng.IDirective  {
@@ -15,8 +17,10 @@ module n3Charts {
       data: '=',
       options: '=',
       styles: '=',
+      onDatumEnter: '=',
       onDatumOver: '=',
-      onDatumOut: '='
+      onDatumMove: '=',
+      onDatumLeave: '='
     };
 
     public restrict = 'E';
@@ -66,12 +70,20 @@ module n3Charts {
         eventMgr.trigger('update', data, options);
       }, true);
 
+      scope.$watch('onDatumEnter', function() {
+          eventMgr.on('enter.directive', scope.onDatumEnter);
+      });
+
       scope.$watch('onDatumOver', function() {
         eventMgr.on('over.directive', scope.onDatumOver);
       });
 
-      scope.$watch('onDatumOut', function() {
-        eventMgr.on('out.directive', scope.onDatumOut);
+      scope.$watch('onDatumMove', function() {
+          eventMgr.on('move.directive', scope.onDatumMove);
+      });
+
+      scope.$watch('onDatumLeave', function() {
+        eventMgr.on('leave.directive', scope.onDatumLeave);
       });
 
       eventMgr.on('legend-click.directive', (series) => {
