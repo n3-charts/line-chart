@@ -11,21 +11,20 @@ module n3Charts.Utils {
     public color: string;
     public visible = true;
 
-    constructor(js: any) {
-      if (js) {
-        this.parseJS(this.sanitize(js));
-      }
+    constructor(js: any = {}) {
+      this.parse(js);
     }
 
-    parseJS(js: any) {
-      this.axis = js.axis;
-      this.dataset = js.dataset;
-      this.key = js.key;
-      this.type = this.parseType(js.type);
-      this.id = js.id;
-      this.color = js.color;
-      this.visible = !(js.visible === false);
-      this.label = js.label || js.id;
+    parse(jsSeries: any) {
+      this.id = jsSeries.id || Options.uuid();
+      this.axis = jsSeries.axis;
+      this.dataset = jsSeries.dataset;
+      this.key = jsSeries.key;
+      this.type = this.parseType(jsSeries.type);
+      this.id = jsSeries.id;
+      this.color = jsSeries.color;
+      this.visible = !(jsSeries.visible === false);
+      this.label = jsSeries.label || jsSeries.id;
     }
 
     getToggledVisibility() {
@@ -39,14 +38,6 @@ module n3Charts.Utils {
 
       if (typeof js === 'string') {
         return [js];
-      }
-
-      return js;
-    }
-
-    sanitize(js:any) {
-      if (!js.id) {
-        throw new TypeError('Every series must have an id property');
       }
 
       return js;

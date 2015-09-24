@@ -21,21 +21,19 @@ module n3Charts.Utils {
     public series: Series[];
     public axes: any;
 
-    constructor(js:any) {
-      this.parseJS(js || Options.DEFAULT);
+    constructor(js:any = {}) {
+      this.parse(js || Options.DEFAULT);
     }
 
-    parseJS(js:any) {
-      this.series = this.parseSeries(js);
-      this.axes = this.parseAxes(js);
+    parse(js:any) {
+      this.series = this.parseSeries(js.series || {});
+      this.axes = this.parseAxes(js.axes || []);
     }
 
-    parseSeries(js: any) {
+    parseSeries(jsSeries: any) {
       var series = Options.DEFAULT.series;
 
-      if (js.hasOwnProperty('series')) {
-        angular.extend(series, js.series);
-      }
+      angular.extend(series, jsSeries);
 
       return this.sanitizeSeries(series);
     }
@@ -43,9 +41,7 @@ module n3Charts.Utils {
     parseAxes(js: any) {
       var axes = Options.DEFAULT.axes;
 
-      if (js.hasOwnProperty('axes')) {
-        angular.extend(axes, js.axes);
-      }
+       angular.extend(axes, js.axes);
 
       return this.sanitizeAxes(axes);
     }
@@ -96,6 +92,17 @@ module n3Charts.Utils {
       return this.series.filter((s) =>
         s.type.indexOf(type) > -1
       );
+    }
+
+    public static uuid(): string {
+      // @src: http://stackoverflow.com/a/2117523
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+        .replace(/[xy]/g, (c) => {
+            var r = Math.random() * 16 | 0;
+            var v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          }
+        );
     }
   }
 }
