@@ -65,8 +65,8 @@ $scope.options = {
   drawDots: true,
   hideOverflow: false,
   columnsHGap: 5,
-  fontFamily: 'Gill, Helvetica, sans-serif',
-  fontSize: 12
+  fontFamily: "'Gill Sans', Helvetica, sans-serif",
+  fontSize: '12px'
 }
 ```
 ##### Axes

@@ -108,10 +108,12 @@
             item.append('text')
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
-                'font-family': options.fontFamily
-                'font-size': options.fontSize
                 'transform': 'translate(13, 4)'
                 'text-rendering': 'geometric-precision'
+              )
+              .style(
+                'font-family': options.fontFamily
+                'font-size': options.fontSize
               )
               .text(s.label || s.y)
 

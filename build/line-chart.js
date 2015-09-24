@@ -1,6 +1,6 @@
 
 /*
-line-chart - v1.1.12 - 15 September 2015
+line-chart - v1.1.12 - 23 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
  */
@@ -655,10 +655,11 @@ mod.factory('n3utils', [
             'class': function(d, i) {
               return "legendText series_" + i;
             },
-            'font-family': options.fontFamily,
-            'font-size': options.fontSize,
             'transform': 'translate(13, 4)',
             'text-rendering': 'geometric-precision'
+          }).style({
+            'font-family': options.fontFamily,
+            'font-size': options.fontSize
           }).text(s.label || s.y);
         });
         translateLegends = function() {
@@ -1165,7 +1166,7 @@ mod.factory('n3utils', [
         }
         options.hideOverflow = options.hideOverflow || false;
         options.fontFamily = (_ref = options.fontFamily) != null ? _ref : 'Courier, monospace';
-        options.fontSize = (_ref1 = options.fontSize) != null ? _ref1 : 10;
+        options.fontSize = (_ref1 = options.fontSize) != null ? _ref1 : '10px';
         defaultMargin = mode === 'thumbnail' ? this.getDefaultThumbnailMargins() : this.getDefaultMargins();
         options.series = angular.extend(this.getDefaultOptions().series, options.series);
         options.axes = angular.extend(this.getDefaultOptions().axes, options.axes);

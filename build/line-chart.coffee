@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.12 - 15 September 2015
+line-chart - v1.1.12 - 23 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -633,10 +633,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             item.append('text')
               .attr(
                 'class': (d, i) -> "legendText series_#{i}"
-                'font-family': options.fontFamily
-                'font-size': options.fontSize
                 'transform': 'translate(13, 4)'
                 'text-rendering': 'geometric-precision'
+              )
+              .style(
+                'font-family': options.fontFamily
+                'font-size': options.fontSize
               )
               .text(s.label || s.y)
 
@@ -1166,7 +1168,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
         options.hideOverflow = options.hideOverflow or false
         options.fontFamily = options.fontFamily ? 'Courier, monospace'
-        options.fontSize = options.fontSize ? 10
+        options.fontSize = options.fontSize ? '10px'
         
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()

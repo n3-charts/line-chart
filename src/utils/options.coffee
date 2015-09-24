@@ -40,7 +40,7 @@
         options.columnsHGap = 5 unless angular.isNumber(options.columnsHGap)
         options.hideOverflow = options.hideOverflow or false
         options.fontFamily = options.fontFamily ? 'Courier, monospace'
-        options.fontSize = options.fontSize ? 10
+        options.fontSize = options.fontSize ? '10px'
         
         defaultMargin = if mode is 'thumbnail' then this.getDefaultThumbnailMargins() \
           else this.getDefaultMargins()

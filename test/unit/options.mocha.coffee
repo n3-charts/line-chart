@@ -73,8 +73,8 @@ describe 'options', ->
       expect(o.fontFamily).to.equal('Courier, monospace')
 
     it 'should preserve the given fontFamily value if defined and valid', ->
-      o = n3utils.sanitizeOptions(fontFamily: 'Gill, Helvetica, sans-serif')
-      expect(o.fontFamily).to.equal('Gill, Helvetica, sans-serif')
+      o = n3utils.sanitizeOptions(fontFamily: "'Gill Sans', Helvetica, sans-serif")
+      expect(o.fontFamily).to.equal("'Gill Sans', Helvetica, sans-serif")
 
     it 'should preserve the given fontFamily value if it is an empty string', ->
       o = n3utils.sanitizeOptions(fontFamily: '')
@@ -83,7 +83,7 @@ describe 'options', ->
   describe 'fontSize', ->
     it 'should set default fontSize value if undefined or invalid', ->
       o = n3utils.sanitizeOptions()
-      expect(o.fontSize).to.equal(10)
+      expect(o.fontSize).to.equal('10px')
 
     it 'should preserve the given fontSize value if it is a valid number', ->
       o = n3utils.sanitizeOptions(fontSize: 16)
