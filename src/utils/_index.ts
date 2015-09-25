@@ -4,6 +4,6 @@
 /// <reference path='SeriesFactory.ts' />
 /// <reference path='Dataset.ts' />
 /// <reference path='Data.ts' />
-/// <reference path='Series.ts' />
+/// <reference path='SeriesOptions.ts' />
 /// <reference path='AxisOptions.ts' />
 /// <reference path='Options.ts' />

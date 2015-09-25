@@ -1,10 +1,10 @@
 /// <reference path='../test.spec.ts' />
 
-describe('n3Charts.Utils.Series', () => {
-  var Series = undefined;
+describe('n3Charts.Utils.SeriesOptions', () => {
+  var SeriesOptions = undefined;
 
   beforeEach(() => {
-    Series = n3Charts.Utils.Series;
+    SeriesOptions = n3Charts.Utils.SeriesOptions;
   });
 
   it('should unserialize', () => {
@@ -19,11 +19,11 @@ describe('n3Charts.Utils.Series', () => {
       type: ['area']
     };
 
-    expect(new Series(js)).to.eql(js);
+    expect(new SeriesOptions(js)).to.eql(js);
   });
 
   it('should give the toggled visibility - and not change the current one', () => {
-    var series = new Series({
+    var series = new SeriesOptions({
       axis: 'y',
       dataset: 'dataset0',
       key: 'val_0',
@@ -58,6 +58,6 @@ describe('n3Charts.Utils.Series', () => {
       type: ['area']
     };
 
-    expect(new Series(given)).to.eql(computed);
+    expect(new SeriesOptions(given)).to.eql(computed);
   });
 });

@@ -1,7 +1,7 @@
 module n3Charts.Utils {
   'use strict';
 
-  export class Series {
+  export class SeriesOptions {
     public axis: string = 'y';
     public dataset: string;
     public key: string;
@@ -11,21 +11,20 @@ module n3Charts.Utils {
     public color: string;
     public visible = true;
 
-    constructor(js: any) {
-      if (js) {
-        this.parseJS(this.sanitize(js));
-      }
+    constructor(js: any = {}) {
+      this.parse(js);
     }
 
-    parseJS(js: any) {
-      this.axis = js.axis;
-      this.dataset = js.dataset;
-      this.key = js.key;
-      this.type = this.parseType(js.type);
-      this.id = js.id;
-      this.color = js.color;
-      this.visible = !(js.visible === false);
-      this.label = js.label || js.id;
+    parse(jsSeries: any) {
+      this.id = jsSeries.id || Options.uuid();
+      this.axis = jsSeries.axis;
+      this.dataset = jsSeries.dataset;
+      this.key = jsSeries.key;
+      this.type = this.parseType(jsSeries.type);
+      this.id = jsSeries.id;
+      this.color = jsSeries.color;
+      this.visible = !(jsSeries.visible === false);
+      this.label = jsSeries.label || jsSeries.id;
     }
 
     getToggledVisibility() {
@@ -44,16 +43,8 @@ module n3Charts.Utils {
       return js;
     }
 
-    sanitize(js:any) {
-      if (!js.id) {
-        throw new TypeError('Every series must have an id property');
-      }
-
-      return js;
-    }
-
     isAColumn() {
-      return this.type.indexOf(Utils.Options.SERIES_TYPES.COLUMN) > -1;
+      return this.type.indexOf(Options.SERIES_TYPES.COLUMN) > -1;
     }
 
     getMainType() {
@@ -61,7 +52,7 @@ module n3Charts.Utils {
         return this.type[0];
       }
 
-      var types = Utils.Options.SERIES_TYPES;
+      var types = Options.SERIES_TYPES;
 
       if (this.type.indexOf(types.AREA) !== -1) {
         return types.AREA;

@@ -5,7 +5,7 @@ module n3Charts.Factory.Series {
 
     public type: string = Utils.Options.SERIES_TYPES.DOT;
 
-    updateData(group: D3.Selection, series: Utils.Series, index: number, numSeries: number) {
+    updateData(group: D3.Selection, series: Utils.SeriesOptions, index: number, numSeries: number) {
 
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
@@ -60,7 +60,7 @@ module n3Charts.Factory.Series {
 
     styleSeries(group: D3.Selection) {
       group.style({
-        'fill': (d: Utils.Series) => d.color,
+        'fill': (d: Utils.SeriesOptions) => d.color,
         'stroke': 'white'
       });
     }
