@@ -1,5 +1,5 @@
 ###
-line-chart - v1.1.12 - 21 September 2015
+line-chart - v1.1.12 - 25 September 2015
 https://github.com/n3-charts/line-chart
 Copyright (c) 2015 n3-charts
 ###
@@ -71,7 +71,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.addTooltips(vis, dimensions, options.axes)
 
       _u.createFocus(vis, dimensions, options)
-      _u.setZoom(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
+      _u.setZoom(svg, vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
     updateEvents = ->
 
@@ -493,8 +493,12 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
 
           [ 'x', 'y', 'y2' ].forEach (axis) ->
             if options.axes[axis]?.zoomable?
+              # apply the zoom
               svg.selectAll(".#{axis}.axis").call(axes["#{axis}Axis"])
               zoomed = true
+
+          # Reformat the axis ticks
+          self.formatTicks(axes, data, options.series, svg, options)
 
           if data.length
             columnWidth = self.getBestColumnWidth(axes, dimensions, data, options)
@@ -503,11 +507,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
           if zoom and zoomed
             self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
 
-      setZoom: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
+      setZoom: (svg, vis, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
         zoom = this.getZoomListener(axes, options)
 
         if zoom
-          zoom.on("zoom", this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom))
+          zoom.on("zoom", this.getZoomHandler(vis, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom))
           svg.call(zoom)
 
       getZoomListener: (axes, options) ->
@@ -853,13 +857,13 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             width: width
             height: height
           )
-        
+
         vis = svg.append('g')
             .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')')
 
         defs = vis.append('defs')
           .attr('class', 'patterns')
-        
+
         # Add a clipPath for the content area
         defs.append('clipPath')
           .attr('class', 'content-clip')
@@ -877,7 +881,7 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
       createContent: (svg, id, options) ->
         content = svg.append('g')
           .attr('class', 'content')
-        
+
         if options.hideOverflow
           content.attr('clip-path', "url(#content-clip-#{id})")
 
@@ -1478,11 +1482,11 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         # ticks can be either an array of tick values
         if angular.isArray(o.ticks)
           axis.tickValues(o.ticks)
-        
+
         # or a number of ticks (approximately)
         else if angular.isNumber(o.ticks)
           axis.ticks(o.ticks)
-        
+
         # or a range function e.g. d3.time.minute
         else if angular.isFunction(o.ticks)
           axis.ticks(o.ticks, o.ticksInterval)
@@ -1507,17 +1511,51 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
         axis = svg.selectAll('.x.axis')
           .call(scales.xAxis)
 
-        if options.axes.x.innerTicks?
-          axis.selectAll('.tick>line')
-            .call(this.setDefaultStroke)
-
         if options.axes.x.grid?
           height = options.margin.height - options.margin.top - options.margin.bottom
           xGrid = scales.xAxis
             .tickSize(-height, 0, 0)
           grid = svg.selectAll('.x.grid')
             .call(xGrid)
-          grid.selectAll('.tick>line')
+
+        if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
+          yDomain = this.getVerticalDomain(options, data, series, 'y')
+          scales.yScale.domain(yDomain).nice()
+          axis = svg.selectAll('.y.axis')
+            .call(scales.yAxis)
+
+          if options.axes.y.grid?
+            width = options.margin.width - options.margin.left - options.margin.right
+            yGrid = scales.yAxis
+              .tickSize(-width, 0, 0)
+            grid = svg.selectAll('.y.grid')
+              .call(yGrid)
+
+        if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
+          y2Domain = this.getVerticalDomain(options, data, series, 'y2')
+          scales.y2Scale.domain(y2Domain).nice()
+          axis = svg.selectAll('.y2.axis')
+            .call(scales.y2Axis)
+
+          if options.axes.y2.grid?
+            width = options.margin.width - options.margin.left - options.margin.right
+            y2Grid = scales.y2Axis
+              .tickSize(-width, 0, 0)
+            grid = svg.selectAll('.y2.grid')
+              .call(y2Grid)
+
+        this.formatTicks(scales, data, series, svg, options)
+
+      formatTicks: (scales, data, series, svg, options) ->
+        axis = svg.selectAll('.x.axis')
+
+        if options.axes.x.innerTicks?
+          axis.selectAll('.tick>line')
+            .call(this.setDefaultStroke)
+
+        if options.axes.x.grid?
+          grid = svg.selectAll('.x.grid')
+            .selectAll('.tick>line')
             .call(this.setDefaultGrid)
 
         if options.axes.x.ticksRotate?
@@ -1527,10 +1565,8 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
             .style('text-anchor', if options.axes.x.ticksRotate >= 0 then 'start' else 'end')
 
         if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
-          yDomain = this.getVerticalDomain(options, data, series, 'y')
-          scales.yScale.domain(yDomain).nice()
+
           axis = svg.selectAll('.y.axis')
-            .call(scales.yAxis)
 
           if options.axes.y.innerTicks?
             axis.selectAll('.tick>line')
@@ -1542,34 +1578,24 @@ mod.factory('n3utils', ['$window', '$log', '$rootScope', ($window, $log, $rootSc
               .style('text-anchor', 'end')
 
           if options.axes.y.grid?
-            width = options.margin.width - options.margin.left - options.margin.right
-            yGrid = scales.yAxis
-              .tickSize(-width, 0, 0)
             grid = svg.selectAll('.y.grid')
-              .call(yGrid)
             grid.selectAll('.tick>line')
               .call(this.setDefaultGrid)
 
         if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
-          y2Domain = this.getVerticalDomain(options, data, series, 'y2')
-          scales.y2Scale.domain(y2Domain).nice()
           axis = svg.selectAll('.y2.axis')
-            .call(scales.y2Axis)
+
           if options.axes.y2.innerTicks?
             axis.selectAll('.tick>line')
               .call(this.setDefaultStroke)
-          
+
           if options.axes.y2.ticksRotate?
             axis.selectAll('.tick>text')
               .attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)')
               .style('text-anchor', 'start')
 
           if options.axes.y2.grid?
-            width = options.margin.width - options.margin.left - options.margin.right
-            y2Grid = scales.y2Axis
-              .tickSize(-width, 0, 0)
             grid = svg.selectAll('.y2.grid')
-              .call(y2Grid)
             grid.selectAll('.tick>line')
               .call(this.setDefaultGrid)
 

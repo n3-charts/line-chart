@@ -65,7 +65,7 @@ directive('linechart', ['n3utils', '$window', '$timeout', (n3utils, $window, $ti
         _u.addTooltips(vis, dimensions, options.axes)
 
       _u.createFocus(vis, dimensions, options)
-      _u.setZoom(vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
+      _u.setZoom(svg, vis, dimensions, axes, dataPerSeries, columnWidth, options, handlers, dispatch)
 
     updateEvents = ->
 

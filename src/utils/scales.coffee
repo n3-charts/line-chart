@@ -110,11 +110,11 @@
         # ticks can be either an array of tick values
         if angular.isArray(o.ticks)
           axis.tickValues(o.ticks)
-        
+
         # or a number of ticks (approximately)
         else if angular.isNumber(o.ticks)
           axis.ticks(o.ticks)
-        
+
         # or a range function e.g. d3.time.minute
         else if angular.isFunction(o.ticks)
           axis.ticks(o.ticks, o.ticksInterval)
@@ -139,17 +139,51 @@
         axis = svg.selectAll('.x.axis')
           .call(scales.xAxis)
 
-        if options.axes.x.innerTicks?
-          axis.selectAll('.tick>line')
-            .call(this.setDefaultStroke)
-
         if options.axes.x.grid?
           height = options.margin.height - options.margin.top - options.margin.bottom
           xGrid = scales.xAxis
             .tickSize(-height, 0, 0)
           grid = svg.selectAll('.x.grid')
             .call(xGrid)
-          grid.selectAll('.tick>line')
+
+        if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
+          yDomain = this.getVerticalDomain(options, data, series, 'y')
+          scales.yScale.domain(yDomain).nice()
+          axis = svg.selectAll('.y.axis')
+            .call(scales.yAxis)
+
+          if options.axes.y.grid?
+            width = options.margin.width - options.margin.left - options.margin.right
+            yGrid = scales.yAxis
+              .tickSize(-width, 0, 0)
+            grid = svg.selectAll('.y.grid')
+              .call(yGrid)
+
+        if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
+          y2Domain = this.getVerticalDomain(options, data, series, 'y2')
+          scales.y2Scale.domain(y2Domain).nice()
+          axis = svg.selectAll('.y2.axis')
+            .call(scales.y2Axis)
+
+          if options.axes.y2.grid?
+            width = options.margin.width - options.margin.left - options.margin.right
+            y2Grid = scales.y2Axis
+              .tickSize(-width, 0, 0)
+            grid = svg.selectAll('.y2.grid')
+              .call(y2Grid)
+
+        this.formatTicks(scales, data, series, svg, options)
+
+      formatTicks: (scales, data, series, svg, options) ->
+        axis = svg.selectAll('.x.axis')
+
+        if options.axes.x.innerTicks?
+          axis.selectAll('.tick>line')
+            .call(this.setDefaultStroke)
+
+        if options.axes.x.grid?
+          grid = svg.selectAll('.x.grid')
+            .selectAll('.tick>line')
             .call(this.setDefaultGrid)
 
         if options.axes.x.ticksRotate?
@@ -159,10 +193,8 @@
             .style('text-anchor', if options.axes.x.ticksRotate >= 0 then 'start' else 'end')
 
         if (series.filter (s) -> s.axis is 'y' and s.visible isnt false).length > 0
-          yDomain = this.getVerticalDomain(options, data, series, 'y')
-          scales.yScale.domain(yDomain).nice()
+
           axis = svg.selectAll('.y.axis')
-            .call(scales.yAxis)
 
           if options.axes.y.innerTicks?
             axis.selectAll('.tick>line')
@@ -174,34 +206,24 @@
               .style('text-anchor', 'end')
 
           if options.axes.y.grid?
-            width = options.margin.width - options.margin.left - options.margin.right
-            yGrid = scales.yAxis
-              .tickSize(-width, 0, 0)
             grid = svg.selectAll('.y.grid')
-              .call(yGrid)
             grid.selectAll('.tick>line')
               .call(this.setDefaultGrid)
 
         if (series.filter (s) -> s.axis is 'y2' and s.visible isnt false).length > 0
-          y2Domain = this.getVerticalDomain(options, data, series, 'y2')
-          scales.y2Scale.domain(y2Domain).nice()
           axis = svg.selectAll('.y2.axis')
-            .call(scales.y2Axis)
+
           if options.axes.y2.innerTicks?
             axis.selectAll('.tick>line')
               .call(this.setDefaultStroke)
-          
+
           if options.axes.y2.ticksRotate?
             axis.selectAll('.tick>text')
               .attr('transform', 'rotate(' + options.axes.y2.ticksRotate + ' 6,0)')
               .style('text-anchor', 'start')
 
           if options.axes.y2.grid?
-            width = options.margin.width - options.margin.left - options.margin.right
-            y2Grid = scales.y2Axis
-              .tickSize(-width, 0, 0)
             grid = svg.selectAll('.y2.grid')
-              .call(y2Grid)
             grid.selectAll('.tick>line')
               .call(this.setDefaultGrid)
 

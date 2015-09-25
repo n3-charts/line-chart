@@ -26,8 +26,12 @@
 
           [ 'x', 'y', 'y2' ].forEach (axis) ->
             if options.axes[axis]?.zoomable?
+              # apply the zoom
               svg.selectAll(".#{axis}.axis").call(axes["#{axis}Axis"])
               zoomed = true
+
+          # Reformat the axis ticks
+          self.formatTicks(axes, data, options.series, svg, options)
 
           if data.length
             columnWidth = self.getBestColumnWidth(axes, dimensions, data, options)
@@ -36,11 +40,11 @@
           if zoom and zoomed
             self.createZoomResetIcon(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom)
 
-      setZoom: (svg, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
+      setZoom: (svg, vis, dimensions, axes, data, columnWidth, options, handlers, dispatch) ->
         zoom = this.getZoomListener(axes, options)
 
         if zoom
-          zoom.on("zoom", this.getZoomHandler(svg, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom))
+          zoom.on("zoom", this.getZoomHandler(vis, dimensions, axes, data, columnWidth, options, handlers, dispatch, zoom))
           svg.call(zoom)
 
       getZoomListener: (axes, options) ->
