@@ -1,6 +1,19 @@
 module n3Charts.Utils {
   'use strict';
 
+  export interface IAxes {
+    x: AxisOptions;
+    y: AxisOptions;
+    y2?: AxisOptions;
+  };
+
+  export interface IMargin {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+  }
+
   export class Options {
 
     static DEFAULT:any = {
@@ -8,6 +21,12 @@ module n3Charts.Utils {
       axes: {
         x: {},
         y: {}
+      },
+      margin: {
+        top: 0,
+        left: 40,
+        bottom: 40,
+        right: 0
       }
     };
 
@@ -18,84 +37,131 @@ module n3Charts.Utils {
       COLUMN: 'column'
     };
 
-    public series: Series[];
-    public axes: any;
+    public series: SeriesOptions[];
+    public axes: IAxes;
+    public margin: IMargin;
 
-    constructor(js:any) {
-      this.parseJS(js || Options.DEFAULT);
+    constructor(js?:any) {
+      this.parse(js);
     }
 
-    parseJS(js:any) {
-      this.series = this.parseSeries(js);
-      this.axes = this.parseAxes(js);
+    parse(js?:any) {
+      var options = <any>{};
+
+      // Extend the default options
+      angular.extend(options, Options.DEFAULT, js);
+
+      this.series = this.parseSeries(options.series);
+      this.axes = this.parseAxes(options.axes);
+      this.margin = this.parseMargin(options.margin);
     }
 
-    parseSeries(js: any) {
-      var series = Options.DEFAULT.series;
-
-      if (js.hasOwnProperty('series')) {
-        angular.extend(series, js.series);
+    parseMargin(jsMargin: any): IMargin {
+      // Type check because of <any> type
+      if (!angular.isObject(jsMargin)) {
+        throw TypeError('Margin option must be an object.');
       }
+
+      var margin = {};
+
+      // Extend the default margin options
+      angular.extend(margin, Options.DEFAULT.margin, jsMargin);
+
+      return this.sanitizeMargin(margin);
+    }
+
+    parseSeries(jsSeries: any): SeriesOptions[] {
+      // Type check because of <any> type
+      if (!angular.isArray(jsSeries)) {
+        throw TypeError('Series option must be an array.');
+      }
+
+      var series = [];
+
+      // Extend the default series options
+      angular.extend(series, Options.DEFAULT.series, jsSeries);
 
       return this.sanitizeSeries(series);
     }
 
-    parseAxes(js: any) {
-      var axes = Options.DEFAULT.axes;
-
-      if (js.hasOwnProperty('axes')) {
-        angular.extend(axes, js.axes);
+    parseAxes(jsAxes: any): IAxes {
+      // Type check because of <any> type
+      if (!angular.isObject(jsAxes)) {
+        throw TypeError('Axes option must be an object.');
       }
+
+      var axes = {};
+
+      // Extend the default axes options
+      angular.extend(axes, Options.DEFAULT.axes, jsAxes);
 
       return this.sanitizeAxes(axes);
     }
 
-    getByAxisSide(side: string) {
-      if ([Factory.Axis.SIDE_X, Factory.Axis.SIDE_Y].indexOf(side) === -1) {
-        throw new TypeError('Cannot get axis side : ' + side);
-      }
-
-      return this.axes[side];
-    }
-
-    getAbsKey(): string {
-      if (!this.axes[Factory.Axis.SIDE_X]) {
-        throw new TypeError('Cannot find abs key : ' + Factory.Axis.SIDE_X);
-      }
-
-      return this.axes[Factory.Axis.SIDE_X].key;
-    }
-
     sanitizeSeries(series: any[]) {
-      return (series || []).map((s) => new Series(s));
+      return (series).map((s) => new SeriesOptions(s));
     }
 
     sanitizeAxes(axes: any) {
-      // Map operation over an object, that returns a new object
-      return Object.keys(axes || {}).reduce((prev, key) => {
+      // Map object keys and return a new object
+      return <IAxes> Object.keys(axes).reduce((prev, key) => {
         prev[key] = new AxisOptions(axes[key]);
         return prev;
       }, {});
     }
 
-    _isValidSeriesType(type:string): Boolean {
-      for (var key in Options.SERIES_TYPES) {
-        if (Options.SERIES_TYPES[key] === type) {
-          return true;
-        }
-      }
-
-      return false;
+    sanitizeMargin(margin) {
+      return <IMargin> {
+        top: parseFloat(margin.top),
+        left: parseFloat(margin.left),
+        bottom: parseFloat(margin.bottom),
+        right: parseFloat(margin.right)
+      };
     }
 
-    getSeriesByType(type: string): Series[] {
-      if (this._isValidSeriesType(type) === false) {
+    isValidAxisSide(side:string): Boolean {
+      return d3.values(Factory.Axis.SIDE).indexOf(side) === -1
+        ? false : true;
+    }
+
+    isValidSeriesType(type:string): Boolean {
+      return d3.values(Options.SERIES_TYPES).indexOf(type) === -1
+        ? false : true;
+    }
+
+    getAbsKey(): string {
+      if (!this.axes[Factory.Axis.SIDE.X]) {
+        throw new TypeError('Cannot find abs key : ' + Factory.Axis.SIDE.X);
+      }
+
+      return this.axes[Factory.Axis.SIDE.X].key;
+    }
+
+    getByAxisSide(side: string) {
+        if (!this.isValidAxisSide(side)) {
+            throw new TypeError('Cannot get axis side : ' + side);
+        }
+
+        return this.axes[side];
+    }
+
+    getSeriesByType(type: string): SeriesOptions[] {
+      if (!this.isValidSeriesType(type)) {
         throw new TypeError('Unknown series type: ' + type);
       }
 
-      return this.series.filter((s) =>
-        s.type.indexOf(type) > -1
-      );
+      return this.series.filter((series) => series.type.indexOf(type) !== -1);
+    }
+
+    public static uuid(): string {
+      // @src: http://stackoverflow.com/a/2117523
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+        .replace(/[xy]/g, (c) => {
+            var r = Math.random() * 16 | 0;
+            var v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          }
+        );
     }
   }
 }

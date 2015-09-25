@@ -51,7 +51,7 @@ module n3Charts.Utils {
       return this;
     }
 
-    datumEnter(series: Utils.Series) {
+    datumEnter(series: SeriesOptions) {
         return (selection: D3.Selection) => {
             return selection.on('mouseenter', (d, i) => {
                 this.trigger('over', d, i, series);
@@ -59,7 +59,7 @@ module n3Charts.Utils {
         };
     }
 
-    datumOver(series: Utils.Series) {
+    datumOver(series: SeriesOptions) {
       return (selection: D3.Selection) => {
         return selection.on('mouseover', (d, i) => {
           this.trigger('over', d, i, series);
@@ -67,7 +67,7 @@ module n3Charts.Utils {
       };
     }
 
-    datumMove(series: Utils.Series) {
+    datumMove(series: SeriesOptions) {
         return (selection: D3.Selection) => {
             return selection.on('mousemove', (d, i) => {
                 this.trigger('over', d, i, series);
@@ -75,7 +75,7 @@ module n3Charts.Utils {
         };
     }
 
-    datumLeave(series: Utils.Series) {
+    datumLeave(series: SeriesOptions) {
       return (selection: D3.Selection) => {
         return selection.on('mouseleave', (d, i) => {
           this.trigger('leave', d, i, series);
