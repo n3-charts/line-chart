@@ -6,7 +6,7 @@ var abs = require('path').resolve;
 // Absolute paths (sub tasks are one folder deeper than this file)
 var paths = {
   source: {from: abs('src/**/*.ts'), to: abs('.tmp/build/')},
-  style: {from: abs('src/**/*.scss'), to: abs('.tmp/build/')},
+  style: {from: abs('src/styles/**/*.scss'), to: abs('.tmp/build/')},
   test: {from: abs('test/**/*.ts'), to: abs('.tmp/test/')},
   spec: {config: abs('test/config/karma.conf.js'), from: abs('test/**/*.spec.ts')},
   e2e: {config: abs('test/config/protractor.conf.js'), from: abs('test/**/*.e2e.ts')},
