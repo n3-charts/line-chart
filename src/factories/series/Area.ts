@@ -3,7 +3,7 @@ module n3Charts.Factory.Series {
 
   export class Area extends Utils.SeriesFactory {
 
-    public type: string = Utils.Options.SERIES_TYPES.AREA;
+    public type: string = Utils.SeriesOptions.TYPE.AREA;
 
     updateData(group: D3.Selection, series: Utils.SeriesOptions, index: number, numSeries: number) {
 
