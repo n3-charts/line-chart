@@ -1,10 +1,10 @@
 module n3Charts.Utils {
   'use strict';
 
-  export interface IAxes {
-    x: AxisOptions;
-    y: AxisOptions;
-    y2?: AxisOptions;
+  export interface IAxesSet {
+    x: IAxisOptions;
+    y: IAxisOptions;
+    y2?: IAxisOptions;
   };
 
   export interface IMargin {
@@ -14,7 +14,13 @@ module n3Charts.Utils {
     right: number;
   }
 
-  export class Options {
+  export interface IOptions {
+    series: ISeriesOptions[];
+    axes: IAxesSet;
+    margin: IMargin;
+  }
+
+  export class Options implements IOptions {
 
     static DEFAULT:any = {
       series: [],
@@ -30,72 +36,38 @@ module n3Charts.Utils {
       }
     };
 
-    static SERIES_TYPES = {
-      DOT: 'dot',
-      LINE: 'line',
-      AREA: 'area',
-      COLUMN: 'column'
-    };
-
     public series: SeriesOptions[];
-    public axes: IAxes;
+    public axes: IAxesSet;
     public margin: IMargin;
 
     constructor(js?:any) {
-      this.parse(js);
+      var options = this.getSanitizedOptions(js);
+
+      this.margin = this.sanitizeMargin(options.margin);
+      this.series = this.sanitizeSeries(options.series);
+      this.axes = this.sanitizeAxes(options.axes);
     }
 
-    parse(js?:any) {
-      var options = <any>{};
+    getSanitizedOptions(js?: any): IOptions {
+      var options = <IOptions>{};
 
       // Extend the default options
       angular.extend(options, Options.DEFAULT, js);
 
-      this.series = this.parseSeries(options.series);
-      this.axes = this.parseAxes(options.axes);
-      this.margin = this.parseMargin(options.margin);
+      options.margin = <IMargin> Options.getObject(options, 'margin', Options.DEFAULT);
+      options.series = <ISeriesOptions[]> Options.getArray(options, 'series', Options.DEFAULT);
+      options.axes = <IAxesSet> Options.getObject(options, 'axes', Options.DEFAULT);
+
+      return options;
     }
 
-    parseMargin(jsMargin: any): IMargin {
-      // Type check because of <any> type
-      if (!angular.isObject(jsMargin)) {
-        throw TypeError('Margin option must be an object.');
-      }
-
-      var margin = {};
-
-      // Extend the default margin options
-      angular.extend(margin, Options.DEFAULT.margin, jsMargin);
-
-      return this.sanitizeMargin(margin);
-    }
-
-    parseSeries(jsSeries: any): SeriesOptions[] {
-      // Type check because of <any> type
-      if (!angular.isArray(jsSeries)) {
-        throw TypeError('Series option must be an array.');
-      }
-
-      var series = [];
-
-      // Extend the default series options
-      angular.extend(series, Options.DEFAULT.series, jsSeries);
-
-      return this.sanitizeSeries(series);
-    }
-
-    parseAxes(jsAxes: any): IAxes {
-      // Type check because of <any> type
-      if (!angular.isObject(jsAxes)) {
-        throw TypeError('Axes option must be an object.');
-      }
-
-      var axes = {};
-
-      // Extend the default axes options
-      angular.extend(axes, Options.DEFAULT.axes, jsAxes);
-
-      return this.sanitizeAxes(axes);
+    sanitizeMargin(margin: any) {
+      return <IMargin>{
+        top: parseFloat(margin.top),
+        left: parseFloat(margin.left),
+        bottom: parseFloat(margin.bottom),
+        right: parseFloat(margin.right)
+      };
     }
 
     sanitizeSeries(series: any[]) {
@@ -104,56 +76,69 @@ module n3Charts.Utils {
 
     sanitizeAxes(axes: any) {
       // Map object keys and return a new object
-      return <IAxes> Object.keys(axes).reduce((prev, key) => {
+      return <IAxesSet> Object.keys(axes).reduce((prev, key) => {
         prev[key] = new AxisOptions(axes[key]);
         return prev;
       }, {});
     }
 
-    sanitizeMargin(margin) {
-      return <IMargin> {
-        top: parseFloat(margin.top),
-        left: parseFloat(margin.left),
-        bottom: parseFloat(margin.bottom),
-        right: parseFloat(margin.right)
-      };
-    }
-
-    isValidAxisSide(side:string): Boolean {
-      return d3.values(Factory.Axis.SIDE).indexOf(side) === -1
-        ? false : true;
-    }
-
-    isValidSeriesType(type:string): Boolean {
-      return d3.values(Options.SERIES_TYPES).indexOf(type) === -1
-        ? false : true;
-    }
-
     getAbsKey(): string {
-      if (!this.axes[Factory.Axis.SIDE.X]) {
-        throw new TypeError('Cannot find abs key : ' + Factory.Axis.SIDE.X);
+      if (!this.axes[AxisOptions.SIDE.X]) {
+        throw new TypeError('Cannot find abs key : ' + AxisOptions.SIDE.X);
       }
 
-      return this.axes[Factory.Axis.SIDE.X].key;
+      return this.axes[AxisOptions.SIDE.X].key;
     }
 
     getByAxisSide(side: string) {
-        if (!this.isValidAxisSide(side)) {
+        if (!AxisOptions.isValidSide(side)) {
             throw new TypeError('Cannot get axis side : ' + side);
         }
 
         return this.axes[side];
     }
 
-    getSeriesByType(type: string): SeriesOptions[] {
-      if (!this.isValidSeriesType(type)) {
+    getSeriesByType(type: string) {
+      if (!SeriesOptions.isValidType(type)) {
         throw new TypeError('Unknown series type: ' + type);
       }
 
-      return this.series.filter((series) => series.type.indexOf(type) !== -1);
+      return this.series.filter((s) => s.hasType(type));
     }
 
-    public static uuid(): string {
+    static getObject(raw: any, key: string, def: any) {
+      // Type check because of <any> type
+      if (!angular.isObject(raw[key])) {
+        throw TypeError(key + ' option must be an object.');
+      }
+
+      var obj = {};
+
+      // Extend by default options
+      if (def && Object.keys(def).indexOf(key) !== -1) {
+        angular.extend(obj, def[key], raw[key]);
+      }
+
+      return obj;
+    }
+
+    static getArray(raw: any, key: string, def: any) {
+      // Type check because of <any> type
+      if (!angular.isArray(raw[key])) {
+        throw TypeError(key + ' option must be an array.');
+      }
+
+      var arr = [];
+
+      // Extend by default options
+      if (def && Object.keys(def).indexOf(key) !== -1) {
+        angular.extend(arr, def[key], raw[key]);
+      }
+
+      return arr;
+    }
+
+    static uuid() {
       // @src: http://stackoverflow.com/a/2117523
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
         .replace(/[xy]/g, (c) => {

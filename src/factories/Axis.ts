@@ -6,15 +6,11 @@ module n3Charts.Factory {
     public svg: D3.Selection;
     public scale: D3.Scale.Scale;
     public axis: D3.Svg.Axis;
-    public static SIDE = {
-      X: 'x',
-      Y: 'y'
-    };
 
     constructor(public side: string) {
       super();
 
-      if (d3.values(Axis.SIDE).indexOf(side) === -1) {
+      if (!Utils.AxisOptions.isValidSide(side)) {
         throw new TypeError('Wrong axis side : ' + side);
       }
     }
@@ -119,7 +115,7 @@ module n3Charts.Factory {
     }
 
     isAbscissas() {
-      return this.side === Axis.SIDE.X;
+      return this.side === Utils.AxisOptions.SIDE.X;
     }
 
     createAxis(vis: D3.Selection) {

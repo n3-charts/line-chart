@@ -1,7 +1,18 @@
 module n3Charts.Utils {
   'use strict';
 
-  export class SeriesOptions {
+  export interface ISeriesOptions {
+    axis: string;
+    dataset: string;
+    key: string;
+    label: string;
+    type: string[];
+    id: string;
+    color: string;
+    visible: boolean;
+  }
+
+  export class SeriesOptions implements ISeriesOptions {
     public axis: string = 'y';
     public dataset: string;
     public key: string;
@@ -9,7 +20,14 @@ module n3Charts.Utils {
     public type: string[] = ['line'];
     public id: string;
     public color: string;
-    public visible = true;
+    public visible: boolean = true;
+
+    static TYPE = {
+        DOT: 'dot',
+        LINE: 'line',
+        AREA: 'area',
+        COLUMN: 'column'
+    };
 
     constructor(js: any = {}) {
       this.parse(js);
@@ -44,7 +62,7 @@ module n3Charts.Utils {
     }
 
     isAColumn() {
-      return this.type.indexOf(Options.SERIES_TYPES.COLUMN) > -1;
+      return this.type.indexOf(SeriesOptions.TYPE.COLUMN) !== -1;
     }
 
     getMainType() {
@@ -52,7 +70,7 @@ module n3Charts.Utils {
         return this.type[0];
       }
 
-      var types = Options.SERIES_TYPES;
+      var types = SeriesOptions.TYPE;
 
       if (this.type.indexOf(types.AREA) !== -1) {
         return types.AREA;
@@ -67,6 +85,14 @@ module n3Charts.Utils {
       }
 
       return this.type[0];
+    }
+
+    hasType(type: string) {
+      return this.type.indexOf(type) !== -1;
+    }
+
+    static isValidType(type: string) {
+      return d3.values(SeriesOptions.TYPE).indexOf(type) !== -1;
     }
   }
 }
