@@ -57,13 +57,13 @@
             width: width
             height: height
           )
-        
+
         vis = svg.append('g')
             .attr('transform', 'translate(' + dimensions.left + ',' + dimensions.top + ')')
 
         defs = vis.append('defs')
           .attr('class', 'patterns')
-        
+
         # Add a clipPath for the content area
         defs.append('clipPath')
           .attr('class', 'content-clip')
@@ -81,7 +81,7 @@
       createContent: (svg, id, options) ->
         content = svg.append('g')
           .attr('class', 'content')
-        
+
         if options.hideOverflow
           content.attr('clip-path', "url(#content-clip-#{id})")
 
