@@ -2,6 +2,7 @@ build/
 typings/
 node_modules/
 .tmp/
+.npmrc
 *.log
 *.sublime-*
 .atom-build.json
