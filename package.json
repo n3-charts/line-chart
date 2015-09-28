@@ -1,16 +1,19 @@
 {
-  "name": "line-chart",
-  "version": "2.0.0-alpha",
-  "homepage": "https://github.com/n3-charts/line-chart",
+  "name": "n3-charts",
+  "version": "2.0.0-beta3",
+  "homepage": "http://n3-charts.github.io/line-chart/v2",
   "licenses": {
     "type": "MIT",
-    "url": "https://github.com/n3-charts/line-chart/blob/master/LICENCE"
+    "url": "https://github.com/n3-charts/line-chart/blob/dev/LICENSE"
   },
   "repository": {
     "type": "git",
     "url": "http://github.com/n3-charts/line-chart.git"
   },
   "bugs": "https://github.com/n3-charts/line-chart/issues",
+  "files": [
+    "build/"
+  ],
   "devDependencies": {
     "angular": "^1.4.0",
     "angular-mocks": "^1.4.0",
@@ -39,6 +42,7 @@
     "karma-sinon": "^1.0.4",
     "mocha": "^2.2.5",
     "protractor": "^2.1.0",
+    "release-it": "^2.3.0",
     "require-dir": "^0.3.0",
     "run-sequence": "^1.1.0",
     "sinon": "^1.14.1",
