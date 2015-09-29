@@ -22,51 +22,51 @@ module n3Charts.Utils {
 
   export class Options implements IOptions {
 
-    static DEFAULT:any = {
-      series: [],
-      axes: {
-        x: {},
-        y: {}
-      },
-      margin: {
-        top: 0,
-        left: 40,
-        bottom: 40,
-        right: 0
-      }
+    public series: SeriesOptions[] = [];
+
+    public axes: IAxesSet = {
+      x: <IAxisOptions>{},
+      y: <IAxisOptions>{}
     };
 
-    public series: SeriesOptions[];
-    public axes: IAxesSet;
-    public margin: IMargin;
+    public margin: IMargin = {
+      top: 0,
+      left: 40,
+      bottom: 40,
+      right: 0
+    };
 
     constructor(js?:any) {
-      var options = this.getSanitizedOptions(js);
+      var options = this.sanitizeOptions(js);
 
       this.margin = this.sanitizeMargin(options.margin);
       this.series = this.sanitizeSeries(options.series);
       this.axes = this.sanitizeAxes(options.axes);
     }
 
-    getSanitizedOptions(js?: any): IOptions {
+    /**
+     * Make sure that the options have proper types,
+     * and convert raw js to typed variables
+     */
+    sanitizeOptions(js?: any): IOptions {
       var options = <IOptions>{};
 
       // Extend the default options
-      angular.extend(options, Options.DEFAULT, js);
+      angular.extend(options, this, js);
 
-      options.margin = <IMargin> Options.getObject(options, 'margin', Options.DEFAULT);
-      options.series = <ISeriesOptions[]> Options.getArray(options, 'series', Options.DEFAULT);
-      options.axes = <IAxesSet> Options.getObject(options, 'axes', Options.DEFAULT);
+      options.margin = <IMargin> Options.getObject(options.margin, this.margin);
+      options.series = <ISeriesOptions[]> Options.getArray(options.series);
+      options.axes = <IAxesSet> Options.getObject(options.axes, this.axes);
 
       return options;
     }
 
     sanitizeMargin(margin: any) {
       return <IMargin>{
-        top: parseFloat(margin.top),
-        left: parseFloat(margin.left),
-        bottom: parseFloat(margin.bottom),
-        right: parseFloat(margin.right)
+        top: Options.getNumber(margin.top),
+        left: Options.getNumber(margin.left),
+        bottom: Options.getNumber(margin.bottom),
+        right: Options.getNumber(margin.right)
       };
     }
 
@@ -106,36 +106,41 @@ module n3Charts.Utils {
       return this.series.filter((s) => s.hasType(type));
     }
 
-    static getObject(raw: any, key: string, def: any) {
-      // Type check because of <any> type
-      if (!angular.isObject(raw[key])) {
-        throw TypeError(key + ' option must be an object.');
+    static getBoolean(val: any, def: boolean = true) {
+      return !(val === !def);
+    }
+
+    static getNumber(val: any, def: number = 0) {
+      var n = parseFloat(val);
+      return !isNaN(n) ? n : def;
+    }
+
+    static getString(val: any) {
+      var s = String(val);
+      return s;
+    }
+
+    static getIdentifier(val: any) {
+      var s = Options.getString(val);
+      return s.replace(/[^a-zA-Z0-9\-_]/ig, '');
+    }
+
+    static getObject(val: any, def: any = {}) {
+      // Type check because *val* is of type any
+      if (!angular.isObject(val)) {
+        throw TypeError(val + ' option must be an object.');
       }
 
       var obj = {};
 
-      // Extend by default options
-      if (def && Object.keys(def).indexOf(key) !== -1) {
-        angular.extend(obj, def[key], raw[key]);
-      }
+      // Extend by default parameter
+      angular.extend(obj, def, val);
 
       return obj;
     }
 
-    static getArray(raw: any, key: string, def: any) {
-      // Type check because of <any> type
-      if (!angular.isArray(raw[key])) {
-        throw TypeError(key + ' option must be an array.');
-      }
-
-      var arr = [];
-
-      // Extend by default options
-      if (def && Object.keys(def).indexOf(key) !== -1) {
-        angular.extend(arr, def[key], raw[key]);
-      }
-
-      return arr;
+    static getArray(val: any|any[], def: any[] = []) {
+      return def.concat(val);
     }
 
     static uuid() {

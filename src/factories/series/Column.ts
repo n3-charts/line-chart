@@ -12,7 +12,8 @@ module n3Charts.Factory.Series {
     public innerXScale: D3.Scale.OrdinalScale;
 
     update(data: Utils.Data, options: Utils.Options) {
-      super.update(data, options);
+      this.data = data;
+      this.options = options;
 
       var series = options.getSeriesByType(this.type).filter((s) => s.visible);
 

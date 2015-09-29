@@ -19,7 +19,7 @@ describe('n3Charts.Utils.Options', () => {
       expect(testing).to.equal(expected);
     });
 
-    it('should create an array as series property', () => {
+    it('should create a series property with the type array', () => {
       options = new Options();
 
       var testing = angular.isArray(options.series);
@@ -28,7 +28,7 @@ describe('n3Charts.Utils.Options', () => {
       expect(testing).to.equal(expected);
     });
 
-    it('should create an object as margin property', () => {
+    it('should create a margin property with the type object', () => {
       options = new Options();
 
       var testing = angular.isObject(options.margin);
@@ -37,7 +37,7 @@ describe('n3Charts.Utils.Options', () => {
       expect(testing).to.equal(expected);
     });
 
-    it('should create an object as axes property', () => {
+    it('should create an axes property with the type object', () => {
       options = new Options();
 
       var testing = angular.isObject(options.axes);
@@ -47,13 +47,13 @@ describe('n3Charts.Utils.Options', () => {
     });
   });
 
-  describe('getSanitizedOptions', () => {
+  describe('sanitizeOptions', () => {
     beforeEach(() => {
       options = new Options();
     });
 
     it('should create an array as series property', () => {
-      var opt = options.getSanitizedOptions();
+      var opt = options.sanitizeOptions();
 
       var testing = angular.isArray(opt.series);
       var expected = true;
@@ -61,16 +61,8 @@ describe('n3Charts.Utils.Options', () => {
       expect(testing).to.equal(expected);
     });
 
-    it('should throw a type error when series argument is not an array', () => {
-      var arg = { series: {foo: 'bar'} };
-
-      expect(() => {
-          options.getSanitizedOptions(arg);
-      }).to.throwError();
-    });
-
     it('should create an object as margin property', () => {
-      var opt = options.getSanitizedOptions();
+      var opt = options.sanitizeOptions();
 
       var testing = angular.isObject(opt.margin);
       var expected = true;
@@ -82,12 +74,12 @@ describe('n3Charts.Utils.Options', () => {
       var arg = { margin: 'bar' };
 
       expect(() => {
-          options.getSanitizedOptions(arg);
+          options.sanitizeOptions(arg);
       }).to.throwError();
     });
 
     it('should create an object as axes property', () => {
-      var opt = options.getSanitizedOptions();
+      var opt = options.sanitizeOptions();
 
       var testing = angular.isObject(opt.axes);
       var expected = true;
@@ -99,8 +91,98 @@ describe('n3Charts.Utils.Options', () => {
       var arg = { axes: 'bar' };
 
       expect(() => {
-          options.getSanitizedOptions(arg);
+          options.sanitizeOptions(arg);
       }).to.throwError();
+    });
+  });
+
+  describe('sanitizeMargin', () => {
+    var arg: any;
+    var margin: n3Charts.Utils.IMargin;
+
+    beforeEach(() => {
+      options = new Options();
+
+      arg = {
+        top: '10',
+        bottom: '10.09',
+        left: 10.5,
+        right: undefined
+      };
+
+      margin = options.sanitizeMargin(arg);
+    });
+
+    it('should parse values as float', () => {
+      var testing = margin;
+      var expected = {
+        top: 10,
+        bottom: 10.09,
+        left: 10.5,
+        right: 0
+      };
+
+      expect(testing).to.eql(expected);
+    });
+  });
+
+  describe('sanitizeSeries', () => {
+    var arg: any[];
+    var series: n3Charts.Utils.SeriesOptions[];
+
+    beforeEach(() => {
+      options = new Options();
+
+      arg = [{
+        axis: 'y',
+        key: 'val_0'
+      }, {
+        axis: 'y',
+        key: 'val_1'
+      }];
+
+      series = options.sanitizeSeries(arg);
+    });
+
+    it('should return an array of SeriesOptions instances', () => {
+      var testing = series[0] instanceof SeriesOptions;
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+  });
+
+  describe('sanitizeAxes', () => {
+    var arg: any;
+    var axes: n3Charts.Utils.IAxesSet;
+
+    beforeEach(() => {
+      options = new Options();
+
+      arg = {
+        x: {
+          type: 'linear'
+        },
+        y: {
+          type: 'linear'
+        }
+      };
+
+      axes = options.sanitizeAxes(arg);
+    });
+
+    it('should return an object containing an AxisOptions instance for the x axis', () => {
+      var testing = axes[AxisOptions.SIDE.X] instanceof AxisOptions;
+      var expected = true;
+
+      expect(testing).to.equal(expected);
+    });
+
+    it('should return an object containing an AxisOptions instance for the y axis', () => {
+      var testing = axes[AxisOptions.SIDE.Y] instanceof AxisOptions;
+      var expected = true;
+
+      expect(testing).to.equal(expected);
     });
   });
 
