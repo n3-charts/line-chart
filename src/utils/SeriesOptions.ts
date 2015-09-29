@@ -30,67 +30,105 @@ module n3Charts.Utils {
     };
 
     constructor(js: any = {}) {
-      this.parse(js);
+      var options = this.sanitizeOptions(js);
+
+      this.id = options.id || Options.uuid();
+      this.axis = this.sanitizeAxis(options.axis);
+      this.dataset = options.dataset;
+      this.key = options.key;
+      this.color = options.color;
+      this.visible = options.visible;
+      this.label = options.label || options.id;
+
+      if (options.type.length > 0) {
+        this.type = this.sanitizeType(options.type);
+      }
     }
 
-    parse(jsSeries: any) {
-      this.id = jsSeries.id || Options.uuid();
-      this.axis = jsSeries.axis;
-      this.dataset = jsSeries.dataset;
-      this.key = jsSeries.key;
-      this.type = this.parseType(jsSeries.type);
-      this.id = jsSeries.id;
-      this.color = jsSeries.color;
-      this.visible = !(jsSeries.visible === false);
-      this.label = jsSeries.label || jsSeries.id;
+    /**
+     * Make sure that the options have proper types,
+     * and convert raw js to typed variables
+     */
+    sanitizeOptions(js: any) {
+      var options = <ISeriesOptions>{};
+
+      // Extend the default options
+      angular.extend(options, this, js);
+
+      options.id = Options.getString(options.id);
+      options.type = Options.getArray(options.type);
+      options.dataset = Options.getString(options.dataset);
+      options.key = Options.getString(options.key);
+      options.color = Options.getString(options.color);
+      options.label = Options.getString(options.label);
+      options.visible = Options.getBoolean(options.visible);
+
+      return options;
     }
 
+    /**
+     * Return the toggeled visibility without modifying
+     * the visibility property itself
+     */
     getToggledVisibility() {
       return !this.visible;
     }
 
-    parseType(js:any): string[] {
-      if (!js) {
-        return ['line'];
-      }
-
-      if (typeof js === 'string') {
-        return [js];
-      }
-
-      return js;
+    /**
+     * Return an array of valid types
+     */
+    sanitizeType(types: string[]) {
+      return types.filter((type) => {
+        return SeriesOptions.isValidType(type);
+      });
     }
 
+    /**
+     * Return a valid axis key
+     */
+    sanitizeAxis(axis: string) {
+      if (['y'].indexOf(axis) === -1) {
+        throw TypeError(axis + ' is not a valid series option for axis.');
+      }
+
+      return axis;
+    }
+
+    /**
+     * Returns true if the series has a type column.
+     * Series of type column need special treatment,
+     * because x values are usually offset
+     */
     isAColumn() {
-      return this.type.indexOf(SeriesOptions.TYPE.COLUMN) !== -1;
+      return this.hasType(SeriesOptions.TYPE.COLUMN);
     }
 
     getMainType() {
-      if (this.type.length === 1) {
-        return this.type[0];
-      }
+      // @Sebastien: do we really need a main type?
+      // I saw we are just using it for defining classes,
+      // but this could be perfectly done for every type
+      d3.values(SeriesOptions.TYPE).forEach((type) => {
+        if (this.hasType(type)) {
+          return type;
+        }
+      });
 
-      var types = SeriesOptions.TYPE;
-
-      if (this.type.indexOf(types.AREA) !== -1) {
-        return types.AREA;
-      }
-
-      if (this.type.indexOf(types.LINE) !== -1) {
-        return types.LINE;
-      }
-
-      if (this.type.indexOf(types.DOT) !== -1) {
-        return types.DOT;
-      }
-
+      // We should always find the type with the lines
+      // above and never reach this return statement
       return this.type[0];
     }
 
+    /**
+     * Returns true if the series has a type *type*,
+     * where type should be a value of SeriesOptions.TYPE
+     */
     hasType(type: string) {
       return this.type.indexOf(type) !== -1;
     }
 
+    /**
+     * Returns true if the type *type* is a valid type
+     */
     static isValidType(type: string) {
       return d3.values(SeriesOptions.TYPE).indexOf(type) !== -1;
     }
