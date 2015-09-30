@@ -1,0 +1,39 @@
+.row {
+  display: flex;
+  align-items: center;
+
+  @mixin col($value) {
+    .col-#{$value} {
+      flex: 1;
+      flex-grow: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      position: relative;
+      flex-basis: $value * 1%;
+      min-height: 24px;
+
+      &.right {
+        text-align: right;
+      }
+
+      &.center {
+        text-align: center;
+      }
+
+      &.middle {
+        align-self: baseline;
+      }
+    }
+  }
+
+  @include col(0);
+  @include col(10);
+  @include col(20);
+  @include col(30);
+  @include col(40);
+  @include col(50);
+  @include col(60);
+  @include col(70);
+  @include col(80);
+  @include col(100);
+}

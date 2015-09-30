@@ -1,0 +1,46 @@
+body, html {
+  font-family: Roboto,'Helvetica Neue',sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $primary;
+  font-weight: 300;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+h2 {
+  font-size: 1.8em;
+}
+
+p {
+  font-weight: 400;
+  font-size: 14px;
+  text-align: justify;
+  line-height: 1.3em;
+}
+
+a {
+  text-decoration: none;
+  font-weight: 300;
+  color: $primary;
+  border-bottom: 1px dashed;
+
+  &:hover {
+    color: $primary-dark;
+  }
+
+  &.quiet {
+    color: $secondary;
+    font-weight: 100;
+  }
+}
+
+code {
+  background-color: hsl(0, 0, 20);
+  color: lightgrey;
+  padding: 10px;
+  display: block;
+}
