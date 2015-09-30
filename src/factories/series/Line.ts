@@ -3,7 +3,7 @@ module n3Charts.Factory.Series {
 
   export class Line extends Utils.SeriesFactory {
 
-    public type: string = Utils.Options.SERIES_TYPES.LINE;
+    public type: string = Utils.SeriesOptions.TYPE.LINE;
 
     updateData(group: D3.Selection, series: Utils.SeriesOptions, index: number, numSeries: number) {
 
