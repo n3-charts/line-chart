@@ -3,3 +3,8 @@ line-chart.sublime-project
 node_modules/
 coverage/
 test/
+.npmrc
+.tmp/
+typings/
+*.map
+v2/.sass-cache
