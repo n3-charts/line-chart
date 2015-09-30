@@ -27,6 +27,10 @@ module n3Charts {
     public replace = true;
     public template = '<div></div>';
 
+    constructor(private $window: ng.IWindowService) {
+
+    }
+
     link = (scope: ILineChartScope, element: JQuery, attributes: ng.IAttributes) => {
       var eventMgr = new Utils.EventManager();
       var factoryMgr = new Utils.FactoryManager();
@@ -55,12 +59,8 @@ module n3Charts {
       // Initialize all factories
       factoryMgr.all().forEach((f) => f.instance.init(f.key, eventMgr, factoryMgr));
 
-      // Trigger the create event
-      eventMgr.trigger('create');
-
-      // We use $watch because both options and data
-      // are objects and not arrays
-      scope.$watch('[options, data]', () => {
+      // Unwrap native options and update the chart
+      var update = () => {
         // Call the update event with a copy of the options
         // and data to avoid infinite digest loop
         var options = new Utils.Options(angular.copy(scope.options));
@@ -68,10 +68,18 @@ module n3Charts {
 
         // Trigger the update event
         eventMgr.trigger('update', data, options);
-      }, true);
+      };
+
+      // Trigger the create event
+      eventMgr.trigger('create');
+      eventMgr.trigger('resize', element[0].parentElement);
+
+      // We use $watch because both options and data
+      // are objects and not arrays
+      scope.$watch('[options, data]', update, true);
 
       scope.$watch('onDatumEnter', function() {
-          eventMgr.on('enter.directive', scope.onDatumEnter);
+        eventMgr.on('enter.directive', scope.onDatumEnter);
       });
 
       scope.$watch('onDatumOver', function() {
@@ -79,7 +87,7 @@ module n3Charts {
       });
 
       scope.$watch('onDatumMove', function() {
-          eventMgr.on('move.directive', scope.onDatumMove);
+        eventMgr.on('move.directive', scope.onDatumMove);
       });
 
       scope.$watch('onDatumLeave', function() {
@@ -90,6 +98,12 @@ module n3Charts {
         var foundSeries = scope.options.series.filter((s) => s.id === series.id)[0];
         foundSeries.visible = series.getToggledVisibility();
         scope.$apply();
+      });
+
+      // Trigger the resize event
+      angular.element(this.$window).on('resize', (event: UIEvent) => {
+        eventMgr.trigger('resize', element[0].parentElement);
+        update();
       });
 
       // Trigger the destroy event
