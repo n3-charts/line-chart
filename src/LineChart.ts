@@ -41,8 +41,8 @@ module n3Charts {
         ['tooltip', Factory.Tooltip, element[0]],
         ['legend', Factory.Legend, element[0]],
         ['transitions', Factory.Transition],
-        ['x-axis', Factory.Axis, Factory.Axis.SIDE.X],
-        ['y-axis', Factory.Axis, Factory.Axis.SIDE.Y],
+        ['x-axis', Factory.Axis, Utils.AxisOptions.SIDE.X],
+        ['y-axis', Factory.Axis, Utils.AxisOptions.SIDE.Y],
 
         // This order is important, otherwise it can mess up with the tooltip
         // (and you don't want to mess up with a tooltip, trust me).

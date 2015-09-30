@@ -3,7 +3,7 @@ module n3Charts.Factory.Series {
 
   export class Column extends Utils.SeriesFactory {
 
-    public type: string = Utils.Options.SERIES_TYPES.COLUMN;
+    public type: string = Utils.SeriesOptions.TYPE.COLUMN;
 
     private gapFactor: number = 0.2;
     private outerPadding: number = (this.gapFactor / 2) * 3;
@@ -12,7 +12,8 @@ module n3Charts.Factory.Series {
     public innerXScale: D3.Scale.OrdinalScale;
 
     update(data: Utils.Data, options: Utils.Options) {
-      super.update(data, options);
+      this.data = data;
+      this.options = options;
 
       var series = options.getSeriesByType(this.type).filter((s) => s.visible);
 
