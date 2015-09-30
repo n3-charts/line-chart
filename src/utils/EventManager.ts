@@ -8,6 +8,7 @@ module n3Charts.Utils {
     static EVENTS: string[] = [
       'create',  // on creation of the chart
       'update',  // on update of the chart
+      'resize',  // on resize of the chart
       'destroy', // on destroying the chart
       'enter',   // on mouse enter a data point or column
       'over',   // on mouse over a data point or column

@@ -7,3 +7,4 @@
 /// <reference path='SeriesOptions.ts' />
 /// <reference path='AxisOptions.ts' />
 /// <reference path='Options.ts' />
+/// <reference path='Dimensions.ts' />
