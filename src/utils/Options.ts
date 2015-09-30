@@ -106,41 +106,41 @@ module n3Charts.Utils {
       return this.series.filter((s) => s.hasType(type));
     }
 
-    static getBoolean(val: any, def: boolean = true) {
-      return !(val === !def);
+    static getBoolean(value: any, defaultValue: boolean = true) {
+      return !(value === !defaultValue);
     }
 
-    static getNumber(val: any, def: number = 0) {
-      var n = parseFloat(val);
-      return !isNaN(n) ? n : def;
+    static getNumber(value: any, defaultValue: number = 0) {
+      var n = parseFloat(value);
+      return !isNaN(n) ? n : defaultValue;
     }
 
-    static getString(val: any) {
-      var s = String(val);
+    static getString(value: any) {
+      var s = String(value);
       return s;
     }
 
-    static getIdentifier(val: any) {
-      var s = Options.getString(val);
+    static getIdentifier(value: any) {
+      var s = Options.getString(value);
       return s.replace(/[^a-zA-Z0-9\-_]/ig, '');
     }
 
-    static getObject(val: any, def: any = {}) {
+    static getObject(value: any, defaultValue: any = {}) {
       // Type check because *val* is of type any
-      if (!angular.isObject(val)) {
-        throw TypeError(val + ' option must be an object.');
+      if (!angular.isObject(value)) {
+        throw TypeError(value + ' option must be an object.');
       }
 
       var obj = {};
 
       // Extend by default parameter
-      angular.extend(obj, def, val);
+      angular.extend(obj, defaultValue, value);
 
       return obj;
     }
 
-    static getArray(val: any|any[], def: any[] = []) {
-      return def.concat(val);
+    static getArray(value: any|any[], defaultValue: any[] = []) {
+      return defaultValue.concat(value);
     }
 
     static uuid() {

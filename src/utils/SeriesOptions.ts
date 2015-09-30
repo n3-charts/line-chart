@@ -112,10 +112,6 @@ module n3Charts.Utils {
           return type;
         }
       });
-
-      // We should always find the type with the lines
-      // above and never reach this return statement
-      return this.type[0];
     }
 
     /**
