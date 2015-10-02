@@ -25,7 +25,7 @@ module n3Charts.Factory {
     update(data:Utils.Data, options:Utils.Options) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: IDimension = container.getDimensions();
+      var dim: Utils.Dimensions = container.getDimensions();
 
       // Get the [min, max] extent of the axis
       var extent = this.getExtent(data, options);
@@ -46,7 +46,7 @@ module n3Charts.Factory {
       this.destroyAxis();
     }
 
-    updateScaleRange(dim: IDimension) {
+    updateScaleRange(dim: Utils.Dimensions) {
       if (this.isAbscissas()) {
         this.scale.range([0, dim.innerWidth]);
       } else {
@@ -133,7 +133,7 @@ module n3Charts.Factory {
       }
     }
 
-    updateAxisContainer(dim: IDimension) {
+    updateAxisContainer(dim: Utils.Dimensions) {
       // Move the axis container to the correct position
       if (this.isAbscissas()) {
         this.svg
