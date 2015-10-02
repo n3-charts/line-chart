@@ -31,7 +31,7 @@ module n3Charts.Factory {
     update(data:Utils.Data, options:Utils.Options) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: IDimension = container.getDimensions();
+      var dim: Utils.Dimensions = container.getDimensions();
 
       var init = (series) => {
         var items = series.append('div').attr({'class': 'item'})
@@ -43,7 +43,7 @@ module n3Charts.Factory {
 
       var update = (series) => {
         series
-          .attr('class', (d) => 'item ' + d.getMainType())
+          .attr('class', (d:Utils.SeriesOptions) => 'item ' + d.type.join(' '))
           .classed('hidden', (d) => !d.visible);
         series.select('.icon').style('background-color', (d) => d.color);
         series.select('.label').text((d) => d.label);

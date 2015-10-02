@@ -103,17 +103,6 @@ module n3Charts.Utils {
       return this.hasType(SeriesOptions.TYPE.COLUMN);
     }
 
-    getMainType() {
-      // @Sebastien: do we really need a main type?
-      // I saw we are just using it for defining classes,
-      // but this could be perfectly done for every type
-      d3.values(SeriesOptions.TYPE).forEach((type) => {
-        if (this.hasType(type)) {
-          return type;
-        }
-      });
-    }
-
     /**
      * Returns true if the series has a type *type*,
      * where type should be a value of SeriesOptions.TYPE

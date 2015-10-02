@@ -1,26 +1,13 @@
 module n3Charts.Factory {
   'use strict';
 
-  export interface IDimension {
-    width: number;
-    height: number;
-    innerWidth: number;
-    innerHeight: number;
-    margin: {
-      left: number;
-      bottom: number;
-      right: number;
-      top: number;
-    };
-  }
-
   export class Container extends Utils.BaseFactory {
 
     public svg: D3.Selection;
     public vis: D3.Selection;
     public data: D3.Selection;
     public axes: D3.Selection;
-    public dim: IDimension;
+    public dim: Utils.Dimensions = new Utils.Dimensions();
 
     constructor(private element: HTMLElement) {
       super();
@@ -29,12 +16,10 @@ module n3Charts.Factory {
     create() {
       this.createRoot();
       this.createContainer();
+      this.eventMgr.on('resize', this.dim.fromParentElement.bind(this.dim));
     }
 
     update(datasets, options) {
-      // Compute the dimensions
-      this.dim = this.getDimensions();
-
       this.updateRoot();
       this.updateContainer();
     }
@@ -85,20 +70,8 @@ module n3Charts.Factory {
         .attr('transform', 'translate(' + this.dim.margin.left + ', ' + this.dim.margin.top + ')');
     }
 
-    getDimensions(): IDimension {
-      // Get the dimensions of the chart
-      return {
-        width: 600,
-        height: 200,
-        innerWidth: 560,
-        innerHeight: 160,
-        margin: {
-          left: 30,
-          bottom: 20,
-          right: 20,
-          top: 20
-        }
-      };
+    getDimensions(): Utils.Dimensions {
+      return this.dim;
     }
   }
 }

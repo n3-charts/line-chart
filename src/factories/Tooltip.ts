@@ -36,8 +36,6 @@ module n3Charts.Factory {
     }
 
     destroy() {
-      this.eventMgr.on('over.tooltip', null);
-      this.eventMgr.on('out.tooltip', null);
       this.svg.remove();
     }
 

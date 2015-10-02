@@ -12,5 +12,6 @@
 @import "legend";
 
 .chart {
+  position: relative;
   @import "axes";
 }
