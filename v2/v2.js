@@ -1,7 +1,7 @@
 angular.module('v2App', ['n3-line-chart', 'apojop'])
 
 .controller('AppCtrl', function($scope, $sce, $http) {
-  // mixpanel.track("V2");
+  mixpanel.track("V2");
 
   $scope.data = {
     dataset0: [

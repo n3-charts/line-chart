@@ -1,0 +1,79 @@
+{
+  "name": "n3-charts",
+  "version": "2.0.0-beta5",
+  "homepage": "http://n3-charts.github.io/line-chart/v2",
+  "licenses": {
+    "type": "MIT",
+    "url": "https://github.com/n3-charts/line-chart/blob/dev/LICENSE"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/n3-charts/line-chart.git"
+  },
+  "bugs": {
+    "url": "https://github.com/n3-charts/line-chart/issues"
+  },
+  "files": [
+    "build/"
+  ],
+  "devDependencies": {
+    "angular": "^1.4.0",
+    "angular-mocks": "^1.4.0",
+    "chai": "^2.3.0",
+    "d3": "^3.5.5",
+    "expect.js": "^0.3.1",
+    "gulp": "^3.8.11",
+    "gulp-clean": "^0.3.1",
+    "gulp-coveralls": "^0.1.4",
+    "gulp-karma": "0.0.4",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-mocha": "^2.1.0",
+    "gulp-nunjucks-render": "^0.2.1",
+    "gulp-protractor": "^1.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.0.3",
+    "gulp-serve": "^1.0.0",
+    "gulp-shell": "^0.4.1",
+    "gulp-tslint": "^3.0.1-beta",
+    "gulp-typescript": "^2.7.5",
+    "jsdom": "^5.4.3",
+    "karma": "^0.12.33",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-coverage": "^0.3.1",
+    "karma-mocha": "^0.1.10",
+    "karma-sinon": "^1.0.4",
+    "mocha": "^2.2.5",
+    "protractor": "^2.1.0",
+    "release-it": "^2.3.0",
+    "require-dir": "^0.3.0",
+    "run-sequence": "^1.1.0",
+    "sinon": "^1.14.1",
+    "tsd": "^0.6.0",
+    "tslint": "^2.2.0-beta",
+    "typescript": "^1.5.0-beta"
+  },
+  "gitHead": "a49753ab15b3dc81a2571fb88f8dfe176aef5966",
+  "description": "This is a development branch. For a stable version, please check out the master branch.",
+  "_id": "n3-charts@2.0.0-beta5",
+  "scripts": {},
+  "_shasum": "8f84debebc5982c8f5463ed96c3a54f2ec817bf9",
+  "_from": "n3-charts@2.0.0-beta5",
+  "_npmVersion": "2.11.2",
+  "_nodeVersion": "0.12.6",
+  "_npmUser": {
+    "name": "lorem-ipsum",
+    "email": "dolor_sit_amet@protonmail.ch"
+  },
+  "dist": {
+    "shasum": "8f84debebc5982c8f5463ed96c3a54f2ec817bf9",
+    "tarball": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta5.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "lorem-ipsum",
+      "email": "vaporzub@gmail.com"
+    }
+  ],
+  "directories": {},
+  "_resolved": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta5.tgz"
+}
