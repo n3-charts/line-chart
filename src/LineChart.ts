@@ -101,13 +101,18 @@ module n3Charts {
       });
 
       // Trigger the resize event
-      angular.element(this.$window).on('resize', (event: UIEvent) => {
+      // Added <any> cast for TS linter error, needs further investigation
+      // [chaosmail]
+      angular.element(this.$window).on(<any>'resize', (event: UIEvent) => {
         eventMgr.trigger('resize', element[0].parentElement);
         update();
       });
 
       // Trigger the destroy event
-      scope.$on('$destroy', () => eventMgr.trigger('destroy'));
+      scope.$on('$destroy', () => {
+        eventMgr.trigger('destroy');
+        angular.element(this.$window).off();
+      });
     };
   }
 }
