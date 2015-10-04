@@ -1,0 +1,37 @@
+@mixin animate($properties...) {
+  $result: ();
+  @each $property in $properties {
+    $result: append($result, $property 0.1s ease-in-out, comma);
+  }
+
+  -webkit-transition: $result;
+  -moz-transition: $result;
+  -o-transition: $result;
+  transition: $result;
+}
+
+
+.underlined {
+  margin-bottom: 0px;
+
+  > span {
+    position: relative;
+
+    &:after {
+      content: "";
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      bottom: -5px;
+      border-bottom: 1px solid;
+    }
+  }
+}
+
+@mixin logo($size) {
+  background: url("assets/n3-charts-v2_logo.png") no-repeat center top;
+  background-position: center center;
+  height: $size;
+  width: $size;
+  background-size: $size;
+}

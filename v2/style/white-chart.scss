@@ -1,0 +1,21 @@
+.chart {
+  .axis {
+    > path {
+      stroke: white;
+    }
+
+    > .tick {
+      > text {
+        fill: white;
+      }
+
+      > line {
+        stroke: white;
+      }
+    }
+  }
+}
+
+.chart-legend {
+  color: white!important;
+}
