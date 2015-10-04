@@ -19,6 +19,9 @@
       display: inline-block;
     }
 
+    // We should consider using a prefix here - like n3-label -
+    // due to naming collision with bootstrap
+    // [chaosmail]
     > .label {
       height: 16px;
       line-height: 17px;
@@ -33,6 +36,9 @@
       background-position: 50% 25%;
     }
 
+    // We should consider using a prefix here - like n3-hidden -
+    // due to naming collision with bootstrap
+    // [chaosmail]
     &.hidden {
       opacity: 0.4;
     }
