@@ -153,36 +153,115 @@ describe('n3Charts.Utils.Options', () => {
   });
 
   describe('sanitizeAxes', () => {
-    var arg: any;
     var axes: n3Charts.Utils.IAxesSet;
 
-    beforeEach(() => {
-      options = new Options();
+    describe('behavior', () => {
+      beforeEach(() => {
+        options = new Options();
+        axes = options.sanitizeAxes({
+          x: {
+            type: 'linear'
+          },
+          y: {}
+        });
+      });
 
-      arg = {
-        x: {
-          type: 'linear'
-        },
-        y: {
-          type: 'linear'
-        }
-      };
+      it('should return an object containing an AxisOptions instance for the x axis', () => {
+        var testing = axes[AxisOptions.SIDE.X] instanceof AxisOptions;
+        var expected = true;
 
-      axes = options.sanitizeAxes(arg);
+        expect(testing).to.equal(expected);
+      });
+
+      it('should return an object containing an AxisOptions instance for the y axis', () => {
+        var testing = axes[AxisOptions.SIDE.Y] instanceof AxisOptions;
+        var expected = true;
+
+        expect(testing).to.equal(expected);
+      });
+
+      it('should assume the axis is linear by default', () => {
+        var testing = axes[AxisOptions.SIDE.Y].type;
+        var expected = 'linear';
+
+        expect(testing).to.equal(expected);
+      });
     });
 
-    it('should return an object containing an AxisOptions instance for the x axis', () => {
-      var testing = axes[AxisOptions.SIDE.X] instanceof AxisOptions;
-      var expected = true;
+    describe('numeric extrema', () => {
+      beforeEach(() => {
+        options = new Options();
 
-      expect(testing).to.equal(expected);
+        axes = options.sanitizeAxes({
+          x: {
+            type: 'linear'
+          },
+          y: {
+            type: 'linear',
+            min: -10,
+            max: 10
+          }
+        });
+      });
+
+      it('should detect min', () => {
+        var testing = axes[AxisOptions.SIDE.Y].min;
+        var expected = -10;
+
+        expect(testing).to.equal(expected);
+      });
+
+      it('should detect min', () => {
+        var testing = axes[AxisOptions.SIDE.Y].max;
+        var expected = 10;
+
+        expect(testing).to.equal(expected);
+      });
+
+      it('should have undefined by default', () => {
+        var testing = axes[AxisOptions.SIDE.X].min;
+        var expected = undefined;
+
+        expect(testing).to.equal(expected);
+      });
     });
 
-    it('should return an object containing an AxisOptions instance for the y axis', () => {
-      var testing = axes[AxisOptions.SIDE.Y] instanceof AxisOptions;
-      var expected = true;
+    describe('date extrema', () => {
+      beforeEach(() => {
+        options = new Options();
 
-      expect(testing).to.equal(expected);
+        axes = options.sanitizeAxes({
+          x: {
+            type: 'date',
+            min: new Date(0),
+            max: new Date(2)
+          },
+          y: {
+            type: 'linear'
+          }
+        });
+      });
+
+      it('should detect min', () => {
+        var testing = axes[AxisOptions.SIDE.X].min;
+        var expected = new Date(0);
+
+        expect(testing).to.eql(expected);
+      });
+
+      it('should detect min', () => {
+        var testing = axes[AxisOptions.SIDE.X].max;
+        var expected = new Date(2);
+
+        expect(testing).to.eql(expected);
+      });
+
+      it('should have unedfined by default', () => {
+        var testing = axes[AxisOptions.SIDE.Y].min;
+        var expected = undefined;
+
+        expect(testing).to.equal(expected);
+      });
     });
   });
 

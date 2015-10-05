@@ -83,35 +83,48 @@ module n3Charts.Factory {
     }
 
     getExtent(datasets: Utils.Data, options: Utils.Options) {
+      var axisOptions = options.axes[this.side];
+      var extent = undefined;
+
       if (this.isAbscissas()) {
         var abscissasKey = options.getAbsKey();
-        return this.getExtentForDatasets(
+        extent = this.getExtentForDatasets(
           datasets,
           () => true,
           (datum) => [datum[abscissasKey], datum[abscissasKey]]
         );
+      } else {
+        var datasetsForSide = [];
+        var seriesForDataset = {};
+        options.series.forEach((series) => {
+          if (series.visible && series.axis === this.side) {
+            datasetsForSide.push(series.dataset);
+            if (!seriesForDataset[series.dataset]) {
+              seriesForDataset[series.dataset] = [];
+            }
+            seriesForDataset[series.dataset].push(series);
+          }
+        });
+
+        extent = this.getExtentForDatasets(
+          datasets,
+          (key) => datasetsForSide.indexOf(key) > -1,
+          (datum, datasetKey) => {
+            var data = seriesForDataset[datasetKey].map((series) => datum[series.key]);
+            return [<number>d3.min(data), <number>d3.max(data)];
+          }
+        );
       }
 
-      var datasetsForSide = [];
-      var seriesForDataset = {};
-      options.series.forEach((series) => {
-        if (series.visible && series.axis === this.side) {
-          datasetsForSide.push(series.dataset);
-          if (!seriesForDataset[series.dataset]) {
-            seriesForDataset[series.dataset] = [];
-          }
-          seriesForDataset[series.dataset].push(series);
-        }
-      });
+      if (axisOptions.min !== undefined) {
+        extent[0] = axisOptions.min;
+      }
 
-      return this.getExtentForDatasets(
-        datasets,
-        (key) => datasetsForSide.indexOf(key) > -1,
-        (datum, datasetKey) => {
-          var data = seriesForDataset[datasetKey].map((series) => datum[series.key]);
-          return [<number>d3.min(data), <number>d3.max(data)];
-        }
-      );
+      if (axisOptions.max !== undefined) {
+        extent[1] = axisOptions.max;
+      }
+
+      return extent;
     }
 
     isAbscissas() {

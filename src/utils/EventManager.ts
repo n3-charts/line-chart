@@ -55,7 +55,7 @@ module n3Charts.Utils {
     datumEnter(series: SeriesOptions) {
         return (selection: D3.Selection) => {
             return selection.on('mouseenter', (d, i) => {
-                this.trigger('over', d, i, series);
+                this.trigger('enter', d, i, series);
             });
         };
     }

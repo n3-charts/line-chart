@@ -63,10 +63,10 @@ module n3Charts.Utils {
 
     sanitizeMargin(margin: any) {
       return <IMargin>{
-        top: Options.getNumber(margin.top),
-        left: Options.getNumber(margin.left),
-        bottom: Options.getNumber(margin.bottom),
-        right: Options.getNumber(margin.right)
+        top: Options.getNumber(margin.top, 0),
+        left: Options.getNumber(margin.left, 0),
+        bottom: Options.getNumber(margin.bottom, 0),
+        right: Options.getNumber(margin.right, 0)
       };
     }
 
@@ -110,14 +110,17 @@ module n3Charts.Utils {
       return !(value === !defaultValue);
     }
 
-    static getNumber(value: any, defaultValue: number = 0) {
+    static getNumber(value: any, defaultValue: number) {
       var n = parseFloat(value);
       return !isNaN(n) ? n : defaultValue;
     }
 
-    static getString(value: any) {
-      var s = String(value);
-      return s;
+    static getDate(value: any, defaultValue: Date) {
+      return value instanceof Date ? value : defaultValue;
+    }
+
+    static getString(value: any, defaultValue?: string) {
+      return value ? String(value) : String(defaultValue);
     }
 
     static getIdentifier(value: any) {
