@@ -71,7 +71,7 @@ module n3Charts {
       };
 
       // Trigger the create event
-      eventMgr.trigger('create');
+      eventMgr.trigger('create', new Utils.Options(angular.copy(scope.options)));
       eventMgr.trigger('resize', element[0].parentElement);
 
       // We use $watch because both options and data

@@ -4,8 +4,11 @@
   opacity: 0;
   background-color: lightgrey;
   height: 20px;
-  width: 60px;
-  margin-left: -30px;
+
+  min-width: 60px;
+  padding: 0px 4px 1px 4px;
+
+  transform: translateX(-50%);
   border-radius: 2px;
   font-family: sans-serif;
   font-weight: 100;
@@ -14,7 +17,11 @@
 
   > .arrow {
     top: 100%;
-    left: 50%;
+
+    // Not sure of this, it seems to render slightly better...
+    // We might abandon the arrow down the road if it keeps being a sissy and
+    // not align properly.
+    left: calc(50% + 1px);
     border: solid transparent;
     content: " ";
     height: 0;

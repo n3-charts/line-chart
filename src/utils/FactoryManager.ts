@@ -3,7 +3,7 @@ module n3Charts.Utils {
 
   export interface IFactory {
     init(key: string, eventMgr: EventManager, factoryMgr: FactoryManager);
-    create();
+    create(options: Options);
     update(datasets, options, attributes: ng.IAttributes);
     destroy();
   }

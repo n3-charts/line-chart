@@ -90,7 +90,7 @@ module n3Charts.Utils {
       return this.axes[AxisOptions.SIDE.X].key;
     }
 
-    getByAxisSide(side: string) {
+    getByAxisSide(side: string): AxisOptions {
         if (!AxisOptions.isValidSide(side)) {
             throw new TypeError('Cannot get axis side : ' + side);
         }
@@ -98,7 +98,7 @@ module n3Charts.Utils {
         return this.axes[side];
     }
 
-    getSeriesByType(type: string) {
+    getSeriesByType(type: string): SeriesOptions[] {
       if (!SeriesOptions.isValidType(type)) {
         throw new TypeError('Unknown series type: ' + type);
       }
@@ -117,6 +117,10 @@ module n3Charts.Utils {
 
     static getDate(value: any, defaultValue: Date) {
       return value instanceof Date ? value : defaultValue;
+    }
+
+    static getFunction(value: any) {
+      return value instanceof Function ? value : undefined;
     }
 
     static getString(value: any, defaultValue?: string) {

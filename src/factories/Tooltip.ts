@@ -39,8 +39,8 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    show(datum:any, index:number, series: Utils.SeriesOptions) {
-      this.updateTooltipContent(datum, index, series);
+    show(datum: any, index: number, series: Utils.SeriesOptions, options: Utils.Options) {
+      this.updateTooltipContent(datum, index, series, options);
       this.updateTooltipPosition(datum, index, series);
 
       this.svg
@@ -51,9 +51,12 @@ module n3Charts.Factory {
       return;
     }
 
-    updateTooltipContent(datum: any, index: number, series: Utils.SeriesOptions) {
-      this.svg.select('.abscissas').text(datum.x);
-      this.svg.select('.value').text(datum.y);
+    updateTooltipContent(datum: any, index: number, series: Utils.SeriesOptions, options: Utils.Options) {
+      var xTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.X).tickFormat;
+      this.svg.select('.abscissas').text(xTickFormat ? xTickFormat(datum.x, index) : datum.x);
+
+      var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
+      this.svg.select('.value').text(yTickFormat ? yTickFormat(datum.y, index) : datum.y);
 
       this.svg.style('background-color', series.color);
       this.svg.select('.arrow').style('border-top-color', series.color);
