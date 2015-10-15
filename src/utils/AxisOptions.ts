@@ -13,6 +13,7 @@ module n3Charts.Utils {
     public key: string = 'x';
     public min: any;
     public max: any;
+    public tickFormat: (value: any, index?: number) => string;
 
     public static SIDE = {
         X: 'x',
@@ -31,6 +32,7 @@ module n3Charts.Utils {
     parse(js: any) {
       this.type = Options.getString(js.type, 'linear');
       this.key = js.key;
+      this.tickFormat = Options.getFunction(js.tickFormat);
 
       if (this.type === AxisOptions.TYPE.LINEAR) {
         this.min = Options.getNumber(js.min, undefined);
