@@ -6,7 +6,6 @@ module n3Charts.Factory.Series {
     public type: string = Utils.SeriesOptions.TYPE.DOT;
 
     updateData(group: D3.Selection, series: Utils.SeriesOptions, index: number, numSeries: number) {
-
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
@@ -35,10 +34,10 @@ module n3Charts.Factory.Series {
       dots.enter()
         .append('circle')
         .attr('class', this.type)
-        .call(this.eventMgr.datumEnter(series))
-        .call(this.eventMgr.datumOver(series))
-        .call(this.eventMgr.datumMove(series))
-        .call(this.eventMgr.datumLeave(series))
+        .call(this.eventMgr.datumEnter(series, this.options))
+        .call(this.eventMgr.datumOver(series, this.options))
+        .call(this.eventMgr.datumMove(series, this.options))
+        .call(this.eventMgr.datumLeave(series, this.options))
         .call(initPoint)
         .transition()
         .call(this.factoryMgr.get('transitions').enter)

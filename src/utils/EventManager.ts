@@ -52,34 +52,34 @@ module n3Charts.Utils {
       return this;
     }
 
-    datumEnter(series: SeriesOptions) {
+    datumEnter(series: SeriesOptions, options: Options) {
         return (selection: D3.Selection) => {
             return selection.on('mouseenter', (d, i) => {
-                this.trigger('enter', d, i, series);
+                this.trigger('enter', d, i, series, options);
             });
         };
     }
 
-    datumOver(series: SeriesOptions) {
+    datumOver(series: SeriesOptions, options: Options) {
       return (selection: D3.Selection) => {
         return selection.on('mouseover', (d, i) => {
-          this.trigger('over', d, i, series);
+          this.trigger('over', d, i, series, options);
         });
       };
     }
 
-    datumMove(series: SeriesOptions) {
+    datumMove(series: SeriesOptions, options: Options) {
         return (selection: D3.Selection) => {
             return selection.on('mousemove', (d, i) => {
-                this.trigger('over', d, i, series);
+                this.trigger('over', d, i, series, options);
             });
         };
     }
 
-    datumLeave(series: SeriesOptions) {
+    datumLeave(series: SeriesOptions, options: Options) {
       return (selection: D3.Selection) => {
         return selection.on('mouseleave', (d, i) => {
-          this.trigger('leave', d, i, series);
+          this.trigger('leave', d, i, series, options);
         });
       };
     }

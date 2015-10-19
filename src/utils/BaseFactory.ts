@@ -19,11 +19,11 @@ module n3Charts.Utils {
       this.eventMgr.on('destroy.' + this.key, this.destroy.bind(this));
     }
 
-    create() {
+    create(options: Options) {
       // This methods need to be overwritten by factories
     }
 
-    update(data, options) {
+    update(data: Data, options: Options) {
       // This methods need to be overwritten by factories
     }
 

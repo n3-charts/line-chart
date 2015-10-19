@@ -13,6 +13,20 @@ module n3Charts.Utils {
       top: 20
     };
 
+
+    updateMargins(options: Options) {
+      if (!options || !options.margin) {
+        return;
+      }
+
+      var fn = (prop) => this.margin[prop] = Options.getNumber(options.margin[prop], this.margin[prop]);
+
+      fn('top');
+      fn('bottom');
+      fn('left');
+      fn('right');
+    }
+
     getDimensionByProperty(element: HTMLElement, propertyName: string) {
       var style = window.getComputedStyle(element, null);
       return +style.getPropertyValue(propertyName).replace(/px$/, '');
