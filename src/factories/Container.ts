@@ -13,7 +13,8 @@ module n3Charts.Factory {
       super();
     }
 
-    create() {
+    create(options: Utils.Options) {
+      this.dim.updateMargins(options);
       this.createRoot();
       this.createContainer();
       this.eventMgr.on('resize', this.dim.fromParentElement.bind(this.dim));

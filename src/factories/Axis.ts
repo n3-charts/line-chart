@@ -37,7 +37,8 @@ module n3Charts.Factory {
       this.updateScaleRange(dim);
       this.updateScaleDomain(extent);
 
-      this.axis = this.getAxis(this.scale);
+      this.axis = this.getAxis(this.scale)
+        .tickFormat(axisOptions.tickFormat);
       this.updateAxisOrientation();
       this.updateAxisContainer(dim);
     }
