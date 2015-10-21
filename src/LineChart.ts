@@ -59,6 +59,10 @@ module n3Charts {
       // Initialize all factories
       factoryMgr.all().forEach((f) => f.instance.init(f.key, eventMgr, factoryMgr));
 
+      // When options aren't defined at startup (when used inside a directive, for example)
+      // we need to wait until they are to create the chart.
+      var deferredCreation = scope.options === undefined;
+
       // Unwrap native options and update the chart
       var update = () => {
         // Call the update event with a copy of the options
@@ -66,13 +70,21 @@ module n3Charts {
         var options = new Utils.Options(angular.copy(scope.options));
         var data = new Utils.Data(angular.copy(scope.data));
 
+        if (deferredCreation) {
+          deferredCreation = false;
+          eventMgr.trigger('create', options);
+          eventMgr.trigger('resize', element[0].parentElement);
+        }
+
         // Trigger the update event
         eventMgr.trigger('update', data, options);
       };
 
       // Trigger the create event
-      eventMgr.trigger('create', new Utils.Options(angular.copy(scope.options)));
-      eventMgr.trigger('resize', element[0].parentElement);
+      if (!deferredCreation) {
+        eventMgr.trigger('create', new Utils.Options(angular.copy(scope.options)));
+        eventMgr.trigger('resize', element[0].parentElement);
+      }
 
       // We use $watch because both options and data
       // are objects and not arrays

@@ -14,6 +14,7 @@ module n3Charts.Utils {
     public min: any;
     public max: any;
     public tickFormat: (value: any, index?: number) => string;
+    public ticks: any;
 
     public static SIDE = {
         X: 'x',
@@ -33,6 +34,7 @@ module n3Charts.Utils {
       this.type = Options.getString(js.type, 'linear');
       this.key = js.key;
       this.tickFormat = Options.getFunction(js.tickFormat);
+      this.ticks = js.ticks;
 
       if (this.type === AxisOptions.TYPE.LINEAR) {
         this.min = Options.getNumber(js.min, undefined);
@@ -46,6 +48,18 @@ module n3Charts.Utils {
 
     static isValidSide(side: string): Boolean {
       return d3.values(AxisOptions.SIDE).indexOf(side) !== -1;
+    }
+
+    configure(axis: D3.Svg.Axis): D3.Svg.Axis {
+      axis.tickFormat(this.tickFormat);
+      console.log(this.ticks);
+      if (this.ticks instanceof Array) {
+        axis.tickValues(this.ticks);
+      } else if (typeof this.ticks === 'number') {
+        axis.ticks(this.ticks);
+      }
+
+      return axis;
     }
   }
 }
