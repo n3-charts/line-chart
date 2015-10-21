@@ -52,7 +52,6 @@ module n3Charts.Utils {
 
     configure(axis: D3.Svg.Axis): D3.Svg.Axis {
       axis.tickFormat(this.tickFormat);
-      console.log(this.ticks);
       if (this.ticks instanceof Array) {
         axis.tickValues(this.ticks);
       } else if (typeof this.ticks === 'number') {
