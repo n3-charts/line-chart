@@ -37,8 +37,7 @@ module n3Charts.Factory {
       this.updateScaleRange(dim);
       this.updateScaleDomain(extent);
 
-      this.axis = this.getAxis(this.scale)
-        .tickFormat(axisOptions.tickFormat);
+      this.axis = this.getAxis(this.scale, axisOptions);
       this.updateAxisOrientation();
       this.updateAxisContainer(dim);
     }
@@ -180,10 +179,14 @@ module n3Charts.Factory {
       return d3.scale.linear();
     }
 
-    getAxis(scale: D3.Scale.Scale): D3.Svg.Axis {
+    getAxis(scale: D3.Scale.Scale, options: Utils.AxisOptions): D3.Svg.Axis {
       // Create and return a D3 Axis generator
-      return d3.svg.axis()
+      var axis = d3.svg.axis()
         .scale(scale);
+
+      options.configure(axis);
+
+      return axis;
     }
   }
 }
