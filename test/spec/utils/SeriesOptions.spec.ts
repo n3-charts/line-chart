@@ -59,8 +59,8 @@ describe('n3Charts.Utils.SeriesOptions', () => {
       expect(testing).to.equal(expected);
     });
 
-    it('should create a key property with the type string', () => {
-      var testing = angular.isString(seriesOptions.key);
+    it('should create a key property with the proper type', () => {
+      var testing = angular.isObject(seriesOptions.key);
       var expected = true;
 
       expect(testing).to.equal(expected);
@@ -68,9 +68,9 @@ describe('n3Charts.Utils.SeriesOptions', () => {
 
     it('should assign the proper key property', () => {
       var testing = seriesOptions.key;
-      var expected = 'val_0';
+      var expected = {y1: 'val_0'};
 
-      expect(testing).to.equal(expected);
+      expect(testing).to.eql(expected);
     });
 
     it('should create a color property with the type string', () => {
@@ -154,6 +154,8 @@ describe('n3Charts.Utils.SeriesOptions', () => {
     });
 
     it('should return only valid types', () => {
+      var warnStub = sinon.stub(console, 'warn');
+
       var arg = [
         'foo',
         'bar',
@@ -168,6 +170,14 @@ describe('n3Charts.Utils.SeriesOptions', () => {
       ];
 
       expect(testing).to.eql(expected);
+
+      expect(warnStub.callCount).to.equal(2);
+      expect(warnStub.args).to.eql([
+        ['Unknow series type : foo'],
+        ['Unknow series type : bar']
+      ]);
+
+      warnStub.restore();
     });
   });
 

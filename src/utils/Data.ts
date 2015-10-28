@@ -27,11 +27,19 @@ module n3Charts.Utils {
 
     getDatasetValues(series: SeriesOptions, options: Options): IPoint[] {
       var xKey = options.getAbsKey();
+      var fn: (d: any) => any;
 
-      return this.sets[series.dataset].values.map((d: any) => {
-          return { 'x': d[xKey], 'y': d[series.key] };
-        }
-      );
+      if (series.key.y0) {
+        fn = (d: any) => {
+          return { x: d[xKey], y1: d[series.key.y1], y0: d[series.key.y0] };
+        };
+      } else {
+        fn = (d: any) => {
+          return { x: d[xKey], y1: d[series.key.y1], y0: 0 };
+        };
+      }
+
+      return this.sets[series.dataset].values.map(fn);
     }
 
     public static getMinDistance(data, scale, key = 'x', range?): number {

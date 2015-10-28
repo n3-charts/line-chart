@@ -26,7 +26,7 @@ module n3Charts.Factory.Series {
       var updatePoint = (s) => {
         s.attr({
           cx: (d) => xAxis.scale(d.x),
-          cy: (d) => yAxis.scale(d.y)
+          cy: (d) => yAxis.scale(d.y1)
         })
         .style('opacity', series.visible ? 1 : 0);
       };
