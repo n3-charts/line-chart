@@ -18,7 +18,7 @@ module n3Charts.Factory.Series {
 
       var updateLine = d3.svg.line()
         .x((d) => xAxis.scale(d.x))
-        .y((d) => yAxis.scale(d.y));
+        .y((d) => yAxis.scale(d.y1));
 
       var line = group.selectAll('.' + this.type)
         .data([lineData]);

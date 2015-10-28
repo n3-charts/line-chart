@@ -4,7 +4,7 @@ module n3Charts.Utils {
   export interface ISeriesOptions {
     axis: string;
     dataset: string;
-    key: string;
+    key: {y0?: string, y1: string};
     label: string;
     type: string[];
     id: string;
@@ -15,7 +15,7 @@ module n3Charts.Utils {
   export class SeriesOptions implements ISeriesOptions {
     public axis: string = 'y';
     public dataset: string;
-    public key: string;
+    public key: { y0?: string, y1: string };
     public label: string;
     public type: string[] = ['line'];
     public id: string;
@@ -58,12 +58,27 @@ module n3Charts.Utils {
       options.id = Options.getString(options.id);
       options.type = Options.getArray(options.type);
       options.dataset = Options.getString(options.dataset);
-      options.key = Options.getString(options.key);
+      options.key = this.sanitizeKeys(options.key);
       options.color = Options.getString(options.color);
       options.label = Options.getString(options.label);
       options.visible = Options.getBoolean(options.visible);
 
       return options;
+    }
+
+    sanitizeKeys(js: any): { y0?: string, y1: string } {
+      if (!js) {
+        return { y1: undefined };
+      }
+
+      if (typeof js === 'string') {
+        return {y1: Options.getString(js)};
+      }
+
+      return {
+        y0: Options.getString(js.y0),
+        y1: Options.getString(js.y1)
+      };
     }
 
     /**

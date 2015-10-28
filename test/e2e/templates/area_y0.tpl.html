@@ -1,0 +1,45 @@
+{% extends "e2e/templates/_base.tpl.html" %}
+
+{% block name %}Area y0{% endblock %}
+
+{% block options %}
+{
+  series: [
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: "val_2",
+      label: "Average",
+      color: "#1f77b4",
+      type: "line",
+      id: 'mySeries0'
+    },
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: {"y0": "val_0", "y1": "val_1"},
+      label: "Tolerance",
+      color: "grey",
+      thickness: "1px",
+      type: "area",
+      id: 'mySeries1'
+    }
+  ],
+  axes: {x: {key: "x"}}
+}
+{% endblock %}
+
+{% block data %}
+{
+  dataset0: [
+    {x: 0, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5},
+    {x: 1, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5},
+    {x: 2, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5},
+    {x: 3, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5},
+    {x: 4, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5},
+    {x: 5, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5},
+    {x: 6, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5},
+    {x: 7, val_0: 90 + Math.random()*5, val_1: 110 + Math.random()*5, val_2: 100 + Math.random()*5}
+  ]
+}
+{% endblock %}

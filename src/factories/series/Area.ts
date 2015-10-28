@@ -19,8 +19,8 @@ module n3Charts.Factory.Series {
 
       var updateArea = d3.svg.area()
         .x((d) => xAxis.scale(d.x))
-        .y0(yAxis.scale(0))
-        .y1((d) => yAxis.scale(d.y));
+        .y0((d) => yAxis.scale(d.y0))
+        .y1((d) => yAxis.scale(d.y1));
 
       var area = group.selectAll('.' + this.type)
         .data([areaData]);
