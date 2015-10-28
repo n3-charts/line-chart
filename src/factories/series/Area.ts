@@ -15,12 +15,16 @@ module n3Charts.Factory.Series {
       var initArea = d3.svg.area()
         .x((d) => xAxis.scale(d.x))
         .y0(yAxis.scale(0))
-        .y1((d) => yAxis.scale(0));
+        .y1((d) => yAxis.scale(0))
+        .interpolate(series.interpolation.mode)
+        .tension(series.interpolation.tension);
 
       var updateArea = d3.svg.area()
         .x((d) => xAxis.scale(d.x))
         .y0((d) => yAxis.scale(d.y0))
-        .y1((d) => yAxis.scale(d.y1));
+        .y1((d) => yAxis.scale(d.y1))
+        .interpolate(series.interpolation.mode)
+        .tension(series.interpolation.tension);
 
       var area = group.selectAll('.' + this.type)
         .data([areaData]);

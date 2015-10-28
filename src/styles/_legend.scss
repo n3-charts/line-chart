@@ -51,10 +51,6 @@
       @include svg("<rect y='2' width='2' height='8'/><rect x='4' y='5' width='2' height='5'/><rect x='8' y='3' width='2' height='7'/>");
     }
 
-    &.area > .icon {
-      @include svg("<polygon points='0,10 2.428,3 5,6 7.625,5 10,10 10,10 0,10'/>");
-    }
-
     &.dot > .icon {
       @include svg("<circle cx='5' cy='6' r='2'/>");
     }
@@ -73,6 +69,10 @@
           <path d='M0,6 L10,6'/>
         </g>
       ");
+    }
+
+    &.area > .icon {
+      @include svg("<polygon points='0,10 2.428,3 5,6 7.625,5 10,10 10,10 0,10'/>");
     }
   }
 

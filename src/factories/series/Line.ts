@@ -15,11 +15,15 @@ module n3Charts.Factory.Series {
 
       var initLine = d3.svg.line()
         .x((d) => xAxis.scale(d.x))
-        .y(yAxis.scale(0));
+        .y(yAxis.scale(0))
+        .interpolate(series.interpolation.mode)
+        .tension(series.interpolation.tension);
 
       var updateLine = d3.svg.line()
         .x((d) => xAxis.scale(d.x))
-        .y((d) => yAxis.scale(d.y1));
+        .y((d) => yAxis.scale(d.y1))
+        .interpolate(series.interpolation.mode)
+        .tension(series.interpolation.tension);
 
       var line = group.selectAll('.' + this.type)
         .data([lineData]);

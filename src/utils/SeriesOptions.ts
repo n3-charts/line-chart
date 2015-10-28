@@ -10,10 +10,12 @@ module n3Charts.Utils {
     id: string;
     color: string;
     visible: boolean;
+    interpolation: {tension: number, mode: string};
   }
 
   export class SeriesOptions implements ISeriesOptions {
     public axis: string = 'y';
+    public interpolation: {tension: number, mode: string};
     public dataset: string;
     public key: { y0?: string, y1: string };
     public label: string;
@@ -34,7 +36,8 @@ module n3Charts.Utils {
       var options = this.sanitizeOptions(js);
 
       this.id = options.id || Options.uuid();
-      this.axis = this.sanitizeAxis(options.axis);
+      this.axis = options.axis;
+      this.interpolation = options.interpolation;
       this.dataset = options.dataset;
       this.key = options.key;
       this.color = options.color;
@@ -56,6 +59,8 @@ module n3Charts.Utils {
       // Extend the default options
       angular.extend(options, this, js);
 
+      options.axis = this.sanitizeAxis(options.axis);
+      options.interpolation = this.sanitizeInterpolation(options.interpolation);
       options.id = Options.getString(options.id);
       options.type = Options.getArray(options.type);
       options.dataset = Options.getString(options.dataset);
@@ -65,6 +70,17 @@ module n3Charts.Utils {
       options.visible = Options.getBoolean(options.visible);
 
       return options;
+    }
+
+    sanitizeInterpolation(js: any): {tension: number, mode: string} {
+      if (!js) {
+        return {mode: 'linear', tension: 0.7};
+      }
+
+      return {
+        mode: Options.getString(js.mode, 'linear'),
+        tension: Options.getNumber(js.tension, 0.7)
+      };
     }
 
     sanitizeKeys(js: any): { y0?: string, y1: string } {
