@@ -26,11 +26,11 @@ describe('n3Charts.Factory.Series.Area - y0', function() {
     var items = element.all(by.css('.chart .y-axis .tick text'));
 
     items.get(0).getText().then(function(text) {
-      expect(text).toEqual('0');
+      expect(text).toEqual('90');
     });
 
     items.get(-1).getText().then(function(text) {
-      expect(text).toEqual('110');
+      expect(text).toEqual('130');
     });
   });
 });
