@@ -32,6 +32,5 @@ describe('n3Charts.Factory.Series.Area - y0', function() {
     items.get(-1).getText().then(function(text) {
       expect(text).toEqual('110');
     });
-
   });
 });

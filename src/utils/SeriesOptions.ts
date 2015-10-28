@@ -25,6 +25,7 @@ module n3Charts.Utils {
     static TYPE = {
         DOT: 'dot',
         LINE: 'line',
+        DASHED_LINE: 'dashed-line',
         AREA: 'area',
         COLUMN: 'column'
     };
@@ -94,7 +95,12 @@ module n3Charts.Utils {
      */
     sanitizeType(types: string[]) {
       return types.filter((type) => {
-        return SeriesOptions.isValidType(type);
+        if (!SeriesOptions.isValidType(type)) {
+          console.warn('Unknow series type : ' + type);
+          return false;
+        }
+
+        return true;
       });
     }
 
@@ -118,11 +124,19 @@ module n3Charts.Utils {
       return this.hasType(SeriesOptions.TYPE.COLUMN);
     }
 
+    isDashed() {
+      return this.type.indexOf(SeriesOptions.TYPE.DASHED_LINE) !== -1;
+    }
+
     /**
      * Returns true if the series has a type *type*,
      * where type should be a value of SeriesOptions.TYPE
      */
     hasType(type: string) {
+      if (type === SeriesOptions.TYPE.LINE) {
+        return (this.type.indexOf(type) !== -1 || this.type.indexOf(SeriesOptions.TYPE.DASHED_LINE) !== -1);
+      }
+
       return this.type.indexOf(type) !== -1;
     }
 
