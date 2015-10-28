@@ -56,7 +56,7 @@ module n3Charts.Factory {
       this.svg.select('.abscissas').text(xTickFormat ? xTickFormat(datum.x, index) : datum.x);
 
       var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
-      this.svg.select('.value').text(yTickFormat ? yTickFormat(datum.y, index) : datum.y);
+      this.svg.select('.value').text(yTickFormat ? yTickFormat(datum.y1, index) : datum.y1);
 
       this.svg.style('background-color', series.color);
       this.svg.select('.arrow').style('border-top-color', series.color);
@@ -76,11 +76,11 @@ module n3Charts.Factory {
       var topOffset = this.element.offsetTop;
 
       this.svg
-        .classed('positive', datum.y >= 0)
-        .classed('negative', datum.y < 0)
+        .classed('positive', datum.y1 >= 0)
+        .classed('negative', datum.y1 < 0)
         .style({
           'left': (leftOffset + margin.left + x) + 'px',
-          'top': (topOffset + margin.top + yScale(datum.y)) + 'px'
+          'top': (topOffset + margin.top + yScale(datum.y1)) + 'px'
         });
 
       return;

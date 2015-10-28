@@ -111,7 +111,7 @@ module n3Charts.Factory {
           (key) => datasetsForSide.indexOf(key) > -1,
           (datum, datasetKey) => {
             var highest = seriesForDataset[datasetKey].map((series) => datum[series.key.y1]);
-            var lowest = seriesForDataset[datasetKey].map((series) => datum[series.key.y0] || 0);
+            var lowest = seriesForDataset[datasetKey].map((series) => datum[series.key.y0] || datum[series.key.y1]);
             return [<number>d3.min(lowest), <number>d3.max(highest)];
           }
         );
