@@ -1,6 +1,6 @@
 .chart-legend {
   @mixin svg($svg) {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'>#{$svg}</svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>#{$svg}</svg>");
   }
 
   margin-left: 20px;
@@ -22,6 +22,10 @@
     // We should consider using a prefix here - like n3-label -
     // due to naming collision with bootstrap
     // [chaosmail]
+    //
+    // Bootstrap won't collide with this selector : ours is more specific than their's
+    // because they use non direct descending selectors. Booyah.
+    // lorem--ipsum
     > .label {
       height: 16px;
       line-height: 17px;
@@ -55,8 +59,20 @@
       @include svg("<circle cx='5' cy='6' r='2'/>");
     }
 
+    &.dashed-line > .icon {
+      @include svg("
+        <g style=\"stroke: white; fill: none; stroke-dasharray: 4px,2px;\">
+          <path d='M0,6 L10,6'/>
+        </g>
+      ");
+    }
+
     &.line > .icon {
-      @include svg("<polygon points='10,9.298 7.896,4.705 5.159,5.552 2.227,2.275 0,8.925 0,10 0.695,10 2.629,4.225 4.841,6.697 7.354,5.92 9.221,10 10,10'/>");
+      @include svg("
+        <g style=\"stroke: white;\">
+          <path d='M0,6 L10,6'/>
+        </g>
+      ");
     }
   }
 
