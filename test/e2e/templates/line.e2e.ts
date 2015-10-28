@@ -17,6 +17,16 @@ describe('n3Charts.Factory.Series.Line', function() {
 
     expect(lines.count()).toBe(2);
     expect(lines.get(0).getAttribute('class')).toBe('line-series mySeries0');
-    expect(lines.get(1).getAttribute('class')).toBe('line-series mySeries1');
+    expect(lines.get(1).getAttribute('class')).toBe('line-series mySeries1 dashed');
+  });
+
+  it('should have legend items with proper classes', function() {
+    var items = element.all(by.css('.chart-legend .item'));
+
+    expect(items.count()).toBe(2);
+
+    ['item line', 'item dashed-line'].forEach(function(className, i) {
+      expect(items.get(i).getAttribute('class')).toBe(className);
+    });
   });
 });

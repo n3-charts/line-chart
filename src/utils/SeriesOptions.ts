@@ -4,18 +4,20 @@ module n3Charts.Utils {
   export interface ISeriesOptions {
     axis: string;
     dataset: string;
-    key: string;
+    key: {y0?: string, y1: string};
     label: string;
     type: string[];
     id: string;
     color: string;
     visible: boolean;
+    interpolation: {tension: number, mode: string};
   }
 
   export class SeriesOptions implements ISeriesOptions {
     public axis: string = 'y';
+    public interpolation: {tension: number, mode: string};
     public dataset: string;
-    public key: string;
+    public key: { y0?: string, y1: string };
     public label: string;
     public type: string[] = ['line'];
     public id: string;
@@ -25,6 +27,7 @@ module n3Charts.Utils {
     static TYPE = {
         DOT: 'dot',
         LINE: 'line',
+        DASHED_LINE: 'dashed-line',
         AREA: 'area',
         COLUMN: 'column'
     };
@@ -33,7 +36,8 @@ module n3Charts.Utils {
       var options = this.sanitizeOptions(js);
 
       this.id = options.id || Options.uuid();
-      this.axis = this.sanitizeAxis(options.axis);
+      this.axis = options.axis;
+      this.interpolation = options.interpolation;
       this.dataset = options.dataset;
       this.key = options.key;
       this.color = options.color;
@@ -55,15 +59,43 @@ module n3Charts.Utils {
       // Extend the default options
       angular.extend(options, this, js);
 
+      options.axis = this.sanitizeAxis(options.axis);
+      options.interpolation = this.sanitizeInterpolation(options.interpolation);
       options.id = Options.getString(options.id);
       options.type = Options.getArray(options.type);
       options.dataset = Options.getString(options.dataset);
-      options.key = Options.getString(options.key);
+      options.key = this.sanitizeKeys(options.key);
       options.color = Options.getString(options.color);
       options.label = Options.getString(options.label);
       options.visible = Options.getBoolean(options.visible);
 
       return options;
+    }
+
+    sanitizeInterpolation(js: any): {tension: number, mode: string} {
+      if (!js) {
+        return {mode: 'linear', tension: 0.7};
+      }
+
+      return {
+        mode: Options.getString(js.mode, 'linear'),
+        tension: Options.getNumber(js.tension, 0.7)
+      };
+    }
+
+    sanitizeKeys(js: any): { y0?: string, y1: string } {
+      if (!js) {
+        return { y1: undefined };
+      }
+
+      if (typeof js === 'string') {
+        return {y1: Options.getString(js)};
+      }
+
+      return {
+        y0: Options.getString(js.y0),
+        y1: Options.getString(js.y1)
+      };
     }
 
     /**
@@ -79,7 +111,12 @@ module n3Charts.Utils {
      */
     sanitizeType(types: string[]) {
       return types.filter((type) => {
-        return SeriesOptions.isValidType(type);
+        if (!SeriesOptions.isValidType(type)) {
+          console.warn('Unknow series type : ' + type);
+          return false;
+        }
+
+        return true;
       });
     }
 
@@ -103,11 +140,19 @@ module n3Charts.Utils {
       return this.hasType(SeriesOptions.TYPE.COLUMN);
     }
 
+    isDashed() {
+      return this.type.indexOf(SeriesOptions.TYPE.DASHED_LINE) !== -1;
+    }
+
     /**
      * Returns true if the series has a type *type*,
      * where type should be a value of SeriesOptions.TYPE
      */
     hasType(type: string) {
+      if (type === SeriesOptions.TYPE.LINE) {
+        return (this.type.indexOf(type) !== -1 || this.type.indexOf(SeriesOptions.TYPE.DASHED_LINE) !== -1);
+      }
+
       return this.type.indexOf(type) !== -1;
     }
 
