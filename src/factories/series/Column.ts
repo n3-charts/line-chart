@@ -54,7 +54,7 @@ module n3Charts.Factory.Series {
       var initCol = (s) => {
         s.attr({
           x: xFn,
-          y: yAxis.scale(0),
+          y: yAxis.scale.range()[0],
           width: this.innerXScale.rangeBand(),
           height: 0
         });
@@ -63,9 +63,9 @@ module n3Charts.Factory.Series {
       var updateCol = (s) => {
         s.attr({
           x: xFn,
-          y: (d) => d.y1 > 0 ? yAxis.scale(d.y1) : yAxis.scale(0),
+          y: (d) => d.y1 > 0 ? yAxis.scale(d.y1) : yAxis.scale.range()[0],
           width: this.innerXScale.rangeBand(),
-          height: (d) => Math.abs(yAxis.scale(0) - yAxis.scale(d.y1))
+          height: (d) => Math.abs(yAxis.scale.range()[0] - yAxis.scale(d.y1))
         })
         .style('opacity', series.visible ? 1 : 0);
       };

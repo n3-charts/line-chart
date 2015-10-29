@@ -124,7 +124,7 @@ module n3Charts.Utils {
     }
 
     static getString(value: any, defaultValue?: string) {
-      return value ? String(value) : String(defaultValue);
+      return value ? String(value) : defaultValue;
     }
 
     static getIdentifier(value: any) {

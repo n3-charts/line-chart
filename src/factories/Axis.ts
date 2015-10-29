@@ -177,6 +177,10 @@ module n3Charts.Factory {
         return d3.time.scale();
       }
 
+      if (options.type === Utils.AxisOptions.TYPE.LOG) {
+        return d3.scale.log();
+      }
+
       return d3.scale.linear();
     }
 

@@ -13,9 +13,10 @@ module n3Charts.Factory.Series {
 
       var lineData = this.data.getDatasetValues(series, this.options);
 
+
       var initLine = d3.svg.line()
         .x((d) => xAxis.scale(d.x))
-        .y(yAxis.scale(0))
+        .y(yAxis.scale.range()[0])
         .interpolate(series.interpolation.mode)
         .tension(series.interpolation.tension);
 
