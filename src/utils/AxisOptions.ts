@@ -23,7 +23,8 @@ module n3Charts.Utils {
 
     public static TYPE = {
       LINEAR: 'linear',
-      DATE: 'date'
+      DATE: 'date',
+      LOG: 'log'
     };
 
     constructor(js: any = {}) {
