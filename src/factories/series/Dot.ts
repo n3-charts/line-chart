@@ -19,7 +19,7 @@ module n3Charts.Factory.Series {
         s.attr({
           r: (d) => 4,
           cx: (d) => xAxis.scale(d.x),
-          cy: (d) => yAxis.scale(0)
+          cy: (d) => yAxis.scale.range()[0]
         });
       };
 
