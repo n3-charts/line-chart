@@ -14,14 +14,14 @@ module n3Charts.Factory.Series {
 
       var initArea = d3.svg.area()
         .x((d) => xAxis.scale(d.x))
-        .y0(yAxis.scale(0))
-        .y1((d) => yAxis.scale(0))
+        .y0(yAxis.scale.range()[0])
+        .y1(yAxis.scale.range()[0])
         .interpolate(series.interpolation.mode)
         .tension(series.interpolation.tension);
 
       var updateArea = d3.svg.area()
         .x((d) => xAxis.scale(d.x))
-        .y0((d) => yAxis.scale(d.y0))
+        .y0((d) => isNaN(yAxis.scale(d.y0)) ? yAxis.scale.range()[0] : yAxis.scale(d.y0))
         .y1((d) => yAxis.scale(d.y1))
         .interpolate(series.interpolation.mode)
         .tension(series.interpolation.tension);
