@@ -14,15 +14,24 @@ module n3Charts.Utils {
     right: number;
   }
 
+  export interface IGrid {
+    x: boolean;
+    y: boolean;
+  }
+
   export interface IOptions {
     series: ISeriesOptions[];
     axes: IAxesSet;
     margin: IMargin;
+    grid: IGrid;
+    tooltipHook: Function;
   }
 
   export class Options implements IOptions {
 
-    public series: SeriesOptions[] = [];
+    public tooltipHook: Function;
+
+    public series: ISeriesOptions[] = [];
 
     public axes: IAxesSet = {
       x: <IAxisOptions>{},
@@ -36,12 +45,19 @@ module n3Charts.Utils {
       right: 0
     };
 
+    public grid: IGrid = {
+      x: false,
+      y: true
+    };
+
     constructor(js?:any) {
       var options = this.sanitizeOptions(js);
 
-      this.margin = this.sanitizeMargin(options.margin);
-      this.series = this.sanitizeSeries(options.series);
-      this.axes = this.sanitizeAxes(options.axes);
+      this.margin = options.margin;
+      this.series = options.series;
+      this.axes = options.axes;
+      this.grid = options.grid;
+      this.tooltipHook = options.tooltipHook;
     }
 
     /**
@@ -54,14 +70,16 @@ module n3Charts.Utils {
       // Extend the default options
       angular.extend(options, this, js);
 
-      options.margin = <IMargin> Options.getObject(options.margin, this.margin);
-      options.series = <ISeriesOptions[]> Options.getArray(options.series);
-      options.axes = <IAxesSet> Options.getObject(options.axes, this.axes);
+      options.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
+      options.series = this.sanitizeSeries(Options.getArray(options.series));
+      options.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
+      options.grid = this.sanitizeGridOptions(options.grid);
+      options.tooltipHook = Options.getFunction(options.tooltipHook);
 
       return options;
     }
 
-    sanitizeMargin(margin: any) {
+    sanitizeMargin(margin: any): IMargin {
       return <IMargin>{
         top: Options.getNumber(margin.top, 0),
         left: Options.getNumber(margin.left, 0),
@@ -70,11 +88,20 @@ module n3Charts.Utils {
       };
     }
 
-    sanitizeSeries(series: any[]) {
+    sanitizeSeries(series: any[]): ISeriesOptions[]  {
       return (series).map((s) => new SeriesOptions(s));
     }
 
-    sanitizeAxes(axes: any) {
+    sanitizeGridOptions(grid: any): IGrid {
+      var g = {
+        x: Options.getBoolean(grid.x, false),
+        y: Options.getBoolean(grid.y, true)
+      };
+
+      return g;
+    }
+
+    sanitizeAxes(axes: any): IAxesSet {
       // Map object keys and return a new object
       return <IAxesSet> Object.keys(axes).reduce((prev, key) => {
         prev[key] = new AxisOptions(axes[key]);
@@ -98,7 +125,7 @@ module n3Charts.Utils {
         return this.axes[side];
     }
 
-    getSeriesByType(type: string): SeriesOptions[] {
+    getSeriesByType(type: string): ISeriesOptions[] {
       if (!SeriesOptions.isValidType(type)) {
         throw new TypeError('Unknown series type: ' + type);
       }
@@ -107,7 +134,11 @@ module n3Charts.Utils {
     }
 
     static getBoolean(value: any, defaultValue: boolean = true) {
-      return !(value === !defaultValue);
+      if (typeof value === 'boolean') {
+        return value;
+      }
+
+      return defaultValue;
     }
 
     static getNumber(value: any, defaultValue: number) {

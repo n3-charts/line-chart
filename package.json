@@ -41,7 +41,7 @@
     "karma-mocha": "^0.1.10",
     "karma-sinon": "^1.0.4",
     "mocha": "^2.2.5",
-    "protractor": "^2.1.0",
+    "protractor": "^2.5.1",
     "release-it": "^2.3.0",
     "require-dir": "^0.3.0",
     "run-sequence": "^1.1.0",

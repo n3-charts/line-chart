@@ -132,6 +132,18 @@ module n3Charts.Factory {
       return this.side === Utils.AxisOptions.SIDE.X;
     }
 
+    isInLastHalf(value: any): Boolean {
+      if (value instanceof Date) {
+        value = value.getTime();
+      }
+
+      value = <number>value;
+
+      var [a, b] = this.scale.domain();
+
+      return value > (b - a) / 2;
+    }
+
     createAxis(vis: D3.Selection) {
       // Create the axis container
       this.svg = vis
