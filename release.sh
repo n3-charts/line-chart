@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+VERSION=`cat package.json | grep version | sed 's/[",:]//g' | awk '{print $2}'`
 
 # Eventually we'll have a branch named v2, I guess ?
 if [ "$(git branch | grep \* | egrep -o '\w+')" != "dev" ]; then
@@ -13,8 +14,11 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 if [ "$1" == "" ]; then
+  echo ""
   echo "Missing version number, aborting !"
-  echo "Usage: ./release.sh 2.0.0-beta3"
+  echo "Usage: ./release.sh VERSION"
+  echo "Current version: ${VERSION}"
+  echo ""
   exit 1
 fi
 
