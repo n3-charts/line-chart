@@ -22,7 +22,7 @@ module n3Charts.Factory.Series {
       this.updateSeriesContainer(series);
     }
 
-    updateColumnsWidth(series: Utils.SeriesOptions[], options: Utils.Options) {
+    updateColumnsWidth(series: Utils.ISeriesOptions[], options: Utils.Options) {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
 
       var colsDatasets = this.data.getDatasets(series, options);
@@ -31,7 +31,7 @@ module n3Charts.Factory.Series {
       this.columnsWidth = delta < Number.MAX_VALUE ? delta / series.length : 10;
     }
 
-    updateColumnScale(series: Utils.SeriesOptions[], options: Utils.Options) {
+    updateColumnScale(series: Utils.ISeriesOptions[], options: Utils.Options) {
       var halfWidth = this.columnsWidth * series.length / 2;
 
       this.innerXScale = d3.scale.ordinal()
@@ -39,7 +39,7 @@ module n3Charts.Factory.Series {
         .rangeBands([-halfWidth, halfWidth], 0, 0.1);
     }
 
-    getTooltipPosition(series: Utils.SeriesOptions) {
+    getTooltipPosition(series: Utils.ISeriesOptions) {
       return this.innerXScale(series.id) + this.innerXScale.rangeBand() / 2;
     }
 
@@ -54,7 +54,7 @@ module n3Charts.Factory.Series {
       var initCol = (s) => {
         s.attr({
           x: xFn,
-          y: yAxis.scale.range()[0],
+          y: (d) => yAxis.scale(d.y0),
           width: this.innerXScale.rangeBand(),
           height: 0
         });
@@ -63,9 +63,9 @@ module n3Charts.Factory.Series {
       var updateCol = (s) => {
         s.attr({
           x: xFn,
-          y: (d) => d.y1 > 0 ? yAxis.scale(d.y1) : yAxis.scale.range()[0],
+          y: (d) => d.y1 > 0 ? yAxis.scale(d.y1) : yAxis.scale(d.y0),
           width: this.innerXScale.rangeBand(),
-          height: (d) => Math.abs(yAxis.scale.range()[0] - yAxis.scale(d.y1))
+          height: (d) => Math.abs(yAxis.scale(d.y0) - yAxis.scale(d.y1))
         })
         .style('opacity', series.visible ? 1 : 0);
       };

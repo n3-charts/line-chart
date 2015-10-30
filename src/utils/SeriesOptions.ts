@@ -11,6 +11,7 @@ module n3Charts.Utils {
     color: string;
     visible: boolean;
     interpolation: {tension: number, mode: string};
+    hasType: (type: string) => boolean;
   }
 
   export class SeriesOptions implements ISeriesOptions {

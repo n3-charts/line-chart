@@ -1,0 +1,13 @@
+.grid {
+  .tick {
+    > text {
+      display: none;
+    }
+
+    > line {
+      stroke: #eee;
+      stroke-width: 1;
+      shape-rendering: crispEdges;
+    }
+  }
+}

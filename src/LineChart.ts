@@ -47,6 +47,7 @@ module n3Charts {
         ['transitions', Factory.Transition],
         ['x-axis', Factory.Axis, Utils.AxisOptions.SIDE.X],
         ['y-axis', Factory.Axis, Utils.AxisOptions.SIDE.Y],
+        ['grid', Factory.Grid],
 
         // This order is important, otherwise it can mess up with the tooltip
         // (and you don't want to mess up with a tooltip, trust me).
@@ -75,6 +76,9 @@ module n3Charts {
           eventMgr.trigger('create', options);
           eventMgr.trigger('resize', element[0].parentElement);
         }
+
+        // Update the eventMgr itself
+        eventMgr.update(data, options);
 
         // Trigger the update event
         eventMgr.trigger('update', data, options);

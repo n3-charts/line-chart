@@ -1,60 +1,54 @@
+.tooltip-line {
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.tooltip-dot {
+  stroke-width: 2px;
+  fill: white;
+}
+
 .chart-tooltip {
   position: absolute;
 
-  opacity: 0;
-  background-color: lightgrey;
-  height: 20px;
-
-  min-width: 60px;
-  padding: 0px 4px 1px 4px;
-
-  transform: translateX(-50%);
-  border-radius: 2px;
+  background-color: white;
+  z-index: 100;
+  box-shadow: 1px 1px 2px hsla(0, 0%, 24%, 0.5);
+  padding: 5px 10px;
+  border-radius: 1px;
   font-family: sans-serif;
   font-weight: 100;
-  color: white;
-  text-align: center;
-
-  > .arrow {
-    top: 100%;
-
-    // Not sure of this, it seems to render slightly better...
-    // We might abandon the arrow down the road if it keeps being a sissy and
-    // not align properly.
-    left: calc(50% + 1px);
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-    border-top-color: lightgrey;
-    border-width: 5px;
-    margin-left: -5px;
-  }
-
-  &.positive {
-    margin-top: -30px;
-  }
-
-  &.negative {
-    margin-top: 10px;
-
-    > .arrow {
-      margin-top: -30px;
-      transform: rotate(180deg);
-    }
-  }
-
-  > .abscissas, > .value {
-    height: 20px;
-    font-size: 12px;
-    line-height: 20px;
-  }
 
   > .abscissas {
-    margin-right: 5px;
-    border-right: 1px solid;
-    padding-right: 5px;
+    margin-bottom: 5px;
+    font-size: 0.7em;
+  }
+
+  .tooltip-item {
+    font-size: 0.8em;
+    white-space: nowrap;
+
+    &:not(:last-child) {
+      margin-bottom: 0.2em;
+    }
+
+    > * {
+      display: inline-block;
+
+      &:not(:last-child) {
+        margin-right: 0.4em;
+      }
+    }
+
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .y-value {
+      font-weight: 500;
+    }
   }
 }

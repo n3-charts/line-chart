@@ -12,6 +12,14 @@ describe('n3Charts.Factory.Axis extrema', function() {
     expect(chart.getTagName()).toBe('svg');
   });
 
+  it('should have axes and a grid', function() {
+    expect(element(by.css('.grid')).isPresent()).toBe(true);
+    expect(element(by.css('.x-axis')).isPresent()).toBe(true);
+    expect(element(by.css('.y-axis')).isPresent()).toBe(true);
+  });
+
+
+
   it('should use min and max', function() {
     var items = element.all(by.css('.chart .x-axis .tick text'));
 
