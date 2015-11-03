@@ -1,10 +1,8 @@
-.chart-legend {
-  @mixin svg($svg) {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>#{$svg}</svg>");
-  }
+@mixin svg($svg) {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>#{$svg}</svg>");
+}
 
-  margin-left: 20px;
-
+@mixin series-item {
   .item {
     cursor: pointer;
     font-family: sans-serif;
@@ -19,13 +17,6 @@
       display: inline-block;
     }
 
-    // We should consider using a prefix here - like n3-label -
-    // due to naming collision with bootstrap
-    // [chaosmail]
-    //
-    // Bootstrap won't collide with this selector : ours is more specific than their's
-    // because they use non direct descending selectors. Booyah.
-    // lorem--ipsum
     > .label {
       height: 16px;
       line-height: 17px;
@@ -40,9 +31,6 @@
       background-position: 50% 25%;
     }
 
-    // We should consider using a prefix here - like n3-hidden -
-    // due to naming collision with bootstrap
-    // [chaosmail]
     &.hidden {
       opacity: 0.4;
     }
@@ -75,5 +63,9 @@
       @include svg("<polygon points='0,10 2.428,3 5,6 7.625,5 10,10 10,10 0,10'/>");
     }
   }
+}
 
+.chart-legend {
+  margin-left: 20px;
+  @include series-item;
 }

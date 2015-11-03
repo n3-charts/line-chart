@@ -8,10 +8,15 @@
                                                                     lorem--ipsum
 */
 
-@import "tooltip";
+@import "series-item";
 @import "legend";
+@import "tooltip";
 
 .chart {
   position: relative;
+
   @import "axes";
+  @import "grid";
+  @import "dots";
+  @import "lines";
 }

@@ -128,7 +128,7 @@ describe('n3Charts.Utils.Options', () => {
 
   describe('sanitizeSeries', () => {
     var arg: any[];
-    var series: n3Charts.Utils.SeriesOptions[];
+    var series: n3Charts.Utils.ISeriesOptions[];
 
     beforeEach(() => {
       options = new Options();
@@ -152,6 +152,25 @@ describe('n3Charts.Utils.Options', () => {
     });
   });
 
+  describe('sanitizeGrid', () => {
+    var grid: n3Charts.Utils.IGrid;
+
+    describe('behavior', () => {
+      beforeEach(() => {
+        options = new Options();
+        grid = options.sanitizeGridOptions({
+        });
+      });
+
+      it('should have a default', () => {
+        var testing = grid;
+        var expected = {x: false, y: true};
+
+        expect(testing).to.eql(expected);
+      });
+    });
+  });
+
   describe('sanitizeAxes', () => {
     var axes: n3Charts.Utils.IAxesSet;
 
@@ -159,9 +178,7 @@ describe('n3Charts.Utils.Options', () => {
       beforeEach(() => {
         options = new Options();
         axes = options.sanitizeAxes({
-          x: {
-            type: 'linear'
-          },
+          x: {type: 'linear'},
           y: {}
         });
       });

@@ -10,14 +10,14 @@ module n3Charts.Factory.Series {
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
       var dotsData = this.data.getDatasetValues(series, this.options);
-      var dotsRadius = 4;
+      var dotsRadius = 2;
 
       var dots = group.selectAll('.' + this.type)
         .data(dotsData, (d: Utils.IPoint) => d.x);
 
       var initPoint = (s) => {
         s.attr({
-          r: (d) => 4,
+          r: (d) => dotsRadius,
           cx: (d) => xAxis.scale(d.x),
           cy: (d) => yAxis.scale.range()[0]
         });
@@ -59,8 +59,7 @@ module n3Charts.Factory.Series {
 
     styleSeries(group: D3.Selection) {
       group.style({
-        'fill': (d: Utils.SeriesOptions) => d.color,
-        'stroke': 'white'
+        'stroke': (d: Utils.SeriesOptions) => d.color
       });
     }
   }

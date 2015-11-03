@@ -19,10 +19,4 @@ describe('n3Charts.Factory.Series.Dot', function() {
     expect(dots.get(0).getAttribute('class')).toBe('dot-series mySeries0');
     expect(dots.get(1).getAttribute('class')).toBe('dot-series mySeries1');
   });
-
-  it('should trigger events on mouseover and mouseout', function() {
-    var dots = element.all(by.css('.chart .dot-series'));
-
-    // browser.actions().mouseMove(dots.get(0));
-  });
 });

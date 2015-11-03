@@ -6,6 +6,7 @@ module n3Charts.Factory {
     public svg: D3.Selection;
     public vis: D3.Selection;
     public data: D3.Selection;
+    public overlay: D3.Selection;
     public axes: D3.Selection;
     public dim: Utils.Dimensions = new Utils.Dimensions();
 
@@ -15,9 +16,26 @@ module n3Charts.Factory {
 
     create(options: Utils.Options) {
       this.dim.updateMargins(options);
+      this.listenToElement(this.element, options);
       this.createRoot();
       this.createContainer();
       this.eventMgr.on('resize', this.dim.fromParentElement.bind(this.dim));
+    }
+
+    listenToElement(element: HTMLElement, options: Utils.Options) {
+      var eventMgr = this.eventMgr;
+
+      element.addEventListener('mouseover', (event) => {
+        eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-over', event]);
+      });
+
+      element.addEventListener('mousemove', (event) => {
+        eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-move', event]);
+      });
+
+      element.addEventListener('mouseout', (event) => {
+        eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-out', event]);
+      });
     }
 
     update(datasets, options) {
@@ -30,6 +48,7 @@ module n3Charts.Factory {
     }
 
     createRoot() {
+
       // Create the SVG root node
       this.svg = d3.select(this.element)
         .append('svg')
@@ -54,6 +73,7 @@ module n3Charts.Factory {
         .append('g')
           .attr('class', 'container');
 
+
       this.axes = this.vis
         .append('g')
           .attr('class', 'axes');
@@ -61,14 +81,20 @@ module n3Charts.Factory {
       this.data = this.vis
         .append('g')
           .attr('class', 'data');
+
+      this.overlay = this.vis
+        .append('g')
+          .attr('class', 'overlay');
     }
 
     updateContainer() {
       // Update the dimensions of the container
       this.vis
-        .attr('width', this.dim.innerWidth)
-        .attr('height', this.dim.innerHeight)
-        .attr('transform', 'translate(' + this.dim.margin.left + ', ' + this.dim.margin.top + ')');
+        .attr({
+          'width': this.dim.innerWidth,
+          'height': this.dim.innerHeight,
+          'transform': 'translate(' + this.dim.margin.left + ', ' + this.dim.margin.top + ')'
+        });
     }
 
     getDimensions(): Utils.Dimensions {
