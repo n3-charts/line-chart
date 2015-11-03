@@ -73,15 +73,19 @@ module n3Charts.Factory {
       var visibleSeries = options.series.filter((series) => series.visible);
       var datasets = visibleSeries.map((series) => data.getDatasetValues(series, options));
 
-      var absKey = options.getAbsKey();
-
       var closestRows = [];
       var closestIndex = -1;
       var minDistance = Number.POSITIVE_INFINITY;
 
       for (var i = 0; i < datasets.length; i++) {
         for (var j = 0; j < datasets[i].length; j++) {
-          var distance = Math.abs(datasets[i][j][absKey] - x);
+          if (options.axes.x.type === 'date') {
+
+            // _sigh_ TypeScript...
+            var distance = Math.abs((<any>datasets[i][j].x).getTime() - x);
+          } else {
+            var distance = Math.abs(datasets[i][j].x - x);
+          }
 
           if (distance === minDistance) {
             closestRows.push({series: visibleSeries[i], row: datasets[i][j]});
@@ -97,10 +101,10 @@ module n3Charts.Factory {
     }
 
     updateTooltipContent(rows: INeighbour[], closestIndex: number, options: Utils.Options) {
-      var x = rows[0].row[options.getAbsKey()];
+      var x = rows[0].row.x;
       var xTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.X).tickFormat;
       this.svg.select('.abscissas')
-        .text('Abscissas : ' + (xTickFormat ? xTickFormat(x, closestIndex) : x));
+        .text(xTickFormat ? xTickFormat(x, closestIndex) : x);
 
       var initItem = (s) => {
         s.attr({'class': 'tooltip-item'});
@@ -123,9 +127,20 @@ module n3Charts.Factory {
       var updateItem = (s) => {
         s.select('.series-label')
           .text((d) => d.series.label);
+
         var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
         s.select('.y-value')
-          .text((d) => yTickFormat ? yTickFormat(d.row.y1, closestIndex) : d.row.y1);
+          .text((d) => {
+            var fn = yTickFormat ? (y1) => yTickFormat(y1, closestIndex) : (y1) => y1;
+
+            var y1Label = fn(d.row.y1);
+
+            if (d.series.hasTwoKeys()) {
+              return '[' + fn(d.row.y0) + ', ' + y1Label + ']';
+            } else {
+              return y1Label;
+            }
+          });
 
         return s;
       };
@@ -148,6 +163,7 @@ module n3Charts.Factory {
         this.hide();
         return;
       }
+
 
       if (x instanceof Date) {
         // _sigh_ TypeScript...
@@ -184,27 +200,46 @@ module n3Charts.Factory {
       var xScale = this.factoryMgr.get('x-axis').scale;
       var yScale = this.factoryMgr.get('y-axis').scale;
 
+      var radius = 3;
+      var circlePath = (r, cx, cy) => {
+        return `M ${cx} ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 `;
+      };
+
+      var trianglePath = (r, cx, cy) => {
+        return `M ${cx} ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 `;
+      };
+
       var initDots = (s) => {
-        s.attr({
-          'class': 'tooltip-dot',
-          'r': 3
+        s.attr('class', 'tooltip-dots-group');
+
+        s.append('path').attr({
+          'class': 'tooltip-dot y1'
         });
 
+        s.append('path').attr({
+          'class': 'tooltip-dot y0'
+        }).style({
+          'display': (d) => d.series.hasTwoKeys() ? null : 'none'
+        });
       };
 
       var updateDots = (s) => {
-        s.attr({
-          'cx': (d) => xScale(d.row.x),
-          'cy': (d) => yScale(d.row.y1),
+        s.select('.tooltip-dot.y1').attr({
+          'd': (d) => circlePath(radius, xScale(d.row.x), yScale(d.row.y1)),
+          'stroke': (d) => d.series.color
+        });
+
+        s.select('.tooltip-dot.y0').attr({
+          'd': (d) => circlePath(radius, xScale(d.row.x), yScale(d.row.y0)),
           'stroke': (d) => d.series.color
         });
       };
 
-      var dots = this.dots.selectAll('.tooltip-dot')
+      var dots = this.dots.selectAll('.tooltip-dots-group')
         .data(rows);
 
       dots.enter()
-        .append('circle')
+        .append('g')
         .call(initDots)
         .call(updateDots);
 

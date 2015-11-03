@@ -157,6 +157,10 @@ module n3Charts.Utils {
       return this.type.indexOf(type) !== -1;
     }
 
+    hasTwoKeys():boolean {
+      return this.key.y0 !== undefined;
+    }
+
     /**
      * Returns true if the type *type* is a valid type
      */
