@@ -133,15 +133,15 @@ module n3Charts.Factory {
     }
 
     isInLastHalf(value: any): Boolean {
-      if (value instanceof Date) {
-        value = value.getTime();
-      }
+      var fn = (v):number => v;
 
-      value = <number>value;
+      if (value instanceof Date) {
+        fn = (v):number => v.getTime();
+      }
 
       var [a, b] = this.scale.domain();
 
-      return value > (b - a) / 2;
+      return fn(value) > fn(a) + (fn(b) - fn(a)) / 2;
     }
 
     createAxis(vis: D3.Selection) {
