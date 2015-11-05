@@ -2,7 +2,7 @@
 
 describe('Custom Abscissas Key', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/custom_abs_key.html');
+    browser.get('test/e2e/custom_abs_key.html');
   });
 
   it('should generate a chart', function() {

@@ -1,8 +1,5 @@
-{% extends "e2e/templates/_base.tpl.html" %}
-
-{% block name %}Column{% endblock %}
-
-{% block options %}
+{
+  options: '''
 {
   series: [
     {
@@ -13,33 +10,15 @@
       color: "#1f77b4",
       type: "column",
       id: 'mySeries0'
-    },
-    {
-      axis: "y",
-      dataset: "dataset0",
-      key: "val_1",
-      label: "Another series",
-      color: "grey",
-      thickness: "1px",
-      type: "column",
-      id: 'mySeries1'
-    },
-    {
-      axis: "y",
-      dataset: "dataset0",
-      key: "val_2",
-      label: "Another series",
-      color: "steelblue",
-      thickness: "1px",
-      type: "column",
-      id: 'mySeries2'
     }
   ],
-  axes: {x: {key: "x"}}
+  axes: {
+    x: {key: "x", ticks: [-10, 0, 10], min: -100, max: 100},
+    y: {ticks: 4}
+  }
 }
-{% endblock %}
-
-{% block data %}
+'''
+  data: '''
 {
   dataset0: [
     {x: 0, val_0: 0, val_1: 0, val_2: 0, val_3: 0},
@@ -52,4 +31,6 @@
     {x: 7, val_0: 4.927, val_1: 3.35, val_2: -13.074, val_3: -12.625}
   ]
 }
-{% endblock %}
+'''
+}
+

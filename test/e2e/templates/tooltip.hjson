@@ -1,8 +1,5 @@
-{% extends "e2e/templates/_base.tpl.html" %}
-
-{% block name %}Tooltip{% endblock %}
-
-{% block options %}
+{
+  options: '''
 {
   grid: {x: false, y: true},
   margin: {right: 50, top: 10},
@@ -49,9 +46,8 @@
   ],
   axes: {x: {key: "x"}}
 }
-{% endblock %}
-
-{% block data %}
+'''
+  data: '''
 {
   dataset0: [
     {x: 0, val_0_bis: 5, val_0: 0, val_1: 0, val_2: 0, val_3: 0},
@@ -96,4 +92,6 @@
     {x: 39, val_0_bis: 5, val_0: 4.927, val_1: 3.35, val_2: -13.074, val_3: -12.625},
   ]
 }
-{% endblock %}
+'''
+}
+

@@ -2,7 +2,7 @@
 
 describe('n3Charts.Factory.Series.Area', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/area.html');
+    browser.get('test/e2e/area.html');
   });
 
   it('should generate a chart', function() {

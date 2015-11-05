@@ -2,7 +2,7 @@
 
 describe('Logarithmic axes', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/log_axes.html');
+    browser.get('test/e2e/log_axes.html');
   });
 
   it('should generate a chart', function() {
@@ -17,9 +17,6 @@ describe('Logarithmic axes', function() {
 
     var lines = element.all(by.css('.chart .line-series'));
     expect(lines.count()).toBe(1);
-
-    var cols = element.all(by.css('.chart .column-series'));
-    expect(cols.count()).toBe(1);
 
     var areas = element.all(by.css('.chart .area-series'));
     expect(areas.count()).toBe(1);

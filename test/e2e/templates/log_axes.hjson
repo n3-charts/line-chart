@@ -1,8 +1,5 @@
-{% extends "e2e/templates/_base.tpl.html" %}
-
-{% block name %}Log axes{% endblock %}
-
-{% block options %}
+{
+  options: '''
 {
   series: [
     {
@@ -27,15 +24,6 @@
       axis: "y",
       dataset: "dataset0",
       key: "val_2",
-      label: "yu nu nut'n jun snu",
-      color: "steelblue",
-      type: "column",
-      id: "c"
-    },
-    {
-      axis: "y",
-      dataset: "dataset0",
-      key: "val_2",
       label: "ABLABLABLA",
       color: "lightpink",
       type: "dot",
@@ -44,9 +32,8 @@
   ],
   axes: {x: {key: "x"}, y: {type: 'log', min: 1}}
 }
-{% endblock %}
-
-{% block data %}
+'''
+  data: '''
 {
   dataset0: [
     {x: 0, val_0: 300000, val_1: 300000, val_2: 300000, val_3: 300000},
@@ -71,4 +58,6 @@
     {x: 19, val_0: 2197740, val_1: 2197740, val_2: 2197740, val_3: 2197740}
   ]
 }
-{% endblock %}
+'''
+}
+

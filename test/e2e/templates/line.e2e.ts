@@ -2,7 +2,7 @@
 
 describe('n3Charts.Factory.Series.Line', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/line.html');
+    browser.get('test/e2e/line.html');
   });
 
   it('should generate a chart', function() {

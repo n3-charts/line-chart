@@ -1,35 +1,51 @@
-{% extends "e2e/templates/_base.tpl.html" %}
-
-{% block name %}Dot{% endblock %}
-
-{% block options %}
+{
+  options: '''
 {
   series: [
     {
       axis: "y",
       dataset: "dataset0",
       key: "val_0",
-      label: "A first series",
+      label: "An area series",
       color: "#1f77b4",
-      type: ["dot", "line"],
+      type: "area",
       id: 'mySeries0'
     },
     {
       axis: "y",
       dataset: "dataset0",
       key: "val_1",
-      label: "Another series",
+      label: "A dot series",
       color: "grey",
       thickness: "1px",
       type: "dot",
       id: 'mySeries1'
+    },
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: "val_2",
+      label: "A line series",
+      color: "grey",
+      thickness: "1px",
+      type: ["dot", "line"],
+      id: 'mySeries2'
+    },
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: "val_3",
+      label: "A columns series",
+      color: "grey",
+      thickness: "1px",
+      type: "column",
+      id: 'mySeries3'
     }
   ],
-  axes: {x: {key: "x"}}
+  axes: {x: {key: "x", min: -1, max: 8}}
 }
-{% endblock %}
-
-{% block data %}
+'''
+  data: '''
 {
   dataset0: [
     {x: 0, val_0: 0, val_1: 0, val_2: 0, val_3: 0},
@@ -42,4 +58,6 @@
     {x: 7, val_0: 4.927, val_1: 3.35, val_2: -13.074, val_3: -12.625}
   ]
 }
-{% endblock %}
+'''
+}
+

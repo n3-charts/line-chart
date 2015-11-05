@@ -2,7 +2,7 @@
 
 describe('Ticks', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/ticks.html');
+    browser.get('test/e2e/ticks.html');
   });
 
   it('should have proper x ticks', function() {

@@ -2,7 +2,7 @@
 
 describe('Date Abscissas', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/date_abscissas.html');
+    browser.get('test/e2e/date_abscissas.html');
   });
 
   it('should generate a chart', function() {

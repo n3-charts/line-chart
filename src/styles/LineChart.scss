@@ -14,6 +14,7 @@
 
 .chart {
   position: relative;
+  box-sizing: border-box;
 
   @import "axes";
   @import "grid";
