@@ -31,6 +31,7 @@ var n3Charts;
                     ['transitions', n3Charts.Factory.Transition],
                     ['x-axis', n3Charts.Factory.Axis, n3Charts.Utils.AxisOptions.SIDE.X],
                     ['y-axis', n3Charts.Factory.Axis, n3Charts.Utils.AxisOptions.SIDE.Y],
+                    ['y2-axis', n3Charts.Factory.Axis, n3Charts.Utils.AxisOptions.SIDE.Y2],
                     ['grid', n3Charts.Factory.Grid],
                     // This order is important, otherwise it can mess up with the tooltip
                     // (and you don't want to mess up with a tooltip, trust me).
@@ -645,7 +646,8 @@ var n3Charts;
             };
             AxisOptions.SIDE = {
                 X: 'x',
-                Y: 'y'
+                Y: 'y',
+                Y2: 'y2'
             };
             AxisOptions.TYPE = {
                 LINEAR: 'linear',
@@ -674,7 +676,7 @@ var n3Charts;
                     top: 0,
                     left: 40,
                     bottom: 40,
-                    right: 0
+                    right: 40
                 };
                 this.grid = {
                     x: false,
@@ -733,9 +735,32 @@ var n3Charts;
                 }
                 return this.axes[Utils.AxisOptions.SIDE.X].key;
             };
+            Options.prototype.getSeriesAndDatasetBySide = function (side) {
+                if (!Utils.AxisOptions.isValidSide(side)) {
+                    throw new TypeError('Cannot get axis side : ' + side);
+                }
+                if (side === Utils.AxisOptions.SIDE.Y2 && !this.axes[side]) {
+                    side = Utils.AxisOptions.SIDE.Y;
+                }
+                var datasetsForSide = [];
+                var seriesForDataset = {};
+                this.series.forEach(function (series) {
+                    if (series.visible && series.axis === side) {
+                        datasetsForSide.push(series.dataset);
+                        if (!seriesForDataset[series.dataset]) {
+                            seriesForDataset[series.dataset] = [];
+                        }
+                        seriesForDataset[series.dataset].push(series);
+                    }
+                });
+                return { seriesForDataset: seriesForDataset, datasetsForSide: datasetsForSide };
+            };
             Options.prototype.getByAxisSide = function (side) {
                 if (!Utils.AxisOptions.isValidSide(side)) {
                     throw new TypeError('Cannot get axis side : ' + side);
+                }
+                if (side === Utils.AxisOptions.SIDE.Y2 && !this.axes[side]) {
+                    return this.axes[Utils.AxisOptions.SIDE.Y];
                 }
                 return this.axes[side];
             };
@@ -812,7 +837,7 @@ var n3Charts;
                 this.margin = {
                     left: 30,
                     bottom: 20,
-                    right: 20,
+                    right: 30,
                     top: 20
                 };
             }
@@ -1317,25 +1342,14 @@ var n3Charts;
                 ];
             };
             Axis.prototype.getExtent = function (datasets, options) {
-                var _this = this;
-                var axisOptions = options.axes[this.side];
+                var axisOptions = options.getByAxisSide(this.side);
                 var extent = undefined;
                 if (this.isAbscissas()) {
                     var abscissasKey = options.getAbsKey();
                     extent = this.getExtentForDatasets(datasets, function () { return true; }, function (datum) { return [datum[abscissasKey], datum[abscissasKey]]; });
                 }
                 else {
-                    var datasetsForSide = [];
-                    var seriesForDataset = {};
-                    options.series.forEach(function (series) {
-                        if (series.visible && series.axis === _this.side) {
-                            datasetsForSide.push(series.dataset);
-                            if (!seriesForDataset[series.dataset]) {
-                                seriesForDataset[series.dataset] = [];
-                            }
-                            seriesForDataset[series.dataset].push(series);
-                        }
-                    });
+                    var _a = options.getSeriesAndDatasetBySide(this.side), datasetsForSide = _a.datasetsForSide, seriesForDataset = _a.seriesForDataset;
                     extent = this.getExtentForDatasets(datasets, function (key) { return datasetsForSide.indexOf(key) > -1; }, function (datum, datasetKey) {
                         var highest = seriesForDataset[datasetKey].map(function (series) { return datum[series.key.y1]; });
                         var lowest = seriesForDataset[datasetKey].map(function (series) { return datum[series.key.y0] || datum[series.key.y1]; });
@@ -1372,7 +1386,12 @@ var n3Charts;
                     this.axis.orient('bottom');
                 }
                 else {
-                    this.axis.orient('left');
+                    if (this.side === n3Charts.Utils.AxisOptions.SIDE.Y) {
+                        this.axis.orient('left');
+                    }
+                    else {
+                        this.axis.orient('right');
+                    }
                 }
             };
             Axis.prototype.updateAxisContainer = function (dim) {
@@ -1382,8 +1401,14 @@ var n3Charts;
                         .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
                 }
                 else {
-                    this.svg
-                        .attr('transform', 'translate(0, 0)');
+                    if (this.side === n3Charts.Utils.AxisOptions.SIDE.Y) {
+                        this.svg
+                            .attr('transform', 'translate(0, 0)');
+                    }
+                    else {
+                        this.svg
+                            .attr('transform', "translate(" + dim.innerWidth + ", 0)");
+                    }
                 }
                 // Redraw the Axis
                 this.svg

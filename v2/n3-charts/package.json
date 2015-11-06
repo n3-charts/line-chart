@@ -1,6 +1,6 @@
 {
   "name": "n3-charts",
-  "version": "2.0.0-beta16",
+  "version": "2.0.0-beta17",
   "homepage": "http://n3-charts.github.io/line-chart/v2",
   "licenses": {
     "type": "MIT",
@@ -58,12 +58,12 @@
     "tslint": "^2.2.0-beta",
     "typescript": "^1.5.0-beta"
   },
-  "gitHead": "ca589bbb7cb75dead843bb664ac3b577a330dcd0",
+  "gitHead": "625bbf79c04e64f9fc80abff21f2559ce997134a",
   "description": "This is a development branch. For a stable version, please check out the master branch.",
-  "_id": "n3-charts@2.0.0-beta16",
+  "_id": "n3-charts@2.0.0-beta17",
   "scripts": {},
-  "_shasum": "23fd1597b8a9a9c8bf505a08f2973a6e1dfc10ec",
-  "_from": "n3-charts@2.0.0-beta16",
+  "_shasum": "2a899be8d7337495ff2498da62370e4cd0e5be2f",
+  "_from": "n3-charts@2.0.0-beta17",
   "_npmVersion": "2.11.2",
   "_nodeVersion": "0.12.6",
   "_npmUser": {
@@ -71,8 +71,8 @@
     "email": "dolor_sit_amet@protonmail.ch"
   },
   "dist": {
-    "shasum": "23fd1597b8a9a9c8bf505a08f2973a6e1dfc10ec",
-    "tarball": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta16.tgz"
+    "shasum": "2a899be8d7337495ff2498da62370e4cd0e5be2f",
+    "tarball": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta17.tgz"
   },
   "maintainers": [
     {
@@ -81,5 +81,5 @@
     }
   ],
   "directories": {},
-  "_resolved": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta16.tgz"
+  "_resolved": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta17.tgz"
 }

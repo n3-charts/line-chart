@@ -23,7 +23,7 @@ angular.module('v2App', ['n3-line-chart', 'apojop'])
   };
 
   $scope.options = {
-    margin: {top: 20, right: 5},
+    margin: {top: 5},
     tooltipHook: function(rows, data, options) {
       return false;
     },
