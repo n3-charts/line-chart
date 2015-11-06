@@ -40,6 +40,14 @@ module n3Charts.Factory {
       this.axis = this.getAxis(this.scale, axisOptions);
       this.updateAxisOrientation();
       this.updateAxisContainer(dim);
+      this.shiftAxisTicks(axisOptions);
+    }
+
+    shiftAxisTicks(options: Utils.AxisOptions) {
+      var {x, y} = options.ticksShift;
+
+      this.svg.selectAll('text')
+        .attr('transform', `translate(${x}, ${y})`);
     }
 
     destroy() {

@@ -6,6 +6,7 @@ module n3Charts.Utils {
     key: string;
     min?: any;
     max?: any;
+    ticksShift?: any;
   }
 
   export class AxisOptions implements IAxisOptions {
@@ -15,6 +16,10 @@ module n3Charts.Utils {
     public max: any;
     public tickFormat: (value: any, index?: number) => string;
     public ticks: any;
+    public ticksShift: any = {
+      x: 0,
+      y: 0
+    };
 
     public static SIDE = {
         X: 'x',
@@ -37,6 +42,13 @@ module n3Charts.Utils {
       this.key = js.key;
       this.tickFormat = Options.getFunction(js.tickFormat);
       this.ticks = js.ticks;
+
+      if (js.ticksShift) {
+        this.ticksShift = {
+          x: Options.getNumber(js.ticksShift.x, 0),
+          y: Options.getNumber(js.ticksShift.y, 0)
+        };
+      }
 
       if (this.type === AxisOptions.TYPE.LINEAR) {
         this.min = Options.getNumber(js.min, undefined);
