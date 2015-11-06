@@ -1,6 +1,6 @@
 {
   "name": "n3-charts",
-  "version": "2.0.0-beta5",
+  "version": "2.0.0-beta16",
   "homepage": "http://n3-charts.github.io/line-chart/v2",
   "licenses": {
     "type": "MIT",
@@ -16,26 +16,32 @@
   "files": [
     "build/"
   ],
-  "devDependencies": {
+  "dependencies": {
     "angular": "^1.4.0",
+    "d3": "^3.5.5"
+  },
+  "devDependencies": {
     "angular-mocks": "^1.4.0",
     "chai": "^2.3.0",
-    "d3": "^3.5.5",
     "expect.js": "^0.3.1",
+    "glob": "^5.0.15",
     "gulp": "^3.8.11",
     "gulp-clean": "^0.3.1",
     "gulp-coveralls": "^0.1.4",
+    "gulp-data": "^1.2.0",
+    "gulp-foreach": "^0.1.0",
     "gulp-karma": "0.0.4",
     "gulp-load-plugins": "^0.10.0",
     "gulp-mocha": "^2.1.0",
-    "gulp-nunjucks-render": "^0.2.1",
     "gulp-protractor": "^1.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.0.3",
     "gulp-serve": "^1.0.0",
     "gulp-shell": "^0.4.1",
+    "gulp-template": "^3.0.0",
     "gulp-tslint": "^3.0.1-beta",
     "gulp-typescript": "^2.7.5",
+    "hjson": "^1.7.4",
     "jsdom": "^5.4.3",
     "karma": "^0.12.33",
     "karma-chrome-launcher": "^0.1.12",
@@ -43,7 +49,7 @@
     "karma-mocha": "^0.1.10",
     "karma-sinon": "^1.0.4",
     "mocha": "^2.2.5",
-    "protractor": "^2.1.0",
+    "protractor": "^2.5.1",
     "release-it": "^2.3.0",
     "require-dir": "^0.3.0",
     "run-sequence": "^1.1.0",
@@ -52,12 +58,12 @@
     "tslint": "^2.2.0-beta",
     "typescript": "^1.5.0-beta"
   },
-  "gitHead": "a49753ab15b3dc81a2571fb88f8dfe176aef5966",
+  "gitHead": "ca589bbb7cb75dead843bb664ac3b577a330dcd0",
   "description": "This is a development branch. For a stable version, please check out the master branch.",
-  "_id": "n3-charts@2.0.0-beta5",
+  "_id": "n3-charts@2.0.0-beta16",
   "scripts": {},
-  "_shasum": "8f84debebc5982c8f5463ed96c3a54f2ec817bf9",
-  "_from": "n3-charts@2.0.0-beta5",
+  "_shasum": "23fd1597b8a9a9c8bf505a08f2973a6e1dfc10ec",
+  "_from": "n3-charts@2.0.0-beta16",
   "_npmVersion": "2.11.2",
   "_nodeVersion": "0.12.6",
   "_npmUser": {
@@ -65,8 +71,8 @@
     "email": "dolor_sit_amet@protonmail.ch"
   },
   "dist": {
-    "shasum": "8f84debebc5982c8f5463ed96c3a54f2ec817bf9",
-    "tarball": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta5.tgz"
+    "shasum": "23fd1597b8a9a9c8bf505a08f2973a6e1dfc10ec",
+    "tarball": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta16.tgz"
   },
   "maintainers": [
     {
@@ -75,5 +81,5 @@
     }
   ],
   "directories": {},
-  "_resolved": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta5.tgz"
+  "_resolved": "http://registry.npmjs.org/n3-charts/-/n3-charts-2.0.0-beta16.tgz"
 }

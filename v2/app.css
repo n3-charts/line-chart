@@ -245,15 +245,19 @@ a.button, button {
     background-color: #7CB342;
     color: white; }
 
-.chart .axis > path {
+.chart .container .overlay .tooltip-line {
   stroke: white; }
+.chart .grid .tick > line {
+  stroke: rgba(255, 255, 255, 0.3); }
+.chart .axis > path {
+  stroke: rgba(255, 255, 255, 0.3); }
 .chart .axis > .tick > text {
   fill: white; }
 .chart .axis > .tick > line {
-  stroke: white; }
+  stroke: rgba(255, 255, 255, 0.3); }
 
 .chart-legend {
-  color: white !important; }
+  display: none; }
 
 body, html {
   margin: 0;
@@ -318,5 +322,3 @@ body, html {
   text-align: center;
   padding-top: 10px;
   color: #BDBDBD; }
-
-/*# sourceMappingURL=app.css.map */

@@ -31,6 +31,7 @@ var n3Charts;
                     ['transitions', n3Charts.Factory.Transition],
                     ['x-axis', n3Charts.Factory.Axis, n3Charts.Utils.AxisOptions.SIDE.X],
                     ['y-axis', n3Charts.Factory.Axis, n3Charts.Utils.AxisOptions.SIDE.Y],
+                    ['grid', n3Charts.Factory.Grid],
                     // This order is important, otherwise it can mess up with the tooltip
                     // (and you don't want to mess up with a tooltip, trust me).
                     ['series-area', n3Charts.Factory.Series.Area],
@@ -40,18 +41,30 @@ var n3Charts;
                 ]);
                 // Initialize all factories
                 factoryMgr.all().forEach(function (f) { return f.instance.init(f.key, eventMgr, factoryMgr); });
+                // When options aren't defined at startup (when used inside a directive, for example)
+                // we need to wait until they are to create the chart.
+                var deferredCreation = scope.options === undefined;
                 // Unwrap native options and update the chart
                 var update = function () {
                     // Call the update event with a copy of the options
                     // and data to avoid infinite digest loop
                     var options = new n3Charts.Utils.Options(angular.copy(scope.options));
                     var data = new n3Charts.Utils.Data(angular.copy(scope.data));
+                    if (deferredCreation) {
+                        deferredCreation = false;
+                        eventMgr.trigger('create', options);
+                        eventMgr.trigger('resize', element[0].parentElement);
+                    }
+                    // Update the eventMgr itself
+                    eventMgr.update(data, options);
                     // Trigger the update event
                     eventMgr.trigger('update', data, options);
                 };
                 // Trigger the create event
-                eventMgr.trigger('create');
-                eventMgr.trigger('resize', element[0].parentElement);
+                if (!deferredCreation) {
+                    eventMgr.trigger('create', new n3Charts.Utils.Options(angular.copy(scope.options)));
+                    eventMgr.trigger('resize', element[0].parentElement);
+                }
                 // We use $watch because both options and data
                 // are objects and not arrays
                 scope.$watch('[options, data]', update, true);
@@ -73,12 +86,17 @@ var n3Charts;
                     scope.$apply();
                 });
                 // Trigger the resize event
+                // Added <any> cast for TS linter error, needs further investigation
+                // [chaosmail]
                 angular.element(_this.$window).on('resize', function (event) {
                     eventMgr.trigger('resize', element[0].parentElement);
                     update();
                 });
                 // Trigger the destroy event
-                scope.$on('$destroy', function () { return eventMgr.trigger('destroy'); });
+                scope.$on('$destroy', function () {
+                    eventMgr.trigger('destroy');
+                    angular.element(_this.$window).off();
+                });
             };
         }
         return LineChart;
@@ -99,6 +117,11 @@ var n3Charts;
                 // Support chaining
                 return this;
             };
+            EventManager.prototype.update = function (data, options) {
+                this.data = data;
+                this.options = options;
+                return;
+            };
             EventManager.prototype.on = function (event, callback) {
                 // Register an event listener
                 // TODO We need to add an $apply() in here
@@ -116,35 +139,45 @@ var n3Charts;
                 // Support chaining
                 return this;
             };
-            EventManager.prototype.datumEnter = function (series) {
+            EventManager.prototype.triggerDataAndOptions = function (event) {
+                var args = [];
+                for (var _i = 1; _i < arguments.length; _i++) {
+                    args[_i - 1] = arguments[_i];
+                }
+                args.push(this.data);
+                args.push(this.options);
+                this._dispatch[event].apply(this, args);
+                return this;
+            };
+            EventManager.prototype.datumEnter = function (series, options) {
                 var _this = this;
                 return function (selection) {
                     return selection.on('mouseenter', function (d, i) {
-                        _this.trigger('over', d, i, series);
+                        _this.trigger('enter', d, i, series, options);
                     });
                 };
             };
-            EventManager.prototype.datumOver = function (series) {
+            EventManager.prototype.datumOver = function (series, options) {
                 var _this = this;
                 return function (selection) {
                     return selection.on('mouseover', function (d, i) {
-                        _this.trigger('over', d, i, series);
+                        _this.trigger('over', d, i, series, options);
                     });
                 };
             };
-            EventManager.prototype.datumMove = function (series) {
+            EventManager.prototype.datumMove = function (series, options) {
                 var _this = this;
                 return function (selection) {
                     return selection.on('mousemove', function (d, i) {
-                        _this.trigger('over', d, i, series);
+                        _this.trigger('over', d, i, series, options);
                     });
                 };
             };
-            EventManager.prototype.datumLeave = function (series) {
+            EventManager.prototype.datumLeave = function (series, options) {
                 var _this = this;
                 return function (selection) {
                     return selection.on('mouseleave', function (d, i) {
-                        _this.trigger('leave', d, i, series);
+                        _this.trigger('leave', d, i, series, options);
                     });
                 };
             };
@@ -162,12 +195,12 @@ var n3Charts;
                 'legend-click',
                 'legend-over',
                 'legend-out',
+                'container-over',
+                'container-move',
+                'container-out',
                 'focus',
                 'toggle',
             ];
-            EventManager.DEFAULT = function () {
-                return new EventManager().init(EventManager.EVENTS);
-            };
             return EventManager;
         })();
         Utils.EventManager = EventManager;
@@ -266,7 +299,7 @@ var n3Charts;
                 this.eventMgr.on('update.' + this.key, this.update.bind(this));
                 this.eventMgr.on('destroy.' + this.key, this.destroy.bind(this));
             };
-            BaseFactory.prototype.create = function () {
+            BaseFactory.prototype.create = function (options) {
                 // This methods need to be overwritten by factories
             };
             BaseFactory.prototype.update = function (data, options) {
@@ -398,9 +431,18 @@ var n3Charts;
             };
             Data.prototype.getDatasetValues = function (series, options) {
                 var xKey = options.getAbsKey();
-                return this.sets[series.dataset].values.map(function (d) {
-                    return { 'x': d[xKey], 'y': d[series.key] };
-                });
+                var fn;
+                if (series.key.y0) {
+                    fn = function (d) {
+                        return { x: d[xKey], y1: d[series.key.y1], y0: d[series.key.y0] };
+                    };
+                }
+                else {
+                    fn = function (d) {
+                        return { x: d[xKey], y1: d[series.key.y1], y0: 0 };
+                    };
+                }
+                return this.sets[series.dataset].values.map(fn);
             };
             Data.getMinDistance = function (data, scale, key, range) {
                 if (key === void 0) { key = 'x'; }
@@ -441,7 +483,8 @@ var n3Charts;
                 this.visible = true;
                 var options = this.sanitizeOptions(js);
                 this.id = options.id || Utils.Options.uuid();
-                this.axis = this.sanitizeAxis(options.axis);
+                this.axis = options.axis;
+                this.interpolation = options.interpolation;
                 this.dataset = options.dataset;
                 this.key = options.key;
                 this.color = options.color;
@@ -459,14 +502,37 @@ var n3Charts;
                 var options = {};
                 // Extend the default options
                 angular.extend(options, this, js);
+                options.axis = this.sanitizeAxis(options.axis);
+                options.interpolation = this.sanitizeInterpolation(options.interpolation);
                 options.id = Utils.Options.getString(options.id);
                 options.type = Utils.Options.getArray(options.type);
                 options.dataset = Utils.Options.getString(options.dataset);
-                options.key = Utils.Options.getString(options.key);
+                options.key = this.sanitizeKeys(options.key);
                 options.color = Utils.Options.getString(options.color);
                 options.label = Utils.Options.getString(options.label);
                 options.visible = Utils.Options.getBoolean(options.visible);
                 return options;
+            };
+            SeriesOptions.prototype.sanitizeInterpolation = function (js) {
+                if (!js) {
+                    return { mode: 'linear', tension: 0.7 };
+                }
+                return {
+                    mode: Utils.Options.getString(js.mode, 'linear'),
+                    tension: Utils.Options.getNumber(js.tension, 0.7)
+                };
+            };
+            SeriesOptions.prototype.sanitizeKeys = function (js) {
+                if (!js) {
+                    return { y1: undefined };
+                }
+                if (typeof js === 'string') {
+                    return { y1: Utils.Options.getString(js) };
+                }
+                return {
+                    y0: Utils.Options.getString(js.y0),
+                    y1: Utils.Options.getString(js.y1)
+                };
             };
             /**
              * Return the toggeled visibility without modifying
@@ -480,7 +546,11 @@ var n3Charts;
              */
             SeriesOptions.prototype.sanitizeType = function (types) {
                 return types.filter(function (type) {
-                    return SeriesOptions.isValidType(type);
+                    if (!SeriesOptions.isValidType(type)) {
+                        console.warn('Unknow series type : ' + type);
+                        return false;
+                    }
+                    return true;
                 });
             };
             /**
@@ -500,12 +570,21 @@ var n3Charts;
             SeriesOptions.prototype.isAColumn = function () {
                 return this.hasType(SeriesOptions.TYPE.COLUMN);
             };
+            SeriesOptions.prototype.isDashed = function () {
+                return this.type.indexOf(SeriesOptions.TYPE.DASHED_LINE) !== -1;
+            };
             /**
              * Returns true if the series has a type *type*,
              * where type should be a value of SeriesOptions.TYPE
              */
             SeriesOptions.prototype.hasType = function (type) {
+                if (type === SeriesOptions.TYPE.LINE) {
+                    return (this.type.indexOf(type) !== -1 || this.type.indexOf(SeriesOptions.TYPE.DASHED_LINE) !== -1);
+                }
                 return this.type.indexOf(type) !== -1;
+            };
+            SeriesOptions.prototype.hasTwoKeys = function () {
+                return this.key.y0 !== undefined;
             };
             /**
              * Returns true if the type *type* is a valid type
@@ -516,6 +595,7 @@ var n3Charts;
             SeriesOptions.TYPE = {
                 DOT: 'dot',
                 LINE: 'line',
+                DASHED_LINE: 'dashed-line',
                 AREA: 'area',
                 COLUMN: 'column'
             };
@@ -537,11 +617,31 @@ var n3Charts;
                 this.parse(js);
             }
             AxisOptions.prototype.parse = function (js) {
-                this.type = js.type;
+                this.type = Utils.Options.getString(js.type, 'linear');
                 this.key = js.key;
+                this.tickFormat = Utils.Options.getFunction(js.tickFormat);
+                this.ticks = js.ticks;
+                if (this.type === AxisOptions.TYPE.LINEAR) {
+                    this.min = Utils.Options.getNumber(js.min, undefined);
+                    this.max = Utils.Options.getNumber(js.max, undefined);
+                }
+                else if (this.type === AxisOptions.TYPE.DATE) {
+                    this.min = Utils.Options.getDate(js.min, undefined);
+                    this.max = Utils.Options.getDate(js.max, undefined);
+                }
             };
             AxisOptions.isValidSide = function (side) {
                 return d3.values(AxisOptions.SIDE).indexOf(side) !== -1;
+            };
+            AxisOptions.prototype.configure = function (axis) {
+                axis.tickFormat(this.tickFormat);
+                if (this.ticks instanceof Array) {
+                    axis.tickValues(this.ticks);
+                }
+                else if (typeof this.ticks === 'number') {
+                    axis.ticks(this.ticks);
+                }
+                return axis;
             };
             AxisOptions.SIDE = {
                 X: 'x',
@@ -549,7 +649,8 @@ var n3Charts;
             };
             AxisOptions.TYPE = {
                 LINEAR: 'linear',
-                DATE: 'date'
+                DATE: 'date',
+                LOG: 'log'
             };
             return AxisOptions;
         })();
@@ -575,10 +676,16 @@ var n3Charts;
                     bottom: 40,
                     right: 0
                 };
+                this.grid = {
+                    x: false,
+                    y: true
+                };
                 var options = this.sanitizeOptions(js);
-                this.margin = this.sanitizeMargin(options.margin);
-                this.series = this.sanitizeSeries(options.series);
-                this.axes = this.sanitizeAxes(options.axes);
+                this.margin = options.margin;
+                this.series = options.series;
+                this.axes = options.axes;
+                this.grid = options.grid;
+                this.tooltipHook = options.tooltipHook;
             }
             /**
              * Make sure that the options have proper types,
@@ -588,21 +695,30 @@ var n3Charts;
                 var options = {};
                 // Extend the default options
                 angular.extend(options, this, js);
-                options.margin = Options.getObject(options.margin, this.margin);
-                options.series = Options.getArray(options.series);
-                options.axes = Options.getObject(options.axes, this.axes);
+                options.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
+                options.series = this.sanitizeSeries(Options.getArray(options.series));
+                options.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
+                options.grid = this.sanitizeGridOptions(options.grid);
+                options.tooltipHook = Options.getFunction(options.tooltipHook);
                 return options;
             };
             Options.prototype.sanitizeMargin = function (margin) {
                 return {
-                    top: Options.getNumber(margin.top),
-                    left: Options.getNumber(margin.left),
-                    bottom: Options.getNumber(margin.bottom),
-                    right: Options.getNumber(margin.right)
+                    top: Options.getNumber(margin.top, 0),
+                    left: Options.getNumber(margin.left, 0),
+                    bottom: Options.getNumber(margin.bottom, 0),
+                    right: Options.getNumber(margin.right, 0)
                 };
             };
             Options.prototype.sanitizeSeries = function (series) {
                 return (series).map(function (s) { return new Utils.SeriesOptions(s); });
+            };
+            Options.prototype.sanitizeGridOptions = function (grid) {
+                var g = {
+                    x: Options.getBoolean(grid.x, false),
+                    y: Options.getBoolean(grid.y, true)
+                };
+                return g;
             };
             Options.prototype.sanitizeAxes = function (axes) {
                 // Map object keys and return a new object
@@ -631,16 +747,23 @@ var n3Charts;
             };
             Options.getBoolean = function (value, defaultValue) {
                 if (defaultValue === void 0) { defaultValue = true; }
-                return !(value === !defaultValue);
+                if (typeof value === 'boolean') {
+                    return value;
+                }
+                return defaultValue;
             };
             Options.getNumber = function (value, defaultValue) {
-                if (defaultValue === void 0) { defaultValue = 0; }
                 var n = parseFloat(value);
                 return !isNaN(n) ? n : defaultValue;
             };
-            Options.getString = function (value) {
-                var s = String(value);
-                return s;
+            Options.getDate = function (value, defaultValue) {
+                return value instanceof Date ? value : defaultValue;
+            };
+            Options.getFunction = function (value) {
+                return value instanceof Function ? value : undefined;
+            };
+            Options.getString = function (value, defaultValue) {
+                return value ? String(value) : defaultValue;
             };
             Options.getIdentifier = function (value) {
                 var s = Options.getString(value);
@@ -693,6 +816,17 @@ var n3Charts;
                     top: 20
                 };
             }
+            Dimensions.prototype.updateMargins = function (options) {
+                var _this = this;
+                if (!options || !options.margin) {
+                    return;
+                }
+                var fn = function (prop) { return _this.margin[prop] = Utils.Options.getNumber(options.margin[prop], _this.margin[prop]); };
+                fn('top');
+                fn('bottom');
+                fn('left');
+                fn('right');
+            };
             Dimensions.prototype.getDimensionByProperty = function (element, propertyName) {
                 var style = window.getComputedStyle(element, null);
                 return +style.getPropertyValue(propertyName).replace(/px$/, '');
@@ -733,10 +867,24 @@ var n3Charts;
                 this.element = element;
                 this.dim = new n3Charts.Utils.Dimensions();
             }
-            Container.prototype.create = function () {
+            Container.prototype.create = function (options) {
+                this.dim.updateMargins(options);
+                this.listenToElement(this.element, options);
                 this.createRoot();
                 this.createContainer();
                 this.eventMgr.on('resize', this.dim.fromParentElement.bind(this.dim));
+            };
+            Container.prototype.listenToElement = function (element, options) {
+                var eventMgr = this.eventMgr;
+                element.addEventListener('mouseover', function (event) {
+                    eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-over', event]);
+                });
+                element.addEventListener('mousemove', function (event) {
+                    eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-move', event]);
+                });
+                element.addEventListener('mouseout', function (event) {
+                    eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-out', event]);
+                });
             };
             Container.prototype.update = function (datasets, options) {
                 this.updateRoot();
@@ -772,13 +920,18 @@ var n3Charts;
                 this.data = this.vis
                     .append('g')
                     .attr('class', 'data');
+                this.overlay = this.vis
+                    .append('g')
+                    .attr('class', 'overlay');
             };
             Container.prototype.updateContainer = function () {
                 // Update the dimensions of the container
                 this.vis
-                    .attr('width', this.dim.innerWidth)
-                    .attr('height', this.dim.innerHeight)
-                    .attr('transform', 'translate(' + this.dim.margin.left + ', ' + this.dim.margin.top + ')');
+                    .attr({
+                    'width': this.dim.innerWidth,
+                    'height': this.dim.innerHeight,
+                    'transform': 'translate(' + this.dim.margin.left + ', ' + this.dim.margin.top + ')'
+                });
             };
             Container.prototype.getDimensions = function () {
                 return this.dim;
@@ -801,69 +954,231 @@ var n3Charts;
             }
             Tooltip.prototype.create = function () {
                 this.createTooltip();
-                this.eventMgr.on('over.tooltip', this.show.bind(this));
-                this.eventMgr.on('leave.tooltip', this.hide.bind(this));
+                this.eventMgr.on('container-move.tooltip', this.show.bind(this));
+                this.eventMgr.on('container-out.tooltip', this.hide.bind(this));
+                this.hide();
             };
             Tooltip.prototype.createTooltip = function () {
                 var svg = this.svg = d3.select(this.element)
                     .append('div')
-                    .attr('class', 'chart-tooltip')
-                    .style('position', 'absolute');
+                    .attr('class', 'chart-tooltip');
                 svg.append('div')
-                    .attr('class', 'arrow');
-                svg.append('div')
-                    .attr('class', 'abscissas')
-                    .style('display', 'inline-block');
-                svg.append('div')
-                    .attr('class', 'value')
-                    .style('display', 'inline-block');
+                    .attr('class', 'abscissas');
+                this.line = this.factoryMgr.get('container').overlay
+                    .append('line')
+                    .attr('class', 'tooltip-line');
+                this.dots = this.factoryMgr.get('container').overlay
+                    .append('g')
+                    .attr('class', 'tooltip-dots');
             };
             Tooltip.prototype.destroy = function () {
                 this.svg.remove();
             };
-            Tooltip.prototype.show = function (datum, index, series) {
-                this.updateTooltipContent(datum, index, series);
-                this.updateTooltipPosition(datum, index, series);
+            Tooltip.prototype.getCoordinates = function (event) {
+                var container = this.factoryMgr.get('container');
+                var dim = container.getDimensions();
+                var _a = event.currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
+                var xScale = this.factoryMgr.get('x-axis').scale;
+                var x = xScale.invert(event.x - left - dim.margin.left);
+                var yScale = this.factoryMgr.get('y-axis').scale;
+                var y = yScale.invert(event.y - top - dim.margin.top);
+                if (y < yScale.domain()[0] || y > yScale.domain()[1]) {
+                    y = undefined;
+                }
+                if (x < xScale.domain()[0] || x > xScale.domain()[1]) {
+                    x = undefined;
+                }
+                return { y: y, x: x };
+            };
+            Tooltip.prototype.getClosestRows = function (x, data, options) {
+                var visibleSeries = options.series.filter(function (series) { return series.visible; });
+                var datasets = visibleSeries.map(function (series) { return data.getDatasetValues(series, options); });
+                var closestRows = [];
+                var closestIndex = -1;
+                var minDistance = Number.POSITIVE_INFINITY;
+                for (var i = 0; i < datasets.length; i++) {
+                    for (var j = 0; j < datasets[i].length; j++) {
+                        if (options.axes.x.type === 'date') {
+                            // _sigh_ TypeScript...
+                            var distance = Math.abs(datasets[i][j].x.getTime() - x);
+                        }
+                        else {
+                            var distance = Math.abs(datasets[i][j].x - x);
+                        }
+                        if (distance === minDistance) {
+                            closestRows.push({ series: visibleSeries[i], row: datasets[i][j] });
+                        }
+                        else if (distance < minDistance) {
+                            minDistance = distance;
+                            closestRows = [{ series: visibleSeries[i], row: datasets[i][j] }];
+                            closestIndex = j;
+                        }
+                    }
+                }
+                return { rows: closestRows, index: closestIndex };
+            };
+            Tooltip.prototype.updateTooltipContent = function (rows, closestIndex, options) {
+                var x = rows[0].row.x;
+                var xTickFormat = options.getByAxisSide(n3Charts.Utils.AxisOptions.SIDE.X).tickFormat;
+                this.svg.select('.abscissas')
+                    .text(xTickFormat ? xTickFormat(x, closestIndex) : x);
+                var initItem = function (s) {
+                    s.attr({ 'class': 'tooltip-item' });
+                    s.append('div')
+                        .attr({ 'class': 'color-dot' })
+                        .style({
+                        'background-color': function (d) { return d.series.color; }
+                    });
+                    s.append('div')
+                        .attr({ 'class': 'series-label' });
+                    s.append('div')
+                        .attr({ 'class': 'y-value' });
+                    return s;
+                };
+                var updateItem = function (s) {
+                    s.select('.series-label')
+                        .text(function (d) { return d.series.label; });
+                    var yTickFormat = options.getByAxisSide(n3Charts.Utils.AxisOptions.SIDE.Y).tickFormat;
+                    s.select('.y-value')
+                        .text(function (d) {
+                        var fn = yTickFormat ? function (y1) { return yTickFormat(y1, closestIndex); } : function (y1) { return y1; };
+                        var y1Label = fn(d.row.y1);
+                        if (d.series.hasTwoKeys()) {
+                            return '[' + fn(d.row.y0) + ', ' + y1Label + ']';
+                        }
+                        else {
+                            return y1Label;
+                        }
+                    });
+                    return s;
+                };
+                var items = this.svg.selectAll('.tooltip-item')
+                    .data(rows, function (d) { return d.series.id; });
+                items.enter()
+                    .append('div')
+                    .call(initItem)
+                    .call(updateItem);
+                items.call(updateItem);
+                items.exit().remove();
+            };
+            Tooltip.prototype.show = function (event, data, options) {
+                var _a = this.getCoordinates(event), x = _a.x, y = _a.y;
+                if (x === undefined || y === undefined) {
+                    this.hide();
+                    return;
+                }
+                if (x instanceof Date) {
+                    // _sigh_ TypeScript...
+                    x = x.getTime();
+                }
+                var _b = this.getClosestRows(x, data, options), rows = _b.rows, index = _b.index;
+                if (rows.length === 0) {
+                    this.hide();
+                    return;
+                }
+                this.updateTooltipDots(rows);
+                this.dots.style('opacity', '1');
+                this.updateLinePosition(rows);
+                this.line.style('opacity', '1');
+                if (options.tooltipHook && options.tooltipHook(rows, data, options) === false) {
+                    return;
+                }
+                this.updateTooltipContent(rows, index, options);
+                this.updateTooltipPosition(rows);
                 this.svg
-                    .transition()
-                    .call(this.factoryMgr.get('transitions').edit)
-                    .style('opacity', '1');
+                    .style('display', null);
                 return;
             };
-            Tooltip.prototype.updateTooltipContent = function (datum, index, series) {
-                this.svg.select('.abscissas').text(datum.x);
-                this.svg.select('.value').text(datum.y);
-                this.svg.style('background-color', series.color);
-                this.svg.select('.arrow').style('border-top-color', series.color);
-            };
-            Tooltip.prototype.updateTooltipPosition = function (datum, index, series) {
+            Tooltip.prototype.updateTooltipDots = function (rows) {
                 var xScale = this.factoryMgr.get('x-axis').scale;
                 var yScale = this.factoryMgr.get('y-axis').scale;
-                var x = xScale(datum.x);
-                if (series.isAColumn()) {
-                    x += this.factoryMgr.get('series-column').getTooltipPosition(series);
-                }
+                var radius = 3;
+                var circlePath = function (r, cx, cy) {
+                    return "M " + cx + " " + cy + " m -" + r + ", 0 a " + r + "," + r + " 0 1,0 " + r * 2 + ",0 a " + r + "," + r + " 0 1,0 -" + r * 2 + ",0 ";
+                };
+                var trianglePath = function (r, cx, cy) {
+                    return "M " + cx + " " + cy + " m -" + r + ", 0 a " + r + "," + r + " 0 1,0 " + r * 2 + ",0 a " + r + "," + r + " 0 1,0 -" + r * 2 + ",0 ";
+                };
+                var initDots = function (s) {
+                    s.attr('class', 'tooltip-dots-group');
+                    s.append('path').attr({
+                        'class': 'tooltip-dot y1'
+                    });
+                    s.append('path').attr({
+                        'class': 'tooltip-dot y0'
+                    }).style({
+                        'display': function (d) { return d.series.hasTwoKeys() ? null : 'none'; }
+                    });
+                };
+                var updateDots = function (s) {
+                    s.select('.tooltip-dot.y1').attr({
+                        'd': function (d) { return circlePath(radius, xScale(d.row.x), yScale(d.row.y1)); },
+                        'stroke': function (d) { return d.series.color; }
+                    });
+                    s.select('.tooltip-dot.y0').attr({
+                        'd': function (d) {
+                            if (d.series.hasTwoKeys()) {
+                                return circlePath(radius, xScale(d.row.x), yScale(d.row.y0));
+                            }
+                            return '';
+                        },
+                        'stroke': function (d) { return d.series.color; }
+                    });
+                };
+                var dots = this.dots.selectAll('.tooltip-dots-group')
+                    .data(rows);
+                dots.enter()
+                    .append('g')
+                    .call(initDots)
+                    .call(updateDots);
+                dots.call(updateDots);
+                dots.exit().remove();
+            };
+            Tooltip.prototype.updateTooltipPosition = function (rows) {
+                var lastRow = rows.slice(-1)[0];
+                var xAxis = this.factoryMgr.get('x-axis');
+                var yScale = this.factoryMgr.get('y-axis').scale;
                 var margin = this.factoryMgr.get('container').getDimensions().margin;
                 var leftOffset = this.element.offsetLeft;
                 var topOffset = this.element.offsetTop;
+                var xOffset = 0;
+                var transform = '';
+                if (xAxis.isInLastHalf(lastRow.row.x)) {
+                    transform = 'translate(-100%, 0)';
+                    xOffset = -10;
+                }
+                else {
+                    xOffset = 10;
+                }
                 this.svg
-                    .classed('positive', datum.y >= 0)
-                    .classed('negative', datum.y < 0)
                     .style({
-                    'left': (leftOffset + margin.left + x) + 'px',
-                    'top': (topOffset + margin.top + yScale(datum.y)) + 'px'
+                    'left': (leftOffset + margin.left + xAxis.scale(lastRow.row.x) + xOffset) + 'px',
+                    'top': (topOffset + margin.top) + 'px',
+                    'transform': transform
+                });
+                return;
+            };
+            Tooltip.prototype.updateLinePosition = function (rows) {
+                var container = this.factoryMgr.get('container');
+                var dim = container.getDimensions();
+                var lastRow = rows.slice(-1)[0];
+                var xAxis = this.factoryMgr.get('x-axis');
+                var x = xAxis.scale(lastRow.row.x);
+                this.line.attr({
+                    'x1': x,
+                    'x2': x,
+                    'y1': 0,
+                    'y2': dim.innerHeight
                 });
                 return;
             };
             Tooltip.prototype.hide = function () {
-                // Next time one of us has to write this, I'll disable this goddamn linter.
-                var self = this.svg;
                 this.svg
-                    .transition()
-                    .call(this.factoryMgr.get('transitions').edit)
-                    .style('opacity', '0')
-                    .each('end', function () { return self.style({ 'left': '0px', 'top': '0px' }); });
-                return;
+                    .style('display', 'none');
+                this.line
+                    .style('opacity', '0');
+                this.dots
+                    .style('opacity', '0');
             };
             return Tooltip;
         })(n3Charts.Utils.BaseFactory);
@@ -960,7 +1275,7 @@ var n3Charts;
                 this.scale = this.getScale(axisOptions);
                 this.updateScaleRange(dim);
                 this.updateScaleDomain(extent);
-                this.axis = this.getAxis(this.scale);
+                this.axis = this.getAxis(this.scale, axisOptions);
                 this.updateAxisOrientation();
                 this.updateAxisContainer(dim);
             };
@@ -1003,28 +1318,48 @@ var n3Charts;
             };
             Axis.prototype.getExtent = function (datasets, options) {
                 var _this = this;
+                var axisOptions = options.axes[this.side];
+                var extent = undefined;
                 if (this.isAbscissas()) {
                     var abscissasKey = options.getAbsKey();
-                    return this.getExtentForDatasets(datasets, function () { return true; }, function (datum) { return [datum[abscissasKey], datum[abscissasKey]]; });
+                    extent = this.getExtentForDatasets(datasets, function () { return true; }, function (datum) { return [datum[abscissasKey], datum[abscissasKey]]; });
                 }
-                var datasetsForSide = [];
-                var seriesForDataset = {};
-                options.series.forEach(function (series) {
-                    if (series.visible && series.axis === _this.side) {
-                        datasetsForSide.push(series.dataset);
-                        if (!seriesForDataset[series.dataset]) {
-                            seriesForDataset[series.dataset] = [];
+                else {
+                    var datasetsForSide = [];
+                    var seriesForDataset = {};
+                    options.series.forEach(function (series) {
+                        if (series.visible && series.axis === _this.side) {
+                            datasetsForSide.push(series.dataset);
+                            if (!seriesForDataset[series.dataset]) {
+                                seriesForDataset[series.dataset] = [];
+                            }
+                            seriesForDataset[series.dataset].push(series);
                         }
-                        seriesForDataset[series.dataset].push(series);
-                    }
-                });
-                return this.getExtentForDatasets(datasets, function (key) { return datasetsForSide.indexOf(key) > -1; }, function (datum, datasetKey) {
-                    var data = seriesForDataset[datasetKey].map(function (series) { return datum[series.key]; });
-                    return [d3.min(data), d3.max(data)];
-                });
+                    });
+                    extent = this.getExtentForDatasets(datasets, function (key) { return datasetsForSide.indexOf(key) > -1; }, function (datum, datasetKey) {
+                        var highest = seriesForDataset[datasetKey].map(function (series) { return datum[series.key.y1]; });
+                        var lowest = seriesForDataset[datasetKey].map(function (series) { return datum[series.key.y0] || datum[series.key.y1]; });
+                        return [d3.min(lowest), d3.max(highest)];
+                    });
+                }
+                if (axisOptions.min !== undefined) {
+                    extent[0] = axisOptions.min;
+                }
+                if (axisOptions.max !== undefined) {
+                    extent[1] = axisOptions.max;
+                }
+                return extent;
             };
             Axis.prototype.isAbscissas = function () {
                 return this.side === n3Charts.Utils.AxisOptions.SIDE.X;
+            };
+            Axis.prototype.isInLastHalf = function (value) {
+                var fn = function (v) { return v; };
+                if (value instanceof Date) {
+                    fn = function (v) { return v.getTime(); };
+                }
+                var _a = this.scale.domain(), a = _a[0], b = _a[1];
+                return fn(value) > fn(a) + (fn(b) - fn(a)) / 2;
             };
             Axis.prototype.createAxis = function (vis) {
                 // Create the axis container
@@ -1066,16 +1401,65 @@ var n3Charts;
                 if (options.type === n3Charts.Utils.AxisOptions.TYPE.DATE) {
                     return d3.time.scale();
                 }
+                if (options.type === n3Charts.Utils.AxisOptions.TYPE.LOG) {
+                    return d3.scale.log();
+                }
                 return d3.scale.linear();
             };
-            Axis.prototype.getAxis = function (scale) {
+            Axis.prototype.getAxis = function (scale, options) {
                 // Create and return a D3 Axis generator
-                return d3.svg.axis()
+                var axis = d3.svg.axis()
                     .scale(scale);
+                options.configure(axis);
+                return axis;
             };
             return Axis;
         })(n3Charts.Utils.BaseFactory);
         Factory.Axis = Axis;
+    })(Factory = n3Charts.Factory || (n3Charts.Factory = {}));
+})(n3Charts || (n3Charts = {}));
+var n3Charts;
+(function (n3Charts) {
+    var Factory;
+    (function (Factory) {
+        'use strict';
+        var Grid = (function (_super) {
+            __extends(Grid, _super);
+            function Grid() {
+                _super.apply(this, arguments);
+            }
+            Grid.prototype.create = function () {
+                this.svg = this.factoryMgr.get('container').axes
+                    .insert('g', ':first-child')
+                    .attr('class', 'grid');
+                this.svg.append('g').classed('x-grid', true);
+                this.svg.append('g').classed('y-grid', true);
+            };
+            Grid.prototype.update = function (data, options) {
+                var container = this.factoryMgr.get('container');
+                var dim = container.getDimensions();
+                if (options.grid.x) {
+                    var xAxis = this.factoryMgr.get('x-axis');
+                    this.svg.select('.x-grid')
+                        .transition()
+                        .call(this.factoryMgr.get('transitions').edit)
+                        .attr('transform', 'translate(0, ' + dim.innerHeight + ')')
+                        .call(xAxis.axis.tickSize(-dim.innerHeight, 0));
+                }
+                if (options.grid.y) {
+                    var yAxis = this.factoryMgr.get('y-axis');
+                    this.svg.select('.y-grid')
+                        .transition()
+                        .call(this.factoryMgr.get('transitions').edit)
+                        .call(yAxis.axis.tickSize(-dim.innerWidth, 0));
+                }
+            };
+            Grid.prototype.destroy = function () {
+                this.svg.remove();
+            };
+            return Grid;
+        })(n3Charts.Utils.BaseFactory);
+        Factory.Grid = Grid;
     })(Factory = n3Charts.Factory || (n3Charts.Factory = {}));
 })(n3Charts || (n3Charts = {}));
 var n3Charts;
@@ -1137,30 +1521,30 @@ var n3Charts;
                     var xAxis = this.factoryMgr.get('x-axis');
                     var yAxis = this.factoryMgr.get('y-axis');
                     var dotsData = this.data.getDatasetValues(series, this.options);
-                    var dotsRadius = 4;
+                    var dotsRadius = 2;
                     var dots = group.selectAll('.' + this.type)
                         .data(dotsData, function (d) { return d.x; });
                     var initPoint = function (s) {
                         s.attr({
-                            r: function (d) { return 4; },
+                            r: function (d) { return dotsRadius; },
                             cx: function (d) { return xAxis.scale(d.x); },
-                            cy: function (d) { return yAxis.scale(0); }
+                            cy: function (d) { return yAxis.scale.range()[0]; }
                         });
                     };
                     var updatePoint = function (s) {
                         s.attr({
                             cx: function (d) { return xAxis.scale(d.x); },
-                            cy: function (d) { return yAxis.scale(d.y); }
+                            cy: function (d) { return yAxis.scale(d.y1); }
                         })
                             .style('opacity', series.visible ? 1 : 0);
                     };
                     dots.enter()
                         .append('circle')
                         .attr('class', this.type)
-                        .call(this.eventMgr.datumEnter(series))
-                        .call(this.eventMgr.datumOver(series))
-                        .call(this.eventMgr.datumMove(series))
-                        .call(this.eventMgr.datumLeave(series))
+                        .call(this.eventMgr.datumEnter(series, this.options))
+                        .call(this.eventMgr.datumOver(series, this.options))
+                        .call(this.eventMgr.datumMove(series, this.options))
+                        .call(this.eventMgr.datumLeave(series, this.options))
                         .call(initPoint)
                         .transition()
                         .call(this.factoryMgr.get('transitions').enter)
@@ -1179,8 +1563,7 @@ var n3Charts;
                 };
                 Dot.prototype.styleSeries = function (group) {
                     group.style({
-                        'fill': function (d) { return d.color; },
-                        'stroke': 'white'
+                        'stroke': function (d) { return d.color; }
                     });
                 };
                 return Dot;
@@ -1203,15 +1586,20 @@ var n3Charts;
                     this.type = n3Charts.Utils.SeriesOptions.TYPE.LINE;
                 }
                 Line.prototype.updateData = function (group, series, index, numSeries) {
+                    group.classed('dashed', series.isDashed());
                     var xAxis = this.factoryMgr.get('x-axis');
                     var yAxis = this.factoryMgr.get('y-axis');
                     var lineData = this.data.getDatasetValues(series, this.options);
                     var initLine = d3.svg.line()
                         .x(function (d) { return xAxis.scale(d.x); })
-                        .y(yAxis.scale(0));
+                        .y(yAxis.scale.range()[0])
+                        .interpolate(series.interpolation.mode)
+                        .tension(series.interpolation.tension);
                     var updateLine = d3.svg.line()
                         .x(function (d) { return xAxis.scale(d.x); })
-                        .y(function (d) { return yAxis.scale(d.y); });
+                        .y(function (d) { return yAxis.scale(d.y1); })
+                        .interpolate(series.interpolation.mode)
+                        .tension(series.interpolation.tension);
                     var line = group.selectAll('.' + this.type)
                         .data([lineData]);
                     line.enter()
@@ -1237,7 +1625,8 @@ var n3Charts;
                 Line.prototype.styleSeries = function (group) {
                     group.style({
                         'fill': 'none',
-                        'stroke': function (s) { return s.color; }
+                        'stroke': function (s) { return s.color; },
+                        'stroke-dasharray': function (s) { return s.isDashed() ? '10,3' : undefined; }
                     });
                 };
                 return Line;
@@ -1265,12 +1654,16 @@ var n3Charts;
                     var areaData = this.data.getDatasetValues(series, this.options);
                     var initArea = d3.svg.area()
                         .x(function (d) { return xAxis.scale(d.x); })
-                        .y0(yAxis.scale(0))
-                        .y1(function (d) { return yAxis.scale(0); });
+                        .y0(yAxis.scale.range()[0])
+                        .y1(yAxis.scale.range()[0])
+                        .interpolate(series.interpolation.mode)
+                        .tension(series.interpolation.tension);
                     var updateArea = d3.svg.area()
                         .x(function (d) { return xAxis.scale(d.x); })
-                        .y0(yAxis.scale(0))
-                        .y1(function (d) { return yAxis.scale(d.y); });
+                        .y0(function (d) { return isNaN(yAxis.scale(d.y0)) ? yAxis.scale.range()[0] : yAxis.scale(d.y0); })
+                        .y1(function (d) { return yAxis.scale(d.y1); })
+                        .interpolate(series.interpolation.mode)
+                        .tension(series.interpolation.tension);
                     var area = group.selectAll('.' + this.type)
                         .data([areaData]);
                     area.enter()
@@ -1354,7 +1747,7 @@ var n3Charts;
                     var initCol = function (s) {
                         s.attr({
                             x: xFn,
-                            y: yAxis.scale(0),
+                            y: function (d) { return yAxis.scale(d.y0); },
                             width: _this.innerXScale.rangeBand(),
                             height: 0
                         });
@@ -1362,9 +1755,9 @@ var n3Charts;
                     var updateCol = function (s) {
                         s.attr({
                             x: xFn,
-                            y: function (d) { return d.y > 0 ? yAxis.scale(d.y) : yAxis.scale(0); },
+                            y: function (d) { return d.y1 > 0 ? yAxis.scale(d.y1) : yAxis.scale(d.y0); },
                             width: _this.innerXScale.rangeBand(),
-                            height: function (d) { return Math.abs(yAxis.scale(0) - yAxis.scale(d.y)); }
+                            height: function (d) { return Math.abs(yAxis.scale(d.y0) - yAxis.scale(d.y1)); }
                         })
                             .style('opacity', series.visible ? 1 : 0);
                     };
@@ -1373,10 +1766,10 @@ var n3Charts;
                     cols.enter()
                         .append('rect')
                         .attr('class', this.type)
-                        .call(this.eventMgr.datumEnter(series))
-                        .call(this.eventMgr.datumOver(series))
-                        .call(this.eventMgr.datumMove(series))
-                        .call(this.eventMgr.datumLeave(series))
+                        .call(this.eventMgr.datumEnter(series, this.options))
+                        .call(this.eventMgr.datumOver(series, this.options))
+                        .call(this.eventMgr.datumMove(series, this.options))
+                        .call(this.eventMgr.datumLeave(series, this.options))
                         .call(initCol)
                         .transition()
                         .call(this.factoryMgr.get('transitions').enter)
@@ -1415,6 +1808,7 @@ var n3Charts;
 /// <reference path='Tooltip.ts' />
 /// <reference path='Legend.ts' />
 /// <reference path='Axis.ts' />
+/// <reference path='Grid.ts' />
 /// <reference path='Transition.ts' />
 /// <reference path='series/_index.ts' />
 /// <reference path='../typings/jquery/jquery.d.ts' />
