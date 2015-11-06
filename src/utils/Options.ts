@@ -42,7 +42,7 @@ module n3Charts.Utils {
       top: 0,
       left: 40,
       bottom: 40,
-      right: 0
+      right: 40
     };
 
     public grid: IGrid = {
@@ -117,12 +117,41 @@ module n3Charts.Utils {
       return this.axes[AxisOptions.SIDE.X].key;
     }
 
-    getByAxisSide(side: string): AxisOptions {
-        if (!AxisOptions.isValidSide(side)) {
-            throw new TypeError('Cannot get axis side : ' + side);
-        }
+    getSeriesAndDatasetBySide(side: string): {seriesForDataset: {}, datasetsForSide: string[]} {
+      if (!AxisOptions.isValidSide(side)) {
+        throw new TypeError('Cannot get axis side : ' + side);
+      }
 
-        return this.axes[side];
+      if (side === AxisOptions.SIDE.Y2 && !this.axes[side]) {
+        side = AxisOptions.SIDE.Y;
+      }
+
+      var datasetsForSide = [];
+      var seriesForDataset = {};
+
+      this.series.forEach((series) => {
+        if (series.visible && series.axis === side) {
+          datasetsForSide.push(series.dataset);
+          if (!seriesForDataset[series.dataset]) {
+            seriesForDataset[series.dataset] = [];
+          }
+          seriesForDataset[series.dataset].push(series);
+        }
+      });
+
+      return {seriesForDataset, datasetsForSide};
+    }
+
+    getByAxisSide(side: string): AxisOptions {
+      if (!AxisOptions.isValidSide(side)) {
+        throw new TypeError('Cannot get axis side : ' + side);
+      }
+
+      if (side === AxisOptions.SIDE.Y2 && !this.axes[side]) {
+        return this.axes[AxisOptions.SIDE.Y];
+      }
+
+      return this.axes[side];
     }
 
     getSeriesByType(type: string): ISeriesOptions[] {

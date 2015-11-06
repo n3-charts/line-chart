@@ -18,7 +18,8 @@ module n3Charts.Utils {
 
     public static SIDE = {
         X: 'x',
-        Y: 'y'
+        Y: 'y',
+        Y2: 'y2'
     };
 
     public static TYPE = {
