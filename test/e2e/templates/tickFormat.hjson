@@ -5,7 +5,7 @@
     left: 100,
     top: 10,
     bottom: 30,
-    right: 30
+    right: 100
   },
   series: [
     {

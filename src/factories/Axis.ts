@@ -83,7 +83,7 @@ module n3Charts.Factory {
     }
 
     getExtent(datasets: Utils.Data, options: Utils.Options) {
-      var axisOptions = options.axes[this.side];
+      var axisOptions = options.getByAxisSide(this.side);
       var extent = undefined;
 
       if (this.isAbscissas()) {
@@ -94,17 +94,7 @@ module n3Charts.Factory {
           (datum) => [datum[abscissasKey], datum[abscissasKey]]
         );
       } else {
-        var datasetsForSide = [];
-        var seriesForDataset = {};
-        options.series.forEach((series) => {
-          if (series.visible && series.axis === this.side) {
-            datasetsForSide.push(series.dataset);
-            if (!seriesForDataset[series.dataset]) {
-              seriesForDataset[series.dataset] = [];
-            }
-            seriesForDataset[series.dataset].push(series);
-          }
-        });
+        var {datasetsForSide, seriesForDataset} = options.getSeriesAndDatasetBySide(this.side);
 
         extent = this.getExtentForDatasets(
           datasets,
@@ -155,7 +145,11 @@ module n3Charts.Factory {
       if (this.isAbscissas()) {
         this.axis.orient('bottom');
       } else {
-        this.axis.orient('left');
+        if (this.side === Utils.AxisOptions.SIDE.Y) {
+          this.axis.orient('left');
+        } else {
+          this.axis.orient('right');
+        }
       }
     }
 
@@ -165,8 +159,14 @@ module n3Charts.Factory {
         this.svg
           .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
       } else {
-        this.svg
-          .attr('transform', 'translate(0, 0)');
+        if (this.side === Utils.AxisOptions.SIDE.Y) {
+          this.svg
+            .attr('transform', 'translate(0, 0)');
+        } else {
+          this.svg
+            .attr('transform', `translate(${dim.innerWidth}, 0)`);
+        }
+
       }
 
       // Redraw the Axis

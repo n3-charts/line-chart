@@ -9,7 +9,7 @@ module n3Charts.Utils {
     public margin = {
       left: 30,
       bottom: 20,
-      right: 20,
+      right: 30,
       top: 20
     };
 
