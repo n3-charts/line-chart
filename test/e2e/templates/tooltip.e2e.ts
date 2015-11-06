@@ -2,7 +2,7 @@
 
 describe('Tooltip', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/tooltip.html');
+    browser.get('test/e2e/tooltip.html');
   });
 
   it('should generate a chart', function() {

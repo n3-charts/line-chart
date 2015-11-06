@@ -2,19 +2,30 @@ var protractor = require('gulp-protractor').protractor;
 var webdriver = require('gulp-protractor').webdriver;
 var webdriverUpdate = require('gulp-protractor').webdriver_update;
 
-module.exports = function(gulp, $, paths) {
+var fs = require('fs');
+var path = require('path');
 
-  // Compile the Jinja test templates
-  gulp.task('jinja:compile:e2e', function() {
-    // Configure the Nunjucks options
-    $.nunjucksRender.nunjucks.configure(['test']);
-    return gulp.src('test/**/*.tpl.html')
-      .pipe($.nunjucksRender())
-      .pipe($.rename(function(path) {
-        pos = path.basename.search('.tpl');
-        path.basename = path.basename.substring(0, pos);
-      }))
-      .pipe(gulp.dest(paths.test.to));
+var hjson = require('hjson');
+
+module.exports = function(gulp, $, paths) {
+  // Shamelessly stolen from http://stackoverflow.com/a/30985576
+  gulp.task('compile:e2e', function() {
+    return gulp.src(paths.e2e.templates)
+      .pipe($.foreach(function(stream, file){
+          var hjsonFile = file;
+          var hjsonBasename = path.basename(hjsonFile.path, path.extname(hjsonFile.path));
+
+          return gulp.src(paths.e2e.base)
+            .pipe($.rename(function(htmlFile) {
+              htmlFile.basename = hjsonBasename;
+            }))
+            .pipe($.data(function() {
+              return hjson.parse(fs.readFileSync(hjsonFile.path, 'utf8'));
+            }))
+            .pipe($.template({name: hjsonBasename}))
+            .pipe(gulp.dest(paths.test.to + '/e2e/'))
+        })
+      )
   });
 
   // Serve the static files
@@ -30,7 +41,7 @@ module.exports = function(gulp, $, paths) {
 
   // Run the integration tests with protractor
   gulp.task('test:e2e', [
-    'webdriver:update', 'webdriver', 'ts:lint:e2e', 'ts:compile:e2e', 'jinja:compile:e2e', 'scss:copy', 'server'
+    'webdriver:update', 'webdriver', 'ts:lint:e2e', 'ts:compile:e2e', 'compile:e2e', 'scss:copy', 'server'
   ], function() {
     return gulp.src(paths.e2e.from)
     .pipe(protractor({

@@ -2,7 +2,7 @@
 
 describe('Tooltip with hook', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/tooltip_hook.html');
+    browser.get('test/e2e/tooltip_hook.html');
   });
 
   it('should generate a chart', function() {

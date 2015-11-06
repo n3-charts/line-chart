@@ -2,7 +2,7 @@
 
 describe('n3Charts.Factory.Legend', function() {
   beforeEach(function() {
-    browser.get('test/e2e/templates/legend.html');
+    browser.get('test/e2e/legend.html');
   });
 
   it('should generate a chart', function() {

@@ -9,7 +9,13 @@ var paths = {
   style: {from: abs('src/styles/**/*.scss'), to: abs('.tmp/build/')},
   test: {from: abs('test/**/*.spec.ts'), to: abs('.tmp/test/')},
   spec: {config: abs('test/config/karma.conf.js'), from: abs('test/**/*.spec.ts')},
-  e2e: {config: abs('test/config/protractor.conf.js'), from: abs('test/**/*.e2e.ts'), templates: abs('test/**/*.tpl.html')},
+  e2e: {
+    config: abs('test/config/protractor.conf.js'),
+    from: abs('test/**/*.e2e.ts'),
+    templates: abs('test/e2e/**/*.hjson'),
+    base: abs('test/e2e/templates/_base.html'),
+    demo: abs('test/e2e/templates/_demo.html')
+  },
   coverage: {to: abs('.tmp/coverage/')}
 };
 
@@ -24,14 +30,22 @@ gulp.task('watch', watchTasks, function () {
   gulp.watch([paths.source.from], ['ts:lint:source', 'ts:compile:source', 'ts:lint:spec', 'test:spec'])
   gulp.watch([paths.test.from], ['ts:lint:spec', 'test:spec'])
   gulp.watch([paths.style.from], ['scss:copy'])
-  gulp.watch([paths.e2e.from, paths.e2e.templates], ['ts:lint:e2e', 'ts:compile:e2e', 'jinja:compile:e2e'])
+  gulp.watch([paths.e2e.from, paths.e2e.templates], ['ts:lint:e2e', 'ts:compile:e2e', 'compile:e2e', 'compile:demo'])
 });
 
 // Serves files via `gulp serve`
 gulp.task('serve', function(callback){
   isWatching = true;
   return runSequence(
-    ['ts:compile:source', 'scss:copy', 'jinja:compile:e2e'],
+    ['ts:compile:source', 'scss:copy', 'compile:e2e'],
+    ['server'],
+    callback);
+});
+
+gulp.task('demo', function(callback){
+  isWatching = true;
+  return runSequence(
+    ['ts:compile:source', 'scss:copy', 'compile:e2e', 'compile:demo'],
     ['server'],
     callback);
 });

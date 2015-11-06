@@ -52,10 +52,10 @@ module n3Charts.Factory {
       var {left, top} = event.currentTarget.getBoundingClientRect();
 
       var xScale = this.factoryMgr.get('x-axis').scale;
-      var x = xScale.invert(event.pageX - left - dim.margin.left);
+      var x = xScale.invert(event.x - left - dim.margin.left);
 
       var yScale = this.factoryMgr.get('y-axis').scale;
-      var y = yScale.invert(event.pageY - top - dim.margin.top);
+      var y = yScale.invert(event.y - top - dim.margin.top);
 
       if (y < yScale.domain()[0] || y > yScale.domain()[1]) {
         y = undefined;
@@ -230,7 +230,13 @@ module n3Charts.Factory {
         });
 
         s.select('.tooltip-dot.y0').attr({
-          'd': (d) => circlePath(radius, xScale(d.row.x), yScale(d.row.y0)),
+          'd': (d) => {
+            if (d.series.hasTwoKeys()) {
+              return circlePath(radius, xScale(d.row.x), yScale(d.row.y0));
+            }
+
+            return '';
+          },
           'stroke': (d) => d.series.color
         });
       };
