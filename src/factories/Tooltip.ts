@@ -100,63 +100,6 @@ module n3Charts.Factory {
       return {rows: closestRows, index: closestIndex};
     }
 
-    updateTooltipContent(rows: INeighbour[], closestIndex: number, options: Utils.Options) {
-      var x = rows[0].row.x;
-      var xTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.X).tickFormat;
-      this.svg.select('.abscissas')
-        .text(xTickFormat ? xTickFormat(x, closestIndex) : x);
-
-      var initItem = (s) => {
-        s.attr({'class': 'tooltip-item'});
-
-        s.append('div')
-          .attr({'class': 'color-dot'})
-          .style({
-            'background-color': (d) => d.series.color
-          });
-
-        s.append('div')
-          .attr({'class': 'series-label'});
-
-        s.append('div')
-          .attr({'class': 'y-value'});
-
-        return s;
-      };
-
-      var updateItem = (s) => {
-        s.select('.series-label')
-          .text((d) => d.series.label);
-
-        var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
-        s.select('.y-value')
-          .text((d) => {
-            var fn = yTickFormat ? (y1) => yTickFormat(y1, closestIndex) : (y1) => y1;
-
-            var y1Label = fn(d.row.y1);
-
-            if (d.series.hasTwoKeys()) {
-              return '[' + fn(d.row.y0) + ', ' + y1Label + ']';
-            } else {
-              return y1Label;
-            }
-          });
-
-        return s;
-      };
-
-      var items = this.svg.selectAll('.tooltip-item')
-        .data(rows, (d) => d.series.id);
-
-      items.enter()
-        .append('div')
-        .call(initItem)
-        .call(updateItem);
-
-      items.call(updateItem);
-      items.exit().remove();
-    }
-
     show(event: any, data: Utils.Data, options: Utils.Options) {
       var {x, y} = this.getCoordinates(event);
       if (x === undefined || y === undefined) {
@@ -182,18 +125,92 @@ module n3Charts.Factory {
       this.updateLinePosition(rows);
       this.line.style('opacity', '1');
 
-      if (options.tooltipHook && options.tooltipHook(rows, data, options) === false) {
+      var tooltipContent = this.getTooltipContent(rows, index, options);
+
+      if (options.tooltipHook) {
+        tooltipContent = options.tooltipHook(rows);
+      }
+
+      if (!tooltipContent) {
         return;
       }
 
-      this.updateTooltipContent(rows, index, options);
+      this.updateTooltipContent(tooltipContent, index, options);
       this.updateTooltipPosition(rows);
+      this.svg.style('display', null);
+    }
 
-      this.svg
-        .style('display', null);
+    // This is the part the user can override.
+    getTooltipContent(rows: INeighbour[], closestIndex: number, options: Utils.Options) {
+      var xTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.X).tickFormat;
+      var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
 
+      var getRowValue = (d: INeighbour) => {
+        var fn = yTickFormat ? (y1) => yTickFormat(y1, closestIndex) : (y1) => y1;
+        var y1Label = fn(d.row.y1);
 
-      return;
+        if (d.series.hasTwoKeys()) {
+          return '[' + fn(d.row.y0) + ', ' + y1Label + ']';
+        } else {
+          return y1Label;
+        }
+      };
+
+      return {
+        abscissas: xTickFormat ? xTickFormat(rows[0].row.x, closestIndex) : rows[0].row.x,
+        rows: rows.map(function(row: INeighbour) {
+          return {
+            label: row.series.label,
+            value: getRowValue(row),
+            color: row.series.color,
+            id: row.series.id
+          };
+        })
+      };
+    }
+
+    updateTooltipContent(result: any, closestIndex: number, options: Utils.Options) {
+      this.svg.select('.abscissas')
+        .text(result.abscissas);
+
+      var initItem = (s) => {
+        s.attr({'class': 'tooltip-item'});
+
+        s.append('div')
+          .attr({'class': 'color-dot'})
+          .style({
+            'background-color': (d) => d.color
+          });
+
+        s.append('div')
+          .attr({'class': 'series-label'});
+
+        s.append('div')
+          .attr({'class': 'y-value'});
+
+        return s;
+      };
+
+      var updateItem = (s) => {
+        s.select('.series-label')
+          .text((d) => d.label);
+
+        s.select('.y-value')
+          .text((d) => d.value);
+
+        return s;
+      };
+
+      var items = this.svg.selectAll('.tooltip-item')
+        .data(result.rows);
+
+      items.enter()
+        .append('div')
+        .call(initItem)
+        .call(updateItem);
+
+      items.call(updateItem);
+      items.exit().remove();
     }
 
     updateTooltipDots(rows: INeighbour[]) {
