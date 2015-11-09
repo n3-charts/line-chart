@@ -102,7 +102,6 @@ module n3Charts.Factory.Series {
     styleSeries(group: D3.Selection) {
       group.style({
         'fill': (d: Utils.SeriesOptions) => d.color,
-        'fill-opacity': 0.5,
         'stroke': (d: Utils.SeriesOptions) => d.color,
         'stroke-width': 1
       });

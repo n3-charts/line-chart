@@ -2,7 +2,7 @@
   options: '''
 {
   grid: {x: false, y: true},
-  margin: {right: 50, top: 10},
+  margin: {right: 50, top: 30},
   series: [
     {
       axis: "y",

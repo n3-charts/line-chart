@@ -296,7 +296,7 @@ module n3Charts.Factory {
       this.line.attr({
         'x1': x,
         'x2': x,
-        'y1': 0,
+        'y1': -dim.margin.top,
         'y2': dim.innerHeight
       });
 
