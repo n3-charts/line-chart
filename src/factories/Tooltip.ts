@@ -45,30 +45,6 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    getCoordinates(event): {x?: number|Date, y?: number} {
-      var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: Utils.Dimensions = container.getDimensions();
-
-      var {left, top} = event.currentTarget.getBoundingClientRect();
-
-      var xScale = this.factoryMgr.get('x-axis').scale;
-      var x = xScale.invert(event.x - left - dim.margin.left);
-
-      var yScale = this.factoryMgr.get('y-axis').scale;
-      var y = yScale.invert(event.y - top - dim.margin.top);
-
-      if (y < yScale.domain()[0] || y > yScale.domain()[1]) {
-        y = undefined;
-      }
-
-      if (x < xScale.domain()[0] || x > xScale.domain()[1]) {
-        x = undefined;
-      }
-
-      return {y, x};
-    }
-
-
     getClosestRows(x: number, data: Utils.Data, options: Utils.Options): {rows: INeighbour[], index:number} {
       var visibleSeries = options.series.filter((series) => series.visible);
       var datasets = visibleSeries.map((series) => data.getDatasetValues(series, options));
@@ -100,65 +76,9 @@ module n3Charts.Factory {
       return {rows: closestRows, index: closestIndex};
     }
 
-    updateTooltipContent(rows: INeighbour[], closestIndex: number, options: Utils.Options) {
-      var x = rows[0].row.x;
-      var xTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.X).tickFormat;
-      this.svg.select('.abscissas')
-        .text(xTickFormat ? xTickFormat(x, closestIndex) : x);
+    showFromCoordinates(coordinates: Factory.ICoordinates, data: Utils.Data, options: Utils.Options) {
+      var {x, y} = coordinates;
 
-      var initItem = (s) => {
-        s.attr({'class': 'tooltip-item'});
-
-        s.append('div')
-          .attr({'class': 'color-dot'})
-          .style({
-            'background-color': (d) => d.series.color
-          });
-
-        s.append('div')
-          .attr({'class': 'series-label'});
-
-        s.append('div')
-          .attr({'class': 'y-value'});
-
-        return s;
-      };
-
-      var updateItem = (s) => {
-        s.select('.series-label')
-          .text((d) => d.series.label);
-
-        var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
-        s.select('.y-value')
-          .text((d) => {
-            var fn = yTickFormat ? (y1) => yTickFormat(y1, closestIndex) : (y1) => y1;
-
-            var y1Label = fn(d.row.y1);
-
-            if (d.series.hasTwoKeys()) {
-              return '[' + fn(d.row.y0) + ', ' + y1Label + ']';
-            } else {
-              return y1Label;
-            }
-          });
-
-        return s;
-      };
-
-      var items = this.svg.selectAll('.tooltip-item')
-        .data(rows, (d) => d.series.id);
-
-      items.enter()
-        .append('div')
-        .call(initItem)
-        .call(updateItem);
-
-      items.call(updateItem);
-      items.exit().remove();
-    }
-
-    show(event: any, data: Utils.Data, options: Utils.Options) {
-      var {x, y} = this.getCoordinates(event);
       if (x === undefined || y === undefined) {
         this.hide();
         return;
@@ -182,18 +102,100 @@ module n3Charts.Factory {
       this.updateLinePosition(rows);
       this.line.style('opacity', '1');
 
-      if (options.tooltipHook && options.tooltipHook(rows, data, options) === false) {
+      var tooltipContent = this.getTooltipContent(rows, index, options);
+
+      if (options.tooltipHook) {
+        tooltipContent = options.tooltipHook(rows);
+      }
+
+      if (!tooltipContent) {
         return;
       }
 
-      this.updateTooltipContent(rows, index, options);
+      this.updateTooltipContent(tooltipContent, index, options);
       this.updateTooltipPosition(rows);
+      this.svg.style('display', null);
+    }
 
-      this.svg
-        .style('display', null);
 
+    show(event: any, data: Utils.Data, options: Utils.Options) {
+      var container: Factory.Container = this.factoryMgr.get('container');
+      var coordinates = container.getCoordinatesFromEvent(event);
 
-      return;
+      this.showFromCoordinates(coordinates, data, options);
+    }
+
+    // This is the part the user can override.
+    getTooltipContent(rows: INeighbour[], closestIndex: number, options: Utils.Options) {
+      var xTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.X).tickFormat;
+      var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
+
+      var getRowValue = (d: INeighbour) => {
+        var fn = yTickFormat ? (y1) => yTickFormat(y1, closestIndex) : (y1) => y1;
+        var y1Label = fn(d.row.y1);
+
+        if (d.series.hasTwoKeys()) {
+          return '[' + fn(d.row.y0) + ', ' + y1Label + ']';
+        } else {
+          return y1Label;
+        }
+      };
+
+      return {
+        abscissas: xTickFormat ? xTickFormat(rows[0].row.x, closestIndex) : rows[0].row.x,
+        rows: rows.map(function(row: INeighbour) {
+          return {
+            label: row.series.label,
+            value: getRowValue(row),
+            color: row.series.color,
+            id: row.series.id
+          };
+        })
+      };
+    }
+
+    updateTooltipContent(result: any, closestIndex: number, options: Utils.Options) {
+      this.svg.select('.abscissas')
+        .text(result.abscissas);
+
+      var initItem = (s) => {
+        s.attr({'class': 'tooltip-item'});
+
+        s.append('div')
+          .attr({'class': 'color-dot'})
+          .style({
+            'background-color': (d) => d.color
+          });
+
+        s.append('div')
+          .attr({'class': 'series-label'});
+
+        s.append('div')
+          .attr({'class': 'y-value'});
+
+        return s;
+      };
+
+      var updateItem = (s) => {
+        s.select('.series-label')
+          .text((d) => d.label);
+
+        s.select('.y-value')
+          .text((d) => d.value);
+
+        return s;
+      };
+
+      var items = this.svg.selectAll('.tooltip-item')
+        .data(result.rows);
+
+      items.enter()
+        .append('div')
+        .call(initItem)
+        .call(updateItem);
+
+      items.call(updateItem);
+      items.exit().remove();
     }
 
     updateTooltipDots(rows: INeighbour[]) {
@@ -296,7 +298,7 @@ module n3Charts.Factory {
       this.line.attr({
         'x1': x,
         'x2': x,
-        'y1': 0,
+        'y1': -dim.margin.top,
         'y2': dim.innerHeight
       });
 

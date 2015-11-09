@@ -5,10 +5,7 @@ module n3Charts {
     data;
     options;
     styles;
-    onDatumEnter;
-    onDatumOver;
-    onDatumMove;
-    onDatumLeave;
+    hoveredCoordinates;
   }
 
   export class LineChart implements ng.IDirective  {
@@ -17,17 +14,14 @@ module n3Charts {
       data: '=',
       options: '=',
       styles: '=',
-      onDatumEnter: '=',
-      onDatumOver: '=',
-      onDatumMove: '=',
-      onDatumLeave: '='
+      hoveredCoordinates: '='
     };
 
     public restrict = 'E';
     public replace = true;
     public template = '<div></div>';
 
-    constructor(private $window: ng.IWindowService) {
+    constructor(private $window: ng.IWindowService, private $parse: ng.IParseService) {
 
     }
 
@@ -95,40 +89,48 @@ module n3Charts {
       // are objects and not arrays
       scope.$watch('[options, data]', update, true);
 
-      scope.$watch('onDatumEnter', function() {
-        eventMgr.on('enter.directive', scope.onDatumEnter);
-      });
-
-      scope.$watch('onDatumOver', function() {
-        eventMgr.on('over.directive', scope.onDatumOver);
-      });
-
-      scope.$watch('onDatumMove', function() {
-        eventMgr.on('move.directive', scope.onDatumMove);
-      });
-
-      scope.$watch('onDatumLeave', function() {
-        eventMgr.on('leave.directive', scope.onDatumLeave);
-      });
-
       eventMgr.on('legend-click.directive', (series) => {
         var foundSeries = scope.options.series.filter((s) => s.id === series.id)[0];
         foundSeries.visible = series.getToggledVisibility();
         scope.$apply();
       });
 
-      // Trigger the resize event
-      // Added <any> cast for TS linter error, needs further investigation
-      // [chaosmail]
-      angular.element(this.$window).on(<any>'resize', (event: UIEvent) => {
-        eventMgr.trigger('resize', element[0].parentElement);
-        update();
+      scope.$watch('hoveredCoordinates', (value) => {
+        if (value === undefined) {
+          return;
+        }
+
+        (<Factory.Tooltip>factoryMgr.get('tooltip')).showFromCoordinates(
+          value,
+          new Utils.Data(angular.copy(scope.data)),
+          new Utils.Options(angular.copy(scope.options))
+        );
+      });
+
+      var setHoveredCoordinates = (value) => {
+        // Jesus. Fruitcake. Christ.
+        var attrs = <any>attributes;
+        var getter = <any>this.$parse(attrs.hoveredCoordinates);
+        var setter = getter.assign;
+        if (!setter) {
+          return;
+        }
+        var coordinates = factoryMgr.get('container').getCoordinatesFromEvent(event);
+        setter(scope.$parent, value);
+      };
+
+      eventMgr.on('container-move.directive', (event) => {
+        setHoveredCoordinates(factoryMgr.get('container').getCoordinatesFromEvent(event));
+        scope.$apply();
+      });
+      eventMgr.on('container-out.directive', () => {
+        setHoveredCoordinates({x: undefined, y: undefined});
+        scope.$apply();
       });
 
       // Trigger the destroy event
       scope.$on('$destroy', () => {
         eventMgr.trigger('destroy');
-        angular.element(this.$window).off();
       });
     };
   }
