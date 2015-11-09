@@ -45,30 +45,6 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    getCoordinates(event): {x?: number|Date, y?: number} {
-      var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: Utils.Dimensions = container.getDimensions();
-
-      var {left, top} = event.currentTarget.getBoundingClientRect();
-
-      var xScale = this.factoryMgr.get('x-axis').scale;
-      var x = xScale.invert(event.x - left - dim.margin.left);
-
-      var yScale = this.factoryMgr.get('y-axis').scale;
-      var y = yScale.invert(event.y - top - dim.margin.top);
-
-      if (y < yScale.domain()[0] || y > yScale.domain()[1]) {
-        y = undefined;
-      }
-
-      if (x < xScale.domain()[0] || x > xScale.domain()[1]) {
-        x = undefined;
-      }
-
-      return {y, x};
-    }
-
-
     getClosestRows(x: number, data: Utils.Data, options: Utils.Options): {rows: INeighbour[], index:number} {
       var visibleSeries = options.series.filter((series) => series.visible);
       var datasets = visibleSeries.map((series) => data.getDatasetValues(series, options));
@@ -100,8 +76,9 @@ module n3Charts.Factory {
       return {rows: closestRows, index: closestIndex};
     }
 
-    show(event: any, data: Utils.Data, options: Utils.Options) {
-      var {x, y} = this.getCoordinates(event);
+    showFromCoordinates(coordinates: Factory.ICoordinates, data: Utils.Data, options: Utils.Options) {
+      var {x, y} = coordinates;
+
       if (x === undefined || y === undefined) {
         this.hide();
         return;
@@ -138,6 +115,14 @@ module n3Charts.Factory {
       this.updateTooltipContent(tooltipContent, index, options);
       this.updateTooltipPosition(rows);
       this.svg.style('display', null);
+    }
+
+
+    show(event: any, data: Utils.Data, options: Utils.Options) {
+      var container: Factory.Container = this.factoryMgr.get('container');
+      var coordinates = container.getCoordinatesFromEvent(event);
+
+      this.showFromCoordinates(coordinates, data, options);
     }
 
     // This is the part the user can override.
