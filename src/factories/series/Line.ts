@@ -15,12 +15,14 @@ module n3Charts.Factory.Series {
 
 
       var initLine = d3.svg.line()
+        .defined(series.defined)
         .x((d) => xAxis.scale(d.x))
         .y(yAxis.scale.range()[0])
         .interpolate(series.interpolation.mode)
         .tension(series.interpolation.tension);
 
       var updateLine = d3.svg.line()
+        .defined(series.defined)
         .x((d) => xAxis.scale(d.x))
         .y((d) => yAxis.scale(d.y1))
         .interpolate(series.interpolation.mode)

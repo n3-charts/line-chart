@@ -12,5 +12,8 @@ module n3Charts {
   // Create the angular module
   angular.module('n3-line-chart', [])
     // and our directives
-    .directive('linechart', ['$window', '$parse', ($window, $parse) => new LineChart($window, $parse)]);
+    .directive('linechart', [
+      '$window', '$parse', '$timeout',
+      ($window, $parse, $timeout) => new LineChart($window, $parse, $timeout)
+    ]);
 }

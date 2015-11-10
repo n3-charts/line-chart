@@ -8,6 +8,7 @@ module n3Charts.Utils {
     label: string;
     type: string[];
     id: string;
+    defined: (point: Utils.IPoint) => boolean;
     color: string;
     visible: boolean;
     interpolation: {tension: number, mode: string};
@@ -24,13 +25,14 @@ module n3Charts.Utils {
     public id: string;
     public color: string;
     public visible: boolean = true;
+    public defined = (v: Utils.IPoint) => true;
 
     static TYPE = {
-        DOT: 'dot',
-        LINE: 'line',
-        DASHED_LINE: 'dashed-line',
-        AREA: 'area',
-        COLUMN: 'column'
+      DOT: 'dot',
+      LINE: 'line',
+      DASHED_LINE: 'dashed-line',
+      AREA: 'area',
+      COLUMN: 'column'
     };
 
     constructor(js: any = {}) {
@@ -44,6 +46,10 @@ module n3Charts.Utils {
       this.color = options.color;
       this.visible = options.visible;
       this.label = options.label || options.id;
+
+      if (options.defined) {
+        this.defined = options.defined;
+      }
 
       if (options.type.length > 0) {
         this.type = this.sanitizeType(options.type);
@@ -69,6 +75,7 @@ module n3Charts.Utils {
       options.color = Options.getString(options.color);
       options.label = Options.getString(options.label);
       options.visible = Options.getBoolean(options.visible);
+      options.defined = Options.getFunction(options.defined);
 
       return options;
     }

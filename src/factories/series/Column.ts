@@ -47,7 +47,7 @@ module n3Charts.Factory.Series {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
-      var colsData = this.data.getDatasetValues(series, this.options);
+      var colsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
 
       var xFn = (d) => xAxis.scale(d.x) + this.innerXScale(series.id);
 

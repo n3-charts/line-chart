@@ -9,7 +9,7 @@ module n3Charts.Factory.Series {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
-      var dotsData = this.data.getDatasetValues(series, this.options);
+      var dotsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
       var dotsRadius = 2;
 
       var dots = group.selectAll('.' + this.type)
