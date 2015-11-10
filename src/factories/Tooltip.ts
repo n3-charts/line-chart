@@ -187,7 +187,7 @@ module n3Charts.Factory {
       };
 
       var items = this.svg.selectAll('.tooltip-item')
-        .data(result.rows);
+        .data(result.rows, (d:any , i) => !!d.id ? d.id : i);
 
       items.enter()
         .append('div')
