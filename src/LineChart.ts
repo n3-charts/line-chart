@@ -6,6 +6,7 @@ module n3Charts {
     options;
     styles;
     hoveredCoordinates;
+    elementDimensions;
   }
 
   export class LineChart implements ng.IDirective  {
@@ -21,7 +22,7 @@ module n3Charts {
     public replace = true;
     public template = '<div></div>';
 
-    constructor(private $window: ng.IWindowService, private $parse: ng.IParseService) {
+    constructor(private $window: ng.IWindowService, private $parse: ng.IParseService, private $timeout: ng.ITimeoutService) {
 
     }
 
@@ -128,9 +129,43 @@ module n3Charts {
         scope.$apply();
       });
 
+      scope.elementDimensions = {};
+
+      var $timeout = this.$timeout;
+      var debounce = (callback, interval) => {
+        var t = null;
+        return (...args) => {
+            $timeout.cancel(t);
+            t = $timeout(() => callback.apply(this, args), interval);
+        };
+      };
+
+      var resizeCb = debounce((event: UIEvent) => {
+        var rect = element[0].parentElement.getBoundingClientRect();
+
+        scope.elementDimensions.height = rect.height;
+        scope.elementDimensions.width = rect.width;
+        scope.elementDimensions.left = rect.left;
+        scope.elementDimensions.right = rect.right;
+        scope.elementDimensions.bottom = rect.bottom;
+        scope.elementDimensions.top = rect.top;
+
+        scope.$apply();
+      }, 50);
+
+      angular.element(this.$window).on(<any>'resize', resizeCb);
+
+      // Watching the dimensions instead of updating when resize event occurs
+      // allows to redraw _only_ when the element itself was actually resized
+      scope.$watch('elementDimensions', () => {
+        eventMgr.trigger('resize', element[0].parentElement);
+        update();
+      }, true);
+
       // Trigger the destroy event
       scope.$on('$destroy', () => {
         eventMgr.trigger('destroy');
+        angular.element(this.$window).off();
       });
     };
   }

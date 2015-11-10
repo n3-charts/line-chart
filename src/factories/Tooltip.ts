@@ -47,7 +47,7 @@ module n3Charts.Factory {
 
     getClosestRows(x: number, data: Utils.Data, options: Utils.Options): {rows: INeighbour[], index:number} {
       var visibleSeries = options.series.filter((series) => series.visible);
-      var datasets = visibleSeries.map((series) => data.getDatasetValues(series, options));
+      var datasets = visibleSeries.map((series) => data.getDatasetValues(series, options).filter(series.defined));
 
       var closestRows = [];
       var closestIndex = -1;
