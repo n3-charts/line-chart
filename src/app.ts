@@ -13,7 +13,7 @@ module n3Charts {
   angular.module('n3-line-chart', [])
     // and our directives
     .directive('linechart', [
-      '$window', '$parse', '$timeout',
-      ($window, $parse, $timeout) => new LineChart($window, $parse, $timeout)
+      '$window', '$parse', '$timeout', '$rootScope',
+      ($window, $parse, $timeout, $rootScope) => new LineChart($window, $parse, $timeout, $rootScope)
     ]);
 }
