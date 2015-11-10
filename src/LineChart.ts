@@ -22,11 +22,16 @@ module n3Charts {
     public replace = true;
     public template = '<div></div>';
 
-    constructor(private $window: ng.IWindowService, private $parse: ng.IParseService, private $timeout: ng.ITimeoutService) {
+    constructor(
+      private $window: ng.IWindowService,
+      private $parse: ng.IParseService,
+      private $timeout: ng.ITimeoutService,
+      private $rootScope: ng.IRootScopeService
+    ) {
 
     }
 
-    link = (scope: ILineChartScope, element: JQuery, attributes: ng.IAttributes) => {
+    link = (scope: ILineChartScope, element: JQuery, attributes: any) => {
       var eventMgr = new Utils.EventManager();
       var factoryMgr = new Utils.FactoryManager();
 
@@ -61,11 +66,12 @@ module n3Charts {
       var deferredCreation = scope.options === undefined;
 
       // Unwrap native options and update the chart
+      var data, options;
       var update = () => {
         // Call the update event with a copy of the options
         // and data to avoid infinite digest loop
-        var options = new Utils.Options(angular.copy(scope.options));
-        var data = new Utils.Data(angular.copy(scope.data));
+        options = new Utils.Options(angular.copy(scope.options));
+        data = new Utils.Data(angular.copy(scope.data));
 
         if (deferredCreation) {
           deferredCreation = false;
@@ -96,38 +102,24 @@ module n3Charts {
         scope.$apply();
       });
 
-      scope.$watch('hoveredCoordinates', (value) => {
-        if (value === undefined) {
-          return;
-        }
+      if (attributes.syncKey) {
+        this.$rootScope.$on(attributes.syncKey, function(event, value) {
+          if (!data || !options) {
+            return;
+          }
 
-        (<Factory.Tooltip>factoryMgr.get('tooltip')).showFromCoordinates(
-          value,
-          new Utils.Data(angular.copy(scope.data)),
-          new Utils.Options(angular.copy(scope.options))
-        );
-      });
+          factoryMgr.get('tooltip').showFromCoordinates(value, data, options);
+        });
 
-      var setHoveredCoordinates = (value) => {
-        // Jesus. Fruitcake. Christ.
-        var attrs = <any>attributes;
-        var getter = <any>this.$parse(attrs.hoveredCoordinates);
-        var setter = getter.assign;
-        if (!setter) {
-          return;
-        }
-        var coordinates = factoryMgr.get('container').getCoordinatesFromEvent(event);
-        setter(scope.$parent, value);
-      };
+        eventMgr.on('container-move.directive', function (event) {
+          scope.$emit(attributes.syncKey, factoryMgr.get('container').getCoordinatesFromEvent(event));
+        });
 
-      eventMgr.on('container-move.directive', (event) => {
-        setHoveredCoordinates(factoryMgr.get('container').getCoordinatesFromEvent(event));
-        scope.$apply();
-      });
-      eventMgr.on('container-out.directive', () => {
-        setHoveredCoordinates({x: undefined, y: undefined});
-        scope.$apply();
-      });
+        eventMgr.on('container-out.directive', function () {
+          scope.$emit(attributes.syncKey, { x: undefined, y: undefined });
+        });
+      }
+
 
       scope.elementDimensions = {};
 
