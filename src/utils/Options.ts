@@ -117,6 +117,20 @@ module n3Charts.Utils {
       return this.axes[AxisOptions.SIDE.X].key;
     }
 
+    getVisibleDatasets(): string[] {
+      var datasets = [];
+
+      this.series.forEach((series) => {
+        if (series.visible) {
+          if (datasets.indexOf(series.dataset) === -1) {
+            datasets.push(series.dataset);
+          }
+        }
+      });
+
+      return datasets;
+    }
+
     getSeriesAndDatasetBySide(side: string): {seriesForDataset: {}, datasetsForSide: string[]} {
       if (!AxisOptions.isValidSide(side)) {
         throw new TypeError('Cannot get axis side : ' + side);

@@ -95,10 +95,11 @@ module n3Charts.Factory {
       var extent = undefined;
 
       if (this.isAbscissas()) {
+        var activeDatasets = options.getVisibleDatasets();
         var abscissasKey = options.getAbsKey();
         extent = this.getExtentForDatasets(
           datasets,
-          () => true,
+          (key) => activeDatasets.indexOf(key) > -1,
           (datum) => [datum[abscissasKey], datum[abscissasKey]]
         );
       } else {

@@ -18,16 +18,28 @@ describe('n3Charts.Factory.Axis extrema', function() {
     expect(element(by.css('.y-axis')).isPresent()).toBe(true);
   });
 
-
-
   it('should use min and max', function() {
-    var items = element.all(by.css('.chart .x-axis .tick text'));
+    var yTicks = element.all(by.css('.chart .y-axis .tick text'));
 
-    expect(items.count()).toBe(10);
+    expect(yTicks.count()).toBe(10);
 
     var expectedTicks = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8].map(String);
 
-    items.each(function(item, index) {
+    yTicks.each(function(item, index) {
+      item.getText().then(function(text) {
+        expect(text).toEqual(expectedTicks[index]);
+      });
+    });
+  });
+
+  it('should have correct abscissas despite the extra dataset', function() {
+    var xTicks = element.all(by.css('.chart .x-axis .tick text'));
+
+    expect(xTicks.count()).toBe(8);
+
+    var expectedTicks = [0, 1, 2, 3, 4, 5, 6, 7].map(String);
+
+    xTicks.each(function(item, index) {
       item.getText().then(function(text) {
         expect(text).toEqual(expectedTicks[index]);
       });

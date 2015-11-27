@@ -6,3 +6,4 @@ node_modules/
 *.log
 *.sublime-*
 .atom-build.json
+.sass-cache
