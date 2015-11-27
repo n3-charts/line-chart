@@ -1,0 +1,30 @@
+<div class="examples">
+  <div class="banner">
+    <h1 class="underlined"><span>n3-charts</span></h1>
+    <h3 class="alternate-color">Examples</h3>
+    <div class="links">
+      <div class="link" ng-repeat="example in examples">
+        <a href="" anchor-link="{{example.id}}" class="bright">{{example.label}}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section example" id="{{example.id}}" ng-repeat="example in examples">
+    <h2>{{example.label}} <codepen-button
+      class="right"
+      codepen-data="data"
+      codepen-options="example.options"
+      codepen-name="example.label"
+      title="Open example in CodePen"
+    ></codepen-button></h2>
+
+    <div class="row">
+      <div class="col-70 chart">
+        <linechart data='data' options='example.options'></linechart>
+      </div>
+      <div class="col-30 options">
+        <pre ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:50:"columns") + ";" | safe'></pre>
+      </div>
+    </div>
+  </div>
+</div>

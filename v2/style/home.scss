@@ -1,0 +1,34 @@
+.banner {
+  .chart {
+
+    height: 250px;
+
+    .container .overlay .tooltip-line {
+      stroke: white;
+    }
+
+    .grid .tick > line {
+      stroke: hsla(0, 0%, 100%, 0.3);
+    }
+
+    .axis {
+      > path {
+        stroke: hsla(0, 0%, 100%, 0.3);
+      }
+
+      > .tick {
+        > text {
+          fill: white;
+        }
+
+        > line {
+          stroke: hsla(0, 0%, 100%, 0.3);
+        }
+      }
+    }
+  }
+
+  .chart-legend {
+    display: none;
+  }
+}

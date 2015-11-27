@@ -1,19 +1,8 @@
-@mixin btn-animation {
-  box-shadow: 0px 1px 1px 1px hsla(0, 0, 0, 0.1);
-  @include animate(box-shadow);
-
-  &:hover {
-    box-shadow: 0px 1px 1px 1px hsla(0, 0, 0, 0.3);
-  }
-}
-
 a.button, button {
   text-decoration: none;
   display: inline-block;
   cursor: pointer;
   outline: none;
-  width: 100px;
-  min-width: 100px;
   height: 30px;
   border: none;
   font-size: 1em;
@@ -22,8 +11,6 @@ a.button, button {
   font-weight: 300;
   user-select: none;
   -webkit-user-select: none;
-
-  @include btn-animation;
 
   background-color: white;
   color: $primary;
@@ -35,24 +22,18 @@ a.button, button {
   }
 }
 
-.fab-button {
-  border-bottom: none;
-  display: inline-block;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 1.5em;
-  text-align: center;
-  @include btn-animation;
 
-  .fa {
-   line-height: 1.3em;
+.codepen-form {
+  .codepen-button {
+    width: 32px;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 32px;
+    opacity: 0.4;
   }
 
-  &.primary {
-    background-color: $primary;
-    color: white
+  &:hover .codepen-button {
+    width: initial;
+    opacity: 1;
   }
 }
-

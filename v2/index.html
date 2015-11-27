@@ -1,7 +1,7 @@
 <html lang="en" ng-app="v2App">
   <head>
     <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300,500' rel='stylesheet' type='text/css'>
-    <link href="../assets/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link href="n3-charts/build/LineChart.css" media="screen" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="app.css">
     <meta name="viewport" content="initial-scale=1" />
@@ -14,80 +14,40 @@
     <title>n3-charts</title>
   </head>
 
-  <body ng-controller="AppCtrl">
+  <body ng-controller="BodyCtrl">
     <div class="header-bar row">
-      <div class="col-40">
-        <a class="header-title" href="/v2">n3-charts</a>
+      <div class="col-20">
+        <a class="header-title quiet" href="/line-chart"><i class='fa fa-angle-left'></i> v1</a>
+      </div>
+      <div class="col-20">
       </div>
       <div class="col-20 center middle">
-        <div class="logo"></div>
+        <a href="#/"><div class="logo"></div></a>
       </div>
       <div class="col-40 right">
-        <a class="fab-button primary" ng-href="https://github.com/n3-charts/line-chart/tree/dev"><i class='fa fa-github'></i></a>
+        <a href="#/home">Home</a>
+        <a href="#/examples">Examples</a>
+        <a href="https://github.com/n3-charts/line-chart/tree/dev">GitHub</a>
       </div>
     </div>
 
-    <div class="banner">
-      <h1 class="underlined"><span>n3-charts</span></h1>
-      <h3 class="alternate-color">Awesome charts for Angular</h3>
-      <div class="chart">
-        <linechart data='data' options='options'></linechart>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Installation</h2>
-      <p>We've chosen npm as our primary distribution system. The reason is simple: Bower forced us to version the build files, which was annoying when reviewing/merging pull requests. We don't like annoying things.</p>
-      <p>The library is still in beta, which means it's not accessible through npm without specifying its version. Install it using the following command:</p>
-      <p><code>$ npm install n3-charts@2.0.0-beta16 --save-dev</code></p>
-    </div>
-
-    <div class="section">
-      <h2>What's new ?</h2>
-      <p>Good question. Not that we rebuilt this just because we like building things, right ? Seriously though, v2 right now is mostly about solving v1 problems, you know, extendability and maintenance. The chart's directive lifecycle has been thought of from the very beginning, which allows better transitions and full leverage of d3.js capabilities.</p>
-      <p>Also, we now use something we call... Shoot, we dont have a name for that. Well, imagine a cake. With a bunch of fruits in it. Everything is baked in. Remove a fruit and there's a hole in the cake. No one wants a cake with air in it. That was v1. Now, imagine a pile of pancakes. Delicious, banana flavoured pancakes. Pour some maple syrup on those godly pastries. The syrup goes from one pancake to another, nothing fancy in this. Now if you remove one or two pancake, the syrup probably won't even notice. That's v2. v2's components are organized in layers and talk to each other using two powerful singletons, <span class="code">eventManager</span> and <span class="code">factoryManager</span>. It makes it super easy to add stuff and extend the directive's features.</p>
-    </div>
-
-    <div class="section">
-      <h2>Okay seriously, what's new ?</h2>
-      <div class="improvements">
-        <div class="list-item">
-          <p class="item-title">CSS styling for the entire chart</p>
-          <p class="item-desc">Elements naming across the chart is now consistent and easy to override</p>
-        </div>
-        <div class="list-item">
-          <p class="item-title">Pure-HTML legend and tooltip you can pimp as much as you want</p>
-          <p class="item-desc">Way easier to implement !</p>
-        </div>
-        <div class="list-item">
-          <p class="item-title">D3.js transitions for data update</p>
-          <p class="item-desc">In v1, the entire chart was redrawn each time the data changed. V2 knows better.</p>
-        </div>
-        <div class="list-item">
-          <p class="item-title">Better data format</p>
-          <p class="item-desc">The dataset has a new, more versatile format that allow unsynced data to be plotted.</p>
-        </div>
-        <div class="list-item">
-          <p class="item-title">Better performances due to smarter algorithms</p>
-          <p class="item-desc">Well, actually what we were doing previously was the dumb way, this one is just the correct one.</p>
-        </div>
-        <div class="list-item">
-          <p class="item-title">Better options format</p>
-          <p class="item-desc">Still WIP, though !</p>
-        </div>
-      </div>
-    </div>
+    <div class="content" ng-class="path" ng-view></div>
 
     <div class="section credits">
       Made with love and care by <a class="quiet" href="https://github.com/chaosmail"><i class='fa fa-github'></i> Christoph K&ouml;rner</a> &amp; <a class="quiet" href="https://github.com/lorem--ipsum"><i class='fa fa-github'></i> S&eacute;bastien Fragnaud</a>.
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script src="n3-charts/build/LineChart.js"></script>
     <script src="//cdn.rawgit.com/lorem--ipsum/apojop/master/apojop.min.js"></script>
-    <script src="v2.js"></script>
+    <script src="index.js"></script>
+    <script src="src/data.js"></script>
+    <script src="src/codepen.js"></script>
+    <script src="src/home.js"></script>
+    <script src="src/examples.js"></script>
 
   </body>
 </html>

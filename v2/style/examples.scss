@@ -1,0 +1,73 @@
+.banner {
+  .links {
+    text-align: center;
+
+    .link {
+      display: inline-block;
+
+      margin-right: 20px;
+      border: 1px solid white;
+      border-radius: 10px;
+      padding: 2px 10px;
+
+      &:hover {
+        border: 1px solid transparent;
+        background-color: white;
+
+        a {
+          color: $primary;
+        }
+      }
+
+      a {
+        border: none;
+      }
+    }
+  }
+}
+
+.example {
+  .codepen-form {
+    display:inline-block;
+    font-size: 0.6em;
+
+    button {
+      color: $secondary;
+    }
+  }
+
+  .chart {
+    height: 350px;
+    padding-right: 20px;
+
+    .container .overlay .tooltip-line {
+      stroke: lightgrey;
+    }
+
+    .grid .tick > line {
+      stroke: hsla(0, 0%, 0%, 0.3);
+    }
+
+    .axis {
+      > path {
+        stroke: hsla(0, 0%, 0%, 0.3);
+      }
+
+      > .tick {
+        > text {
+          fill: lightgrey;
+        }
+
+        > line {
+          stroke: hsla(0, 0%, 0%, 0.3);
+        }
+      }
+    }
+  }
+
+  .options {
+    padding-left: 20px;
+    border-left: 5px solid lightgrey;
+  }
+}
+

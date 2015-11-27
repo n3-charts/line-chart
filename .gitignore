@@ -8,3 +8,4 @@ test/
 typings/
 *.map
 v2/.sass-cache
+.sass-cache

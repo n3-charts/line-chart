@@ -187,6 +187,8 @@ a {
   a.quiet {
     color: #BDBDBD;
     font-weight: 100; }
+  a.bright {
+    color: white; }
 
 code {
   background-color: #333333;
@@ -199,8 +201,6 @@ a.button, button {
   display: inline-block;
   cursor: pointer;
   outline: none;
-  width: 100px;
-  min-width: 100px;
   height: 30px;
   border: none;
   font-size: 1em;
@@ -209,55 +209,22 @@ a.button, button {
   font-weight: 300;
   user-select: none;
   -webkit-user-select: none;
-  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.1);
-  -webkit-transition: box-shadow 0.1s ease-in-out;
-  -moz-transition: box-shadow 0.1s ease-in-out;
-  -o-transition: box-shadow 0.1s ease-in-out;
-  transition: box-shadow 0.1s ease-in-out;
   background-color: white;
   color: #7CB342; }
-  a.button:hover, button:hover {
-    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.3); }
   a.button.primary, button.primary {
     color: white;
     background-color: #7CB342;
     border-radius: 2px; }
 
-.fab-button {
-  border-bottom: none;
-  display: inline-block;
-  cursor: pointer;
+.codepen-form .codepen-button {
   width: 32px;
+  white-space: nowrap;
+  overflow: hidden;
   height: 32px;
-  border-radius: 50%;
-  font-size: 1.5em;
-  text-align: center;
-  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.1);
-  -webkit-transition: box-shadow 0.1s ease-in-out;
-  -moz-transition: box-shadow 0.1s ease-in-out;
-  -o-transition: box-shadow 0.1s ease-in-out;
-  transition: box-shadow 0.1s ease-in-out; }
-  .fab-button:hover {
-    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.3); }
-  .fab-button .fa {
-    line-height: 1.3em; }
-  .fab-button.primary {
-    background-color: #7CB342;
-    color: white; }
-
-.chart .container .overlay .tooltip-line {
-  stroke: white; }
-.chart .grid .tick > line {
-  stroke: rgba(255, 255, 255, 0.3); }
-.chart .axis > path {
-  stroke: rgba(255, 255, 255, 0.3); }
-.chart .axis > .tick > text {
-  fill: white; }
-.chart .axis > .tick > line {
-  stroke: rgba(255, 255, 255, 0.3); }
-
-.chart-legend {
-  display: none; }
+  opacity: 0.4; }
+.codepen-form:hover .codepen-button {
+  width: initial;
+  opacity: 1; }
 
 body, html {
   margin: 0;
@@ -282,38 +249,76 @@ body, html {
     width: 100px;
     background-size: 100px;
     display: inline-block; }
+  .header-bar a {
+    border: none; }
+    .header-bar a:not(:last-child) {
+      margin-right: 15px; }
 
-.banner {
+.content .banner {
   padding-top: 80px;
   background-color: #F6F6F6;
   background: linear-gradient(0deg, #7CB342, #AED581);
   padding-bottom: 40px; }
-  .banner h1, .banner h3 {
+  .content .banner h1, .content .banner h3 {
     text-align: center;
     color: white; }
-  .banner .buttons {
-    text-align: center;
-    margin-top: 30px; }
-    .banner .buttons > *:not(:last-child) {
-      margin-right: 10px; }
-  .banner .chart {
-    height: 250px; }
-
-.section {
-  width: calc(100% - 100px);
-  margin: 100px auto; }
-
-.improvements .list-item {
-  margin-bottom: 30px;
-  padding-left: 10px;
-  margin-left: 10px;
-  border-left: 2px solid #7CB342; }
-  .improvements .list-item > * {
-    line-height: 1em; }
-  .improvements .list-item .item-title {
-    color: #9E9E9E; }
-  .improvements .list-item .item-desc {
-    color: #616161; }
+.content .section {
+  width: calc(100% - 100px); }
+  .content .section:not(.credits) {
+    margin: 100px auto; }
+  .content .section[id] {
+    padding-top: 45px;
+    margin-top: -45px; }
+.content .home .banner .chart {
+  height: 250px; }
+  .content .home .banner .chart .container .overlay .tooltip-line {
+    stroke: white; }
+  .content .home .banner .chart .grid .tick > line {
+    stroke: rgba(255, 255, 255, 0.3); }
+  .content .home .banner .chart .axis > path {
+    stroke: rgba(255, 255, 255, 0.3); }
+  .content .home .banner .chart .axis > .tick > text {
+    fill: white; }
+  .content .home .banner .chart .axis > .tick > line {
+    stroke: rgba(255, 255, 255, 0.3); }
+.content .home .banner .chart-legend {
+  display: none; }
+.content .examples .banner .links {
+  text-align: center; }
+  .content .examples .banner .links .link {
+    display: inline-block;
+    margin-right: 20px;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 2px 10px; }
+    .content .examples .banner .links .link:hover {
+      border: 1px solid transparent;
+      background-color: white; }
+      .content .examples .banner .links .link:hover a {
+        color: #7CB342; }
+    .content .examples .banner .links .link a {
+      border: none; }
+.content .examples .example .codepen-form {
+  display: inline-block;
+  font-size: 0.6em; }
+  .content .examples .example .codepen-form button {
+    color: #BDBDBD; }
+.content .examples .example .chart {
+  height: 350px;
+  padding-right: 20px; }
+  .content .examples .example .chart .container .overlay .tooltip-line {
+    stroke: lightgrey; }
+  .content .examples .example .chart .grid .tick > line {
+    stroke: rgba(0, 0, 0, 0.3); }
+  .content .examples .example .chart .axis > path {
+    stroke: rgba(0, 0, 0, 0.3); }
+  .content .examples .example .chart .axis > .tick > text {
+    fill: lightgrey; }
+  .content .examples .example .chart .axis > .tick > line {
+    stroke: rgba(0, 0, 0, 0.3); }
+.content .examples .example .options {
+  padding-left: 20px;
+  border-left: 5px solid lightgrey; }
 
 .credits {
   margin-bottom: 10px;

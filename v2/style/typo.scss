@@ -36,6 +36,10 @@ a {
     color: $secondary;
     font-weight: 100;
   }
+
+  &.bright {
+    color: white;
+  }
 }
 
 code {

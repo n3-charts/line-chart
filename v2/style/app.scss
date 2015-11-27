@@ -1,4 +1,4 @@
-@import 'palette';
+@import 'colors';
 $primary-name: Light Green;
 $primary: palette($primary-name, 600);
 $primary-light: palette($primary-name, 400);
@@ -14,18 +14,20 @@ $secondary-light: palette($secondary-name, 100);
 @import 'grid';
 @import 'typo';
 @import 'buttons';
-@import 'white-chart';
 
+// General layout, for pages actually are ng-views
 body, html {
   margin: 0;
   padding: 0;
 }
 
+$header-height: 50px;
+
 .header-bar {
   position: fixed;
   background-color: $secondary-light;
   width: 100%;
-  height: 50px;
+  height: $header-height;
   z-index: 10;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 
@@ -42,59 +44,48 @@ body, html {
     @include logo(100px);
     display: inline-block;
   }
-}
 
-
-.banner {
-  padding-top: 80px;
-  background-color: #F6F6F6;
-  background: linear-gradient(0deg, $primary, $primary-lighter);
-  padding-bottom: 40px;
-
-  h1, h3 {
-    text-align: center;
-    color: white;
-  }
-
-  .buttons {
-    text-align: center;
-    margin-top: 30px;
-
-    > * {
-      &:not(:last-child) {
-        margin-right: 10px;
-      }
+  a {
+    border: none;
+    &:not(:last-child) {
+      margin-right: 15px;
     }
-  }
-
-  .chart {
-    height: 250px;
   }
 }
 
-.section {
-  width: calc(100% - 100px);
-  margin: 100px auto;
-}
+.content {
+  .banner {
+    padding-top: 80px;
+    background-color: #F6F6F6;
+    background: linear-gradient(0deg, $primary, $primary-lighter);
+    padding-bottom: 40px;
 
-.improvements {
-  .list-item {
-    margin-bottom: 30px;
-    padding-left: 10px;
-    margin-left: 10px;
-    border-left: 2px solid $primary;
+    h1, h3 {
+      text-align: center;
+      color: white;
+    }
+  }
 
-    > * {
-      line-height: 1em;
+  .section {
+    width: calc(100% - 100px);
+
+    &:not(.credits) {
+      margin: 100px auto;
     }
 
-    .item-title {
-      color: palette(Grey, 500);
+    // For anchor links so they're not hidden behind the header
+    &[id] {
+      padding-top: $header-height - 5px;
+      margin-top: -$header-height + 5px;
     }
+  }
 
-    .item-desc {
-      color: palette(Grey, 700);
-    }
+  .home {
+    @import 'home';
+  }
+
+  .examples {
+    @import 'examples';
   }
 }
 
