@@ -17,4 +17,25 @@ angular.module('v2App', ['n3-line-chart', 'apojop', 'ngRoute', 'home', 'examples
   };
 })
 
+.directive('classIfRoute', function($location) {
+  return {
+    restrict: 'A',
+    link: function(scope, elm, attrs) {
+      var bits = attrs.classIfRoute.split(':');
+
+      scope.$on('$locationChangeSuccess', function() {
+        console.log($location.path(), bits);
+
+        if ($location.path() === bits[1]) {
+          console.log('addClass', bits[0]);
+          elm.addClass(bits[0]);
+        } else {
+          console.log('removeClass', bits[0]);
+          elm.removeClass(bits[0]);
+        }
+      });
+    }
+  }
+})
+
 ;

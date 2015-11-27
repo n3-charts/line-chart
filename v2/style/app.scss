@@ -79,14 +79,14 @@ $header-height: 50px;
       margin-top: -$header-height + 5px;
     }
   }
+}
 
-  .home {
-    @import 'home';
-  }
+.home {
+  @import 'home';
+}
 
-  .examples {
-    @import 'examples';
-  }
+.examples {
+  @import 'examples';
 }
 
 .credits {

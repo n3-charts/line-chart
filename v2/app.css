@@ -189,6 +189,16 @@ a {
     font-weight: 100; }
   a.bright {
     color: white; }
+  a.active {
+    position: relative; }
+    a.active:after {
+      content: '';
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      height: 2px;
+      background-color: #7CB342;
+      bottom: -9px; }
 
 code {
   background-color: #333333;
@@ -248,6 +258,10 @@ body, html {
     height: 100px;
     width: 100px;
     background-size: 100px;
+    -webkit-transition: height 0.1s ease-in-out, width 0.1s ease-in-out, background-size 0.1s ease-in-out;
+    -moz-transition: height 0.1s ease-in-out, width 0.1s ease-in-out, background-size 0.1s ease-in-out;
+    -o-transition: height 0.1s ease-in-out, width 0.1s ease-in-out, background-size 0.1s ease-in-out;
+    transition: height 0.1s ease-in-out, width 0.1s ease-in-out, background-size 0.1s ease-in-out;
     display: inline-block; }
   .header-bar a {
     border: none; }
@@ -269,54 +283,60 @@ body, html {
   .content .section[id] {
     padding-top: 45px;
     margin-top: -45px; }
-.content .home .banner .chart {
+
+.home .banner .chart {
   height: 250px; }
-  .content .home .banner .chart .container .overlay .tooltip-line {
+  .home .banner .chart .container .overlay .tooltip-line {
     stroke: white; }
-  .content .home .banner .chart .grid .tick > line {
+  .home .banner .chart .grid .tick > line {
     stroke: rgba(255, 255, 255, 0.3); }
-  .content .home .banner .chart .axis > path {
+  .home .banner .chart .axis > path {
     stroke: rgba(255, 255, 255, 0.3); }
-  .content .home .banner .chart .axis > .tick > text {
+  .home .banner .chart .axis > .tick > text {
     fill: white; }
-  .content .home .banner .chart .axis > .tick > line {
+  .home .banner .chart .axis > .tick > line {
     stroke: rgba(255, 255, 255, 0.3); }
-.content .home .banner .chart-legend {
+.home .banner .chart-legend {
   display: none; }
-.content .examples .banner .links {
+
+.examples .header-bar .logo {
+  height: 50px;
+  width: 50px;
+  background-size: 50px; }
+.examples .banner .links {
   text-align: center; }
-  .content .examples .banner .links .link {
+  .examples .banner .links .link {
     display: inline-block;
     margin-right: 20px;
     border: 1px solid white;
     border-radius: 10px;
     padding: 2px 10px; }
-    .content .examples .banner .links .link:hover {
+    .examples .banner .links .link:hover {
       border: 1px solid transparent;
       background-color: white; }
-      .content .examples .banner .links .link:hover a {
+      .examples .banner .links .link:hover a {
         color: #7CB342; }
-    .content .examples .banner .links .link a {
+    .examples .banner .links .link a {
       border: none; }
-.content .examples .example .codepen-form {
+.examples .example .codepen-form {
   display: inline-block;
   font-size: 0.6em; }
-  .content .examples .example .codepen-form button {
+  .examples .example .codepen-form button {
     color: #BDBDBD; }
-.content .examples .example .chart {
+.examples .example .chart {
   height: 350px;
   padding-right: 20px; }
-  .content .examples .example .chart .container .overlay .tooltip-line {
+  .examples .example .chart .container .overlay .tooltip-line {
     stroke: lightgrey; }
-  .content .examples .example .chart .grid .tick > line {
+  .examples .example .chart .grid .tick > line {
     stroke: rgba(0, 0, 0, 0.3); }
-  .content .examples .example .chart .axis > path {
+  .examples .example .chart .axis > path {
     stroke: rgba(0, 0, 0, 0.3); }
-  .content .examples .example .chart .axis > .tick > text {
+  .examples .example .chart .axis > .tick > text {
     fill: lightgrey; }
-  .content .examples .example .chart .axis > .tick > line {
+  .examples .example .chart .axis > .tick > line {
     stroke: rgba(0, 0, 0, 0.3); }
-.content .examples .example .options {
+.examples .example .options {
   padding-left: 20px;
   border-left: 5px solid lightgrey; }
 

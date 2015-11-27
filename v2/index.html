@@ -1,8 +1,22 @@
 <html lang="en" ng-app="v2App">
   <head>
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/favicons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/favicons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/favicons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/favicons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/favicons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/favicons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/favicons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/favicons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="assets/favicons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
+
     <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300,500' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link href="n3-charts/build/LineChart.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="http://codepen.io/n3-charts/pen/KdjqgW.css" media="screen" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="app.css">
     <meta name="viewport" content="initial-scale=1" />
      <!-- start Mixpanel -->
@@ -14,7 +28,7 @@
     <title>n3-charts</title>
   </head>
 
-  <body ng-controller="BodyCtrl">
+  <body ng-controller="BodyCtrl" ng-class="path">
     <div class="header-bar row">
       <div class="col-20">
         <a class="header-title quiet" href="/line-chart"><i class='fa fa-angle-left'></i> v1</a>
@@ -25,13 +39,13 @@
         <a href="#/"><div class="logo"></div></a>
       </div>
       <div class="col-40 right">
-        <a href="#/home">Home</a>
-        <a href="#/examples">Examples</a>
+        <a class-if-route="active:/home" href="#/home">Home</a>
+        <a class-if-route="active:/examples" href="#/examples">Examples</a>
         <a href="https://github.com/n3-charts/line-chart/tree/dev">GitHub</a>
       </div>
     </div>
 
-    <div class="content" ng-class="path" ng-view></div>
+    <div class="content" ng-view></div>
 
     <div class="section credits">
       Made with love and care by <a class="quiet" href="https://github.com/chaosmail"><i class='fa fa-github'></i> Christoph K&ouml;rner</a> &amp; <a class="quiet" href="https://github.com/lorem--ipsum"><i class='fa fa-github'></i> S&eacute;bastien Fragnaud</a>.
@@ -41,7 +55,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <script src="n3-charts/build/LineChart.js"></script>
+    <script src="http://codepen.io/n3-charts/pen/KdjqgW.js"></script>
     <script src="//cdn.rawgit.com/lorem--ipsum/apojop/master/apojop.min.js"></script>
     <script src="index.js"></script>
     <script src="src/data.js"></script>

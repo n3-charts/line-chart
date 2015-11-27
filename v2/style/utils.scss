@@ -34,4 +34,6 @@
   height: $size;
   width: $size;
   background-size: $size;
+
+  @include animate(height, width, background-size);
 }

@@ -122,27 +122,53 @@ angular.module('examples', ['n3-line-chart', 'codepen', 'data'])
         series: [
           {
             axis: "y",
-            dataset: "numerical",
+            dataset: "noisy",
             key: "val_0",
-            label: "An interpolated series",
-            interpolation: {mode: 'cardinal', tension: 0.7},
+            label: "Interpolated",
+            interpolation: {mode: 'bundle', tension: 0.7},
             color: "hsla(88, 48%, 48%, 1)",
-            type: ["dot", 'line', 'area'],
+            type: ['line'],
             id: 'mySeries0'
           },
           {
             axis: "y",
-            dataset: "numerical",
-            key: "val_1",
-            label: "A non interpolated series",
+            dataset: "noisy",
+            key: "val_0",
+            label: "Not interpolated",
             color: "hsla(88, 48%, 48%, 1)",
-            type: ["dot", 'line', 'area'],
+            type: ['line'],
             id: 'mySeries1'
           }
         ],
         axes: {x: {key: "x"}}
       }
     },
+    {
+      label: 'y0 - y1', id: 'y0_y1_series', options: {
+        margin: {top: 5},
+        series: [
+          {
+            axis: "y",
+            dataset: "tolerance",
+            key: "average",
+            label: "Main series",
+            color: "hsla(88, 48%, 48%, 1)",
+            type: ["dot", 'line'],
+            id: 'tolerance'
+          },
+          {
+            axis: "y",
+            dataset: "tolerance",
+            key: {y0: 'extrema_min', y1: 'extrema_max'},
+            label: "Extrema",
+            color: "hsla(88, 48%, 48%, 1)",
+            type: ['area'],
+            id: 'extrema'
+          }
+        ],
+        axes: {x: {key: "x"}, y: {min: 0, max: 40}}
+      }
+    }
   ];
 
   $scope.data = datasets;

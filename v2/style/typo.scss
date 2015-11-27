@@ -40,6 +40,20 @@ a {
   &.bright {
     color: white;
   }
+
+  &.active {
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      height: 2px;
+      background-color: $primary;
+      bottom: -9px;
+    }
+  }
 }
 
 code {
