@@ -1,4 +1,3 @@
-# Usage
  - Include the js and the CSS
  - Import the module
  
