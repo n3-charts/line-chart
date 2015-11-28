@@ -1,5 +1,9 @@
  - Include the js and the CSS
  - Import the module
+
+```html
+Insert full HTML example here !
+```
  
  
 ## Options
