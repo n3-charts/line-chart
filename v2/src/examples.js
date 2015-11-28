@@ -168,7 +168,36 @@ angular.module('examples', ['n3-line-chart', 'codepen', 'data'])
         ],
         axes: {x: {key: "x"}, y: {min: 0, max: 40}}
       }
-    }
+    },
+    {
+      label: 'Interrupted data', id: 'interrupted_data', options: {
+        margin: {top: 5},
+        series: [
+          {
+            axis: "y",
+            dataset: "interrupted",
+            key: "val_0",
+            label: "Continuous",
+            color: "hsla(88, 48%, 48%, 1)",
+            type: ["dot", 'line', 'area'],
+            id: 'mySeries0'
+          },
+          {
+            axis: "y",
+            dataset: "interrupted",
+            key: "val_3",
+            defined: function(value) {
+              return value.y1 !== undefined;
+            },
+            label: "Interrupted",
+            color: "hsla(88, 48%, 48%, 1)",
+            type: ["dot", 'line', 'area'],
+            id: 'mySeries1'
+          }
+        ],
+        axes: {x: {key: "x"}}
+      }
+    },
   ];
 
   $scope.data = datasets;

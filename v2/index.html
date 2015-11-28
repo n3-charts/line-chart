@@ -30,15 +30,13 @@
 
   <body ng-controller="BodyCtrl" ng-class="path">
     <div class="header-bar row">
-      <div class="col-20">
+      <div class="col-40 col-0-when-small">
         <a class="header-title quiet" href="/line-chart"><i class='fa fa-angle-left'></i> v1</a>
       </div>
-      <div class="col-20">
-      </div>
-      <div class="col-20 center middle">
+      <div class="col-20 center middle left-when-small">
         <a href="#/"><div class="logo"></div></a>
       </div>
-      <div class="col-40 right">
+      <div class="col-40 right col-80-when-small">
         <a class-if-route="active:/home" href="#/home">Home</a>
         <a class-if-route="active:/examples" href="#/examples">Examples</a>
         <a href="https://github.com/n3-charts/line-chart/tree/dev">GitHub</a>
@@ -55,10 +53,14 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+
+    <script type="text/javascript" src="assets/marked.min.js"></script>
+
     <script src="http://codepen.io/n3-charts/pen/KdjqgW.js"></script>
     <script src="//cdn.rawgit.com/lorem--ipsum/apojop/master/apojop.min.js"></script>
     <script src="index.js"></script>
     <script src="src/data.js"></script>
+    <script src="src/markdown.js"></script>
     <script src="src/codepen.js"></script>
     <script src="src/home.js"></script>
     <script src="src/examples.js"></script>

@@ -26,7 +26,7 @@ a {
   text-decoration: none;
   font-weight: 300;
   color: $primary;
-  border-bottom: 1px dashed;
+  border-bottom: 1px solid;
 
   &:hover {
     color: $primary-dark;
@@ -35,10 +35,15 @@ a {
   &.quiet {
     color: $secondary;
     font-weight: 100;
+    border-bottom: 1px dashed;
   }
 
   &.bright {
     color: white;
+  }
+
+  &.tiny {
+    font-size: 0.8em;
   }
 
   &.active {

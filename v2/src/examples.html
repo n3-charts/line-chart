@@ -17,10 +17,10 @@
     ></codepen-button></h2>
 
     <div class="row">
-      <div class="col-70 chart">
+      <div class="col-70 chart col-100-when-small">
         <linechart data='data' options='example.options'></linechart>
       </div>
-      <div class="col-30 options">
+      <div class="col-30 options col-100-when-small">
         <pre ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:50:"columns") + ";" | safe'></pre>
       </div>
     </div>

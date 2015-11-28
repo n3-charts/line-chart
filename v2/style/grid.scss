@@ -1,27 +1,54 @@
+@mixin small {
+  @media (max-width: 800px) {
+    @content;
+  }
+}
+
 .row {
   display: flex;
   align-items: center;
+  width: 0;
+  flex-wrap: wrap;
+
+  &.full {
+    width: 100%;
+  }
+
+
+  @mixin column($value) {
+    flex: 1;
+    flex-grow: 0;
+    flex-shrink: 1;
+    box-sizing: border-box;
+    position: relative;
+    min-height: 24px;
+    flex-basis: $value * 1%;
+
+    &.left, &.left-when-small {
+      text-align: left;
+    }
+
+    &.right {
+      text-align: right;
+    }
+
+    &.center {
+      text-align: center;
+    }
+
+    &.middle {
+      align-self: baseline;
+    }
+  }
 
   @mixin col($value) {
     .col-#{$value} {
-      flex: 1;
-      flex-grow: 0;
-      flex-shrink: 0;
-      box-sizing: border-box;
-      position: relative;
-      flex-basis: $value * 1%;
-      min-height: 24px;
+      @include column($value);
+    }
 
-      &.right {
-        text-align: right;
-      }
-
-      &.center {
-        text-align: center;
-      }
-
-      &.middle {
-        align-self: baseline;
+    .col-#{$value}-when-small {
+      @include small {
+        @include column($value);
       }
     }
   }
@@ -35,5 +62,12 @@
   @include col(60);
   @include col(70);
   @include col(80);
+  @include col(90);
   @include col(100);
+
+  .col-0-when-small {
+    @include small {
+      display: none;
+    }
+  }
 }

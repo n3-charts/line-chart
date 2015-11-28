@@ -6,7 +6,9 @@ angular.module('data', [])
     tolerance: generators.toleranceData(30),
     numerical: generators.sinData(100, 4),
     logarithmic: generators.logarithmicData(100, 4),
-    noisy: generators.noisyLinearData(40, 4)
+    noisy: generators.noisyLinearData(40, 4),
+    interrupted: generators.interruptedData(20, 4),
+    parametric: generators.parametricData(32)
   }
 })
 
@@ -27,12 +29,43 @@ angular.module('data', [])
   };
 
   return {
+    parametricData: function(precision) {
+      var data = [];
+      var t = 0;
+      var increment;
+
+      if (!precision || precision > 32) {
+        increment = Math.PI/32;
+      } else {
+        increment = Math.PI / precision;
+      }
+
+      while (t <= 2 * Math.PI) {
+        data.push({
+          x: 2 * Math.cos(3 * t),
+          y: 2 * Math.sin(5 * t),
+        });
+
+        t += increment;
+      }
+      return data;
+    },
+
     noisyLinearData: fn(
       function(i, j) {return Math.round(Math.random()*100);}
     ),
 
     positiveData: fn(
       function(i, j) {return Math.abs(Math.round(Math.sin((i+1)*j/5)*(5*(i+1))*1000)/1000);}
+    ),
+
+    interruptedData: fn(
+      function(i, j) {
+        if (j%10 >= 10 - i) {
+          return undefined;
+        }
+        return Math.abs(Math.round(Math.sin((i+1)*j/5)*(5*(i+1))*1000)/1000);
+      }
     ),
 
     sinData: fn(

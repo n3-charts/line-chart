@@ -25,8 +25,8 @@ $header-height: 50px;
 
 .header-bar {
   position: fixed;
-  background-color: $secondary-light;
   width: 100%;
+  background-color: $secondary-light;
   height: $header-height;
   z-index: 10;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
