@@ -49,10 +49,10 @@ module n3Charts.Factory {
       var {left, top} = event.currentTarget.getBoundingClientRect();
 
       var xScale = this.factoryMgr.get('x-axis').scale;
-      var x = xScale.invert(event.x - left - dim.margin.left);
+      var x = xScale.invert(event.clientX - left - dim.margin.left);
 
       var yScale = this.factoryMgr.get('y-axis').scale;
-      var y = yScale.invert(event.y - top - dim.margin.top);
+      var y = yScale.invert(event.clientY - top - dim.margin.top);
 
       if (y < yScale.domain()[0] || y > yScale.domain()[1]) {
         y = undefined;
