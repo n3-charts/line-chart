@@ -4,6 +4,8 @@ module n3Charts.Factory {
   export class Grid extends Utils.BaseFactory {
 
     public svg: D3.Selection;
+    public xAxis: D3.Svg.Axis;
+    public yAxis: D3.Svg.Axis;
 
     create() {
       this.svg = this.factoryMgr.get('container').axes
@@ -20,20 +22,23 @@ module n3Charts.Factory {
       var dim: Utils.Dimensions = container.getDimensions();
 
       if (options.grid.x) {
-        var xAxis = <Factory.Axis> this.factoryMgr.get('x-axis');
+        var xAxis = <D3.Svg.Axis> this.factoryMgr.get('x-axis').cloneAxis();
+
         this.svg.select('.x-grid')
           .transition()
           .call(this.factoryMgr.get('transitions').edit)
           .attr('transform', 'translate(0, ' + dim.innerHeight + ')')
-          .call(xAxis.axis.tickSize(-dim.innerHeight, 0));
+          .call(xAxis.tickSize(-dim.innerHeight, 0));
       }
 
       if (options.grid.y) {
-        var yAxis = <Factory.Axis> this.factoryMgr.get('y-axis');
+        var yAxis = <D3.Svg.Axis> this.factoryMgr.get('y-axis').cloneAxis();
+
+
         this.svg.select('.y-grid')
           .transition()
           .call(this.factoryMgr.get('transitions').edit)
-          .call(yAxis.axis.tickSize(-dim.innerWidth, 0));
+          .call(yAxis.tickSize(-dim.innerWidth, 0));
       }
     }
 

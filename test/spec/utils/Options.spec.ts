@@ -153,13 +153,12 @@ describe('n3Charts.Utils.Options', () => {
   });
 
   describe('sanitizeGrid', () => {
-    var grid: n3Charts.Utils.IGrid;
+    var grid: n3Charts.Utils.ITwoAxes;
 
     describe('behavior', () => {
       beforeEach(() => {
         options = new Options();
-        grid = options.sanitizeGridOptions({
-        });
+        grid = options.sanitizeTwoAxesOptions({}, options.grid);
       });
 
       it('should have a default', () => {

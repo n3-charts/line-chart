@@ -49,6 +49,7 @@ module n3Charts {
         ['y-axis', Factory.Axis, Utils.AxisOptions.SIDE.Y],
         ['y2-axis', Factory.Axis, Utils.AxisOptions.SIDE.Y2],
         ['grid', Factory.Grid],
+        ['zoom', Factory.Zoom],
 
         // This order is important, otherwise it can mess up with the tooltip
         // (and you don't want to mess up with a tooltip, trust me).

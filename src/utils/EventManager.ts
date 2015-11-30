@@ -26,6 +26,7 @@ module n3Charts.Utils {
       'container-out',   // on mouse out on the container
       'focus',   // on focus of a data point from a snappy tooltip
       'toggle',  // on toggling series' visibility
+      'zoom',  // on zoom/pan
     ];
 
     init(events:string[]) : EventManager {

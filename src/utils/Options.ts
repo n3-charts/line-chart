@@ -14,7 +14,7 @@ module n3Charts.Utils {
     right: number;
   }
 
-  export interface IGrid {
+  export interface ITwoAxes {
     x: boolean;
     y: boolean;
   }
@@ -23,7 +23,8 @@ module n3Charts.Utils {
     series: ISeriesOptions[];
     axes: IAxesSet;
     margin: IMargin;
-    grid: IGrid;
+    pan: ITwoAxes;
+    grid: ITwoAxes;
     tooltipHook: Function;
   }
 
@@ -32,6 +33,11 @@ module n3Charts.Utils {
     public tooltipHook: Function;
 
     public series: ISeriesOptions[] = [];
+
+    public pan: ITwoAxes = {
+      x: false,
+      y: false
+    };
 
     public axes: IAxesSet = {
       x: <IAxisOptions>{},
@@ -45,7 +51,7 @@ module n3Charts.Utils {
       right: 40
     };
 
-    public grid: IGrid = {
+    public grid: ITwoAxes = {
       x: false,
       y: true
     };
@@ -56,6 +62,7 @@ module n3Charts.Utils {
       this.margin = options.margin;
       this.series = options.series;
       this.axes = options.axes;
+      this.pan = options.pan;
       this.grid = options.grid;
       this.tooltipHook = options.tooltipHook;
     }
@@ -73,7 +80,8 @@ module n3Charts.Utils {
       options.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
       options.series = this.sanitizeSeries(Options.getArray(options.series));
       options.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
-      options.grid = this.sanitizeGridOptions(options.grid);
+      options.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
+      options.pan = this.sanitizeTwoAxesOptions(options.pan, this.pan);
       options.tooltipHook = Options.getFunction(options.tooltipHook);
 
       return options;
@@ -92,10 +100,10 @@ module n3Charts.Utils {
       return (series).map((s) => new SeriesOptions(s));
     }
 
-    sanitizeGridOptions(grid: any): IGrid {
+    sanitizeTwoAxesOptions(object: any, def: any): ITwoAxes {
       var g = {
-        x: Options.getBoolean(grid.x, false),
-        y: Options.getBoolean(grid.y, true)
+        x: Options.getBoolean(object.x, def.x),
+        y: Options.getBoolean(object.y, def.y)
       };
 
       return g;

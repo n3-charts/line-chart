@@ -8,6 +8,8 @@ module n3Charts.Factory {
 
   export class Container extends Utils.BaseFactory {
 
+    public defs: D3.Selection;
+
     public svg: D3.Selection;
     public vis: D3.Selection;
     public data: D3.Selection;
@@ -75,11 +77,13 @@ module n3Charts.Factory {
     }
 
     createRoot() {
-
       // Create the SVG root node
       this.svg = d3.select(this.element)
         .append('svg')
           .attr('class', 'chart');
+
+      this.defs = this.svg
+        .append('defs');
     }
 
     updateRoot() {
@@ -100,14 +104,21 @@ module n3Charts.Factory {
         .append('g')
           .attr('class', 'container');
 
-
       this.axes = this.vis
         .append('g')
           .attr('class', 'axes');
 
+      this.defs.append('svg:clipPath')
+        .attr('id', 'clipping-path')
+          .append('svg:rect')
+          .attr('id', 'clipping-rect');
+
       this.data = this.vis
         .append('g')
-          .attr('class', 'data');
+          .attr({
+            'class': 'data',
+            'clip-path': 'url(#clipping-path)'
+          });
 
       this.overlay = this.vis
         .append('g')
@@ -121,6 +132,12 @@ module n3Charts.Factory {
           'width': this.dim.innerWidth,
           'height': this.dim.innerHeight,
           'transform': 'translate(' + this.dim.margin.left + ', ' + this.dim.margin.top + ')'
+        });
+
+      d3.select(this.element).select('#clipping-rect')
+        .attr({
+          'width': this.dim.innerWidth,
+          'height': this.dim.innerHeight
         });
     }
 
