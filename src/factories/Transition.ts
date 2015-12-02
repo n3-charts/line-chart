@@ -2,9 +2,18 @@ module n3Charts.Factory {
   'use strict';
 
   export class Transition extends Utils.BaseFactory {
-
-    static duration: number = 250;
+    static defaultDuration: number = 250;
+    static duration: number = Transition.defaultDuration;
     static ease: string = 'cubic';
+    static enabled: Boolean = true;
+
+    off() {
+      Transition.duration = 0;
+    }
+
+    on() {
+      Transition.duration = Transition.defaultDuration;
+    }
 
     enter(t: D3.Transition.Transition) {
       var duration = Transition.duration;
@@ -12,7 +21,7 @@ module n3Charts.Factory {
       var n = t[0].length;
       var delay = (d, i) => n ? i / n * duration : 0;
 
-      return t.duration(duration)
+      t.duration(duration)
         .delay(delay)
         .ease(ease);
     }
@@ -22,7 +31,7 @@ module n3Charts.Factory {
       var ease = Transition.ease;
       var delay = 0;
 
-      return t.duration(duration)
+      t.duration(duration)
         .delay(delay)
         .ease(ease);
     }
@@ -32,7 +41,7 @@ module n3Charts.Factory {
       var ease = Transition.ease;
       var delay = 0;
 
-      return t.duration(duration)
+      t.duration(duration)
         .delay(delay)
         .ease(ease);
     }

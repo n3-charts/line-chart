@@ -33,6 +33,10 @@ Name | Type | Default | Description | Mandatory
 #### X
 #### Y
 
+### Pan
+#### X
+#### Y
+
 
 ## Data
 ### Datasets

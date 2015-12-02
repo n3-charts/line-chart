@@ -15,14 +15,17 @@ module n3Charts.Utils {
     update(data, options) {
       this.data = data;
       this.options = options;
+      this.softUpdate();
+    }
 
-      var series = options.getSeriesByType(this.type).filter((s) => s.visible);
-
+    softUpdate() {
+      var series = this.options.getSeriesByType(this.type).filter((s) => s.visible);
       this.updateSeriesContainer(series);
     }
 
     create() {
       this.createContainer(this.factoryMgr.get('container').data);
+      this.eventMgr.on('zoom.' + this.type, this.softUpdate.bind(this));
     }
 
     destroy() {
@@ -72,11 +75,11 @@ module n3Charts.Utils {
     }
 
     updateData(group: D3.Selection, series: ISeriesOptions, index: number, numSeries: number) {
-      // we need to overwrite this
+      // this needs to be overwritten
     }
 
     styleSeries(group: D3.Selection) {
-      // we need to override this
+      // this needs to be overwritten
     }
   }
 }

@@ -5,7 +5,7 @@ module n3Charts.Factory {
 
     public svg: D3.Selection;
     public scale: D3.Scale.Scale;
-    public axis: D3.Svg.Axis;
+    public d3axis: D3.Svg.Axis;
 
     constructor(public side: string) {
       super();
@@ -20,6 +20,13 @@ module n3Charts.Factory {
       var vis: D3.Selection = this.factoryMgr.get('container').axes;
 
       this.createAxis(vis);
+
+      this.eventMgr.on('zoom.' + this.key, this.softUpdate.bind(this));
+    }
+
+    // This simply redraws the axis, without reprocessing the extent
+    softUpdate() {
+      this.svg.call(this.d3axis);
     }
 
     update(data:Utils.Data, options:Utils.Options) {
@@ -37,8 +44,8 @@ module n3Charts.Factory {
       this.updateScaleRange(dim);
       this.updateScaleDomain(extent);
 
-      this.axis = this.getAxis(this.scale, axisOptions);
-      this.updateAxisOrientation();
+      this.d3axis = this.getAxis(this.scale, axisOptions);
+      this.updateAxisOrientation(this.d3axis);
       this.updateAxisContainer(dim);
       this.shiftAxisTicks(axisOptions);
     }
@@ -150,14 +157,14 @@ module n3Charts.Factory {
           .attr('class', 'axis ' + this.side + '-axis');
     }
 
-    updateAxisOrientation() {
+    updateAxisOrientation(axis) {
       if (this.isAbscissas()) {
-        this.axis.orient('bottom');
+        axis.orient('bottom');
       } else {
         if (this.side === Utils.AxisOptions.SIDE.Y) {
-          this.axis.orient('left');
+          axis.orient('left');
         } else {
-          this.axis.orient('right');
+          axis.orient('right');
         }
       }
     }
@@ -175,14 +182,13 @@ module n3Charts.Factory {
           this.svg
             .attr('transform', `translate(${dim.innerWidth}, 0)`);
         }
-
       }
 
       // Redraw the Axis
       this.svg
         .transition()
         .call(this.factoryMgr.get('transitions').edit)
-        .call(this.axis);
+        .call(this.d3axis);
     }
 
     destroyAxis() {
@@ -213,6 +219,18 @@ module n3Charts.Factory {
       options.configure(axis);
 
       return axis;
+    }
+
+    cloneAxis(): D3.Svg.Axis {
+      return d3.svg.axis()
+        .scale(this.d3axis.scale())
+        .orient(this.d3axis.orient())
+        .tickValues(this.d3axis.tickValues())
+        .ticks(this.d3axis.ticks())
+        .tickSize(this.d3axis.tickSize());
+
+        // dafuq is wrong with this tslinter ???
+        // .tickFormat(this.d3axis.tickFormat);
     }
   }
 }
