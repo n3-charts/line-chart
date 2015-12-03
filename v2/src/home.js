@@ -1,4 +1,4 @@
-angular.module('home', ['markdownToJS'])
+angular.module('home', ['markdown'])
 
 .value('data', {
   timed: [],

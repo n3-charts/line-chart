@@ -1,0 +1,49 @@
+.markdown-to-html {
+  code {
+    &.inline {
+      background-color: rgba(211, 211, 211, 0.22);
+      border-radius: 2px;
+      padding: 2px;
+    }
+
+    &:not(.inline) {
+      background-color: hsl(0, 0, 20);
+      color: lightgrey;
+      padding: 10px;
+      display: block;
+    }
+  }
+
+  table {
+    font-size: 0.9em;
+    font-weight: 300;
+
+    border-collapse: collapse;
+
+    td, th {
+      border: 1px solid $primary-lighterest;
+      padding: 5px 10px;
+    }
+
+    th {
+      text-align: center;
+      background-color: $primary-lighter;
+      font-weight: 300;
+      font-size: 0.9em;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: hsla(87, 54%, 85%, 0.3);
+    }
+
+    td {
+      // color: white;
+      height: 50px;
+
+      &:first-child {
+        // color: $primary;
+      }
+    }
+  }
+}

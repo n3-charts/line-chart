@@ -3,15 +3,17 @@ $primary-name: Light Green;
 $primary: palette($primary-name, 600);
 $primary-light: palette($primary-name, 400);
 $primary-lighter: palette($primary-name, 300);
+$primary-lighterest: palette($primary-name, 100);
 $primary-dark: palette($primary-name, 900);
 
 $secondary-name: Grey;
-$secondary-dark: palette($secondary-name, 700);
 $secondary: palette($secondary-name, 400);
+$secondary-dark: palette($secondary-name, 700);
 $secondary-light: palette($secondary-name, 100);
 
 @import 'utils';
 @import 'grid';
+@import 'markdown-to-html';
 @import 'typo';
 @import 'buttons';
 
