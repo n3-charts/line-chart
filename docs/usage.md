@@ -7,6 +7,21 @@ See [some examples](http://n3-charts.github.io/line-chart/v2/#/examples).
 
 ### Series
 Each series defines a visual element in the chart. They should all have the following form :
+```js
+{
+  axis: 'y', // only y is supported at this moment
+  dataset: 'dataset0',
+  key: 'val_0', // can also be something like {y0: 'some_key', y1: 'some_other_key'}
+  label: 'An area series',
+  interpolation: {mode: 'cardinal', tension: 0.7},
+  defined: function() {
+   return value.y1 !== undefined; 
+  },
+  color: "#1f77b4", // or any valid CSS value, really
+  type: ['line', 'dot', 'area'], // this, or a string. But this is better.
+  id: 'mySeries0'
+}
+```
 
 Name | Type | Default | Description | Mandatory
 ---- | ---- | ------- | ------------ | --------
@@ -21,9 +36,35 @@ Name | Type | Default | Description | Mandatory
 `defined` | Function | `undefined` | Helps tell the chart where this series is defined or not, regarding its data. More on that [here](https://github.com/mbostock/d3/wiki/SVG-Shapes#line_defined) | No
 
 ### Axes
-#### Min/max
-#### Ticks
-#### Type
+There are currently two axes supported by the directive : `x` and `y`. Abscissas (`x`) is mandatory, just because the directive needs to know where to read the abscissas in the data. But there's more !
+
+```js
+{
+  x: {
+    key: 'foo',
+    type: 'linear', // or 'date', or 'log'
+    ticks: [-10, 0, 10] // can also be a number
+  },
+  y: {
+    min: -10,
+    max: 10,
+    ticksShift: {
+      y: -5,
+      x: 10
+    },
+    tickFormat: function(value, index) {
+      return "Pouet : " + value + " " + index;
+    }
+  }
+}
+```
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`key`| String | `undefined` | The abscissas key, a property on each datum | Yes
+`type` | String | `'linear'` | The axis' type. can be either `'linear'`, `'log'` or `'date'`. | No
+`ticks` | Array or Number | `undefined` | The axis' ticks. Depending on what is given will either call `tickValues` or `ticks` on the inner d3 axis. | No
+`ticksShift` | Object | `{y: 0, x: 0}` | A bit of a hack to allow shifting of the ticks. May be useful if the chart is squeezed in a container and the 0 tick is cropped. Or not. | No. Of course not.
+ `tickFormat` | Function | Formats the ticks. Takes the value and its index as arguments | No
 
 ### Margin
 
