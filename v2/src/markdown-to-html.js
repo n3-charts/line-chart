@@ -12,9 +12,11 @@ angular.module('markdown', [])
         return '<code class="inline">' + code + '</code>';
       };
 
-      // renderer.code = function(code, language) {
-      //   return '<code class="">' + code + '</code>';
-      // };
+      marked.setOptions({
+        highlight: function (code) {
+          return hljs.highlightAuto(code).value;
+        }
+      });
 
       scope.$watch('url', function(url) {
         $http.get(url).then(function(response) {
