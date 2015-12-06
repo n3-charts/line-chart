@@ -21,7 +21,7 @@
         <linechart data='data' options='example.options'></linechart>
       </div>
       <div class="col-30 options col-100-when-small">
-        <pre ng-bind-html='"$scope.options = " + (example.options | prettyUnsafe:50:"columns") + ";" | safe'></pre>
+        <pre><code class="lang-js" highlight-js>$scope.options = {{(example.options | indent:40:"columns") + ";"}}</code></pre>
       </div>
     </div>
   </div>
