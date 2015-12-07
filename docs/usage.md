@@ -91,6 +91,7 @@ The `tooltipHook` function is a callback that cna be used in three ways, regardi
 
 #### Custom tooltip
 The function needs to take an array as sole arguments, which contains items. Each of this items contains the row (`{x, y0, y1}`) and the series (as you defined it in the options). The function returned data _must_ possess the following structure :
+
 Name | Type | Description
 ---- | ---- | -------
 `abscissas` | String | The abscissas' label
