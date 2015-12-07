@@ -67,16 +67,60 @@ Name | Type | Default | Description | Mandatory
  `tickFormat` | Function | `undefined` | Formats the ticks. Takes the value and its index as arguments | No
 
 ### Margin
+The `margin` property affects, well, the chart's margins. Useful to optimize space regarding your data. The `margin` object should look like this :
+```js
+{
+  top: 20,
+  right: 30,
+  bottom: 20,
+  left: 10
+}
+```
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`top` | Number | `0` | The top margin | No
+`right` | Number | `40` | The right margin | No
+`bottom` | Number | `40` | The bottom margin | No
+`left` | Number | `40` | The left margin | No
 
-### Tooltip
+### TooltipHook
+The `tooltipHook` function is a callback that cna be used in three ways, regarding its value and what it returns :
+ - `undefined` is the default value. The original, unaltered tooltip will show up.
+ - a function that returns `false` (or something that casts to `false` like `null`, `undefined`, an empty string... I'm looking at you, JavaScript) will give you a chance to use what's currently hovered but will prevent the tooltip from showing up. The line and the dots will be drawn, though, and masking them can be done in CSS.
+ - a function that returns something that doesn't cast to `false` make the chart display what you want in the tooltip. This particular behavior is explained below.
+
+#### Custom tooltip
+The function needs to take an array as sole arguments, which contains items. Each of this items contains the row (`{x, y0, y1}`) and the series (as you defined it in the options). The function returned data _must_ possess the following structure :
+Name | Type | Description
+---- | ---- | -------
+`abscissas` | String | The abscissas' label
+`rows` | `[{label, value, id, color}]` | These are the dots the chart will draw. All of the properties are strings, the `id` being checked by d3 to process its join.
 
 ### Grid
-#### X
-#### Y
+The `grid` object parametrizes how the chart's background grid will be shown. It's not mandatory and should look like this : 
+```js
+{
+  x: false,
+  y: true
+}
+```
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`x` | Boolean | `false` | Visibility of the grid's vertical lines | No
+`y` | Boolean | `true` | Visibility of the grid's horizontal lines | No
 
 ### Pan
-#### X
-#### Y
+The `pan` object parametrizes which of the chart's axes accept(s) panning. This feature is not linked to any callback as of now (soooo not super useful), but will be in the future. It's not mandatory and should look like this : 
+```js
+{
+  x: false,
+  y: false
+}
+```
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`x` | Boolean | `false` | Enables/disables panning on the x axis | No
+`y` | Boolean | `false` | Enables/disables panning on the y axis | No
 
 
 ## Data
