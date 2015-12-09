@@ -125,9 +125,7 @@ Name | Type | Default | Description | Mandatory
 
 
 ## Data
-### Datasets
-
-## Synchronizing several charts' tooltips
+The data format has changed since v1. What now gets passed to the directive as the `data` attribute should be an object (well, *yes*, everything is an object) that has datasets properties. Series must refer to those datasets in their `dataset` property. This is made to allow handling only one data object to the chart, while the series display heterogeneous datasets. Take a look at [the examples](http://n3-charts.github.io/line-chart/v2/#/examples) for more information !
 
 ## Full example
 ```html
