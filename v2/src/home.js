@@ -21,7 +21,7 @@ angular.module('home', ['markdown'])
 })
 
 .controller('HomeCtrl', function($scope, $sce, $http, data) {
-  mixpanel.track("V2");
+  mixpanel.track('Home', {version: 'v2'});
 
   $scope.data = data;
 

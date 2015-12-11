@@ -13,6 +13,8 @@ angular.module('examples', ['n3-line-chart', 'codepen', 'data'])
 })
 
 .controller('ExamplesCtrl', function($scope, datasets) {
+  mixpanel.track('Examples', {version: 'v2'});
+
   $scope.examples = [
     {
       label: 'Line series', id: 'line_series', options: {

@@ -16,7 +16,7 @@ angular.module('codepen', ['apojop'])
           }
 
           scope.track = function() {
-            mixpanel.track("codepen", {title: name});
+            mixpanel.track("codepen", {title: name, version: 'v2'});
           };
 
           var postDeserializing = "";

@@ -15,7 +15,7 @@ angular.module('demo', ['ngRoute', 'n3-charts.linechart', 'directives', 'example
 })
 
 .controller('HomeCtrl', function($scope, $sce, $http) {
-  mixpanel.track("Home");
+  mixpanel.track('Home', {version: 'v1'});
 
   $http.get('https://api.github.com/repos/n3-charts/line-chart/releases').success(function(r) {
     $scope.releases = r.map(function(release) {

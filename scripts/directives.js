@@ -30,7 +30,7 @@ angular.module('directives', [])
           }
 
           scope.track = function() {
-            mixpanel.track("codepen", {title: name});
+            mixpanel.track("codepen", {title: name, version: 'v1'});
           };
 
           var postDeserializing = "";

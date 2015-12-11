@@ -65,7 +65,7 @@ angular.module('utils', [])
 angular.module('examples', ['apojop', 'utils'])
 
 .controller('ExamplesCtrl', function($scope, appUtils) {
-  mixpanel.track("Examples");
+  mixpanel.track('Examples', {version: 'v1'});
   var colors = d3.scale.category10();
   $scope.max = 30;
 
