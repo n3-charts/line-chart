@@ -1,2 +1,0 @@
-- Run `./release.sh -n awesome-applejuice` where `awesome-applejuice` is the name for the new version
-- Create a release on GitHub
