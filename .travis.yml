@@ -1,19 +1,16 @@
 language: node_js
 node_js:
-- '0.10'
+- '0.12'
 before_install:
+- wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+- sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+- sudo apt-get update
+- sudo apt-get install google-chrome-stable
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 - npm install
-- sudo pip install pillow
-script: grunt travis
-addons:
-  firefox: '38.0'
-env:
-  global:
-    secure: dB3WMokJn/Z5d5Hpal4i+xtXw/8af7BxCyLL7h2fG4LlDgqke9QDL8t4RL6oEodAoMp1KIwASl2MQqnjgUOO+XzB+WCje9CiA22BIj3Q7CAgjImbPzY6i1ijDZJ8YwfHbdvzqGkZUL/INEmwCcrlsQGKagsHXNQ3n3uejzTnfj0=
-after_script:
-  - bash test/visual/scripts/send.sh
+- tsd reinstall -s
+script: gulp travis
 notifications:
   webhooks:
     urls:

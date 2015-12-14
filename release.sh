@@ -1,67 +1,27 @@
 #!/usr/bin/env bash
+set -e
+VERSION=`cat package.json | grep version | sed 's/[",:]//g' | awk '{print $2}'`
 
-if [ "$(git branch | grep \* | egrep -o '\w+')" != "master" ]; then
-  echo "You can only release on master. Please don't do that again."
+# Eventually we'll have a branch named v2, I guess ?
+if [ "$(git branch | grep \* | egrep -o '\w+')" != "dev" ]; then
+  echo "You can only release on dev. Please don't do that again."
   exit 1
 fi
 
-git diff --quiet HEAD
-if [ "$?" -eq 1 ]; then
-  echo "Please start from a clean state. Git found some changes (and it never lies)."
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Uncommitted changes in this directory, aborting !";
   exit 1
 fi
 
-VERSION_NAME=""
-OLD_VERSION=`grep version package.json | tr -d ' ' | grep -e '(\d+\.?)+' -P -o`
-
-increment() {
-  regex="([0-9]+).([0-9]+).([0-9]+)"
-
-  [[ $1 =~ $regex ]]
-  major="${BASH_REMATCH[1]}"
-  minor="${BASH_REMATCH[2]}"
-  patch="${BASH_REMATCH[3]}"
-
-  let "patch++"
-
-  echo "$major.$minor.$patch"
-}
-
-rollback() {
-  grunt bumpup:$OLD_VERSION > /dev/null
-  echo "Version has been rolled back to $OLD_VERSION in package.json and bower.json"
-  exit 1
-}
-
-VERSION=`increment $OLD_VERSION`
-TAG_NAME="v$VERSION"
-
-while getopts n: flag
-  do
-    case $flag in
-      n)
-        VERSION_NAME=$OPTARG
-        ;;
-      ?)
-        exit
-        ;;
-    esac
-  done
-
-
-if [ "$VERSION_NAME" = "" ]; then
-  echo "Please give a name to that new version (like ludicrous-limbo, for example)"
+if [ "$1" == "" ]; then
+  echo ""
+  echo "Missing version number, aborting !"
+  echo "Usage: ./release.sh VERSION"
+  echo "Current version: ${VERSION}"
+  echo ""
   exit 1
 fi
 
-echo "Incrementing version to $VERSION in package.json and bower.json"
-grunt bumpup:$VERSION > /dev/null
+release-it $1
 
-echo "Building project with new version $VERSION..."
-grunt build || rollback
-
-git commit -am "Released version $VERSION"
-
-git tag -a $VERSION -m "$VERSION_NAME ($TAG_NAME)"
-
-git push origin master && git push --tags
+rm -r build

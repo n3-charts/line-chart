@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html lang="en" ng-app="example">
+<head>
+  <title>n3-charts</title>
+  <link rel="stylesheet" type="text/css" media="screen" href="/build/LineChart.css">
+  <style type="text/css">
+  .example {
+    width: calc(100% - 200px);
+    height: 300px;
+    border: 1px solid lightgrey;
+    margin: 10px auto;
+    padding: 10px 10px 30px 10px;
+  }
+  </style>
+</head>
+
+<body ng-controller='ExamplesCtrl'>
+  <div class="example">
+    <linechart data="example.data" options="example.options"></linechart>
+  </div>
+  <script src="/angular/angular.js"></script>
+  <script src="/d3/d3.min.js"></script>
+  <script src="/build/LineChart.js"></script>
+  <script type="text/javascript">
+  angular.module('example', ['n3-line-chart'])
+  .controller('ExamplesCtrl', function($scope) {
+    $scope.example = {
+      data: <%= data %>,
+      options: <%= options %>,
+      label: "<%= name %>"
+    };
+  });
+  </script>
+</body>
+</html>

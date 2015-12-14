@@ -1,6 +1,9 @@
-line-chart.sublime-workspace
-line-chart.sublime-project
-
-bower_components/
+build/
+typings/
 node_modules/
-coverage/
+.tmp/
+.npmrc
+*.log
+*.sublime-*
+.atom-build.json
+.sass-cache

@@ -1,0 +1,71 @@
+@mixin svg($svg) {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>#{$svg}</svg>");
+}
+
+@mixin series-item {
+  .item {
+    cursor: pointer;
+    font-family: sans-serif;
+    height: 16px;
+    font-size: 0.8em;
+    font-weight: 100;
+    display: inline-block;
+    margin-right: 10px;
+
+    > * {
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    > .label {
+      height: 16px;
+      line-height: 17px;
+    }
+
+    > .icon {
+      width: 16px;
+      border-radius: 50%;
+      height: 16px;
+      margin-right: 5px;
+      background-repeat: no-repeat;
+      background-position: 50% 25%;
+    }
+
+    &.hidden {
+      opacity: 0.4;
+    }
+
+    &.column > .icon {
+      @include svg("<rect y='2' width='2' height='8'/><rect x='4' y='5' width='2' height='5'/><rect x='8' y='3' width='2' height='7'/>");
+    }
+
+    &.dot > .icon {
+      @include svg("<circle cx='5' cy='6' r='2'/>");
+    }
+
+    &.dashed-line > .icon {
+      @include svg("
+        <g style=\"stroke: white; fill: none; stroke-dasharray: 4px,2px;\">
+          <path d='M0,6 L10,6'/>
+        </g>
+      ");
+    }
+
+    &.line > .icon {
+      @include svg("
+        <g style=\"stroke: white;\">
+          <path d='M0,6 L10,6'/>
+        </g>
+      ");
+    }
+
+    &.area > .icon {
+      @include svg("<polygon points='0,10 2.428,3 5,6 7.625,5 10,10 10,10 0,10'/>");
+    }
+  }
+}
+
+.chart-legend {
+  margin-left: 20px;
+  @include series-item;
+}

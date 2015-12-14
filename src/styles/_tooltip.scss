@@ -1,0 +1,55 @@
+.tooltip-line {
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.tooltip-dot {
+  stroke-width: 2px;
+  fill: white;
+}
+
+.chart-tooltip {
+  position: absolute;
+
+  background-color: white;
+  z-index: 100;
+  box-shadow: 1px 1px 2px hsla(0, 0%, 24%, 0.5);
+  padding: 5px 10px;
+  border-radius: 1px;
+  font-family: sans-serif;
+  font-weight: 100;
+
+  > .abscissas {
+    margin-bottom: 5px;
+    font-size: 0.7em;
+    white-space: nowrap;
+  }
+
+  .tooltip-item {
+    font-size: 0.8em;
+    white-space: nowrap;
+
+    &:not(:last-child) {
+      margin-bottom: 0.2em;
+    }
+
+    > * {
+      display: inline-block;
+
+      &:not(:last-child) {
+        margin-right: 0.4em;
+      }
+    }
+
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .y-value {
+      font-weight: 500;
+    }
+  }
+}

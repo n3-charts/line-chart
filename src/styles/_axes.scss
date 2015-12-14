@@ -1,0 +1,19 @@
+.axis {
+  font: 10px Roboto;
+  shape-rendering: crispEdges;
+
+  > path {
+    fill: none;
+    stroke: black;
+  }
+
+  > .tick {
+    > text {
+      fill: black;
+    }
+
+    > line {
+      stroke: black;
+    }
+  }
+}

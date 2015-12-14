@@ -1,0 +1,367 @@
+
+{% extends "e2e/templates/_base.tpl.html" %}
+
+{% block name %}Playground{% endblock %}
+
+{% block headStart %}
+<!-- XEditable Styles -->
+<link rel="stylesheet" href="https://rawgit.com/vitalets/angular-xeditable/master/dist/css/xeditable.css">
+<!-- Bootstrap, what else -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<style>
+  .label {
+   color: black;
+  }
+</style>
+
+{% endblock %}
+
+{% block ngModules %}['xeditable', 'n3-line-chart']{% endblock %}
+{% block data %}generateData(15){% endblock %}
+{% block options %}
+{
+  axes: {
+    x: {
+      key: "x"
+    },
+    y: {
+      tooltipFormat: ".2f"
+    }
+  },
+  margin: {
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0
+  },
+  series: [
+    {
+      dataset: "dataset0",
+      key: "y0",
+      id: "series1",
+      label: "A line",
+      color: "steelblue"
+    },
+    {
+      dataset: "dataset0",
+      key: "y1",
+      id: "series2",
+      label: "A column",
+      color: "orange",
+      type: "column"
+    },
+    {
+     dataset: "dataset0",
+      key: "y0",
+      id: "series3",
+      label: "An area",
+      color: "salmon",
+      type: "area"
+    }
+  ]
+}
+{% endblock %}
+
+{% block ngController %}
+$scope.params = getParams();
+$scope.addDatapoint = addDatapoint;
+$scope.removeDatapoint = removeDatapoint;
+
+function getParams(){
+  return {
+    lineMode: [
+      'linear', 'step-before', 'step-after', 'basis',
+      'basis-open', 'basis-closed', 'bundle', 'cardinal',
+      'cardinal-open', 'cadinal-closed', 'monotone'
+    ],
+    series:{
+      axis: [
+        'y', 'y2'
+      ],
+      type: [
+        'line', 'area', 'column'
+      ]
+    },
+    axis: {
+      type: [
+        'linear', 'date', 'log'
+      ]
+    }
+  };
+}
+
+function generateData(numPoints){
+  numPoints = numPoints || 10;
+  return {
+    'dataset0': d3.range(numPoints).map(function(d){
+      return {
+        x: d,
+        y0: rand(0, 10),
+        y1: rand(0, 100),
+        y2: rand(0, 50)
+      }
+    }),
+    'dataset1': d3.range(numPoints).map(function(d){
+      return {
+        x: d,
+        y0: rand(0, 10),
+        y1: rand(0, 100),
+        y2: rand(0, 50)
+      }
+    })
+  };
+}
+
+function addDatapoint(dataset){
+  $scope.example.data[dataset].push({
+    x: $scope.example.data[dataset][$scope.example.data[dataset].length - 1].x + 1,
+    y0: rand(0, 10),
+    y1: rand(0, 100),
+    y2: rand(0, 50)
+  });
+}
+
+function removeDatapoint(dataset, point){
+  $scope.example.data[dataset].splice(
+    $scope.example.data[dataset].indexOf(point), 1
+  );
+}
+
+function rand(min, max){
+  min = min || 0;
+  max = max || 1;
+  return min + (max - min) * Math.random();
+}
+{% endblock %}
+
+
+{% block bodyCenter %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>Data</h2>
+      <div ng-repeat="(dataset, values) in example.data">
+        <h3>{$ dataset $}</h3>
+        <button class="btn btn-primary pull-right" ng-click="addDatapoint(dataset)">Add point</button>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>x</th>
+              <th>y0</th>
+              <th>y1</th>
+              <th>y2</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="d in values">
+              <td>{$ d.x $}</td>
+              <td><a href="#" editable-number="d.y0">{$ d.y0 | number:2 $}</a></td>
+              <td><a href="#" editable-number="d.y1">{$ d.y1 | number:2 $}</a></td>
+              <td><a href="#" editable-number="d.y2">{$ d.y2 | number:2 $}</a></td>
+              <td>
+                <a ng-click="removeDatapoint(dataset, d)">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <h2>Options</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>lineMode</td>
+            <td><a href="#" editable-select="example.options.lineMode" e-ng-options="mode for mode in params.lineMode">{$ example.options.lineMode $}</a></td>
+          </tr>
+          <tr>
+            <td>tension</td>
+            <td><a href="#" editable-range="example.options.tension" e-min="0" e-max="1" e-step="0.1">{$ example.options.tension $}</a></td>
+          </tr>
+          <tr>
+            <td>drawLegend</td>
+            <td><a href="#" editable-checkbox="example.options.drawLegend" e-title="drawLegend">{$ example.options.drawLegend && "true" || "false" $}</a></td>
+          </tr>
+          <tr>
+            <td>drawDots</td>
+            <td><a href="#" editable-checkbox="example.options.drawDots" e-title="drawDots">{$ example.options.drawDots && "true" || "false" $}</a></td>
+          </tr>
+          <tr>
+            <td>columnsHGap</td>
+            <td><a href="#" editable-number="example.options.columnsHGap" e-min="0">{$ example.options.columnsHGap $}</a></td>
+          </tr>
+          <tr>
+            <td>hideOverflow</td>
+            <td><a href="#" editable-checkbox="example.options.hideOverflow" e-title="hideOverflow">{$ example.options.hideOverflow && "true" || "false" $}</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Margin</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>left</td>
+            <td><a href="#" editable-number="example.options.margin.left" e-min="0">{$ example.options.margin.left $}</a></td>
+          </tr>
+          <tr>
+            <td>top</td>
+            <td><a href="#" editable-number="example.options.margin.top" e-min="0">{$ example.options.margin.top $}</a></td>
+          </tr>
+          <tr>
+            <td>right</td>
+            <td><a href="#" editable-number="example.options.margin.right" e-min="0">{$ example.options.margin.right $}</a></td>
+          </tr>
+          <tr>
+            <td>bottom</td>
+            <td><a href="#" editable-number="example.options.margin.bottom" e-min="0">{$ example.options.margin.bottom $}</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Axes</h3>
+      <div ng-repeat="(key, axis) in example.options.axes">
+        <h4>{$ key $}</h4>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Option</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>key</td>
+            <td><a href="#" editable-text="axis.key">{$ axis.key || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>type</td>
+            <td><a href="#" editable-select="axis.type" e-ng-options="mode for mode in params.axis.type">{$ axis.type || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>min</td>
+            <td><a href="#" editable-number="axis.min">{$ axis.min || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>max</td>
+            <td><a href="#" editable-number="axis.max">{$ axis.max || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>ticksFormat</td>
+            <td><a href="#" editable-text="axis.ticksFormat">{$ axis.ticksFormat || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>tooltipFormat</td>
+            <td><a href="#" editable-text="axis.tooltipFormat">{$ axis.tooltipFormat || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>ticks</td>
+            <td><a href="#" editable-number="axis.ticks">{$ axis.ticks || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>ticksRotate</td>
+            <td><a href="#" editable-number="axis.ticksRotate">{$ axis.ticksRotate || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>width</td>
+            <td><a href="#" editable-number="axis.width">{$ axis.width || "undefined" $}</a></td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <h3>Series</h3>
+      <div ng-repeat="series in example.options.series">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Option</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>y</td>
+            <td><a href="#" editable-text="series.y">{$ series.y $}</a></td>
+          </tr>
+          <tr>
+            <td>label</td>
+            <td><a href="#" editable-text="series.label">{$ series.label $}</a></td>
+          </tr>
+          <tr>
+            <td>color</td>
+            <td><a href="#" editable-text="series.color">{$ series.color $}</a></td>
+          </tr>
+          <tr>
+            <td>axis</td>
+            <td><a href="#" editable-select="series.axis" e-ng-options="mode for mode in params.series.axis">{$ series.axis $}</a></td>
+          </tr>
+          <tr>
+            <td>type</td>
+            <td><a href="#" editable-select="series.type" e-ng-options="mode for mode in params.series.type">{$ series.type $}</a></td>
+          </tr>
+          <tr>
+            <td>thickness</td>
+            <td><a href="#" editable-text="series.thickness">{$ series.thickness || "undefined" $}</a></td>
+          </tr>
+          </tr>
+          <tr>
+            <td>striped</td>
+            <td><a href="#" editable-checkbox="series.striped" e-title="striped">{$ series.striped && "true" || series.striped === undefined && "undefined" || "false" $}</a></td>
+          </tr>
+          <tr>
+            <td>lineMode</td>
+            <td><a href="#" editable-select="series.lineMode" e-ng-options="mode for mode in params.series.lineMode">{$ series.lineMode || "undefined" $}</a></td>
+          </tr>
+          <tr>
+            <td>visible</td>
+            <td><a href="#" editable-checkbox="series.visible" e-title="visible">{$ series.visible && "true" || series.visible === undefined && "undefined" || "false" $}</a></td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="col-sm-6">
+    <h2>Data</h2>
+    <pre>{$ example.data | json $}</pre>
+  </div>
+  <div class="col-sm-6">
+    <h2>Options</h2>
+    <pre>{$ example.options | json $}</pre>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block bodyEnd %}
+<script>
+// Set interpolation method to {$ expr $}
+angular.module('example')
+.config(function($interpolateProvider) {
+  $interpolateProvider.startSymbol('{$');
+  $interpolateProvider.endSymbol('$}');
+});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="https://rawgit.com/vitalets/angular-xeditable/master/dist/js/xeditable.min.js"></script>
+{% endblock %}

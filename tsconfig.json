@@ -1,0 +1,38 @@
+{
+    "version": "1.5.0-alpha",
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": true,
+        "out": "build/LineChart.js"
+    },
+    "filesGlob": [
+        "./src/**/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "files": [
+        "./src/LineChart.ts",
+        "./src/app.ts",
+        "./src/factories/Axis.ts",
+        "./src/factories/Container.ts",
+        "./src/factories/Legend.ts",
+        "./src/factories/Tooltip.ts",
+        "./src/factories/Transition.ts",
+        "./src/factories/_index.ts",
+        "./src/factories/series/Area.ts",
+        "./src/factories/series/Column.ts",
+        "./src/factories/series/Dot.ts",
+        "./src/factories/series/Line.ts",
+        "./src/factories/series/_index.ts",
+        "./src/utils/BaseFactory.ts",
+        "./src/utils/Data.ts",
+        "./src/utils/Dataset.ts",
+        "./src/utils/EventManager.ts",
+        "./src/utils/FactoryManager.ts",
+        "./src/utils/Options.ts",
+        "./src/utils/Series.ts",
+        "./src/utils/SeriesFactory.ts",
+        "./src/utils/_index.ts"
+    ]
+}
