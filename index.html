@@ -1,55 +1,73 @@
-<!DOCTYPE HTML>
-<html lang="en" ng-app="demo">
-<head>
-  <link rel="icon" type="image/png" href="assets/images/logo_small.png" />
+<html lang="en" ng-app="v2App">
+  <head>
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/favicons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/favicons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/favicons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/favicons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/favicons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/favicons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/favicons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/favicons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="assets/favicons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
 
-  <link rel="stylesheet" href="css/pure-min.css">
-  <link href="assets/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300,500' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link href="http://codepen.io/n3-charts/pen/KdjqgW.css" media="screen" rel="stylesheet" type="text/css" />
 
-  <link href="css/app.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/tomorrow-night.min.css">
 
-  <!-- start Mixpanel -->
-  <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
-typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
-b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);
-mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
-  <!-- end Mixpanel -->
+    <link rel="stylesheet" href="app.css">
+    <meta name="viewport" content="initial-scale=1" />
+     <!-- start Mixpanel -->
+    <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+  typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
+  b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);
+  mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
+    <!-- end Mixpanel -->
+    <title>n3-charts</title>
+  </head>
 
-  <title>n3-charts</title>
-</head>
-
-<body>
-
-  <div class="pure-g">
-    <div class='pure-u-1'>
-      <div class="pure-menu pure-menu-open pure-menu-horizontal">
-        <h1 class="pure-menu-heading"><a href="#/about"><img src="assets/images/logo_small.png">n3-charts</a></h1>
-        <ul class="right" ng-controller="menuCtrl">
-          <li class="internal" ng-class="{active: isActive('/')}"><a href="#/">Home</a></li>
-          <li class="internal" ng-class="{active: isActive('/examples')}"><a href="#/examples">Examples</a></li>
-          <li class="internal" ng-class="{active: isActive('/tests')}"><a href="#/tests">Tests</a></li>
-          <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
-          <li><a href="https://travis-ci.org/n3-charts/line-chart" target="_blank">Travis CI <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
-          <li><a href="https://gitter.im/n3-charts/line-chart" target="_blank">Gitter <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
-          <li class="internal"><a href="/line-chart/v2">V2</a></li>
-        </ul>
+  <body ng-controller="BodyCtrl" ng-class="path">
+    <div class="header-bar row">
+      <div class="col-40 col-0-when-small">
+        <a class="header-title quiet" href="/line-chart/v1"><i class='fa fa-angle-left'></i> v1</a>
+      </div>
+      <div class="col-20 center middle left-when-small">
+        <a href="#/"><div class="logo"></div></a>
+      </div>
+      <div class="col-40 right col-80-when-small">
+        <a class-if-route="active:/home" href="#/home">Home</a>
+        <a class-if-route="active:/examples" href="#/examples">Examples</a>
+        <a href="https://github.com/n3-charts/line-chart/tree/dev">GitHub</a>
       </div>
     </div>
-  </div>
-  <div class="pure-g" ng-view>
-  </div>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular-route.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-<script src="//cdn.rawgit.com/n3-charts/line-chart/1.1.11/build/line-chart.min.js"></script>
-<script src="//cdn.rawgit.com/lorem--ipsum/apojop/master/apojop.min.js"></script>
+    <div class="content" ng-view></div>
 
-<script src="scripts/examples.js"></script>
-<script src="scripts/tests.js"></script>
-<script src="scripts/directives.js"></script>
-<script src="scripts/main.js"></script>
+    <div class="section credits">
+      Made with love and care by <a class="quiet" href="https://github.com/chaosmail"><i class='fa fa-github'></i> Christoph K&ouml;rner</a> &amp; <a class="quiet" href="https://github.com/lorem--ipsum"><i class='fa fa-github'></i> S&eacute;bastien Fragnaud</a>.
+    </div>
 
-</body>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+
+    <script type="text/javascript" src="assets/marked.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/highlight.min.js"></script>
+
+    <script src="http://codepen.io/n3-charts/pen/KdjqgW.js"></script>
+    <script src="//cdn.rawgit.com/lorem--ipsum/apojop/1.0.6/apojop.min.js"></script>
+    <script src="index.js"></script>
+    <script src="src/data.js"></script>
+    <script src="src/markdown-to-html.js"></script>
+    <script src="src/codepen.js"></script>
+    <script src="src/home.js"></script>
+    <script src="src/examples.js"></script>
+  </body>
 </html>

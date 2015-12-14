@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="en" ng-app="demo">
+<head>
+  <link rel="icon" type="image/png" href="assets/images/logo_small.png" />
+
+  <link rel="stylesheet" href="css/pure-min.css">
+  <link href="assets/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
+
+  <link href="css/app.css" rel="stylesheet" type="text/css" />
+
+  <!-- start Mixpanel -->
+  <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
+b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);
+mixpanel.init("ee285273de2082a6e691fa5a5c49c892");</script>
+  <!-- end Mixpanel -->
+
+  <title>n3-charts</title>
+</head>
+
+<body>
+
+  <div class="pure-g">
+    <div class='pure-u-1'>
+      <div class="pure-menu pure-menu-open pure-menu-horizontal">
+        <h1 class="pure-menu-heading"><a href="#/about"><img src="assets/images/logo_small.png">n3-charts</a></h1>
+        <ul class="right" ng-controller="menuCtrl">
+          <li class="internal" ng-class="{active: isActive('/')}"><a href="#/">Home</a></li>
+          <li class="internal" ng-class="{active: isActive('/examples')}"><a href="#/examples">Examples</a></li>
+          <li class="internal" ng-class="{active: isActive('/tests')}"><a href="#/tests">Tests</a></li>
+          <li><a href="http://github.com/n3-charts/line-chart" target="_blank">Github <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
+          <li><a href="https://travis-ci.org/n3-charts/line-chart" target="_blank">Travis CI <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
+          <li><a href="https://gitter.im/n3-charts/line-chart" target="_blank">Gitter <i class='fa fa-external-link' style="font-size: 10px;"></i></a></li>
+          <li class="internal"><a href="/line-chart">V2</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="pure-g" ng-view>
+  </div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular-route.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="//cdn.rawgit.com/n3-charts/line-chart/1.1.11/build/line-chart.min.js"></script>
+<script src="//cdn.rawgit.com/lorem--ipsum/apojop/master/apojop.min.js"></script>
+
+<script src="scripts/examples.js"></script>
+<script src="scripts/tests.js"></script>
+<script src="scripts/directives.js"></script>
+<script src="scripts/main.js"></script>
+
+</body>
+</html>
