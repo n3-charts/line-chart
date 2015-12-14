@@ -3,8 +3,8 @@ set -e
 VERSION=`cat package.json | grep version | sed 's/[",:]//g' | awk '{print $2}'`
 
 # Eventually we'll have a branch named v2, I guess ?
-if [ "$(git branch | grep \* | egrep -o '\w+')" != "dev" ]; then
-  echo "You can only release on dev. Please don't do that again."
+if [ "$(git branch | grep \* | egrep -o '\w+')" != "master" ]; then
+  echo "You can only release on master. Please don't do that again."
   exit 1
 fi
 
