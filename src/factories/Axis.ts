@@ -226,7 +226,7 @@ module n3Charts.Factory {
         .scale(this.d3axis.scale())
         .orient(this.d3axis.orient())
         .tickValues(this.d3axis.tickValues())
-        .ticks(this.d3axis.ticks())
+        .ticks(this.d3axis.ticks()[0])
         .tickSize(this.d3axis.tickSize());
 
         // dafuq is wrong with this tslinter ???

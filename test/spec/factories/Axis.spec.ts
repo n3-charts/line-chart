@@ -27,4 +27,16 @@ describe('n3Charts.Factory.Axis', () => {
       expect(() => new n3Charts.Factory.Axis('pouet')).to.throwError();
     });
   });
+
+  it('should clone the d3 axis', () => {
+    axis = new n3Charts.Factory.Axis('x');
+
+    axis.scale = axis.getScale(new n3Charts.Utils.AxisOptions({}));
+    axis.d3axis = axis.getAxis(axis.scale, new n3Charts.Utils.AxisOptions({
+      ticks: 5
+    }));
+
+    var clone = axis.cloneAxis();
+    expect(clone.ticks()).to.eql(axis.d3axis.ticks());
+  });
 });
