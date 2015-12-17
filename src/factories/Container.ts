@@ -137,7 +137,8 @@ module n3Charts.Factory {
       d3.select(this.element).select('#clipping-rect')
         .attr({
           'width': this.dim.innerWidth,
-          'height': this.dim.innerHeight
+          'height': this.dim.innerHeight + this.dim.margin.top,
+          'transform': `translate(0, ${-this.dim.margin.top})`
         });
     }
 

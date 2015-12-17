@@ -2,6 +2,7 @@
   options: '''
 {
   pan: {x: true},
+  margin: {top: 10},
   series: [
     {
       axis: "y",
