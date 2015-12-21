@@ -26,6 +26,10 @@ module n3Charts.Utils {
     }
 
     getDatasetValues(series: ISeriesOptions, options: Options): IPoint[] {
+      if (!this.sets || !this.sets[series.dataset].values) {
+        return [];
+      }
+
       var xKey = options.getAbsKey();
       var fn: (d: any) => any;
 
