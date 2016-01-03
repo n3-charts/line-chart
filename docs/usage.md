@@ -1,14 +1,26 @@
- - Include the js and the CSS
- - Import the module
+# Documentation
 
-See [some examples](http://n3-charts.github.io/line-chart/#/examples).
+
 
 ## Options
 
+**n3-line-chart** provides multiple options to configure your chart, series and axes.
+
+```js
+$scope.options = {
+  series: [
+    ...
+  ],
+  axes: { ... },
+  ...
+};
+```
+
 ### Series
+
 Each series defines a visual element in the chart. They should all have the following form :
 ```js
-{
+series: [{
   axis: 'y', // only y is supported at this moment
   dataset: 'dataset0',
   key: 'val_0', // can also be something like {y0: 'some_key', y1: 'some_other_key'}
@@ -20,7 +32,7 @@ Each series defines a visual element in the chart. They should all have the foll
   color: "#1f77b4", // or any valid CSS value, really
   type: ['line', 'dot', 'area'], // this, or a string. But this is better.
   id: 'mySeries0'
-}
+}, { ... }]
 ```
 
 Name | Type | Default | Description | Mandatory
@@ -39,7 +51,7 @@ Name | Type | Default | Description | Mandatory
 There are currently two axes supported by the directive : `x` and `y`. Abscissas (`x`) is mandatory, just because the directive needs to know where to read the abscissas in the data. But there's more !
 
 ```js
-{
+axes: {
   x: {
     key: 'foo',
     type: 'linear', // or 'date', or 'log'
@@ -69,7 +81,7 @@ Name | Type | Default | Description | Mandatory
 ### Margin
 The `margin` property affects, well, the chart's margins. Useful to optimize space regarding your data. The `margin` object should look like this :
 ```js
-{
+margin: {
   top: 20,
   right: 30,
   bottom: 20,
@@ -84,7 +96,7 @@ Name | Type | Default | Description | Mandatory
 `left` | Number | `40` | The left margin | No
 
 ### TooltipHook
-The `tooltipHook` function is a callback that cna be used in three ways, regarding its value and what it returns :
+The `tooltipHook` function is a callback that can be used in three ways, regarding its value and what it returns :
  - `undefined` is the default value. The original, unaltered tooltip will show up.
  - a function that returns `false` (or something that casts to `false` like `null`, `undefined`, an empty string... I'm looking at you, JavaScript) will give you a chance to use what's currently hovered but will prevent the tooltip from showing up. The line and the dots will be drawn, though, and masking them can be done in CSS.
  - a function that returns something that doesn't cast to `false` make the chart display what you want in the tooltip. This particular behavior is explained below.
@@ -100,7 +112,7 @@ Name | Type | Description
 ### Grid
 The `grid` object parametrizes how the chart's background grid will be shown. It's not mandatory and should look like this : 
 ```js
-{
+grid: {
   x: false,
   y: true
 }
@@ -113,7 +125,7 @@ Name | Type | Default | Description | Mandatory
 ### Pan
 The `pan` object parametrizes which of the chart's axes accept(s) panning. This feature is not linked to any callback as of now (soooo not super useful), but will be in the future. It's not mandatory and should look like this : 
 ```js
-{
+pan: {
   x: false,
   y: false
 }
@@ -125,7 +137,31 @@ Name | Type | Default | Description | Mandatory
 
 
 ## Data
-The data format has changed since v1. What now gets passed to the directive as the `data` attribute should be an object (well, *yes*, everything is an object) that has datasets properties. Series must refer to those datasets in their `dataset` property. This is made to allow handling only one data object to the chart, while the series display heterogeneous datasets. Take a look at [the examples](http://n3-charts.github.io/line-chart/v2/#/examples) for more information !
+
+The data format has changed since v1. What now gets passed to the directive as the `data` attribute should be an object (well, *yes*, everything is an object) that defines datasets as properties. Each dataset can then contain an array of arbitrary data point objects. In the series options, one can now specify the datasets with the `dataset` property, as well as the data point value with the `key` property. This is made to allow handling only one data object to the chart, while the series display heterogeneous datasets.
+
+```js
+$scope.data = {
+  dataset0: [
+    {x: 0, y: 2}, {x: 1, y: 3}
+  ],
+  dataset1: [
+    {x: 0, value: 2}, {x: 1, value: 3}
+  ],
+  ...
+};
+
+$scope.options = {
+  series: [
+    {dataset: "dataset0", key: "y", label: "dataset 0"},
+    {dataset: "dataset1", key: "value", label: "dataset 1"}
+  ],
+  axes: {x: {key: "x"}},
+  ...
+};
+```
+
+Take a look at [the examples](http://n3-charts.github.io/line-chart/v2/#/examples) for more information !
 
 ## Full example
 ```html
