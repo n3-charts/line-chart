@@ -1,8 +1,9 @@
-angular.module('v2App', ['n3-line-chart', 'apojop', 'ngRoute', 'home', 'examples'])
+angular.module('v2App', ['n3-line-chart', 'apojop', 'ngRoute', 'home', 'docs', 'examples'])
 
 .config(['$routeProvider', function config($routeProvider) {
   $routeProvider
   .when('/home', {controller: 'HomeCtrl', templateUrl: 'src/home.html'})
+  .when('/docs', {controller: 'DocsCtrl', templateUrl: 'src/docs.html'})
   .when('/examples', {controller: 'ExamplesCtrl', templateUrl: 'src/examples.html'})
   .otherwise({redirectTo: '/home'});
 }])
