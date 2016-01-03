@@ -1,7 +1,7 @@
  - Include the js and the CSS
  - Import the module
 
-See [some examples](http://n3-charts.github.io/line-chart/v2/#/examples).
+See [some examples](http://n3-charts.github.io/line-chart/#/examples).
 
 ## Options
 
