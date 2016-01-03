@@ -1,7 +1,5 @@
 # Documentation
 
-
-
 ## Options
 
 **n3-line-chart** provides multiple options to configure your chart, series and axes.

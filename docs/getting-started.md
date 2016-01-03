@@ -21,7 +21,9 @@ Next, you need to reference *LineChart.js* and *LineChart.css* in your *index.ht
 
 Finally, you need to reference the *n3-line-chart* module in your AngularJS application.
 
-`angular.module('app', ['n3-line-chart'])`
+```js
+angular.module('app', ['n3-line-chart'])
+```
 
 ## Creating a Minimal Setup
 
