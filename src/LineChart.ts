@@ -158,7 +158,7 @@ module n3Charts {
       // Trigger the destroy event
       scope.$on('$destroy', () => {
         eventMgr.trigger('destroy');
-        angular.element(this.$window).off();
+        angular.element(this.$window).off('resize', resizeCb);
       });
     };
   }
