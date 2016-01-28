@@ -135,7 +135,7 @@ module n3Charts.Factory {
     }
 
     isAbscissas() {
-      return this.side === Utils.AxisOptions.SIDE.X;
+      return [Utils.AxisOptions.SIDE.X, Utils.AxisOptions.SIDE.X2].indexOf(this.side) !== -1;
     }
 
     isInLastHalf(value: any): Boolean {
@@ -159,7 +159,11 @@ module n3Charts.Factory {
 
     updateAxisOrientation(axis) {
       if (this.isAbscissas()) {
-        axis.orient('bottom');
+        if (this.side === Utils.AxisOptions.SIDE.X) {
+          axis.orient('bottom');
+        } else {
+          axis.orient('top');
+        }
       } else {
         if (this.side === Utils.AxisOptions.SIDE.Y) {
           axis.orient('left');
@@ -172,8 +176,13 @@ module n3Charts.Factory {
     updateAxisContainer(dim: Utils.Dimensions) {
       // Move the axis container to the correct position
       if (this.isAbscissas()) {
-        this.svg
-          .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
+        if (this.side === Utils.AxisOptions.SIDE.X) {
+          this.svg
+            .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
+        } else {
+          this.svg
+            .attr('transform', 'translate(0, 0)');
+        }
       } else {
         if (this.side === Utils.AxisOptions.SIDE.Y) {
           this.svg

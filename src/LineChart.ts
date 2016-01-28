@@ -46,6 +46,7 @@ module n3Charts {
         ['legend', Factory.Legend, element[0]],
         ['transitions', Factory.Transition],
         ['x-axis', Factory.Axis, Utils.AxisOptions.SIDE.X],
+        ['x2-axis', Factory.Axis, Utils.AxisOptions.SIDE.X2],
         ['y-axis', Factory.Axis, Utils.AxisOptions.SIDE.Y],
         ['y2-axis', Factory.Axis, Utils.AxisOptions.SIDE.Y2],
         ['grid', Factory.Grid],

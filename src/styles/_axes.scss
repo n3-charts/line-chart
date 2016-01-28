@@ -2,6 +2,11 @@
   font: 10px Roboto;
   shape-rendering: crispEdges;
 
+  // Hidden by default, because of reasons.
+  &.x2-axis {
+    display: none;
+  }
+
   > path {
     fill: none;
     stroke: black;

@@ -7,13 +7,6 @@ module n3Charts.Utils {
     y2?: IAxisOptions;
   };
 
-  export interface IMargin {
-    top: number;
-    left: number;
-    bottom: number;
-    right: number;
-  }
-
   export interface ITwoAxes {
     x: boolean;
     y: boolean;
@@ -44,12 +37,7 @@ module n3Charts.Utils {
       y: <IAxisOptions>{}
     };
 
-    public margin: IMargin = {
-      top: 0,
-      left: 40,
-      bottom: 40,
-      right: 40
-    };
+    public margin: IMargin = Utils.Dimensions.getDefaultMargins();
 
     public grid: ITwoAxes = {
       x: false,
@@ -169,8 +157,12 @@ module n3Charts.Utils {
         throw new TypeError('Cannot get axis side : ' + side);
       }
 
-      if (side === AxisOptions.SIDE.Y2 && !this.axes[side]) {
-        return this.axes[AxisOptions.SIDE.Y];
+      if (!this.axes[side]) {
+        if (side === AxisOptions.SIDE.Y2) {
+          return this.axes[AxisOptions.SIDE.Y];
+        } else if (side === AxisOptions.SIDE.X2) {
+          return this.axes[AxisOptions.SIDE.X];
+        }
       }
 
       return this.axes[side];

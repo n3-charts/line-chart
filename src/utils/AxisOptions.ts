@@ -22,9 +22,10 @@ module n3Charts.Utils {
     };
 
     public static SIDE = {
-        X: 'x',
-        Y: 'y',
-        Y2: 'y2'
+      X: 'x',
+      X2: 'x2',
+      Y: 'y',
+      Y2: 'y2'
     };
 
     public static TYPE = {
@@ -57,7 +58,6 @@ module n3Charts.Utils {
         this.min = Options.getDate(js.min, undefined);
         this.max = Options.getDate(js.max, undefined);
       }
-
     }
 
     static isValidSide(side: string): Boolean {
