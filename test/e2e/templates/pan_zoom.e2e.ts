@@ -1,5 +1,7 @@
 /// <reference path='../test.e2e.ts' />
 
+// This test depends SO MUCH on the display it's ran on...
+
 describe('Pan & zoom', function() {
   beforeEach(function() {
     browser.get('test/e2e/pan_zoom.html');

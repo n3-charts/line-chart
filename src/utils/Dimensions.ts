@@ -1,18 +1,29 @@
 module n3Charts.Utils {
   'use strict';
 
+  export interface IMargin {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+  }
+
   export class Dimensions {
     public width = 600;
     public height = 200;
     public innerWidth = 560;
     public innerHeight = 160;
-    public margin = {
-      left: 30,
-      bottom: 20,
-      right: 30,
-      top: 20
-    };
 
+    public margin:IMargin = Dimensions.getDefaultMargins();
+
+    static getDefaultMargins():IMargin {
+      return  {
+        top: 0,
+        left: 40,
+        bottom: 40,
+        right: 40
+      };
+    }
 
     updateMargins(options: Options) {
       if (!options || !options.margin) {

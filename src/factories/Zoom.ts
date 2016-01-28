@@ -26,6 +26,7 @@ module n3Charts.Factory {
       }
 
       var y2Axis = this.factoryMgr.get('y2-axis');
+      var x2Axis = this.factoryMgr.get('x2-axis');
       var eventMgr = this.eventMgr;
       var transitions = this.factoryMgr.get('transitions');
 
@@ -34,6 +35,7 @@ module n3Charts.Factory {
         .on('zoom', function() {
           // This will need to be done better when actually having y2 axes...
           y2Axis.scale.domain(yAxis.scale.domain());
+          x2Axis.scale.domain(xAxis.scale.domain());
 
           // Turning off and on transitions so that panning/zooming feels quick and
           // reactive
