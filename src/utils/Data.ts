@@ -21,11 +21,11 @@ module n3Charts.Utils {
       this.sets = js;
     }
 
-    getDatasets(series: ISeriesOptions[], options: Options): IPoint[][] {
-      return series.map((d: ISeriesOptions) => this.getDatasetValues(d, options));
+    getDatasets(series: Options.ISeriesOptions[], options: Options.Options): IPoint[][] {
+      return series.map((d: Options.ISeriesOptions) => this.getDatasetValues(d, options));
     }
 
-    getDatasetValues(series: ISeriesOptions, options: Options): IPoint[] {
+    getDatasetValues(series: Options.ISeriesOptions, options: Options.Options): IPoint[] {
       if (!this.sets || !this.sets[series.dataset].values) {
         return [];
       }

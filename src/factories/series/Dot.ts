@@ -1,11 +1,11 @@
 module n3Charts.Factory.Series {
   'use strict';
 
-  export class Dot extends Utils.SeriesFactory {
+  export class Dot extends Factory.Series.SeriesFactory {
 
-    public type: string = Utils.SeriesOptions.TYPE.DOT;
+    public type: string = Options.SeriesOptions.TYPE.DOT;
 
-    updateData(group: D3.Selection, series: Utils.SeriesOptions, index: number, numSeries: number) {
+    updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
@@ -59,7 +59,7 @@ module n3Charts.Factory.Series {
 
     styleSeries(group: D3.Selection) {
       group.style({
-        'stroke': (d: Utils.SeriesOptions) => d.color
+        'stroke': (d: Options.SeriesOptions) => d.color
       });
     }
   }

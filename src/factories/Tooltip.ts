@@ -3,10 +3,10 @@ module n3Charts.Factory {
 
   interface INeighbour {
     row: any;
-    series: Utils.SeriesOptions;
+    series: Options.SeriesOptions;
   }
 
-  export class Tooltip extends Utils.BaseFactory {
+  export class Tooltip extends Factory.BaseFactory {
 
     private svg:D3.Selection;
     private line:D3.Selection;
@@ -20,6 +20,7 @@ module n3Charts.Factory {
       this.createTooltip();
       this.eventMgr.on('container-move.tooltip', this.show.bind(this));
       this.eventMgr.on('container-out.tooltip', this.hide.bind(this));
+      this.eventMgr.on('outer-world-hover.tooltip', this.showFromCoordinates.bind(this));
 
       this.hide();
     }
@@ -45,7 +46,7 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    getClosestRows(x: number, data: Utils.Data, options: Utils.Options): {rows: INeighbour[], index:number} {
+    getClosestRows(x: number, data: Utils.Data, options: Options.Options): {rows: INeighbour[], index:number} {
       var visibleSeries = options.series.filter((series) => series.visible);
       var datasets = visibleSeries.map((series) => data.getDatasetValues(series, options).filter(series.defined));
 
@@ -76,7 +77,7 @@ module n3Charts.Factory {
       return {rows: closestRows, index: closestIndex};
     }
 
-    showFromCoordinates(coordinates: Factory.ICoordinates, data: Utils.Data, options: Utils.Options) {
+    showFromCoordinates(coordinates: Factory.ICoordinates, data: Utils.Data, options: Options.Options) {
       var {x, y} = coordinates;
 
       if (x === undefined || y === undefined) {
@@ -118,7 +119,7 @@ module n3Charts.Factory {
     }
 
 
-    show(event: any, data: Utils.Data, options: Utils.Options) {
+    show(event: any, data: Utils.Data, options: Options.Options) {
       var container: Factory.Container = this.factoryMgr.get('container');
       var coordinates = container.getCoordinatesFromEvent(event);
 
@@ -126,9 +127,9 @@ module n3Charts.Factory {
     }
 
     // This is the part the user can override.
-    getTooltipContent(rows: INeighbour[], closestIndex: number, options: Utils.Options) {
-      var xTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.X).tickFormat;
-      var yTickFormat = options.getByAxisSide(Utils.AxisOptions.SIDE.Y).tickFormat;
+    getTooltipContent(rows: INeighbour[], closestIndex: number, options: Options.Options) {
+      var xTickFormat = options.getByAxisSide(Options.AxisOptions.SIDE.X).tickFormat;
+      var yTickFormat = options.getByAxisSide(Options.AxisOptions.SIDE.Y).tickFormat;
 
       var getRowValue = (d: INeighbour) => {
         var fn = yTickFormat ? (y1) => yTickFormat(y1, closestIndex) : (y1) => y1;
@@ -154,7 +155,7 @@ module n3Charts.Factory {
       };
     }
 
-    updateTooltipContent(result: any, closestIndex: number, options: Utils.Options) {
+    updateTooltipContent(result: any, closestIndex: number, options: Options.Options) {
       this.svg.select('.abscissas')
         .text(result.abscissas);
 
@@ -287,7 +288,7 @@ module n3Charts.Factory {
 
     updateLinePosition(rows: INeighbour[]) {
       var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: Utils.Dimensions = container.getDimensions();
+      var dim: Options.Dimensions = container.getDimensions();
 
       var [lastRow] = rows.slice(-1);
 

@@ -27,7 +27,7 @@ series: [{
   label: 'An area series',
   interpolation: {mode: 'cardinal', tension: 0.7},
   defined: function() {
-   return value.y1 !== undefined; 
+   return value.y1 !== undefined;
   },
   color: "#1f77b4", // or any valid CSS value, really
   type: ['line', 'dot', 'area'], // this, or a string. But this is better.
@@ -110,7 +110,7 @@ Name | Type | Description
 `rows` | `[{label, value, id, color}]` | These are the dots the chart will draw. All of the properties are strings, the `id` being checked by d3 to process its join.
 
 ### Grid
-The `grid` object parametrizes how the chart's background grid will be shown. It's not mandatory and should look like this : 
+The `grid` object parametrizes how the chart's background grid will be shown. It's not mandatory and should look like this :
 ```js
 grid: {
   x: false,
@@ -123,7 +123,7 @@ Name | Type | Default | Description | Mandatory
 `y` | Boolean | `true` | Visibility of the grid's horizontal lines | No
 
 ### Pan
-The `pan` object parametrizes which of the chart's axes accept(s) panning. This feature is not linked to any callback as of now (soooo not super useful), but will be in the future. It's not mandatory and should look like this : 
+The `pan` object parametrizes which of the chart's axes accept(s) panning. This feature is not linked to any callback as of now (soooo not super useful), but will be in the future. It's not mandatory and should look like this :
 ```js
 pan: {
   x: false,
@@ -135,6 +135,17 @@ Name | Type | Default | Description | Mandatory
 `x` | Boolean | `false` | Enables/disables panning on the x axis | No
 `y` | Boolean | `false` | Enables/disables panning on the y axis | No
 
+## Synchronization and callbacks
+
+The directive accepts additional HTML attributes to allow charts' synchronization and callbacks on various events.
+
+Name | Description | Example
+---- | ----------- | -------
+`on-drag` | Method called when the chart is panned. The horizontal and vertical axes domains is passed under the key `$domains`  | `on-drag="onDrag($domains)"`
+`tooltip-sync-key` | The charts that share the same key and the same root scope will have synchronized tooltips | `tooltip-sync-key="mahKey"`
+`drag-key` | The charts that share the same key and the same root scope will have synchronized axes' domains | `drag-sync-key="mahOtherKey"`
+
+> Please note that heterogeneous keys can't have the same value, i.e. don't pass the same string for two different keys.
 
 ## Data
 

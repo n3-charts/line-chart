@@ -6,7 +6,7 @@ module n3Charts.Factory {
     y?: number;
   }
 
-  export class Container extends Utils.BaseFactory {
+  export class Container extends BaseFactory {
 
     public defs: D3.Selection;
 
@@ -15,13 +15,13 @@ module n3Charts.Factory {
     public data: D3.Selection;
     public overlay: D3.Selection;
     public axes: D3.Selection;
-    public dim: Utils.Dimensions = new Utils.Dimensions();
+    public dim: Options.Dimensions = new Options.Dimensions();
 
     constructor(private element: HTMLElement) {
       super();
     }
 
-    create(options: Utils.Options) {
+    create(options: Options.Options) {
       this.dim.updateMargins(options);
       this.listenToElement(this.element, options);
       this.createRoot();
@@ -29,7 +29,7 @@ module n3Charts.Factory {
       this.eventMgr.on('resize', this.dim.fromParentElement.bind(this.dim));
     }
 
-    listenToElement(element: HTMLElement, options: Utils.Options) {
+    listenToElement(element: HTMLElement, options: Options.Options) {
       var eventMgr = this.eventMgr;
 
       element.addEventListener('mouseover', (event) => {
@@ -46,7 +46,7 @@ module n3Charts.Factory {
     }
 
     getCoordinatesFromEvent(event): ICoordinates {
-      var dim: Utils.Dimensions = this.getDimensions();
+      var dim: Options.Dimensions = this.getDimensions();
 
       var {left, top} = event.currentTarget.getBoundingClientRect();
 
@@ -142,7 +142,7 @@ module n3Charts.Factory {
         });
     }
 
-    getDimensions(): Utils.Dimensions {
+    getDimensions(): Options.Dimensions {
       return this.dim;
     }
   }

@@ -1,7 +1,7 @@
 module n3Charts.Factory {
   'use strict';
 
-  export class Axis extends Utils.BaseFactory {
+  export class Axis extends Factory.BaseFactory {
 
     public svg: D3.Selection;
     public scale: D3.Scale.Scale;
@@ -10,7 +10,7 @@ module n3Charts.Factory {
     constructor(public side: string) {
       super();
 
-      if (!Utils.AxisOptions.isValidSide(side)) {
+      if (!Options.AxisOptions.isValidSide(side)) {
         throw new TypeError('Wrong axis side : ' + side);
       }
     }
@@ -29,10 +29,10 @@ module n3Charts.Factory {
       this.svg.call(this.d3axis);
     }
 
-    update(data:Utils.Data, options:Utils.Options) {
+    update(data:Utils.Data, options:Options.Options) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: Utils.Dimensions = container.getDimensions();
+      var dim: Options.Dimensions = container.getDimensions();
 
       // Get the [min, max] extent of the axis
       var extent = this.getExtent(data, options);
@@ -50,7 +50,7 @@ module n3Charts.Factory {
       this.shiftAxisTicks(axisOptions);
     }
 
-    shiftAxisTicks(options: Utils.AxisOptions) {
+    shiftAxisTicks(options: Options.AxisOptions) {
       var {x, y} = options.ticksShift;
 
       this.svg.selectAll('text')
@@ -61,7 +61,7 @@ module n3Charts.Factory {
       this.destroyAxis();
     }
 
-    updateScaleRange(dim: Utils.Dimensions) {
+    updateScaleRange(dim: Options.Dimensions) {
       if (this.isAbscissas()) {
         this.scale.range([0, dim.innerWidth]);
       } else {
@@ -71,6 +71,14 @@ module n3Charts.Factory {
 
     updateScaleDomain(extent: Number[]) {
       this.scale.domain(extent);
+    }
+
+    getScaleDomain():Number[] {
+      if (!this.scale) {
+        return [0, 1];
+      }
+
+      return this.scale.domain();
     }
 
     getExtentForDatasets(
@@ -97,7 +105,7 @@ module n3Charts.Factory {
       ];
     }
 
-    getExtent(datasets: Utils.Data, options: Utils.Options) {
+    getExtent(datasets: Utils.Data, options: Options.Options) {
       var axisOptions = options.getByAxisSide(this.side);
       var extent = undefined;
 
@@ -135,7 +143,7 @@ module n3Charts.Factory {
     }
 
     isAbscissas() {
-      return [Utils.AxisOptions.SIDE.X, Utils.AxisOptions.SIDE.X2].indexOf(this.side) !== -1;
+      return [Options.AxisOptions.SIDE.X, Options.AxisOptions.SIDE.X2].indexOf(this.side) !== -1;
     }
 
     isInLastHalf(value: any): Boolean {
@@ -159,13 +167,13 @@ module n3Charts.Factory {
 
     updateAxisOrientation(axis) {
       if (this.isAbscissas()) {
-        if (this.side === Utils.AxisOptions.SIDE.X) {
+        if (this.side === Options.AxisOptions.SIDE.X) {
           axis.orient('bottom');
         } else {
           axis.orient('top');
         }
       } else {
-        if (this.side === Utils.AxisOptions.SIDE.Y) {
+        if (this.side === Options.AxisOptions.SIDE.Y) {
           axis.orient('left');
         } else {
           axis.orient('right');
@@ -173,10 +181,10 @@ module n3Charts.Factory {
       }
     }
 
-    updateAxisContainer(dim: Utils.Dimensions) {
+    updateAxisContainer(dim: Options.Dimensions) {
       // Move the axis container to the correct position
       if (this.isAbscissas()) {
-        if (this.side === Utils.AxisOptions.SIDE.X) {
+        if (this.side === Options.AxisOptions.SIDE.X) {
           this.svg
             .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
         } else {
@@ -184,7 +192,7 @@ module n3Charts.Factory {
             .attr('transform', 'translate(0, 0)');
         }
       } else {
-        if (this.side === Utils.AxisOptions.SIDE.Y) {
+        if (this.side === Options.AxisOptions.SIDE.Y) {
           this.svg
             .attr('transform', 'translate(0, 0)');
         } else {
@@ -205,22 +213,22 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    getScale(options: Utils.AxisOptions): D3.Scale.Scale {
+    getScale(options: Options.AxisOptions): D3.Scale.Scale {
       // Create and return a D3 Scale
       var scale: D3.Scale.Scale;
 
-      if (options.type === Utils.AxisOptions.TYPE.DATE) {
+      if (options.type === Options.AxisOptions.TYPE.DATE) {
         return d3.time.scale();
       }
 
-      if (options.type === Utils.AxisOptions.TYPE.LOG) {
+      if (options.type === Options.AxisOptions.TYPE.LOG) {
         return d3.scale.log();
       }
 
       return d3.scale.linear();
     }
 
-    getAxis(scale: D3.Scale.Scale, options: Utils.AxisOptions): D3.Svg.Axis {
+    getAxis(scale: D3.Scale.Scale, options: Options.AxisOptions): D3.Svg.Axis {
       // Create and return a D3 Axis generator
       var axis = d3.svg.axis()
         .scale(scale);

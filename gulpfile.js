@@ -4,18 +4,18 @@ var runSequence = require('run-sequence');
 var abs = require('path').resolve;
 
 var paths = {
-  source: {from: 'src/**/*.ts', to: '.tmp/build/'},
+  source: {from: 'src/**/+([^.]).ts', to: '.tmp/build/'},
   style: {from: 'src/styles/**/*.scss', to: '.tmp/build/'},
-  test: {from: 'test/**/*.spec.ts', to: '.tmp/test/'},
-  spec: {config: abs('test/config/karma.conf.js'), from: 'test/**/*.spec.ts'},
+  test: {from: 'src/**/*.spec.ts', to: '.tmp/test/'},
+  spec: {config: abs('config/karma.conf.js'), from: 'src/**/*.spec.ts'},
   e2e: {
-    config: 'test/config/protractor.conf.js',
-    from: 'test/**/*.e2e.ts',
-    templates: 'test/e2e/**/*.hjson',
-    base: 'test/e2e/templates/_base.html',
-    demo: 'test/e2e/templates/_demo.html'
+    config: 'config/protractor.conf.js',
+    from: 'e2e/**/*.e2e.ts',
+    templates: 'e2e/**/*.hjson',
+    base: 'e2e/templates/_base.html',
+    demo: 'e2e/templates/_demo.html'
   },
-  coverage: {to: '.tmp/coverage/'}
+  coverage: {to: abs('.tmp/coverage/')}
 };
 
 require('./gulp-tasks')(gulp, $, paths);

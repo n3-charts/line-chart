@@ -1,15 +1,31 @@
 module n3Charts.Factory {
   'use strict';
 
-  export class Zoom extends Utils.BaseFactory {
+  export class Zoom extends Factory.BaseFactory {
 
     public behavior: D3.Behavior.Zoom;
 
     create() {
       this.behavior = d3.behavior.zoom();
+
+      this.eventMgr.on('outer-world-zoom.' + this.key, this.updateFromOuterWorld.bind(this));
     }
 
-    update(data:Utils.Data, options:Utils.Options) {
+    updateFromOuterWorld(translate) {
+      this.behavior.translate(translate);
+
+      var xAxis = this.factoryMgr.get('x-axis');
+      var yAxis = this.factoryMgr.get('y-axis');
+      var y2Axis = this.factoryMgr.get('y2-axis');
+      var x2Axis = this.factoryMgr.get('x2-axis');
+
+      y2Axis.scale.domain(yAxis.scale.domain());
+      x2Axis.scale.domain(xAxis.scale.domain());
+
+      this.eventMgr.trigger('zoom', d3.event, false);
+    }
+
+    update(data:Utils.Data, options:Options.Options) {
       var xAxis = this.factoryMgr.get('x-axis');
       var yAxis = this.factoryMgr.get('y-axis');
 
@@ -40,7 +56,7 @@ module n3Charts.Factory {
           // Turning off and on transitions so that panning/zooming feels quick and
           // reactive
           transitions.off();
-          eventMgr.trigger('zoom', d3.event.sourceEvent.target);
+          eventMgr.trigger('zoom', d3.event, true);
           transitions.on();
         });
 
