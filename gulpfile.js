@@ -3,20 +3,19 @@ var $ = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
 var abs = require('path').resolve;
 
-// Absolute paths (sub tasks are one folder deeper than this file)
 var paths = {
-  source: {from: abs('src/**/*.ts'), to: abs('.tmp/build/')},
-  style: {from: abs('src/styles/**/*.scss'), to: abs('.tmp/build/')},
-  test: {from: abs('test/**/*.spec.ts'), to: abs('.tmp/test/')},
-  spec: {config: abs('test/config/karma.conf.js'), from: abs('test/**/*.spec.ts')},
+  source: {from: 'src/**/*.ts', to: '.tmp/build/'},
+  style: {from: 'src/styles/**/*.scss', to: '.tmp/build/'},
+  test: {from: 'test/**/*.spec.ts', to: '.tmp/test/'},
+  spec: {config: abs('test/config/karma.conf.js'), from: 'test/**/*.spec.ts'},
   e2e: {
-    config: abs('test/config/protractor.conf.js'),
-    from: abs('test/**/*.e2e.ts'),
-    templates: abs('test/e2e/**/*.hjson'),
-    base: abs('test/e2e/templates/_base.html'),
-    demo: abs('test/e2e/templates/_demo.html')
+    config: 'test/config/protractor.conf.js',
+    from: 'test/**/*.e2e.ts',
+    templates: 'test/e2e/**/*.hjson',
+    base: 'test/e2e/templates/_base.html',
+    demo: 'test/e2e/templates/_demo.html'
   },
-  coverage: {to: abs('.tmp/coverage/')}
+  coverage: {to: '.tmp/coverage/'}
 };
 
 require('./gulp-tasks')(gulp, $, paths);
