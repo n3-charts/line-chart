@@ -1,9 +1,9 @@
 module n3Charts.Factory.Series {
   'use strict';
 
-  export class Column extends Utils.SeriesFactory {
+  export class Column extends Factory.Series.SeriesFactory {
 
-    public type: string = Utils.SeriesOptions.TYPE.COLUMN;
+    public type: string = Options.SeriesOptions.TYPE.COLUMN;
 
     private gapFactor: number = 0.2;
     private outerPadding: number = (this.gapFactor / 2) * 3;
@@ -11,7 +11,7 @@ module n3Charts.Factory.Series {
 
     public innerXScale: D3.Scale.OrdinalScale;
 
-    update(data: Utils.Data, options: Utils.Options) {
+    update(data: Utils.Data, options: Options.Options) {
       this.data = data;
       this.options = options;
 
@@ -22,7 +22,7 @@ module n3Charts.Factory.Series {
       this.updateSeriesContainer(series);
     }
 
-    updateColumnsWidth(series: Utils.ISeriesOptions[], options: Utils.Options) {
+    updateColumnsWidth(series: Options.ISeriesOptions[], options: Options.Options) {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
 
       var colsDatasets = this.data.getDatasets(series, options);
@@ -31,7 +31,7 @@ module n3Charts.Factory.Series {
       this.columnsWidth = delta < Number.MAX_VALUE ? delta / series.length : 10;
     }
 
-    updateColumnScale(series: Utils.ISeriesOptions[], options: Utils.Options) {
+    updateColumnScale(series: Options.ISeriesOptions[], options: Options.Options) {
       var halfWidth = this.columnsWidth * series.length / 2;
 
       this.innerXScale = d3.scale.ordinal()
@@ -39,11 +39,11 @@ module n3Charts.Factory.Series {
         .rangeBands([-halfWidth, halfWidth], 0, 0.1);
     }
 
-    getTooltipPosition(series: Utils.ISeriesOptions) {
+    getTooltipPosition(series: Options.ISeriesOptions) {
       return this.innerXScale(series.id) + this.innerXScale.rangeBand() / 2;
     }
 
-    updateData(group: D3.Selection, series: Utils.SeriesOptions, index: number, numSeries: number) {
+    updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
@@ -101,8 +101,8 @@ module n3Charts.Factory.Series {
 
     styleSeries(group: D3.Selection) {
       group.style({
-        'fill': (d: Utils.SeriesOptions) => d.color,
-        'stroke': (d: Utils.SeriesOptions) => d.color,
+        'fill': (d: Options.SeriesOptions) => d.color,
+        'stroke': (d: Options.SeriesOptions) => d.color,
         'stroke-width': 1
       });
     }

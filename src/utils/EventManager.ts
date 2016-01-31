@@ -5,7 +5,10 @@ module n3Charts.Utils {
 
     private _dispatch : D3.Dispatch;
     private data: Utils.Data;
-    private options: Utils.Options;
+    private options: Options.Options;
+
+    // For testing purposes
+    public strictMode: Boolean = true;
 
     static EVENTS: string[] = [
       'create',  // on creation of the chart
@@ -27,6 +30,8 @@ module n3Charts.Utils {
       'focus',   // on focus of a data point from a snappy tooltip
       'toggle',  // on toggling series' visibility
       'zoom',  // on zoom/pan
+      'outer-world-hover',  // on incoming sync event (tooltip)
+      'outer-world-zoom',  // on incoming sync event (drag)
     ];
 
     init(events:string[]) : EventManager {
@@ -37,13 +42,17 @@ module n3Charts.Utils {
       return this;
     }
 
-    update(data: Utils.Data, options: Utils.Options) {
+    update(data: Utils.Data, options: Options.Options) {
       this.data = data;
       this.options = options;
       return;
     }
 
-    on(event:string, callback:(any?) => void) : EventManager {
+    on(event:string, callback:Function) : EventManager {
+      if (this.strictMode && EventManager.EVENTS.indexOf(event.split('.')[0]) === -1) {
+        throw new Error(`Unknown event: ${event}`);
+      }
+
       // Register an event listener
       // TODO We need to add an $apply() in here
       this._dispatch.on(event, callback);
@@ -69,7 +78,7 @@ module n3Charts.Utils {
       return this;
     }
 
-    datumEnter(series: SeriesOptions, options: Options) {
+    datumEnter(series: Options.SeriesOptions, options: Options.Options) {
       return (selection: D3.Selection) => {
         return selection.on('mouseenter', (d, i) => {
           this.trigger('enter', d, i, series, options);
@@ -77,7 +86,7 @@ module n3Charts.Utils {
       };
     }
 
-    datumOver(series: SeriesOptions, options: Options) {
+    datumOver(series: Options.SeriesOptions, options: Options.Options) {
       return (selection: D3.Selection) => {
         return selection.on('mouseover', (d, i) => {
           this.trigger('over', d, i, series, options);
@@ -85,7 +94,7 @@ module n3Charts.Utils {
       };
     }
 
-    datumMove(series: SeriesOptions, options: Options) {
+    datumMove(series: Options.SeriesOptions, options: Options.Options) {
       return (selection: D3.Selection) => {
         return selection.on('mousemove', (d, i) => {
           this.trigger('over', d, i, series, options);
@@ -93,7 +102,7 @@ module n3Charts.Utils {
       };
     }
 
-    datumLeave(series: SeriesOptions, options: Options) {
+    datumLeave(series: Options.SeriesOptions, options: Options.Options) {
       return (selection: D3.Selection) => {
         return selection.on('mouseleave', (d, i) => {
           this.trigger('leave', d, i, series, options);

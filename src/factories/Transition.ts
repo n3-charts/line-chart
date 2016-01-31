@@ -1,7 +1,7 @@
 module n3Charts.Factory {
   'use strict';
 
-  export class Transition extends Utils.BaseFactory {
+  export class Transition extends Factory.BaseFactory {
     static defaultDuration: number = 250;
     static duration: number = Transition.defaultDuration;
     static ease: string = 'cubic';

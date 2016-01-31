@@ -1,7 +1,7 @@
 module n3Charts.Factory {
   'use strict';
 
-  export class Legend extends Utils.BaseFactory {
+  export class Legend extends Factory.BaseFactory {
 
     private div:D3.Selection;
 
@@ -28,10 +28,10 @@ module n3Charts.Factory {
       };
     }
 
-    update(data:Utils.Data, options:Utils.Options) {
+    update(data:Utils.Data, options:Options.Options) {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: Utils.Dimensions = container.getDimensions();
+      var dim: Options.Dimensions = container.getDimensions();
 
       var init = (series) => {
         var items = series.append('div').attr({'class': 'item'})
@@ -43,7 +43,7 @@ module n3Charts.Factory {
 
       var update = (series) => {
         series
-          .attr('class', (d:Utils.SeriesOptions) => 'item ' + d.type.join(' '))
+          .attr('class', (d:Options.SeriesOptions) => 'item ' + d.type.join(' '))
           .classed('hidden', (d) => !d.visible);
         series.select('.icon').style('background-color', (d) => d.color);
         series.select('.label').text((d) => d.label);
