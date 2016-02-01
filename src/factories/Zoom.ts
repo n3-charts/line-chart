@@ -47,35 +47,18 @@ module n3Charts.Factory {
       var eventMgr = this.eventMgr;
       var transitions = this.factoryMgr.get('transitions');
 
-      var throttle = (callback, limit) => {
-        let wait = false;
-        return (...args) => {
-          if (!wait) {
-            callback.apply(this, args);
-            wait = true;
-            setTimeout(function () {
-              wait = false;
-            }, limit);
-          }
-        };
-      };
-
-      var throttled = throttle(function(event) {
-        // This will need to be done better when actually having y2 axes...
-        y2Axis.scale.domain(yAxis.scale.domain());
-        x2Axis.scale.domain(xAxis.scale.domain());
-        eventMgr.trigger('zoom', event, true);
-      }, 10);
-
       this.behavior
         .scaleExtent([1, 1])
         .on('zoomstart', () => {
           this.factoryMgr.turnFactoriesOff(['transitions', 'tooltip']);
         }).on('zoom', () => {
-          throttled(d3.event);
+          // This will need to be done better when actually having y2 axes...
+          y2Axis.scale.domain(yAxis.scale.domain());
+          x2Axis.scale.domain(xAxis.scale.domain());
+          eventMgr.trigger('zoom', d3.event, true);
         }).on('zoomend', () => {
           this.factoryMgr.turnFactoriesOn(['transitions', 'tooltip']);
-          eventMgr.trigger('zoomend', event, true);
+          eventMgr.trigger('zoomend', d3.event, true);
         });
 
       this.factoryMgr.get('container').svg.call(this.behavior);
