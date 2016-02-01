@@ -31,27 +31,40 @@ module n3Charts.Factory.Series {
       var area = group.selectAll('.' + this.type)
         .data([areaData]);
 
-      area.enter()
-        .append('path')
-        .attr('class', this.type)
-        .attr('d', (d) => initArea(d))
-        .transition()
-        .call(this.factoryMgr.get('transitions').enter)
-        .attr('d', (d) => updateArea(d));
+      if (this.factoryMgr.get('transitions').isEnabled()) {
+        area.enter()
+          .append('path')
+          .attr('class', this.type)
+          .attr('d', (d) => initArea(d))
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
+          .attr('d', (d) => updateArea(d));
 
-      area
-        .transition()
-        .call(this.factoryMgr.get('transitions').edit)
-        .attr('d', (d) => updateArea(d))
-        .style('opacity', series.visible ? 1 : 0);
+        area
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
+          .attr('d', (d) => updateArea(d))
+          .style('opacity', series.visible ? 1 : 0);
 
-      area.exit()
-        .transition()
-        .call(this.factoryMgr.get('transitions').exit)
-        .attr('d', (d) => initArea(d))
-        .each('end', function() {
-          d3.select(this).remove();
-        });
+        area.exit()
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'exit'))
+          .attr('d', (d) => initArea(d))
+          .each('end', function() { d3.select(this).remove(); });
+      } else {
+        area.enter()
+          .append('path')
+          .attr('class', this.type)
+          .attr('d', (d) => updateArea(d));
+
+        area
+          .attr('d', (d) => updateArea(d))
+          .style('opacity', series.visible ? 1 : 0);
+
+        area.exit()
+          .remove();
+      }
+
     }
 
     styleSeries(group: D3.Selection) {

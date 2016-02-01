@@ -12,6 +12,11 @@ module n3Charts.Factory.Series {
     protected data: Utils.Data;
     protected options: Options.Options;
 
+    create() {
+      this.createContainer(this.factoryMgr.get('container').data);
+      this.eventMgr.on('zoom.' + this.type, this.softUpdate.bind(this));
+    }
+
     update(data, options) {
       this.data = data;
       this.options = options;
@@ -21,12 +26,6 @@ module n3Charts.Factory.Series {
     softUpdate() {
       var series = this.options.getSeriesByType(this.type).filter((s) => s.visible);
       this.updateSeriesContainer(series);
-    }
-
-    create() {
-      this.createContainer(this.factoryMgr.get('container').data);
-      this.eventMgr.on('zoom.' + this.type, this.softUpdate.bind(this));
-      this.eventMgr.on('outer-world-zoom.' + this.key, this.softUpdate.bind(this));
     }
 
     destroy() {
@@ -40,7 +39,6 @@ module n3Charts.Factory.Series {
     }
 
     updateSeriesContainer(series: Options.ISeriesOptions[]) {
-
       // Create a data join
       var groups = this.svg
         .selectAll('.' + this.type + SeriesFactory.seriesClassSuffix)

@@ -25,6 +25,16 @@ module n3Charts.Utils {
         .indexOf(factoryKey);
     }
 
+    getBoundFunction(factoryKey: string, functionName: string): any {
+      let factory = this.get(factoryKey);
+
+      if (!factory) {
+        return null;
+      }
+
+      return factory[functionName].bind(factory);
+    }
+
     get(factoryKey: string): any {
       // Get the index of the factory
       var index = this.index(factoryKey);
@@ -41,6 +51,14 @@ module n3Charts.Utils {
     all(): IFactoryEntry[] {
       // Return the complete stack
       return this._factoryStack;
+    }
+
+    turnFactoriesOff(keys: string[]) {
+      keys.forEach((key) => { this.get(key).off(); });
+    }
+
+    turnFactoriesOn(keys: string[]) {
+      keys.forEach((key) => { this.get(key).on(); });
     }
 
     registerMany(factories: any[]) {

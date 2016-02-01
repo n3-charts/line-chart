@@ -30,8 +30,10 @@ module n3Charts.Utils {
       'focus',   // on focus of a data point from a snappy tooltip
       'toggle',  // on toggling series' visibility
       'zoom',  // on zoom/pan
+      'zoomend',  // on zoom/pan end
       'outer-world-hover',  // on incoming sync event (tooltip)
-      'outer-world-zoom',  // on incoming sync event (drag)
+      'outer-world-zoom',  // on incoming sync event (zoom)
+      'outer-world-zoomend',  // on incoming sync event (zoomend)
     ];
 
     init(events:string[]) : EventManager {

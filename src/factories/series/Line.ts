@@ -31,27 +31,41 @@ module n3Charts.Factory.Series {
       var line = group.selectAll('.' + this.type)
         .data([lineData]);
 
-      line.enter()
-        .append('path')
-        .attr('class', this.type)
-        .attr('d', (d) => initLine(d))
-        .transition()
-        .call(this.factoryMgr.get('transitions').enter)
-        .attr('d', (d) => updateLine(d));
+      if (this.factoryMgr.get('transitions').isEnabled()) {
+        line.enter()
+          .append('path')
+          .attr('class', this.type)
+          .attr('d', (d) => initLine(d))
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
+          .attr('d', (d) => updateLine(d));
 
-      line
-        .transition()
-        .call(this.factoryMgr.get('transitions').edit)
-        .attr('d', (d) => updateLine(d))
-        .style('opacity', series.visible ? 1 : 0);
+        line
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
+          .attr('d', (d) => updateLine(d))
+          .style('opacity', series.visible ? 1 : 0);
 
-      line.exit()
-        .transition()
-        .call(this.factoryMgr.get('transitions').exit)
-        .attr('d', (d) => initLine(d))
-        .each('end', function() {
-          d3.select(this).remove();
-        });
+        line.exit()
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'exit'))
+          .attr('d', (d) => initLine(d))
+          .each('end', function() {
+            d3.select(this).remove();
+          });
+      } else {
+        line.enter()
+          .append('path')
+          .attr('class', this.type)
+          .attr('d', (d) => updateLine(d));
+
+        line
+          .attr('d', (d) => updateLine(d))
+          .style('opacity', series.visible ? 1 : 0);
+
+        line.exit()
+          .remove();
+      }
     }
 
     styleSeries(group: D3.Selection) {

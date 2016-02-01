@@ -76,15 +76,27 @@ module n3Charts.Factory {
 
       if (callbacks.length > 0) {
         this.unregisteringFunctions.push(
-          this.scope.$root.$on(this.attributes.dragSyncKey, (event, translate) => {
-            eventMgr.triggerDataAndOptions('outer-world-zoom', translate);
+          this.scope.$root.$on(this.attributes.dragSyncKey, (event, {translate, isEndEvent}) => {
+            if (event.targetScope === this.scope) {
+              return;
+            }
+
+            if (isEndEvent) {
+              eventMgr.triggerDataAndOptions('outer-world-zoomend', translate);
+            } else {
+              eventMgr.triggerDataAndOptions('outer-world-zoom', translate);
+            }
           })
         );
 
         eventMgr.on('zoom.directive', (event, bubble) => {
           if (bubble) {
-            callbacks.forEach((fn) => fn(event.translate));
+            callbacks.forEach((fn) => fn({translate: event.translate, isEndEvent: false}));
           }
+        });
+
+        eventMgr.on('zoomend.directive', (event) => {
+          callbacks.forEach((fn) => fn({translate: event.translate, isEndEvent: true}));
         });
       }
     }

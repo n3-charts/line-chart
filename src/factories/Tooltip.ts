@@ -11,9 +11,19 @@ module n3Charts.Factory {
     private svg:D3.Selection;
     private line:D3.Selection;
     private dots:D3.Selection;
+    private enabled:Boolean = true;
 
     constructor(private element: HTMLElement) {
       super();
+    }
+
+    on() {
+      this.enabled = true;
+    }
+
+    off() {
+      this.enabled = false;
+      this.hide();
     }
 
     create() {
@@ -78,6 +88,10 @@ module n3Charts.Factory {
     }
 
     showFromCoordinates(coordinates: Factory.ICoordinates, data: Utils.Data, options: Options.Options) {
+      if (!this.enabled) {
+        return;
+      }
+
       var {x, y} = coordinates;
 
       if (x === undefined || y === undefined) {
@@ -120,6 +134,10 @@ module n3Charts.Factory {
 
 
     show(event: any, data: Utils.Data, options: Options.Options) {
+      if (!this.enabled) {
+        return;
+      }
+
       var container: Factory.Container = this.factoryMgr.get('container');
       var coordinates = container.getCoordinatesFromEvent(event);
 

@@ -38,7 +38,7 @@ module n3Charts.Factory {
 
         this.svg.select('.x-grid')
           .transition()
-          .call(this.factoryMgr.get('transitions').edit)
+          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
           .attr('transform', 'translate(0, ' + dim.innerHeight + ')')
           .call(this.xAxis.tickSize(-dim.innerHeight, 0));
       }
@@ -48,7 +48,7 @@ module n3Charts.Factory {
 
         this.svg.select('.y-grid')
           .transition()
-          .call(this.factoryMgr.get('transitions').edit)
+          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
           .call(this.yAxis.tickSize(-dim.innerWidth, 0));
       }
     }
