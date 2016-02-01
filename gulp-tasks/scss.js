@@ -4,6 +4,9 @@ module.exports = function(gulp, $, paths) {
     return gulp
     .src(paths.style.from)
     .pipe($.sass())
+    .pipe(gulp.dest(paths.style.to))
+    .pipe($.uglifycss())
+    .pipe($.rename({extname: '.min.css'}))
     .pipe(gulp.dest(paths.style.to));
   });
 };

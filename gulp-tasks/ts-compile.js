@@ -2,12 +2,16 @@ module.exports = function(gulp, $, paths) {
   // Compile the source files to JavaScript
   gulp.task('ts:compile:source', function () {
     return gulp
-    .src(paths.source.from)
-    .pipe($.typescript({
-      module: 'CommonJS',
-      out: 'LineChart.js'
-    }))
-    .pipe(gulp.dest(paths.source.to));
+      .src(paths.source.from)
+      .pipe($.typescript({
+        module: 'CommonJS',
+        out: 'LineChart.js'
+      }))
+      .pipe(gulp.dest(paths.source.to))
+      .pipe($.uglify())
+      .pipe($.rename({extname: '.min.js'}))
+      .pipe(gulp.dest(paths.source.to));
+
   });
 
   // Compile the test files to JavaScript

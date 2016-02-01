@@ -7,7 +7,6 @@ module n3Charts.Factory {
 
     create() {
       this.behavior = d3.behavior.zoom();
-
       this.eventMgr.on('outer-world-zoom.' + this.key, this.updateFromOuterWorld.bind(this));
     }
 
@@ -22,7 +21,9 @@ module n3Charts.Factory {
       y2Axis.scale.domain(yAxis.scale.domain());
       x2Axis.scale.domain(xAxis.scale.domain());
 
+      this.factoryMgr.turnFactoriesOff(['transitions', 'tooltip']);
       this.eventMgr.trigger('zoom', d3.event, false);
+      this.factoryMgr.turnFactoriesOn(['transitions', 'tooltip']);
     }
 
     update(data:Utils.Data, options:Options.Options) {
@@ -46,18 +47,35 @@ module n3Charts.Factory {
       var eventMgr = this.eventMgr;
       var transitions = this.factoryMgr.get('transitions');
 
+      var throttle = (callback, limit) => {
+        let wait = false;
+        return (...args) => {
+          if (!wait) {
+            callback.apply(this, args);
+            wait = true;
+            setTimeout(function () {
+              wait = false;
+            }, limit);
+          }
+        };
+      };
+
+      var throttled = throttle(function(event) {
+        // This will need to be done better when actually having y2 axes...
+        y2Axis.scale.domain(yAxis.scale.domain());
+        x2Axis.scale.domain(xAxis.scale.domain());
+        eventMgr.trigger('zoom', event, true);
+      }, 10);
+
       this.behavior
         .scaleExtent([1, 1])
-        .on('zoom', function() {
-          // This will need to be done better when actually having y2 axes...
-          y2Axis.scale.domain(yAxis.scale.domain());
-          x2Axis.scale.domain(xAxis.scale.domain());
-
-          // Turning off and on transitions so that panning/zooming feels quick and
-          // reactive
-          transitions.off();
-          eventMgr.trigger('zoom', d3.event, true);
-          transitions.on();
+        .on('zoomstart', () => {
+          this.factoryMgr.turnFactoriesOff(['transitions', 'tooltip']);
+        }).on('zoom', () => {
+          throttled(d3.event);
+        }).on('zoomend', () => {
+          this.factoryMgr.turnFactoriesOn(['transitions', 'tooltip']);
+          eventMgr.trigger('zoomend', event, true);
         });
 
       this.factoryMgr.get('container').svg.call(this.behavior);

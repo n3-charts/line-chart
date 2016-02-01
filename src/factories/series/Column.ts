@@ -73,30 +73,47 @@ module n3Charts.Factory.Series {
       var cols = group.selectAll('.' + this.type)
         .data(colsData, (d: Utils.IPoint) => d.x);
 
-      cols.enter()
-        .append('rect')
-        .attr('class', this.type)
-        .call(this.eventMgr.datumEnter(series, this.options))
-        .call(this.eventMgr.datumOver(series, this.options))
-        .call(this.eventMgr.datumMove(series, this.options))
-        .call(this.eventMgr.datumLeave(series, this.options))
-        .call(initCol)
-        .transition()
-        .call(this.factoryMgr.get('transitions').enter)
-        .call(updateCol);
+      if (this.factoryMgr.get('transitions').isEnabled()) {
+        cols.enter()
+          .append('rect')
+          .attr('class', this.type)
+          .call(this.eventMgr.datumEnter(series, this.options))
+          .call(this.eventMgr.datumOver(series, this.options))
+          .call(this.eventMgr.datumMove(series, this.options))
+          .call(this.eventMgr.datumLeave(series, this.options))
+          .call(initCol)
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
+          .call(updateCol);
 
-      cols
-        .transition()
-        .call(this.factoryMgr.get('transitions').edit)
-        .call(updateCol);
+        cols
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
+          .call(updateCol);
 
-      cols.exit()
-        .transition()
-        .call(this.factoryMgr.get('transitions').exit)
-        .call(initCol)
-        .each('end', function() {
-          d3.select(this).remove();
-        });
+        cols.exit()
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'exit'))
+          .call(initCol)
+          .each('end', function() {
+            d3.select(this).remove();
+          });
+      } else {
+        cols.enter()
+          .append('rect')
+          .attr('class', this.type)
+          .call(this.eventMgr.datumEnter(series, this.options))
+          .call(this.eventMgr.datumOver(series, this.options))
+          .call(this.eventMgr.datumMove(series, this.options))
+          .call(this.eventMgr.datumLeave(series, this.options))
+          .call(updateCol);
+
+        cols
+          .call(updateCol);
+
+        cols.exit()
+          .remove();
+      }
     }
 
     styleSeries(group: D3.Selection) {

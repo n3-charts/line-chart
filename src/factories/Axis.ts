@@ -204,7 +204,7 @@ module n3Charts.Factory {
       // Redraw the Axis
       this.svg
         .transition()
-        .call(this.factoryMgr.get('transitions').edit)
+        .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
         .call(this.d3axis);
     }
 

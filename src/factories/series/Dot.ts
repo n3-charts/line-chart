@@ -31,30 +31,47 @@ module n3Charts.Factory.Series {
         .style('opacity', series.visible ? 1 : 0);
       };
 
-      dots.enter()
-        .append('circle')
-        .attr('class', this.type)
-        .call(this.eventMgr.datumEnter(series, this.options))
-        .call(this.eventMgr.datumOver(series, this.options))
-        .call(this.eventMgr.datumMove(series, this.options))
-        .call(this.eventMgr.datumLeave(series, this.options))
-        .call(initPoint)
-        .transition()
-        .call(this.factoryMgr.get('transitions').enter)
-        .call(updatePoint);
+      if (this.factoryMgr.get('transitions').isEnabled()) {
+        dots.enter()
+          .append('circle')
+          .attr('class', this.type)
+          .call(this.eventMgr.datumEnter(series, this.options))
+          .call(this.eventMgr.datumOver(series, this.options))
+          .call(this.eventMgr.datumMove(series, this.options))
+          .call(this.eventMgr.datumLeave(series, this.options))
+          .call(initPoint)
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
+          .call(updatePoint);
 
-      dots
-        .transition()
-        .call(this.factoryMgr.get('transitions').edit)
-        .call(updatePoint);
+        dots
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
+          .call(updatePoint);
 
-      dots.exit()
-        .transition()
-        .call(this.factoryMgr.get('transitions').exit)
-        .call(initPoint)
-        .each('end', function() {
-          d3.select(this).remove();
-        });
+        dots.exit()
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'exit'))
+          .call(initPoint)
+          .each('end', function() {
+            d3.select(this).remove();
+          });
+      } else {
+        dots.enter()
+          .append('circle')
+          .attr('class', this.type)
+          .call(this.eventMgr.datumEnter(series, this.options))
+          .call(this.eventMgr.datumOver(series, this.options))
+          .call(this.eventMgr.datumMove(series, this.options))
+          .call(this.eventMgr.datumLeave(series, this.options))
+          .call(updatePoint);
+
+        dots
+          .call(updatePoint);
+
+        dots.exit()
+          .remove();
+      }
     }
 
     styleSeries(group: D3.Selection) {
