@@ -52,6 +52,7 @@
           tooltip-sync-key="{{example.tooltipSync}}"
           drag-sync-key="{{example.dragSync}}"
           on-drag="onDrag($domains)"
+          on-drag-end="onDragEnd($domains)"
         ></linechart>
       </div>
     </div>
@@ -63,6 +64,11 @@
   angular.module('example', ['n3-line-chart'])
   .controller('ExamplesCtrl', function($scope) {
     $scope.onDrag = function(domains) {
+      // console.log('drag', domains);
+    };
+
+    $scope.onDragEnd = function(domains) {
+      // console.log('dragend', domains);
     };
 
     $scope.examples = [

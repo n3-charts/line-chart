@@ -51,20 +51,32 @@ module n3Charts.Factory {
 
     syncDrag() {
       let eventMgr: Utils.EventManager = this.eventMgr;
-      let callbacks = [];
+      let callbacks:{({translate: [], isEndEvent: Boolean})}[] = [];
+
+      let xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
+      let yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
       if (!!this.attributes.onDrag) {
-        let fn = this.$parse(this.attributes.onDrag);
-        let xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
-        let yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
+        var onDrag = this.$parse(this.attributes.onDrag);
 
-        callbacks.push((translate) => {
-          fn(this.scope.$parent, {
-            $domains: {
-              x: xAxis.getScaleDomain(),
-              y: yAxis.getScaleDomain()
-            }
-          });
+        callbacks.push(({translate, isEndEvent}) => {
+          if (!isEndEvent) {
+            onDrag(this.scope.$parent, {
+              $domains: {x: xAxis.getScaleDomain(), y: yAxis.getScaleDomain()}
+            });
+          }
+        });
+      }
+
+      if (!!this.attributes.onDragEnd) {
+        var onDragEnd = this.$parse(this.attributes.onDragEnd);
+
+        callbacks.push(({translate, isEndEvent}) => {
+          if (isEndEvent) {
+            onDragEnd(this.scope.$parent, {
+              $domains: {x: xAxis.getScaleDomain(), y: yAxis.getScaleDomain()}
+            });
+          }
         });
       }
 
