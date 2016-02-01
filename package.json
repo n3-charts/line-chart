@@ -16,7 +16,8 @@
   ],
   "dependencies": {
     "angular": "^1.4.0",
-    "d3": "^3.5.5"
+    "d3": "^3.5.5",
+    "gulp-uglifycss": "^1.0.5"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0",
@@ -39,6 +40,7 @@
     "gulp-template": "^3.0.0",
     "gulp-tslint": "^3.0.1-beta",
     "gulp-typescript": "^2.7.5",
+    "gulp-uglify": "^1.5.1",
     "hjson": "^1.7.4",
     "jsdom": "^5.4.3",
     "karma": "^0.12.33",
