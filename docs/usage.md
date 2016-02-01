@@ -144,7 +144,7 @@ Name | Description | Example
 `on-drag` | Method called when the chart is panned. The horizontal and vertical axes domains is passed under the key `$domains`  | `on-drag="onDrag($domains)"`
 `on-drag-end` | Method called when the chart is done being panned. The horizontal and vertical axes domains is passed under the key `$domains`  | `on-drag-end="onDragEnd($domains)"`
 `tooltip-sync-key` | The charts that share the same key and the same root scope will have synchronized tooltips | `tooltip-sync-key="mahKey"`
-`drag-key` | The charts that share the same key and the same root scope will have synchronized axes' domains | `drag-sync-key="mahOtherKey"`
+`drag-sync-key` | The charts that share the same key and the same root scope will have synchronized axes' domains | `drag-sync-key="mahOtherKey"`
 
 > Please note that heterogeneous keys can't have the same value, i.e. don't pass the same string for two different keys.
 
