@@ -105,5 +105,5 @@ $scope.options = {
 * ~~`type: 'area'`~~ and ~~`drawDots`~~ in global options is now `type:['area', 'dot']` in series options
 * ~~`lineMode`~~ and ~~`tension`~~ in global options is now `interpolation: {mode: 'cardinal', tension: 0.7}` in series options
 * ~~`grid: true`~~ in series options is now `grid: {x: false, y: true}` in global options
-* ~~`zoomable: true`~~ in series options is now `grid: {x: false, y: true}` in global options
-* ~~`tooltip: {formatter: function(x, y, series) {return 'pouet';}}`~~ in global options is now `tooltipHook` (see [here](http://codepen.io/chaosmail/pen/xZgPmp) for an example usage)
+* ~~`zoomable: true`~~ in series options is now `pan: {x: false, y: true}` (only for panning) in global options
+* ~~`tooltip: {formatter: function(x, y, series) {return 'pouet';}}`~~ in global options is now `tooltipHook` (see [docs](http://n3-charts.github.io/line-chart/#/docs) or [this example](http://codepen.io/chaosmail/pen/xZgPmp) for more information about its usage)
