@@ -14,13 +14,13 @@ module n3Charts.Factory {
 
       this.sanitizeAttributes();
       this.syncTooltips();
-      this.syncDrag();
+      this.syncDomainsChange();
     }
 
     sanitizeAttributes() {
-      let {tooltipSyncKey, dragSyncKey} = this.attributes;
-      if (!!tooltipSyncKey && !!dragSyncKey) {
-        if (tooltipSyncKey === dragSyncKey) {
+      let {tooltipSyncKey, domainsSyncKey} = this.attributes;
+      if (!!tooltipSyncKey && !!domainsSyncKey) {
+        if (tooltipSyncKey === domainsSyncKey) {
           throw new Error('Heterogeneous sync keys can\'t have the same value.');
         }
       }
@@ -49,68 +49,82 @@ module n3Charts.Factory {
       }
     }
 
-    syncDrag() {
-      let eventMgr: Utils.EventManager = this.eventMgr;
-      let callbacks:{({translate: [], isEndEvent: Boolean})}[] = [];
 
+    syncDomainsChange() {
+      let eventMgr: Utils.EventManager = this.eventMgr;
+      let callbacks = [];
       let xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
       let yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
-      if (!!this.attributes.onDrag) {
-        var onDrag = this.$parse(this.attributes.onDrag);
+      if (!!this.attributes.onDomainsChange) {
+        var onDomainsChange = this.$parse(this.attributes.onDomainsChange);
 
-        callbacks.push(({translate, isEndEvent}) => {
-          if (!isEndEvent) {
-            onDrag(this.scope.$parent, {
-              $domains: {x: xAxis.getScaleDomain(), y: yAxis.getScaleDomain()}
-            });
-          }
-        });
-      }
-
-      if (!!this.attributes.onDragEnd) {
-        var onDragEnd = this.$parse(this.attributes.onDragEnd);
-
-        callbacks.push(({translate, isEndEvent}) => {
+        callbacks.push((domains, {isEndEvent}) => {
           if (isEndEvent) {
-            onDragEnd(this.scope.$parent, {
-              $domains: {x: xAxis.getScaleDomain(), y: yAxis.getScaleDomain()}
-            });
+            onDomainsChange(this.scope.$parent, {$domains: domains});
           }
         });
       }
 
-      if (!!this.attributes.dragSyncKey) {
-         callbacks.push((translate) => {
-           this.scope.$emit(this.attributes.dragSyncKey, translate);
-         });
-      }
-
-      if (callbacks.length > 0) {
+      if (!!this.attributes.domainsSyncKey) {
         this.unregisteringFunctions.push(
-          this.scope.$root.$on(this.attributes.dragSyncKey, (event, {translate, isEndEvent}) => {
+          this.scope.$root.$on(this.attributes.domainsSyncKey, (event, domains, type) => {
             if (event.targetScope === this.scope) {
               return;
             }
 
-            if (isEndEvent) {
-              eventMgr.triggerDataAndOptions('outer-world-zoomend', translate);
-            } else {
-              eventMgr.triggerDataAndOptions('outer-world-zoom', translate);
+            if (type === 'zoom-end') {
+              eventMgr.trigger('outer-world-domain-change', domains);
+              this.factoryMgr.turnFactoriesOn(['tooltip']);
+
+            } else if (type === 'zoom') {
+              this.factoryMgr.turnFactoriesOff(['tooltip']);
+
+            } else if (type === 'pan' || type === 'pan-end') {
+              this.factoryMgr.turnFactoriesOff(['transitions', 'tooltip']);
+              eventMgr.trigger('outer-world-domain-change', domains);
+
+              if (type === 'pan-end') {
+                this.factoryMgr.turnFactoriesOn(['transitions', 'tooltip']);
+              }
+
+            } else if (type === 'zoom-pan-reset') {
+              eventMgr.trigger('zoom-pan-reset', false);
             }
           })
         );
 
-        eventMgr.on('zoom.directive', (event, bubble) => {
-          if (bubble) {
-            callbacks.forEach((fn) => fn({translate: event.translate, isEndEvent: false}));
-          }
-        });
-
-        eventMgr.on('zoomend.directive', (event) => {
-          callbacks.forEach((fn) => fn({translate: event.translate, isEndEvent: true}));
+        callbacks.push((domains, {type}) => {
+          this.scope.$emit(this.attributes.domainsSyncKey, domains, type);
         });
       }
+
+      let domains = () => {
+        return {x: xAxis.getScaleDomain(), y: yAxis.getScaleDomain()};
+      };
+      let ping = (args) => callbacks.forEach((fn) => fn(domains(), args));
+
+      eventMgr.on('pan.directive', () => {
+        ping({type: 'pan'});
+      });
+
+      eventMgr.on('pan-end.directive', () => {
+        ping({type: 'pan-end', isEndEvent: true});
+      });
+
+      eventMgr.on('zoom.directive', () => {
+        ping({type: 'zoom', isEndEvent: true});
+      });
+
+      eventMgr.on('zoom-end.directive', () => {
+        ping({type: 'zoom-end', isEndEvent: true});
+      });
+
+      eventMgr.on('zoom-pan-reset.directive', (madeHere) => {
+        if (madeHere) {
+          ping({type: 'zoom-pan-reset', isEndEvent: true});
+        }
+      });
     }
 
     destroy() {

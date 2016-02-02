@@ -26,7 +26,20 @@ module n3Charts.Factory {
       this.listenToElement(this.element, options);
       this.createRoot();
       this.createContainer();
-      this.eventMgr.on('resize', this.dim.fromParentElement.bind(this.dim));
+      this.dim.fromParentElement(this.element.parentElement);
+      this.eventMgr.on('resize', () => {
+        this.dim.fromParentElement(this.element.parentElement);
+        this.update();
+      });
+
+      // D3, Y U NO DBLCKICK ?
+      this.eventMgr.listenForDblClick(this.svg, () => {
+        this.eventMgr.trigger('zoom-pan-reset', true);
+      }, this.key);
+
+      this.eventMgr.on('zoom-pan-reset.' + this.key, (event) => {
+        this.eventMgr.triggerDataAndOptions('update');
+      });
     }
 
     listenToElement(element: HTMLElement, options: Options.Options) {
@@ -67,7 +80,7 @@ module n3Charts.Factory {
       return {y, x};
     }
 
-    update(datasets, options) {
+    update() {
       this.updateRoot();
       this.updateContainer();
     }

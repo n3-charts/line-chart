@@ -17,6 +17,7 @@ module n3Charts.Options {
     axes: IAxesSet;
     margin: IMargin;
     pan: ITwoAxes;
+    zoom: ITwoAxes;
     grid: ITwoAxes;
     tooltipHook: Function;
   }
@@ -28,6 +29,11 @@ module n3Charts.Options {
     public series: ISeriesOptions[] = [];
 
     public pan: ITwoAxes = {
+      x: false,
+      y: false
+    };
+
+    public zoom: ITwoAxes = {
       x: false,
       y: false
     };
@@ -51,6 +57,7 @@ module n3Charts.Options {
       this.series = options.series;
       this.axes = options.axes;
       this.pan = options.pan;
+      this.zoom = options.zoom;
       this.grid = options.grid;
       this.tooltipHook = options.tooltipHook;
     }
@@ -70,6 +77,7 @@ module n3Charts.Options {
       options.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
       options.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
       options.pan = this.sanitizeTwoAxesOptions(options.pan, this.pan);
+      options.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
       options.tooltipHook = Options.getFunction(options.tooltipHook);
 
       return options;

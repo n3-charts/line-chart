@@ -56,6 +56,7 @@ module n3Charts {
         ['y-axis', Factory.Axis, Options.AxisOptions.SIDE.Y],
         ['y2-axis', Factory.Axis, Options.AxisOptions.SIDE.Y2],
         ['grid', Factory.Grid],
+        ['pan', Factory.Pan],
         ['zoom', Factory.Zoom],
         ['sync-layer', Factory.SyncLayer, scope, attributes, this.$parse],
 
@@ -85,7 +86,6 @@ module n3Charts {
         if (deferredCreation) {
           deferredCreation = false;
           eventMgr.trigger('create', options);
-          eventMgr.trigger('resize', element[0].parentElement);
         }
 
         // Update the eventMgr itself
@@ -98,7 +98,6 @@ module n3Charts {
       // Trigger the create event
       if (!deferredCreation) {
         eventMgr.trigger('create', new Options.Options(angular.copy(scope.options)));
-        eventMgr.trigger('resize', element[0].parentElement);
       }
 
       // We use $watch because both options and data
@@ -141,7 +140,6 @@ module n3Charts {
       // allows to redraw _only_ when the element itself was actually resized
       scope.$watch('elementDimensions', () => {
         eventMgr.trigger('resize', element[0].parentElement);
-        update();
       }, true);
 
       // Trigger the destroy event

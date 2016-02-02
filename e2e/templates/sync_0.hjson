@@ -1,9 +1,10 @@
 {
-  dragSync: 'MLEM'
+  domainsSync: 'MLEM'
   tooltipSync: 'ARBGRBLBLB'
   options: '''
 {
   pan: {x: true, y: true},
+  zoom: {x: true, y: true},
   grid: {x: false, y: true},
   margin: {right: 50, top: 30},
   series: [

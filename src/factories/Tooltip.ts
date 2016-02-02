@@ -11,18 +11,13 @@ module n3Charts.Factory {
     private svg:D3.Selection;
     private line:D3.Selection;
     private dots:D3.Selection;
-    private enabled:Boolean = true;
 
     constructor(private element: HTMLElement) {
       super();
     }
 
-    on() {
-      this.enabled = true;
-    }
-
     off() {
-      this.enabled = false;
+      super.off();
       this.hide();
     }
 
@@ -88,7 +83,7 @@ module n3Charts.Factory {
     }
 
     showFromCoordinates(coordinates: Factory.ICoordinates, data: Utils.Data, options: Options.Options) {
-      if (!this.enabled) {
+      if (this.isOff()) {
         return;
       }
 
@@ -134,7 +129,7 @@ module n3Charts.Factory {
 
 
     show(event: any, data: Utils.Data, options: Options.Options) {
-      if (!this.enabled) {
+      if (this.isOff()) {
         return;
       }
 

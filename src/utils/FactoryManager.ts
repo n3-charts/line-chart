@@ -6,6 +6,10 @@ module n3Charts.Utils {
     create(options: Options.Options);
     update(datasets, options, attributes: ng.IAttributes);
     destroy();
+    off();
+    isOff();
+    on();
+    isOn();
   }
 
   export interface IFactoryEntry {
@@ -35,6 +39,7 @@ module n3Charts.Utils {
       return factory[functionName].bind(factory);
     }
 
+    // This should return a more meaningful type...
     get(factoryKey: string): any {
       // Get the index of the factory
       var index = this.index(factoryKey);
@@ -49,16 +54,35 @@ module n3Charts.Utils {
     }
 
     all(): IFactoryEntry[] {
-      // Return the complete stack
       return this._factoryStack;
     }
 
-    turnFactoriesOff(keys: string[]) {
-      keys.forEach((key) => { this.get(key).off(); });
+    turnFactoriesOff(keys: string[]):Function {
+      var toUndo = [];
+      keys.forEach((key) => {
+        let f = this.get(key);
+
+        if (f.isOn()) {
+          f.off();
+          toUndo.push(key);
+        }
+      });
+
+      return () => this.turnFactoriesOn(toUndo);
     }
 
-    turnFactoriesOn(keys: string[]) {
-      keys.forEach((key) => { this.get(key).on(); });
+    turnFactoriesOn(keys: string[]):Function {
+      var toUndo = [];
+      keys.forEach((key) => {
+        let f = this.get(key);
+
+        if (f.isOff()) {
+          f.on();
+          toUndo.push(key);
+        }
+      });
+
+      return () => this.turnFactoriesOff(toUndo);
     }
 
     registerMany(factories: any[]) {

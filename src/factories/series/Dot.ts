@@ -31,7 +31,7 @@ module n3Charts.Factory.Series {
         .style('opacity', series.visible ? 1 : 0);
       };
 
-      if (this.factoryMgr.get('transitions').isEnabled()) {
+      if (this.factoryMgr.get('transitions').isOn()) {
         dots.enter()
           .append('circle')
           .attr('class', this.type)

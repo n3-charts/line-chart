@@ -31,7 +31,7 @@ module n3Charts.Factory.Series {
       var line = group.selectAll('.' + this.type)
         .data([lineData]);
 
-      if (this.factoryMgr.get('transitions').isEnabled()) {
+      if (this.factoryMgr.get('transitions').isOn()) {
         line.enter()
           .append('path')
           .attr('class', this.type)

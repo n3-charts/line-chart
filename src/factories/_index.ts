@@ -5,6 +5,7 @@
 /// <reference path='Axis.ts' />
 /// <reference path='Grid.ts' />
 /// <reference path='Zoom.ts' />
+/// <reference path='Pan.ts' />
 /// <reference path='Transition.ts' />
 /// <reference path='SyncLayer.ts' />
 /// <reference path='series/_index.ts' />

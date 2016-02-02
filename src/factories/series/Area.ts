@@ -31,7 +31,7 @@ module n3Charts.Factory.Series {
       var area = group.selectAll('.' + this.type)
         .data([areaData]);
 
-      if (this.factoryMgr.get('transitions').isEnabled()) {
+      if (this.factoryMgr.get('transitions').isOn()) {
         area.enter()
           .append('path')
           .attr('class', this.type)
