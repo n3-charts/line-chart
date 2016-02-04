@@ -6,7 +6,7 @@ angular.module('markdown', [])
     restrict: 'A',
     compile: function(elm, attrs) {
       var interpolateFn = $interpolate(elm.html(), true);
-      elm.html(''); // stop automatic intepolation
+      elm.html(''); // stop automatic interpolation
 
       return function(scope, elem, attrs){
         scope.$watch(interpolateFn, function (value) {

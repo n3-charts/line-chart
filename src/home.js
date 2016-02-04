@@ -1,4 +1,4 @@
-angular.module('home', ['markdown'])
+angular.module('home', ['markdown', 'info'])
 
 .value('data', {
   timed: [],
@@ -20,8 +20,12 @@ angular.module('home', ['markdown'])
   ]
 })
 
-.controller('HomeCtrl', function($scope, $sce, $http, data) {
+.controller('HomeCtrl', function($scope, $sce, $http, data, version) {
   mixpanel.track('Home', {version: 'v2'});
+
+  version.get().then(function(latestTag) {
+    $scope.url = "https://raw.githubusercontent.com/n3-charts/line-chart/" + latestTag + "/docs/getting-started.md";
+  });
 
   $scope.data = data;
 

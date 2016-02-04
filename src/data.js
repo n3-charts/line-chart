@@ -35,7 +35,7 @@ angular.module('data', [])
       var increment;
 
       if (!precision || precision > 32) {
-        increment = Math.PI/32;
+        increment = Math.PI / 32;
       } else {
         increment = Math.PI / precision;
       }
