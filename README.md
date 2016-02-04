@@ -6,7 +6,9 @@
 
 ## Resource
 
-* [Documentation][n3-home]
+* [Official Website][n3-home]
+* [Documentation][n3-docs]
+* [Migration Guide][n3-migration]
 * [Examples][n3-examples]
 
 ## Getting started
@@ -94,6 +96,8 @@ If you want to contribute, please contact us via [Gitter][n3-gitter] to discuss 
 [angular-home]: https://angularjs.org/ "AngularJS"
 [d3-home]: https://d3js.org/ "D3.js"
 [n3-home]: http://n3-charts.github.io/line-chart "n3-charts Home"
+[n3-docs]: http://n3-charts.github.io/line-chart/#/docs "n3-charts Documentation"
+[n3-migration]: http://n3-charts.github.io/line-chart/#/migration "n3-charts Migration Guide"
 [n3-examples]: http://n3-charts.github.io/line-chart/#/examples "n3-charts Examples"
 [n3-releases]: https://github.com/n3-charts/line-chart/releases "n3-charts Releases"
 [n3-gitter]: https://gitter.im/n3-charts/line-chart "n3-charts Gitter"
