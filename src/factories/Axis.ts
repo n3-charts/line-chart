@@ -3,14 +3,14 @@
 module n3Charts.Factory {
   'use strict';
 
-  export interface Scale extends D3.Scale.Scale {
+  export interface IScale extends D3.Scale.Scale {
     invert(y:number):number|Date;
   }
 
   export class Axis extends Factory.BaseFactory {
 
     public svg: D3.Selection;
-    public scale: Scale;
+    public scale: IScale;
     public d3axis: D3.Svg.Axis;
 
     constructor(public side: string) {
@@ -104,7 +104,7 @@ module n3Charts.Factory {
       this.scale.domain(extent);
     }
 
-    getScaleDomain():Number[] {
+    getScaleDomain():number[] {
       if (!this.scale) {
         return [0, 1];
       }
@@ -244,7 +244,7 @@ module n3Charts.Factory {
       return this.scale.invert(value);
     }
 
-    getScale(options: Options.AxisOptions): Scale {
+    getScale(options: Options.AxisOptions): IScale {
       // Create and return a D3 Scale
       var scale: D3.Scale.Scale;
 
@@ -259,7 +259,7 @@ module n3Charts.Factory {
       return d3.scale.linear();
     }
 
-    getAxis(scale: Scale, options: Options.AxisOptions): D3.Svg.Axis {
+    getAxis(scale: IScale, options: Options.AxisOptions): D3.Svg.Axis {
       // Create and return a D3 Axis generator
       var axis = d3.svg.axis()
         .scale(scale);
