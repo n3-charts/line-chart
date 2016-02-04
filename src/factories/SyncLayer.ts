@@ -1,6 +1,11 @@
 module n3Charts.Factory {
   'use strict';
 
+  export interface IDomains {
+    x: number[];
+    y: number[];
+  }
+
   export class SyncLayer extends Factory.BaseFactory {
 
     private unregisteringFunctions: Function[];
@@ -68,9 +73,17 @@ module n3Charts.Factory {
 
       if (!!this.attributes.domainsSyncKey) {
         this.unregisteringFunctions.push(
-          this.scope.$root.$on(this.attributes.domainsSyncKey, (event, domains, type) => {
+          this.scope.$root.$on(this.attributes.domainsSyncKey, (event, domains:IDomains, type) => {
             if (event.targetScope === this.scope) {
               return;
+            }
+
+            if (!domains.x) {
+              domains.x = xAxis.getScaleDomain();
+            }
+
+            if (!domains.y) {
+              domains.y = yAxis.getScaleDomain();
             }
 
             if (type === 'zoom-end') {
@@ -94,35 +107,43 @@ module n3Charts.Factory {
           })
         );
 
-        callbacks.push((domains, {type}) => {
+        callbacks.push((domains:IDomains, {type}) => {
           this.scope.$emit(this.attributes.domainsSyncKey, domains, type);
         });
       }
 
-      let domains = () => {
+      let getDomains = ():IDomains => {
         return {x: xAxis.getScaleDomain(), y: yAxis.getScaleDomain()};
       };
-      let ping = (args) => callbacks.forEach((fn) => fn(domains(), args));
+      let ping = (domains, args) => callbacks.forEach((fn) => fn(domains, args));
 
       eventMgr.on('pan.directive', () => {
-        ping({type: 'pan'});
+        let domains = getDomains();
+        (<Factory.Pan>this.factoryMgr.get('pan')).constrainOutgoingDomains(domains);
+        ping(domains, {type: 'pan'});
       });
 
       eventMgr.on('pan-end.directive', () => {
-        ping({type: 'pan-end', isEndEvent: true});
+        let domains = getDomains();
+        (<Factory.Pan>this.factoryMgr.get('pan')).constrainOutgoingDomains(domains);
+        ping(domains, {type: 'pan-end', isEndEvent: true});
       });
 
       eventMgr.on('zoom.directive', () => {
-        ping({type: 'zoom', isEndEvent: true});
+        let domains = getDomains();
+        (<Factory.Pan>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
+        ping(domains, {type: 'zoom', isEndEvent: true});
       });
 
       eventMgr.on('zoom-end.directive', () => {
-        ping({type: 'zoom-end', isEndEvent: true});
+        let domains = getDomains();
+        (<Factory.Pan>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
+        ping(domains, {type: 'zoom-end', isEndEvent: true});
       });
 
       eventMgr.on('zoom-pan-reset.directive', (madeHere) => {
         if (madeHere) {
-          ping({type: 'zoom-pan-reset', isEndEvent: true});
+          ping(getDomains(), {type: 'zoom-pan-reset', isEndEvent: true});
         }
       });
     }

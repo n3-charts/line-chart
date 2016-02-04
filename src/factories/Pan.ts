@@ -5,8 +5,19 @@ module n3Charts.Factory {
 
     private isActive: Boolean = false;
     private hasMoved: Boolean = false;
-    private xFn:(x:number) => number;
-    private yFn:(y:number) => number;
+
+    private panOnX: Boolean;
+    private panOnY: Boolean;
+
+    constrainOutgoingDomains(domains:Factory.IDomains):void {
+      if (!this.panOnX) {
+        delete domains.x;
+      }
+
+      if (!this.panOnY) {
+        delete domains.y;
+      }
+    }
 
     move(deltaX:number, deltaY:number) {
       if (deltaX !== 0) {
@@ -27,8 +38,8 @@ module n3Charts.Factory {
     }
 
     update(data:Utils.Data, options:Options.Options) {
-      this.xFn = options.pan.x ? (x) => x : (x) => 0;
-      this.yFn = options.pan.y ? (y) => y : (y) => 0;
+      this.panOnX = options.pan.x;
+      this.panOnY = options.pan.y;
 
       let container = this.factoryMgr.get('container');
       let k = (event) => `${event}.${this.key}`;
@@ -60,8 +71,8 @@ module n3Charts.Factory {
         }).on(k('mousemove'), () => {
           if (this.isActive) {
             let [xEnd, yEnd] = d3.mouse(d3.event.currentTarget);
-            let deltaX = this.xFn(xStart - xEnd);
-            let deltaY = this.yFn(yStart - yEnd);
+            let deltaX = this.panOnX ? xStart - xEnd : 0;
+            let deltaY = this.panOnY ? yStart - yEnd : 0;
 
             if (deltaX !== 0 || deltaY !== 0) {
               if (!turnBackOn) {

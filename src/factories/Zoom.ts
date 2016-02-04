@@ -11,11 +11,24 @@ module n3Charts.Factory {
     private yStartFn:(y:number) => number;
     private yEndFn:(y:number) => number;
 
+    private zoomOnX: Boolean;
+    private zoomOnY: Boolean;
+
 
     create() {
       this.rect = this.factoryMgr.get('container').svg
         .append('rect')
           .attr('class', 'chart-brush');
+    }
+
+    constrainOutgoingDomains(domains:Factory.IDomains):void {
+      if (!this.zoomOnX) {
+        delete domains.x;
+      }
+
+      if (!this.zoomOnY) {
+        delete domains.y;
+      }
     }
 
     update(data:Utils.Data, options:Options.Options) {
@@ -24,11 +37,14 @@ module n3Charts.Factory {
       let dimensions = (<Factory.Container>this.factoryMgr.get('container')).getDimensions();
       let {left, top} = dimensions.margin;
 
-      this.xStartFn = options.zoom.x ? (x) => x : (x) => left;
-      this.xEndFn = options.zoom.x ? (x) => x : (x) => dimensions.innerWidth + left;
+      this.zoomOnX = options.zoom.x;
+      this.zoomOnY = options.zoom.y;
 
-      this.yStartFn = options.zoom.y ? (y) => y : (y) => top;
-      this.yEndFn = options.zoom.y ? (y) => y : (y) => dimensions.innerHeight + top;
+      this.xStartFn = this.zoomOnX ? (x) => x : (x) => left;
+      this.xEndFn = this.zoomOnX ? (x) => x : (x) => dimensions.innerWidth + left;
+
+      this.yStartFn = this.zoomOnY ? (y) => y : (y) => top;
+      this.yEndFn = this.zoomOnY ? (y) => y : (y) => dimensions.innerHeight + top;
     }
 
     show({xStart, xEnd, yStart, yEnd}:{xStart: number, xEnd: number, yStart: number, yEnd: number}) {
