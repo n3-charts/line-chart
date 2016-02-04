@@ -1,10 +1,16 @@
+/// <reference path='BaseFactory.ts' />
+
 module n3Charts.Factory {
   'use strict';
+
+  export interface Scale extends D3.Scale.Scale {
+    invert(y:number):number|Date;
+  }
 
   export class Axis extends Factory.BaseFactory {
 
     public svg: D3.Selection;
-    public scale: D3.Scale.Scale;
+    public scale: Scale;
     public d3axis: D3.Svg.Axis;
 
     constructor(public side: string) {
@@ -21,12 +27,37 @@ module n3Charts.Factory {
 
       this.createAxis(vis);
 
-      this.eventMgr.on('zoom.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('pan.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('zoom-end.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('outer-world-domain-change.' + this.key, this.updateFromOuterWorld.bind(this));
+      this.eventMgr.on('resize.' + this.key, this.onResize.bind(this));
+    }
+
+    updateFromOuterWorld(domains: {x:number, y:number}) {
+      this.updateScaleDomain(domains[this.side[0]]);
+      this.softUpdate();
     }
 
     // This simply redraws the axis, without reprocessing the extent
     softUpdate() {
-      this.svg.call(this.d3axis);
+      // Redraw the Axis
+      if (this.factoryMgr.get('transitions').isOn()) {
+        this.svg
+          .transition()
+          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
+          .call(this.d3axis);
+      } else {
+        this.svg.call(this.d3axis);
+      }
+    }
+
+    onResize() {
+      var container = <Factory.Container> this.factoryMgr.get('container');
+      var dim: Options.Dimensions = container.getDimensions();
+
+      this.updateScaleRange(dim);
+      this.updateAxisContainer(dim);
+      this.softUpdate();
     }
 
     update(data:Utils.Data, options:Options.Options) {
@@ -201,11 +232,7 @@ module n3Charts.Factory {
         }
       }
 
-      // Redraw the Axis
-      this.svg
-        .transition()
-        .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
-        .call(this.d3axis);
+      this.softUpdate();
     }
 
     destroyAxis() {
@@ -213,7 +240,11 @@ module n3Charts.Factory {
       this.svg.remove();
     }
 
-    getScale(options: Options.AxisOptions): D3.Scale.Scale {
+    invert(value: number):number|Date {
+      return this.scale.invert(value);
+    }
+
+    getScale(options: Options.AxisOptions): Scale {
       // Create and return a D3 Scale
       var scale: D3.Scale.Scale;
 
@@ -228,7 +259,7 @@ module n3Charts.Factory {
       return d3.scale.linear();
     }
 
-    getAxis(scale: D3.Scale.Scale, options: Options.AxisOptions): D3.Svg.Axis {
+    getAxis(scale: Scale, options: Options.AxisOptions): D3.Svg.Axis {
       // Create and return a D3 Axis generator
       var axis = d3.svg.axis()
         .scale(scale);

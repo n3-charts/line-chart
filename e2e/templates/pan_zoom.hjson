@@ -1,8 +1,10 @@
 {
   options: '''
 {
-  grid: {x: true, y: true},
-  pan: {x: true},
+  pan: {x: true, y: true},
+  zoom: {x: true, y: true},
+
+  grid: {x: false, y: true},
   series: [
     {
       axis: "y",

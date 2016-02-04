@@ -11,6 +11,13 @@ module n3Charts.Factory.Series {
 
     public innerXScale: D3.Scale.OrdinalScale;
 
+    softUpdate() {
+      var series = this.options.getSeriesByType(this.type).filter((s) => s.visible);
+      this.updateColumnsWidth(series, this.options);
+      this.updateColumnScale(series, this.options);
+      this.updateSeriesContainer(series);
+    }
+
     update(data: Utils.Data, options: Options.Options) {
       this.data = data;
       this.options = options;
@@ -73,7 +80,7 @@ module n3Charts.Factory.Series {
       var cols = group.selectAll('.' + this.type)
         .data(colsData, (d: Utils.IPoint) => d.x);
 
-      if (this.factoryMgr.get('transitions').isEnabled()) {
+      if (this.factoryMgr.get('transitions').isOn()) {
         cols.enter()
           .append('rect')
           .attr('class', this.type)

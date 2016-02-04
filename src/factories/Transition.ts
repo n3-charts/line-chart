@@ -6,15 +6,13 @@ module n3Charts.Factory {
     private duration: number = Transition.defaultDuration;
     private ease: string = 'cubic';
 
-    isEnabled():Boolean {
-      return this.duration > 0;
-    }
-
     off() {
+      super.off();
       this.duration = 0;
     }
 
     on() {
+      super.on();
       this.duration = Transition.defaultDuration;
     }
 

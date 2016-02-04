@@ -16,10 +16,13 @@
   position: relative;
   box-sizing: border-box;
 
+  user-select: none;
+
   @import "axes";
   @import "grid";
   @import "dots";
   @import "lines";
   @import "columns";
   @import "areas";
+  @import "brush";
 }

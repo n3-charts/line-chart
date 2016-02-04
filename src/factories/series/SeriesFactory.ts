@@ -14,7 +14,10 @@ module n3Charts.Factory.Series {
 
     create() {
       this.createContainer(this.factoryMgr.get('container').data);
-      this.eventMgr.on('zoom.' + this.type, this.softUpdate.bind(this));
+      this.eventMgr.on('pan.' + this.type, this.softUpdate.bind(this));
+      this.eventMgr.on('zoom-end.' + this.type, this.softUpdate.bind(this));
+      this.eventMgr.on('outer-world-domain-change.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('resize.' + this.type, this.softUpdate.bind(this));
     }
 
     update(data, options) {

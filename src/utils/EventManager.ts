@@ -15,30 +15,46 @@ module n3Charts.Utils {
       'update',  // on update of the chart
       'resize',  // on resize of the chart
       'destroy', // on destroying the chart
+
       'enter',   // on mouse enter a data point or column
       'over',   // on mouse over a data point or column
       'move',   // on mouse move a data point or column
       'leave',   // on mouse leave of a data point or column
       'click',   // on click on a data point or column
       'dblclick',   // on double click on a data point or column
+
       'legend-click',   // on click on a legend item
       'legend-over',   // on mouse over on a legend item
       'legend-out',   // on mouse out on a legend item
+
       'container-over',   // on mouse over on the container
       'container-move',   // on mouse move on the container
       'container-out',   // on mouse out on the container
+
       'focus',   // on focus of a data point from a snappy tooltip
       'toggle',  // on toggling series' visibility
-      'zoom',  // on zoom/pan
-      'zoomend',  // on zoom/pan end
+
+
       'outer-world-hover',  // on incoming sync event (tooltip)
-      'outer-world-zoom',  // on incoming sync event (zoom)
-      'outer-world-zoomend',  // on incoming sync event (zoomend)
+      'outer-world-domain-change',  // on incoming sync event (pan zoom)
+
+      'pan',  // on pan end
+      'pan-end',  // on pan end
+      'zoom',  // brushy brushy brushy
+      'zoom-end',  // BRUSHY BRUSHY BRUSHY
+      'zoom-pan-reset',  // no brushy
+
+      'window-mouseup',
     ];
 
     init(events:string[]) : EventManager {
       // Generate a new d3.dispatch event dispatcher
       this._dispatch = d3.dispatch.apply(this, events);
+
+      // Not sure about that... it's supposed to avoid several directives to
+      // replace each others' listeners, but is a timestamp really unique ?
+      let id = new Date().getTime();
+      d3.select(window).on('mouseup.' + id, () => this.trigger('window-mouseup'));
 
       // Support chaining
       return this;
@@ -55,19 +71,12 @@ module n3Charts.Utils {
         throw new Error(`Unknown event: ${event}`);
       }
 
-      // Register an event listener
-      // TODO We need to add an $apply() in here
       this._dispatch.on(event, callback);
-
-      // Support chaining
       return this;
     }
 
     trigger(event:string, ...args: any[]) : EventManager {
-      // Trigger an event, and call the event handler
       this._dispatch[event].apply(this, args);
-
-      // Support chaining
       return this;
     }
 
@@ -110,6 +119,43 @@ module n3Charts.Utils {
           this.trigger('leave', d, i, series, options);
         });
       };
+    }
+
+    // That would be so cool to have native dblclick support in D3...
+    listenForDblClick(selection:D3.Selection, callback: Function, listenerSuffix:string):D3.Selection {
+      let down,
+        tolerance = 5,
+        last,
+        wait = null;
+
+      let dist = (a:number[], b:number[]):number => {
+        return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
+      };
+
+      selection.on('mousedown.dbl.' + listenerSuffix, function() {
+        down = d3.mouse(document.body);
+        last = new Date().getTime();
+      });
+
+      selection.on('mouseup.dbl.' + listenerSuffix, function() {
+        if (dist(down, d3.mouse(document.body)) > tolerance) {
+          return;
+        }
+
+        if (wait) {
+          window.clearTimeout(wait);
+          wait = null;
+          callback(d3.event);
+        } else {
+          wait = window.setTimeout((function(e) {
+            return function() {
+              wait = null;
+            };
+          })(d3.event), 300);
+        }
+      });
+
+      return selection;
     }
   }
 }

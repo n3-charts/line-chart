@@ -15,8 +15,10 @@ module n3Charts.Factory {
       this.svg.append('g').classed('x-grid', true);
       this.svg.append('g').classed('y-grid', true);
 
-      this.eventMgr.on('zoom.' + this.key, this.softUpdate.bind(this));
-      this.eventMgr.on('outer-world-zoom.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('resize.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('pan.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('zoom-end.' + this.key, this.softUpdate.bind(this));
+      this.eventMgr.on('outer-world-domain-change.' + this.key, this.softUpdate.bind(this));
     }
 
     softUpdate() {

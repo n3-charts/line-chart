@@ -4,6 +4,9 @@ module.exports = function(gulp, $, paths) {
     return gulp
     .src(paths.style.from)
     .pipe($.sass())
+    .pipe($.autoprefixer({
+      browsers: ['last 2 versions', '> 10%'],
+    }))
     .pipe(gulp.dest(paths.style.to))
     .pipe($.uglifycss())
     .pipe($.rename({extname: '.min.css'}))

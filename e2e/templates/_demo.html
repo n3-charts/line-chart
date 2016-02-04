@@ -50,25 +50,20 @@
           data="example.data"
           options="example.options"
           tooltip-sync-key="{{example.tooltipSync}}"
-          drag-sync-key="{{example.dragSync}}"
-          on-drag="onDrag($domains)"
-          on-drag-end="onDragEnd($domains)"
+          domains-sync-key="{{example.domainsSync}}"
+          on-domains-change="onDomainsChange($domains)"
         ></linechart>
       </div>
     </div>
   </div>
   <script src="/angular/angular.js"></script>
   <script src="/d3/d3.min.js"></script>
-  <script src="/build/LineChart.min.js"></script>
+  <script src="/build/LineChart.js"></script>
   <script type="text/javascript">
   angular.module('example', ['n3-line-chart'])
   .controller('ExamplesCtrl', function($scope) {
-    $scope.onDrag = function(domains) {
-      // console.log('drag', domains);
-    };
-
-    $scope.onDragEnd = function(domains) {
-      // console.log('dragend', domains);
+    $scope.onDomainsChange = function(domains) {
+      console.log('change', domains);
     };
 
     $scope.examples = [
@@ -77,7 +72,7 @@
           options: <%=example.options%>,
           data: <%=example.data%>,
           name: "<%=example.name%>",
-          dragSync: "<%=example.dragSync%>",
+          domainsSync: "<%=example.domainsSync%>",
           tooltipSync: "<%=example.tooltipSync%>"
         },
       <% }); %>

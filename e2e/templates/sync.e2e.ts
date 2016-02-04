@@ -35,21 +35,33 @@ describe('Sync', function() {
 
   it('should pan on x only by default', function() {
     browser.executeScript('window.scrollTo(0,5414);');
+    var container = element(by.css('.sync_0 .container'));
 
     checkTicks('x');
     checkTicks('y');
 
     browser.actions()
-      .mouseDown(element(by.css('.sync_0 .container')))
-      .mouseMove({x: -510, y: 200})
-      .mouseUp(element(by.css('.sync_0 .container')))
+      .mouseMove(container, {x: 20, y: 20})
+      .mouseDown()
+      .mouseMove(container, {x: 100, y: 50})
+      .mouseUp()
+      .perform();
+
+    browser.actions()
+      .mouseMove(container, {x: 20, y: 20})
+      .mouseDown()
+      .mouseMove(container, {x: 100, y: 50})
+      .mouseUp()
+      .perform();
+
+    browser.actions()
+      .mouseMove(container, {x: 20, y: 20})
+      .mouseDown()
+      .mouseMove(container, {x: 100, y: 50})
+      .mouseUp()
       .perform();
 
     checkTicks('x');
     checkTicks('y');
-
-    // browser.wait(function() {
-    //   console.log;
-    // }, 1000000);
   });
 });

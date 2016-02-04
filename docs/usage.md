@@ -123,7 +123,7 @@ Name | Type | Default | Description | Mandatory
 `y` | Boolean | `true` | Visibility of the grid's horizontal lines | No
 
 ### Pan
-The `pan` object parametrizes which of the chart's axes accept(s) panning. This feature is not linked to any callback as of now (soooo not super useful), but will be in the future. It's not mandatory and should look like this :
+The `pan` object parametrizes which of the chart's axes accept(s) panning. It's not mandatory and should look like this :
 ```js
 pan: {
   x: false,
@@ -135,16 +135,28 @@ Name | Type | Default | Description | Mandatory
 `x` | Boolean | `false` | Enables/disables panning on the x axis | No
 `y` | Boolean | `false` | Enables/disables panning on the y axis | No
 
+### Zoom
+The `zoom` object parametrizes which of the chart's axes accept(s) zooming. It's not mandatory and should look like this :
+```js
+zoom: {
+  x: false,
+  y: false
+}
+```
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`x` | Boolean | `false` | Enables/disables zoom on the x axis | No
+`y` | Boolean | `false` | Enables/disables zoom on the y axis | No
+
 ## Synchronization and callbacks
 
 The directive accepts additional HTML attributes to allow charts' synchronization and callbacks on various events.
 
 Name | Description | Example
 ---- | ----------- | -------
-`on-drag` | Method called when the chart is panned. The horizontal and vertical axes domains is passed under the key `$domains`  | `on-drag="onDrag($domains)"`
-`on-drag-end` | Method called when the chart is done being panned. The horizontal and vertical axes domains is passed under the key `$domains`  | `on-drag-end="onDragEnd($domains)"`
+`on-domains-change` | Method called when an interaction changes the axes' domains. The horizontal and vertical axes' domains are passed under the key `$domains` | `on-domains-change="onDomainsChange($domains)"`
 `tooltip-sync-key` | The charts that share the same key and the same root scope will have synchronized tooltips | `tooltip-sync-key="mahKey"`
-`drag-sync-key` | The charts that share the same key and the same root scope will have synchronized axes' domains | `drag-sync-key="mahOtherKey"`
+`domains-sync-key` | The charts that share the same key and the same root scope will have synchronized axes' domains | `domains-sync-key="mahOtherKey"`
 
 > Please note that heterogeneous keys can't have the same value, i.e. don't pass the same string for two different keys.
 
