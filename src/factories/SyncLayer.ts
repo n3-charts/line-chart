@@ -78,6 +78,10 @@ module n3Charts.Factory {
               return;
             }
 
+            if (!domains.x || !domains.y) {
+              domains = angular.copy(domains);
+            }
+
             if (!domains.x) {
               domains.x = xAxis.getScaleDomain();
             }
@@ -132,7 +136,7 @@ module n3Charts.Factory {
       eventMgr.on('zoom.directive', () => {
         let domains = getDomains();
         (<Factory.Pan>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
-        ping(domains, {type: 'zoom', isEndEvent: true});
+        ping(domains, {type: 'zoom', isEndEvent: false});
       });
 
       eventMgr.on('zoom-end.directive', () => {
