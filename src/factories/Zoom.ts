@@ -32,19 +32,23 @@ module n3Charts.Factory {
     }
 
     update(data:Utils.Data, options:Options.Options) {
-      this.registerEvents(this.factoryMgr.get('container'));
-
       let dimensions = (<Factory.Container>this.factoryMgr.get('container')).getDimensions();
       let {left, top} = dimensions.margin;
 
       this.zoomOnX = options.zoom.x;
       this.zoomOnY = options.zoom.y;
 
+      if (!this.zoomOnX && !this.zoomOnY) {
+        return;
+      }
+
       this.xStartFn = this.zoomOnX ? (x) => x : (x) => left;
       this.xEndFn = this.zoomOnX ? (x) => x : (x) => dimensions.innerWidth + left;
 
       this.yStartFn = this.zoomOnY ? (y) => y : (y) => top;
       this.yEndFn = this.zoomOnY ? (y) => y : (y) => dimensions.innerHeight + top;
+
+      this.registerEvents(this.factoryMgr.get('container'));
     }
 
     show({xStart, xEnd, yStart, yEnd}:{xStart: number, xEnd: number, yStart: number, yEnd: number}) {
@@ -64,7 +68,6 @@ module n3Charts.Factory {
     }
 
     updateAxes({xStart, xEnd, yStart, yEnd}:{xStart: number, xEnd: number, yStart: number, yEnd: number}) {
-      console.log(xStart, xEnd);
       [xStart, xEnd] = xStart > xEnd ? [xEnd, xStart] : [xStart, xEnd];
       [yStart, yEnd] = yStart > yEnd ? [yEnd, yStart] : [yStart, yEnd];
 
