@@ -91,6 +91,14 @@ $header-height: 50px;
   @import 'examples';
 }
 
+.docs {
+  @import 'docs';
+}
+
+.migration {
+  @import 'docs';
+}
+
 .credits {
   margin-bottom: 10px;
   font-size: 0.8em;
