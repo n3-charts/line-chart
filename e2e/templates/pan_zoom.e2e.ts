@@ -27,7 +27,6 @@ describe('Pan & zoom', function() {
     // Okay so for some reason, this will only pan the chart if
     // there are three mouse actions sequences...
     // If anyone wants to improve this, that'll be much appreciated.
-    // Who am I kidding...
     browser.actions()
       .mouseMove(container, {x: 20, y: 20})
       .mouseDown()

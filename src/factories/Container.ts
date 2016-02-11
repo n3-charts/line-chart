@@ -17,6 +17,8 @@ module n3Charts.Factory {
     public axes: D3.Selection;
     public dim: Options.Dimensions = new Options.Dimensions();
 
+    private clippingPathId:string;
+
     constructor(private element: HTMLElement) {
       super();
     }
@@ -121,8 +123,9 @@ module n3Charts.Factory {
         .append('g')
           .attr('class', 'axes');
 
+      this.clippingPathId = 'clipping-path-' + Utils.UUID.generate();
       this.defs.append('svg:clipPath')
-        .attr('id', 'clipping-path')
+        .attr('id', this.clippingPathId)
           .append('svg:rect')
           .attr('id', 'clipping-rect');
 
@@ -130,7 +133,7 @@ module n3Charts.Factory {
         .append('g')
           .attr({
             'class': 'data',
-            'clip-path': 'url(#clipping-path)'
+            'clip-path': 'url(#' + this.clippingPathId + ')'
           });
 
       this.overlay = this.vis
@@ -139,19 +142,17 @@ module n3Charts.Factory {
     }
 
     updateContainer() {
-      // Update the dimensions of the container
       this.vis
         .attr({
           'width': this.dim.innerWidth,
-          'height': this.dim.innerHeight,
+          'height': Math.max(this.dim.innerHeight, 0),
           'transform': 'translate(' + this.dim.margin.left + ', ' + this.dim.margin.top + ')'
         });
 
       d3.select(this.element).select('#clipping-rect')
         .attr({
           'width': this.dim.innerWidth,
-          'height': this.dim.innerHeight + this.dim.margin.top,
-          'transform': `translate(0, ${-this.dim.margin.top})`
+          'height': Math.max(this.dim.innerHeight, 0)
         });
     }
 

@@ -1,6 +1,7 @@
 {
   options: '''
 {
+  pan: {x: true},
   series: [
     {
       axis: "y",

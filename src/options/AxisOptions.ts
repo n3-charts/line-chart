@@ -1,15 +1,7 @@
 module n3Charts.Options {
   'use strict';
 
-  export interface IAxisOptions {
-    type: string;
-    key: string;
-    min?: any;
-    max?: any;
-    ticksShift?: any;
-  }
-
-  export class AxisOptions implements IAxisOptions {
+  export class AxisOptions {
     public type: string = 'linear';
     public key: string = 'x';
     public min: any;
@@ -64,11 +56,18 @@ module n3Charts.Options {
       return d3.values(AxisOptions.SIDE).indexOf(side) !== -1;
     }
 
+    hasDynamicTicks() {
+      return this.ticks instanceof Function;
+    }
+
     configure(axis: D3.Svg.Axis): D3.Svg.Axis {
       axis.tickFormat(this.tickFormat);
+
       if (this.ticks instanceof Array) {
         axis.tickValues(this.ticks);
       } else if (typeof this.ticks === 'number') {
+        axis.ticks(this.ticks);
+      } else if (this.ticks instanceof Function) {
         axis.ticks(this.ticks);
       }
 

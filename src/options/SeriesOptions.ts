@@ -38,7 +38,7 @@ module n3Charts.Options {
     constructor(js: any = {}) {
       var options = this.sanitizeOptions(js);
 
-      this.id = options.id || Options.uuid();
+      this.id = options.id || Utils.UUID.generate();
       this.axis = options.axis;
       this.interpolation = options.interpolation;
       this.dataset = options.dataset;

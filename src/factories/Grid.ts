@@ -57,13 +57,14 @@ module n3Charts.Factory {
       var dim: Options.Dimensions = container.getDimensions();
 
       if (options.grid.x) {
-        this.xAxis = <D3.Svg.Axis> this.factoryMgr.get('x-axis').cloneAxis();
+        this.xAxis = <D3.Svg.Axis> this.factoryMgr.get('x-axis').cloneAxis()
+          .tickSize(-dim.innerHeight, 0);
 
         this.svg.select('.x-grid')
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
           .attr('transform', 'translate(0, ' + dim.innerHeight + ')')
-          .call(this.xAxis.tickSize(-dim.innerHeight, 0));
+          .call(this.xAxis);
       }
 
       if (options.grid.y) {

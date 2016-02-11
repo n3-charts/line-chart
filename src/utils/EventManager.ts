@@ -45,6 +45,7 @@ module n3Charts.Utils {
       'zoom-pan-reset',  // no brushy
 
       'window-mouseup',
+      'window-mousemove',
     ];
 
     init(events:string[]) : EventManager {
@@ -55,6 +56,7 @@ module n3Charts.Utils {
       // replace each others' listeners, but is a timestamp really unique ?
       let id = new Date().getTime();
       d3.select(window).on('mouseup.' + id, () => this.trigger('window-mouseup'));
+      d3.select(window).on('mousemove.' + id, () => this.trigger('window-mousemove'));
 
       // Support chaining
       return this;

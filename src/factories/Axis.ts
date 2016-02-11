@@ -3,15 +3,18 @@
 module n3Charts.Factory {
   'use strict';
 
-  export interface IScale extends D3.Scale.Scale {
-    invert(y:number):number|Date;
+  interface ITick {
+    value: Date | number;
+    label: string;
   }
 
   export class Axis extends Factory.BaseFactory {
 
     public svg: D3.Selection;
-    public scale: IScale;
+    public scale: D3.Scale.LinearScale | D3.Scale.TimeScale;
     public d3axis: D3.Svg.Axis;
+
+    private options: Options.AxisOptions;
 
     constructor(public side: string) {
       super();
@@ -22,7 +25,6 @@ module n3Charts.Factory {
     }
 
     create() {
-      // Get the svg container
       var vis: D3.Selection = this.factoryMgr.get('container').axes;
 
       this.createAxis(vis);
@@ -38,9 +40,7 @@ module n3Charts.Factory {
       this.softUpdate();
     }
 
-    // This simply redraws the axis, without reprocessing the extent
     softUpdate() {
-      // Redraw the Axis
       if (this.factoryMgr.get('transitions').isOn()) {
         this.svg
           .transition()
@@ -69,16 +69,16 @@ module n3Charts.Factory {
       var extent = this.getExtent(data, options);
 
       // Get the options for the axis
-      var axisOptions = options.getByAxisSide(this.side);
+      this.options = options.getByAxisSide(this.side);
 
-      this.scale = this.getScale(axisOptions);
+      this.scale = this.getScale();
       this.updateScaleRange(dim);
       this.updateScaleDomain(extent);
 
-      this.d3axis = this.getAxis(this.scale, axisOptions);
+      this.d3axis = this.getAxis(this.scale, this.options);
       this.updateAxisOrientation(this.d3axis);
       this.updateAxisContainer(dim);
-      this.shiftAxisTicks(axisOptions);
+      this.shiftAxisTicks(this.options);
     }
 
     shiftAxisTicks(options: Options.AxisOptions) {
@@ -105,11 +105,7 @@ module n3Charts.Factory {
     }
 
     getScaleDomain():number[] {
-      if (!this.scale) {
-        return [0, 1];
-      }
-
-      return this.scale.domain();
+      return this.scale ? this.scale.domain() : [0, 1];
     }
 
     getExtentForDatasets(
@@ -190,7 +186,6 @@ module n3Charts.Factory {
     }
 
     createAxis(vis: D3.Selection) {
-      // Create the axis container
       this.svg = vis
         .append('g')
           .attr('class', 'axis ' + this.side + '-axis');
@@ -244,25 +239,37 @@ module n3Charts.Factory {
       return this.scale.invert(value);
     }
 
-    getScale(options: Options.AxisOptions): IScale {
+    isTimeAxis() {
+      return this.options.type === Options.AxisOptions.TYPE.DATE;
+    }
+
+    getScale(): D3.Scale.LinearScale | D3.Scale.TimeScale {
       // Create and return a D3 Scale
       var scale: D3.Scale.Scale;
 
-      if (options.type === Options.AxisOptions.TYPE.DATE) {
+      if (this.options && this.options.type === Options.AxisOptions.TYPE.DATE) {
         return d3.time.scale();
       }
 
-      if (options.type === Options.AxisOptions.TYPE.LOG) {
+      if (this.options && this.options.type === Options.AxisOptions.TYPE.LOG) {
         return d3.scale.log();
       }
 
       return d3.scale.linear();
     }
 
-    getAxis(scale: IScale, options: Options.AxisOptions): D3.Svg.Axis {
+    getAxis(scale: D3.Scale.LinearScale | D3.Scale.TimeScale, options: Options.AxisOptions): D3.Svg.Axis {
+      var axis: any;
+
       // Create and return a D3 Axis generator
-      var axis = d3.svg.axis()
-        .scale(scale);
+      if (options.hasDynamicTicks()) {
+        axis = n3Charts.svg.twoSpeedAxis()
+          .scale(scale);
+      } else {
+        axis = d3.svg.axis()
+          .scale(scale);
+      }
+
 
       options.configure(axis);
 
@@ -270,11 +277,20 @@ module n3Charts.Factory {
     }
 
     cloneAxis(): D3.Svg.Axis {
-      return d3.svg.axis()
+      var axis: D3.Svg.Axis;
+
+      if (this.options && this.options.hasDynamicTicks()) {
+        axis = n3Charts.svg.twoSpeedAxis()
+          .ticks(this.d3axis.ticks());
+      } else {
+        axis = d3.svg.axis()
+          .ticks(this.d3axis.ticks()[0]);
+      }
+
+      return axis
         .scale(this.d3axis.scale())
         .orient(this.d3axis.orient())
         .tickValues(this.d3axis.tickValues())
-        .ticks(this.d3axis.ticks()[0])
         .tickSize(this.d3axis.tickSize());
 
         // dafuq is wrong with this tslinter ???
