@@ -31,4 +31,14 @@ describe('n3Charts.Factory.Legend', function() {
     element(by.css('.chart-legend .item.column')).click();
     expect(element.all(by.css('.chart .column-series')).count()).toEqual(0);
   });
+
+  it('should have legend item labels', function() {
+    expect(element.all(by.css('.chart-legend .item .legend-label')).count()).toEqual(4);
+  });
+
+  it('should have legend item with proper class when hidden', function() {
+    expect(element.all(by.css('.chart-legend .item.dot.legend-hidden')).count()).toEqual(0);
+    element.all(by.css('.chart-legend .item.dot')).first().click();
+    expect(element.all(by.css('.chart-legend .item.dot.legend-hidden')).count()).toEqual(1);
+  });
 });

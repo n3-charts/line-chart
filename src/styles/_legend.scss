@@ -17,7 +17,7 @@
       display: inline-block;
     }
 
-    > .label {
+    > .legend-label {
       height: 16px;
       line-height: 17px;
     }
@@ -31,7 +31,7 @@
       background-position: 50% 25%;
     }
 
-    &.hidden {
+    &.legend-hidden {
       opacity: 0.4;
     }
 
