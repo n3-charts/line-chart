@@ -1,7 +1,8 @@
-/// <reference path='../../typings/jquery/jquery.d.ts' />
 /// <reference path='../../typings/angularjs/angular.d.ts' />
+/// <reference path='../../typings/jquery/jquery.d.ts' />
 /// <reference path='../../typings/d3/d3.d.ts' />
 
+/// <reference path='../svg/_index.ts' />
 /// <reference path='../options/_index.ts' />
 /// <reference path='../utils/_index.ts' />
 /// <reference path='../factories/_index.ts' />
@@ -110,51 +111,35 @@ module n3Charts {
         scope.$apply();
       });
 
-      scope.elementDimensions = {};
+      var getDimensions = function():any {
+        if (!element || !element[0]) {
+          return {};
+        }
 
-      var $timeout = this.$timeout;
-      var debounce = (callback, interval) => {
-        var t = null;
-        return (...args) => {
-            $timeout.cancel(t);
-            t = $timeout(() => callback.apply(this, args), interval);
+        var rect = element[0].parentElement.getBoundingClientRect();
+        return {
+          height: rect.height,
+          width: rect.width,
+          left: rect.left,
+          right: rect.right,
+          bottom: rect.bottom,
+          top: rect.top
         };
       };
 
-      var resizeCb = debounce((event: UIEvent) => {
-        var rect = element[0].parentElement.getBoundingClientRect();
-
-        scope.elementDimensions.height = rect.height;
-        scope.elementDimensions.width = rect.width;
-        scope.elementDimensions.left = rect.left;
-        scope.elementDimensions.right = rect.right;
-        scope.elementDimensions.bottom = rect.bottom;
-        scope.elementDimensions.top = rect.top;
-
-        scope.$apply();
-      }, 50);
-
-      angular.element(this.$window).on(<any>'resize', resizeCb);
-
-      // Watching the dimensions instead of updating when resize event occurs
-      // allows to redraw _only_ when the element itself was actually resized
-      scope.$watch('elementDimensions', () => {
+      var debouncedResizeEventEmitter = Utils.FunctionUtils.debounce(() => {
         eventMgr.trigger('resize', element[0].parentElement);
-      }, true);
+      }, 50);
+      scope.$watch(getDimensions, debouncedResizeEventEmitter, true);
+
+      var debouncedApplier = Utils.FunctionUtils.debounce(() => scope.$apply(), 50);
+      angular.element(this.$window).on(<any>'resize', debouncedApplier);
 
       // Trigger the destroy event
       scope.$on('$destroy', () => {
         eventMgr.trigger('destroy');
-        angular.element(this.$window).off('resize', resizeCb);
+        angular.element(this.$window).off('resize', debouncedApplier);
       });
     };
   }
-
-  // Create the angular module
-  angular.module('n3-line-chart', [])
-    // and our directives
-    .directive('linechart', [
-      '$window', '$parse', '$timeout', '$rootScope',
-      ($window, $parse, $timeout, $rootScope) => new LineChart($window, $parse, $timeout, $rootScope)
-    ]);
 }

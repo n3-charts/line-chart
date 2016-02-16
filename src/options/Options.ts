@@ -2,9 +2,9 @@ module n3Charts.Options {
   'use strict';
 
   export interface IAxesSet {
-    x: IAxisOptions;
-    y: IAxisOptions;
-    y2?: IAxisOptions;
+    x: AxisOptions;
+    y: AxisOptions;
+    y2?: AxisOptions;
   };
 
   export interface ITwoAxes {
@@ -39,8 +39,8 @@ module n3Charts.Options {
     };
 
     public axes: IAxesSet = {
-      x: <IAxisOptions>{},
-      y: <IAxisOptions>{}
+      x: <AxisOptions>{},
+      y: <AxisOptions>{}
     };
 
     public margin: IMargin = Dimensions.getDefaultMargins();
@@ -230,17 +230,6 @@ module n3Charts.Options {
 
     static getArray(value: any|any[], defaultValue: any[] = []) {
       return defaultValue.concat(value);
-    }
-
-    static uuid() {
-      // @src: http://stackoverflow.com/a/2117523
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-        .replace(/[xy]/g, (c) => {
-            var r = Math.random() * 16 | 0;
-            var v = c === 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-          }
-        );
     }
   }
 }

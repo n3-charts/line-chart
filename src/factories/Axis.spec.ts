@@ -30,7 +30,7 @@ describe('n3Charts.Factory.Axis', () => {
   it('should clone the d3 axis', () => {
     axis = new n3Charts.Factory.Axis('x');
 
-    axis.scale = axis.getScale(new n3Charts.Options.AxisOptions({}));
+    axis.scale = axis.getScale();
     axis.d3axis = axis.getAxis(axis.scale, new n3Charts.Options.AxisOptions({
       ticks: 5
     }));

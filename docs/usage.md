@@ -55,7 +55,7 @@ axes: {
   x: {
     key: 'foo',
     type: 'linear', // or 'date', or 'log'
-    ticks: [-10, 0, 10] // can also be a number
+    ticks: [-10, 0, 10] // can also be a number, or a function
   },
   y: {
     min: -10,
@@ -74,9 +74,22 @@ Name | Type | Default | Description | Mandatory
 ---- | ---- | ------- | ------------ | --------
 `key`| String | `undefined` | The abscissas key, a property on each datum | Yes
 `type` | String | `'linear'` | The axis' type. can be either `'linear'`, `'log'` or `'date'`. | No
-`ticks` | Array or Number | `undefined` | The axis' ticks. Depending on what is given will either call `tickValues` or `ticks` on the inner d3 axis. | No
+`ticks` | Array or Number or Function | `undefined` | The axis' ticks. Depending on what is given will either call `tickValues` or `ticks` on the inner d3 axis, or use a home-made axis to display major and minor ticks (see below). | No
 `ticksShift` | Object | `{y: 0, x: 0}` | A bit of a hack to allow shifting of the ticks. May be useful if the chart is squeezed in a container and the 0 tick is cropped. Or not. | No. Of course not.
  `tickFormat` | Function | `undefined` | Formats the ticks. Takes the value and its index as arguments | No
+
+#### Major and minor ticks
+When given a function as the `ticks` attribute, the axis will stop generating its own ticks and start displayign exactly what's returned by the function. This is basically an advanced way of setting the ticks. However, the function must return data as follows :
+
+```js
+var myTicksFunction = function(domain) {
+  return {
+    major: [{label: '00', value: 0}, {label: '01', value: 1}],
+    minor: [{label: '.5', value: 0.5}, {label: '.5', value: 1.5}]
+  };
+};
+```
+
 
 ### Margin
 The `margin` property affects, well, the chart's margins. Useful to optimize space regarding your data. The `margin` object should look like this :
