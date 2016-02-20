@@ -12,13 +12,14 @@ module n3Charts.Utils {
     }
 
     fromJS(js: any) {
+      var sets = {};
       for (var key in js) {
         if (js.hasOwnProperty(key)) {
-          js[key] = new Dataset(js[key], key);
+          sets[key] = new Dataset(js[key], key);
         }
       }
 
-      this.sets = js;
+      this.sets = sets;
     }
 
     getDatasets(series: Options.ISeriesOptions[], options: Options.Options): IPoint[][] {

@@ -39,14 +39,13 @@ module n3Charts {
     ) {}
 
     link = (scope: ILineChartScope, element: JQuery, attributes: any) => {
+      var data:Utils.Data;
+      var options:Options.Options;
       var eventMgr = new Utils.EventManager();
       var factoryMgr = new Utils.FactoryManager();
 
-      // Initialize global events
       eventMgr.init(Utils.EventManager.EVENTS);
 
-      // Register all factories
-      // Note: we can apply additional arguments to each factory
       factoryMgr.registerMany([
         ['container', Factory.Container, element[0]],
         ['tooltip', Factory.Tooltip, element[0]],
@@ -69,41 +68,39 @@ module n3Charts {
         ['series-dot', Factory.Series.Dot]
       ]);
 
-      // Initialize all factories
       factoryMgr.all().forEach((f) => f.instance.init(f.key, eventMgr, factoryMgr));
 
-      // When options aren't defined at startup (when used inside a directive, for example)
-      // we need to wait until they are to create the chart.
       var deferredCreation = scope.options === undefined;
 
-      // Unwrap native options and update the chart
-      var data, options;
-      var update = () => {
-        // Call the update event with a copy of the options
-        // and data to avoid infinite digest loop
+      var updateAll = () => {
         options = new Options.Options(angular.copy(scope.options));
-        data = new Utils.Data(angular.copy(scope.data));
+        data = new Utils.Data(scope.data);
 
         if (deferredCreation) {
           deferredCreation = false;
           eventMgr.trigger('create', options);
         }
 
-        // Update the eventMgr itself
         eventMgr.update(data, options);
-
-        // Trigger the update event
         eventMgr.trigger('update', data, options);
       };
 
-      // Trigger the create event
       if (!deferredCreation) {
         eventMgr.trigger('create', new Options.Options(angular.copy(scope.options)));
       }
 
+      var updateData = (_data) => {
+        if (!_data) {
+          return;
+        }
+        data.fromJS(_data);
+        eventMgr.trigger('update', data, options);
+      };
+
       // We use $watch because both options and data
       // are objects and not arrays
-      scope.$watch('[options, data]', update, true);
+      scope.$watch('options', updateAll, true);
+      scope.$watch('data', updateData, true);
 
       eventMgr.on('legend-click.directive', (series) => {
         var foundSeries = scope.options.series.filter((s) => s.id === series.id)[0];

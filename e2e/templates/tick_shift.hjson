@@ -1,6 +1,24 @@
 {
-  options: '''
-    {
+html: '''
+  <linechart ng-class="name" data="data" options="options"></linechart>
+'''
+
+js: '''
+  function($scope) {
+    $scope.data = {
+      dataset0: [
+        {x: 0, val_0: 90, val_1: 110 + 1, val_2: 100 + 2},
+        {x: 1, val_0: 90 + 3, val_1: 110 + 4, val_2: 100 + 5},
+        {x: 2, val_0: 90 + 6, val_1: 110 + 7, val_2: 100 + 8},
+        {x: 3, val_0: 90 + 9, val_1: 110 + 10, val_2: 100 + 11},
+        {x: 4, val_0: 90 + 12, val_1: 110 + 13, val_2: 100 + 14},
+        {x: 5, val_0: 90 + 15, val_1: 110 + 16, val_2: 100 + 17},
+        {x: 6, val_0: 90 + 18, val_1: 110 + 19, val_2: 100 + 20},
+        {x: 7, val_0: 90 + 21, val_1: 110 + 22, val_2: 100 + 23}
+      ]
+    };
+
+    $scope.options = {
       series: [
         {
           axis: "y",
@@ -27,21 +45,8 @@
         x: {key: "x"},
         y: {ticksShift: {y: -5, x: 10}}
       }
-    }
-  '''
-  data: '''
-    {
-      dataset0: [
-        {x: 0, val_0: 90, val_1: 110 + 1, val_2: 100 + 2},
-        {x: 1, val_0: 90 + 3, val_1: 110 + 4, val_2: 100 + 5},
-        {x: 2, val_0: 90 + 6, val_1: 110 + 7, val_2: 100 + 8},
-        {x: 3, val_0: 90 + 9, val_1: 110 + 10, val_2: 100 + 11},
-        {x: 4, val_0: 90 + 12, val_1: 110 + 13, val_2: 100 + 14},
-        {x: 5, val_0: 90 + 15, val_1: 110 + 16, val_2: 100 + 17},
-        {x: 6, val_0: 90 + 18, val_1: 110 + 19, val_2: 100 + 20},
-        {x: 7, val_0: 90 + 21, val_1: 110 + 22, val_2: 100 + 23}
-      ]
-    }
-  '''
+    };
+  }
+'''
 }
 
