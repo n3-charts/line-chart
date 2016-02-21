@@ -1,23 +1,36 @@
-angular.module('v2App', ['n3-line-chart', 'apojop', 'ngRoute', 'home', 'docs', 'migration', 'examples'])
+angular.module('v2App', ['n3-line-chart', 'apojop', 'ui.router', 'home', 'docs', 'migration', 'examples'])
 
-.config(['$routeProvider', function config($routeProvider) {
-  $routeProvider
-  .when('/home', {controller: 'HomeCtrl', templateUrl: 'src/home.html'})
-  .when('/docs', {controller: 'DocsCtrl', templateUrl: 'src/docs.html'})
-  .when('/migration', {controller: 'MigrationCtrl', templateUrl: 'src/migration.html'})
-  .when('/examples', {controller: 'ExamplesCtrl', templateUrl: 'src/examples.html'})
-  .otherwise({redirectTo: '/home'});
+.config(['$stateProvider', '$urlRouterProvider', function config($stateProvider, $urlRouterProvider) {
+  $urlRouterProvider.otherwise('home');
+
+  $stateProvider
+    .state('home', {
+      url: '/home',
+      controller: 'HomeCtrl',
+      templateUrl: 'src/home.html'
+    })
+    .state('docs', {
+      url: '/docs',
+      controller: 'DocsCtrl',
+      templateUrl: 'src/docs.html'
+    })
+    .state('migration', {
+      url: '/migration',
+      controller: 'MigrationCtrl',
+      templateUrl: 'src/migration.html'
+    })
+    .state('examples', {
+      url: '/examples',
+      controller: 'ExamplesCtrl',
+      templateUrl: 'src/examples.html'
+    })
+    ;
 }])
 
-.controller('BodyCtrl', function($scope, $location) {
-  $scope.$on('$locationChangeSuccess', function(next, current) {
-    $scope.path = $location.path().replace(/^\//, '') || 'home';
-  });
-
-  $scope.isActive = function(route) {
-    return $location.path() === route;
-  };
-})
+.run(['$rootScope', '$state', '$stateParams', function ($rootScope, $state, $stateParams) {
+  $rootScope.$state = $state;
+  $rootScope.$stateParams = $stateParams;
+}])
 
 .directive('classIfRoute', function($location) {
   return {

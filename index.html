@@ -31,7 +31,7 @@
     <title>n3-charts</title>
   </head>
 
-  <body ng-controller="BodyCtrl" ng-class="path">
+  <body ng-class="$state.current.name">
     <!-- For bots searching for an image... -->
     <img src="assets/n3-charts-v2_logo.png" style="position: absolute; opacity: 0; width: 0px; height: 0px; overflow: hidden;">
 
@@ -43,26 +43,26 @@
         <a href="#/"><div class="logo"></div></a>
       </div>
       <div class="col-40 right col-80-when-small">
-        <a class-if-route="active:/home" href="#/home">Home</a>
-        <a class-if-route="active:/docs" href="#/docs">Documentation</a>
-        <a class-if-route="active:/migration" href="#/migration">Migration Guide</a>
-        <a class-if-route="active:/examples" href="#/examples">Examples</a>
+        <a ui-sref-active="active" ui-sref="home">Home</a>
+        <a ui-sref-active="active" ui-sref="docs">Documentation</a>
+        <a ui-sref-active="active" ui-sref="migration">Migration Guide</a>
+        <a ui-sref-active="active" ui-sref="examples">Examples</a>
         <a href="https://github.com/n3-charts/line-chart">GitHub</a>
       </div>
     </div>
 
-    <div class="content" ng-view></div>
+    <div class="content" ui-view></div>
 
     <div class="section credits">
       Made with love and care by <a class="quiet" href="https://github.com/chaosmail"><i class='fa fa-github'></i> Christoph K&ouml;rner</a> &amp; <a class="quiet" href="https://github.com/lorem--ipsum"><i class='fa fa-github'></i> S&eacute;bastien Fragnaud</a>.
     </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.18/angular-ui-router.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script type="text/javascript" src="assets/marked.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/line-chart/2.0.14/LineChart.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/line-chart/2.0.14/LineChart.min.js"></script>
     <script src="//cdn.rawgit.com/lorem--ipsum/apojop/1.0.6/apojop.min.js"></script>
     <script src="index.js"></script>
     <script src="src/info.js"></script>

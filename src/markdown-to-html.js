@@ -13,8 +13,6 @@ angular.module('markdown', [])
           elem.html(hljs.highlightAuto(value).value);
         });
       }
-      // console.log(elm);
-      // hljs.highlightBlock(elm[0]);
     }
   }
 })
@@ -38,6 +36,10 @@ angular.module('markdown', [])
       });
 
       scope.$watch('url', function(url) {
+        if (!url) {
+          return;
+        }
+
         $http.get(url).then(function(response) {
           elm[0].innerHTML = marked(response.data, {renderer: renderer});
         });
