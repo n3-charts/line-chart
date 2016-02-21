@@ -5,13 +5,14 @@ angular.module('codepen', ['apojop'])
     restrict: 'E',
     link: function(scope, element, attrs) {
       scope.$watchCollection(
-        '[' + [attrs.codepenData, attrs.codepenOptions, attrs.codepenName].join() + ']',
+        '[' + [attrs.codepenData, attrs.codepenOptions, attrs.codepenName, attrs.version].join() + ']',
         function(values) {
           var data = values[0];
           var options = values[1];
           var name = values[2];
+          var version = values[3];
 
-          if (!data || !options || !name) {
+          if (!data || !options || !name || !version) {
             return;
           }
 
@@ -45,13 +46,13 @@ angular.module('codepen', ['apojop'])
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js',
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.min.js',
             'http://d3js.org/d3.v3.min.js',
-            'http://codepen.io/n3-charts/pen/KdjqgW.js'
+            'https://cdnjs.cloudflare.com/ajax/libs/line-chart/' + version + '/LineChart.min.js'
           ].join(';');
 
           var CSS = ".container {\n  width: 600px;\n  height: 300px;\n}";
 
           var CSS_EXTERNAL = [
-            'http://codepen.io/n3-charts/pen/KdjqgW.css'
+            'https://cdnjs.cloudflare.com/ajax/libs/line-chart/' + version + '/LineChart.min.css'
           ].join(';');
 
           var data = {

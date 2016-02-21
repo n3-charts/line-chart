@@ -1,4 +1,4 @@
-angular.module('examples', ['n3-line-chart', 'codepen', 'data'])
+angular.module('examples', ['n3-line-chart', 'codepen', 'data', 'info'])
 
 .directive('anchorLink', function($location, $anchorScroll) {
   return {
@@ -12,8 +12,12 @@ angular.module('examples', ['n3-line-chart', 'codepen', 'data'])
   }
 })
 
-.controller('ExamplesCtrl', function($scope, datasets) {
+.controller('ExamplesCtrl', function($scope, datasets, version) {
   mixpanel.track('Examples', {version: 'v2'});
+
+  version.get().then(function(latestTag) {
+    $scope.version = latestTag;
+  });
 
   $scope.examples = [
     {
