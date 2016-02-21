@@ -1,47 +1,52 @@
 {
-  options: '''
-{
-  margin: {top: 5},
-  series: [
-    {
-      axis: "y",
-      dataset: "dataset0",
-      key: "y",
-      label: "A parametric series",
-      color: "#1f77b4",
-      type: ["line", "dot"],
-      id: 'mySeries0'
-    },
-  ],
-  axes: {x: {key: "x"}}
-}
+html: '''
+  <linechart ng-class="name" data="data" options="options"></linechart>
 '''
-  data: '''
-{
-  dataset0: [
-    {x: 10, y: 0},
-    {x: 6, y: 10},
-    {x: -3, y: 0},
-    {x: -10, y: -10},
-    {x: -8, y: 0},
-    {x: 0, y: 10},
-    {x: 8, y: 0},
-    {x: 10, y: -10},
-    {x: 3, y: 0},
-    {x: -6, y: 10},
-    {x: -10, y: 0},
-    {x: -6, y: -10},
-    {x: 3, y: 0},
-    {x: 10, y: 10},
-    {x: 8, y: 0},
-    {x: 0, y: -10},
-    {x: -8, y: 0},
-    {x: -10, y: 10},
-    {x: -3, y: 0},
-    {x: 6, y: -10},
-    {x: 10, y: 0}
-  ]
-}
+
+js: '''
+  function($scope) {
+    $scope.data = {
+      dataset0: [
+        {x: 10, y: 0},
+        {x: 6, y: 10},
+        {x: -3, y: 0},
+        {x: -10, y: -10},
+        {x: -8, y: 0},
+        {x: 0, y: 10},
+        {x: 8, y: 0},
+        {x: 10, y: -10},
+        {x: 3, y: 0},
+        {x: -6, y: 10},
+        {x: -10, y: 0},
+        {x: -6, y: -10},
+        {x: 3, y: 0},
+        {x: 10, y: 10},
+        {x: 8, y: 0},
+        {x: 0, y: -10},
+        {x: -8, y: 0},
+        {x: -10, y: 10},
+        {x: -3, y: 0},
+        {x: 6, y: -10},
+        {x: 10, y: 0}
+      ]
+    };
+
+    $scope.options = {
+      margin: {top: 5},
+      series: [
+        {
+          axis: "y",
+          dataset: "dataset0",
+          key: "y",
+          label: "A parametric series",
+          color: "#1f77b4",
+          type: ["line", "dot"],
+          id: 'mySeries0'
+        },
+      ],
+      axes: {x: {key: "x"}}
+    };
+  }
 '''
 }
 

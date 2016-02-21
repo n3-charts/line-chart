@@ -38,46 +38,35 @@
   </style>
 </head>
 
-<body ng-controller='ExamplesCtrl'>
+<body>
   <div class="examples">
-    <div class="example" ng-repeat="example in examples">
+    <% _.each(examples, function(example) { %>
+
+    <div class="example <%=example.name%>" ng-controller="<%=example.name%>Ctrl">
       <div class="example-title">
-        <a href="/test/e2e/{{example.name}}.html">{{example.name}}</a>
+        <a href="/test/e2e/<%=example.name%>.html"><%=example.name%></a>
       </div>
       <div class="example-chart">
-        <linechart
-          ng-class="example.name"
-          data="example.data"
-          options="example.options"
-          tooltip-sync-key="{{example.tooltipSync}}"
-          domains-sync-key="{{example.domainsSync}}"
-          on-domains-change="onDomainsChange($domains)"
-        ></linechart>
+        <%=example.html%>
       </div>
     </div>
+
+    <% }); %>
+
+
   </div>
   <script src="/angular/angular.js"></script>
   <script src="/d3/d3.min.js"></script>
   <script src="/build/LineChart.js"></script>
   <script type="text/javascript">
   angular.module('example', ['n3-line-chart'])
-  .controller('ExamplesCtrl', function($scope) {
-    $scope.onDomainsChange = function(domains) {
-      console.log('change', domains);
-    };
 
-    $scope.examples = [
-      <% _.each(examples, function(example) { %>
-        {
-          options: <%=example.options%>,
-          data: <%=example.data%>,
-          name: "<%=example.name%>",
-          domainsSync: "<%=example.domainsSync%>",
-          tooltipSync: "<%=example.tooltipSync%>"
-        },
-      <% }); %>
-    ];
-  });
+  <% _.each(examples, function(example) { %>
+    .controller('<%=example.name%>Ctrl', <%=example.js%>
+    )
+  <% }); %>
+
+
   </script>
 </body>
 </html>
