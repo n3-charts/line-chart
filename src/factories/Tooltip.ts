@@ -139,6 +139,21 @@ module n3Charts.Factory {
       this.showFromCoordinates(coordinates, data, options);
     }
 
+    hide(event?: any, data?: Utils.Data, options?: Options.Options) {
+      this.svg
+        .style('display', 'none');
+
+      this.line
+        .style('opacity', '0');
+
+      this.dots
+        .style('opacity', '0');
+
+      if (options && options.tooltipHook) {
+        options.tooltipHook(undefined);
+      }
+    }
+
     // This is the part the user can override.
     getTooltipContent(rows: INeighbour[], closestIndex: number, options: Options.Options) {
       var xTickFormat = options.getByAxisSide(Options.AxisOptions.SIDE.X).tickFormat;
@@ -317,17 +332,6 @@ module n3Charts.Factory {
       });
 
       return;
-    }
-
-    hide() {
-      this.svg
-        .style('display', 'none');
-
-      this.line
-        .style('opacity', '0');
-
-      this.dots
-        .style('opacity', '0');
     }
   }
 }

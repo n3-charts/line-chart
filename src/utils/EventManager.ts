@@ -13,6 +13,7 @@ module n3Charts.Utils {
     static EVENTS: string[] = [
       'create',  // on creation of the chart
       'update',  // on update of the chart
+      'data-update',  // on update of the data (slightly different from redrawing the entire chart)
       'resize',  // on resize of the chart
       'destroy', // on destroying the chart
 

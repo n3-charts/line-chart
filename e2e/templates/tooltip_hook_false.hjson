@@ -1,6 +1,7 @@
 {
 html: '''
   <linechart ng-class="name" data="data" options="options"></linechart>
+  <div class="tooltip-receiver">{{tooltipValue}}</div>
 '''
 
 js: '''
@@ -51,7 +52,13 @@ js: '''
     };
 
     $scope.options = {
-      tooltipHook: function(rows, data, options) {
+      tooltipHook: function(items) {
+        if (items) {
+          $scope.tooltipValue = items[0].row.x + ' : ' + items.map(function(item) {return item.row.y1}).join(' , ');
+        } else {
+          $scope.tooltipValue = "";
+        }
+        $scope.$digest();
         return false;
       },
       grid: {x: false, y: true},
