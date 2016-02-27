@@ -90,7 +90,7 @@ module n3Charts.Factory {
       var {x, y} = coordinates;
 
       if (x === undefined || y === undefined) {
-        this.hide();
+        this.hide(undefined, data, options);
         return;
       }
 
@@ -102,7 +102,7 @@ module n3Charts.Factory {
 
       var {rows, index} = this.getClosestRows(<number>x , data, options);
       if (rows.length === 0) {
-        this.hide();
+        this.hide(undefined, data, options);
         return;
       }
 
@@ -157,9 +157,11 @@ module n3Charts.Factory {
     // This is the part the user can override.
     getTooltipContent(rows: INeighbour[], closestIndex: number, options: Options.Options) {
       var xTickFormat = options.getByAxisSide(Options.AxisOptions.SIDE.X).tickFormat;
-      var yTickFormat = options.getByAxisSide(Options.AxisOptions.SIDE.Y).tickFormat;
+      var getYTickFormat = (side: string) => options.getByAxisSide(side).tickFormat;
 
       var getRowValue = (d: INeighbour) => {
+        var yTickFormat = getYTickFormat(d.series.axis);
+
         var fn = yTickFormat ? (y1) => yTickFormat(y1, closestIndex) : (y1) => y1;
         var y1Label = fn(d.row.y1);
 
@@ -229,7 +231,7 @@ module n3Charts.Factory {
 
     updateTooltipDots(rows: INeighbour[]) {
       var xScale = this.factoryMgr.get('x-axis').scale;
-      var yScale = this.factoryMgr.get('y-axis').scale;
+      var yScale = (side) => this.factoryMgr.get(side + '-axis').scale;
 
       var radius = 3;
       var circlePath = (r, cx, cy) => {
@@ -256,14 +258,14 @@ module n3Charts.Factory {
 
       var updateDots = (s) => {
         s.select('.tooltip-dot.y1').attr({
-          'd': (d) => circlePath(radius, xScale(d.row.x), yScale(d.row.y1)),
+          'd': (d) => circlePath(radius, xScale(d.row.x), yScale(d.series.axis)(d.row.y1)),
           'stroke': (d) => d.series.color
         });
 
         s.select('.tooltip-dot.y0').attr({
           'd': (d) => {
             if (d.series.hasTwoKeys()) {
-              return circlePath(radius, xScale(d.row.x), yScale(d.row.y0));
+              return circlePath(radius, xScale(d.row.x), yScale(d.series.axis)(d.row.y0));
             }
 
             return '';

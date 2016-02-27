@@ -40,7 +40,7 @@ Name | Type | Default | Description | Mandatory
 `key` | Object or String | - | This can either be a single string (`'value_0'` or something) or a pair of values, for areas, columns, etc (`{y0: 'min_value', y1: 'max_value'}`). | Yes
 `label` | String | `""` | What's shown in the tooltip and in the legend for this series. | No
 `id` | String | a uuid | A series' identifier, mostly used for visibility toggling. | No
-`axis` | String | `'y'` | The axis the series will use to plot its values. Currently, only `'y'` is supported. | Yes
+`axis` | String | `'y'` | The axis the series will use to plot its values. Can be either `'y'` or `'y2'`. | Yes
 `color` | String | `undefined` | The series's color. Any valid CSS value will work. | No
 `interpolation` | Object | `undefined` | Can be something like `{mode: 'cardinal', tension: 0.7}`. More about that [here](https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate) | No
 `type` | String or Array | `''` | The series's type(s). Can be any combination of `line`, `area`, `dot`, `column`. | No
@@ -67,7 +67,8 @@ axes: {
     tickFormat: function(value, index) {
       return "Pouet : " + value + " " + index;
     }
-  }
+  },
+  y2: {} // same as y
 }
 ```
 Name | Type | Default | Description | Mandatory
@@ -121,6 +122,8 @@ Name | Type | Description
 ---- | ---- | -------
 `abscissas` | String | The abscissas' label
 `rows` | `[{label, value, id, color}]` | These are the dots the chart will draw. All of the properties are strings, the `id` being checked by d3 to process its join.
+
+> The `tooltipHook` function will be called with `undefined` as sole argument when the tooltip is supposed to be hidden (i.e. when the mouse cursor exits the chart).
 
 ### Grid
 The `grid` object parametrizes how the chart's background grid will be shown. It's not mandatory and should look like this :

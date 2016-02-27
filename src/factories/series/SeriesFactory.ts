@@ -31,6 +31,13 @@ module n3Charts.Factory.Series {
       this.softUpdate();
     }
 
+    getAxes(series: Options.SeriesOptions): {xAxis: Factory.Axis, yAxis: Factory.Axis} {
+      return {
+        xAxis: this.factoryMgr.get('x-axis'),
+        yAxis: this.factoryMgr.get(series.axis + '-axis')
+      };
+    }
+
     softUpdate() {
       var series = this.options.getSeriesByType(this.type).filter((s) => s.visible);
       this.updateSeriesContainer(series);
