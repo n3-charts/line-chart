@@ -33,7 +33,7 @@ module n3Charts.Factory {
         var y2 = this.factoryMgr.get('y2-axis').scale;
 
         y1.domain(y1.range().map((x) => x + deltaY).map(y1.invert));
-        y2.domain(y1.domain());
+        y2.domain(y2.range().map((x) => x + deltaY).map(y2.invert));
       }
     }
 

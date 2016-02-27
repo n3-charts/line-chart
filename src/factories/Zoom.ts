@@ -82,7 +82,7 @@ module n3Charts.Factory {
       let yAxis:Factory.Axis = this.factoryMgr.get('y-axis');
       let y2Axis:Factory.Axis = this.factoryMgr.get('y2-axis');
       yAxis.scale.domain([yAxis.invert(yEnd - top), yAxis.invert(yStart - top)]);
-      y2Axis.scale.domain(yAxis.scale.domain());
+      y2Axis.scale.domain([y2Axis.invert(yEnd - top), y2Axis.invert(yStart - top)]);
     }
 
     registerEvents(container: Factory.Container) {

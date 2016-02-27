@@ -8,8 +8,7 @@ module n3Charts.Factory.Series {
     updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
       group.classed('dashed', series.isDashed());
 
-      var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
-      var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
+      var {xAxis, yAxis} = this.getAxes(series);
 
       var lineData = this.data.getDatasetValues(series, this.options);
 

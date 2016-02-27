@@ -132,7 +132,7 @@ module n3Charts.Options {
      * Return a valid axis key
      */
     sanitizeAxis(axis: string) {
-      if (['y'].indexOf(axis) === -1) {
+      if (['y', 'y2'].indexOf(axis) === -1) {
         throw TypeError(axis + ' is not a valid series option for axis.');
       }
 

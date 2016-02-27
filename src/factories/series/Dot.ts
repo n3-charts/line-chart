@@ -6,8 +6,7 @@ module n3Charts.Factory.Series {
     public type: string = Options.SeriesOptions.TYPE.DOT;
 
     updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
-      var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
-      var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
+      var {xAxis, yAxis} = this.getAxes(series);
 
       var dotsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
       var dotsRadius = 2;

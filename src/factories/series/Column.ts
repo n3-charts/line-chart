@@ -51,8 +51,7 @@ module n3Charts.Factory.Series {
     }
 
     updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
-      var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
-      var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
+      var {xAxis, yAxis} = this.getAxes(series);
 
       var colsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
 

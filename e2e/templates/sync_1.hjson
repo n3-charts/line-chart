@@ -5,6 +5,7 @@ html: '''
     data="data"
     options="options"
     domains-sync-key="MLEM"
+    tooltip-sync-key="MLUM"
   ></linechart>
 '''
 
