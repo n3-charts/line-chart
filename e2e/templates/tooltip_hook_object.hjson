@@ -51,10 +51,14 @@ js: '''
     };
 
     $scope.options = {
-      tooltipHook: function(rows, data, options) {
+      tooltipHook: function(items) {
+        if (!items) {
+          return;
+        }
+
         return {
           abscissas: "Pouet",
-          rows: rows.map(function(d) {
+          rows: items.map(function(d) {
             return {
               label: d.row.x + ' -> ' + d.series.label + ' : ',
               value: d.row.y1,

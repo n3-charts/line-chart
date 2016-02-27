@@ -93,7 +93,12 @@ module n3Charts {
         if (!_data) {
           return;
         }
+
         data.fromJS(_data);
+        factoryMgr.turnFactoriesOff(['transitions']);
+        eventMgr.trigger('data-update', data, options);
+        factoryMgr.turnFactoriesOn(['transitions']);
+
         eventMgr.trigger('update', data, options);
       };
 
