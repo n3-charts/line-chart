@@ -102,8 +102,6 @@ module n3Charts {
         eventMgr.trigger('update', data, options);
       };
 
-      // We use $watch because both options and data
-      // are objects and not arrays
       scope.$watch('options', updateAll, true);
       scope.$watch('data', updateData, true);
 
