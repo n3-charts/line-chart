@@ -80,15 +80,15 @@ describe('Two axes', function() {
       .keyDown(protractor.Key.ALT)
       .mouseDown()
       .keyUp(protractor.Key.ALT)
-      .mouseMove(container, {x: 100, y: 50})
+      .mouseMove(container, {x: 100, y: 55})
       .mouseUp()
       .perform();
 
     browser.sleep(500);
 
     checkTicks('x', [ '0.0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0' ], element);
-    checkTicks('y', [ '10.0', '10.5', '11.0', '11.5', '12.0', '12.5', '13.0' ], element);
-    checkTicks('y2', [ '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94' ], element);
+    checkTicks('y', [ '9.5', '10.0', '10.5', '11.0', '11.5', '12.0', '12.5', '13.0' ], element);
+    checkTicks('y2', [ '80', '82', '84', '86', '88', '90', '92', '94' ], element);
 
     // d3 doesn't handle double clicks...
     browser.actions().click().click().perform();
