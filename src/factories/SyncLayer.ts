@@ -20,6 +20,7 @@ module n3Charts.Factory {
       this.sanitizeAttributes();
       this.syncTooltips();
       this.syncDomainsChange();
+      this.syncDatumEvents();
     }
 
     sanitizeAttributes() {
@@ -28,6 +29,18 @@ module n3Charts.Factory {
         if (tooltipSyncKey === domainsSyncKey) {
           throw new Error('Heterogeneous sync keys can\'t have the same value.');
         }
+      }
+    }
+
+    syncDatumEvents() {
+      let eventMgr: Utils.EventManager = this.eventMgr;
+
+      if (!!this.attributes.onClick) {
+        var onClick = this.$parse(this.attributes.onClick);
+
+        eventMgr.on('click.directive', (d, i, series, options) => {
+          onClick(this.scope.$parent, {row: d, index: i, series, options});
+        });
       }
     }
 

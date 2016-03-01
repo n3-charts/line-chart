@@ -12,6 +12,8 @@ module n3Charts.Factory {
     private line:D3.Selection;
     private dots:D3.Selection;
 
+    private options: Options.Options;
+
     constructor(private element: HTMLElement) {
       super();
     }
@@ -21,13 +23,19 @@ module n3Charts.Factory {
       this.hide();
     }
 
-    create() {
+    create(options: Options.Options) {
+      this.options = options;
+
       this.createTooltip();
       this.eventMgr.on('container-move.tooltip', this.show.bind(this));
       this.eventMgr.on('container-out.tooltip', this.hide.bind(this));
       this.eventMgr.on('outer-world-hover.tooltip', this.showFromCoordinates.bind(this));
 
       this.hide();
+    }
+
+    update(data: Utils.Data, options: Options.Options) {
+      this.options = options;
     }
 
     createTooltip() {
@@ -238,21 +246,21 @@ module n3Charts.Factory {
         return `M ${cx} ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 `;
       };
 
-      var trianglePath = (r, cx, cy) => {
-        return `M ${cx} ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 `;
-      };
-
       var initDots = (s) => {
         s.attr('class', 'tooltip-dots-group');
 
         s.append('path').attr({
           'class': 'tooltip-dot y1'
+        }).on('click', (d:INeighbour, i) => {
+           this.eventMgr.trigger('click', d.row, i, d.series, this.options);
         });
 
         s.append('path').attr({
           'class': 'tooltip-dot y0'
         }).style({
           'display': (d) => d.series.hasTwoKeys() ? null : 'none'
+        }).on('click', (d:INeighbour, i) => {
+           this.eventMgr.trigger('click', d.row, i, d.series, this.options);
         });
       };
 

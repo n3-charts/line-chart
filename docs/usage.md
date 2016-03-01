@@ -173,6 +173,7 @@ Name | Description | Example
 `on-domains-change` | Method called when an interaction changes the axes' domains. The horizontal and vertical axes' domains are passed under the key `$domains` | `on-domains-change="onDomainsChange($domains)"`
 `tooltip-sync-key` | The charts that share the same key and the same root scope will have synchronized tooltips | `tooltip-sync-key="mahKey"`
 `domains-sync-key` | The charts that share the same key and the same root scope will have synchronized axes' domains | `domains-sync-key="mahOtherKey"`
+`on-click` | Function to call when a data point is clicked | `on-click="mahClickCallback(row, index, series, options)"`
 
 > Please note that heterogeneous keys can't have the same value, i.e. don't pass the same string for two different keys.
 

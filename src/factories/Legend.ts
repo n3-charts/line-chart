@@ -29,7 +29,6 @@ module n3Charts.Factory {
     }
 
     update(data:Utils.Data, options:Options.Options) {
-      // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: Options.Dimensions = container.getDimensions();
 
