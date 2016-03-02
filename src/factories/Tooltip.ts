@@ -66,6 +66,7 @@ module n3Charts.Factory {
       var closestRows = [];
       var closestIndex = -1;
       var minDistance = Number.POSITIVE_INFINITY;
+      var foundSeries: Options.ISeriesOptions[] = [];
 
       for (var i = 0; i < datasets.length; i++) {
         for (var j = 0; j < datasets[i].length; j++) {
@@ -77,11 +78,14 @@ module n3Charts.Factory {
             var distance = Math.abs(datasets[i][j].x - x);
           }
 
-          if (distance === minDistance) {
-            closestRows.push({series: visibleSeries[i], row: datasets[i][j]});
+          let series = visibleSeries[i];
+          if (distance === minDistance && foundSeries.indexOf(series) === -1) {
+            closestRows.push({series, row: datasets[i][j]});
+            foundSeries.push(series);
           } else if (distance < minDistance) {
             minDistance = distance;
             closestRows = [{series: visibleSeries[i], row: datasets[i][j]}];
+            foundSeries = [series];
             closestIndex = j;
           }
         }
