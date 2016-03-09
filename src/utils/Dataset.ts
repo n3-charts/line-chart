@@ -3,7 +3,8 @@ module n3Charts.Utils {
 
   export interface IPoint {
     x: number;
-    y: number;
+    y0: number;
+    y1: number;
   }
 
   export class Dataset {

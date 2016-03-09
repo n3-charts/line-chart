@@ -8,13 +8,13 @@ module n3Charts.Factory {
 
   export class Container extends BaseFactory {
 
-    public defs: D3.Selection;
+    public defs: d3.Selection<any>;
 
-    public svg: D3.Selection;
-    public vis: D3.Selection;
-    public data: D3.Selection;
-    public overlay: D3.Selection;
-    public axes: D3.Selection;
+    public svg: d3.Selection<any>;
+    public vis: d3.Selection<any>;
+    public data: d3.Selection<any>;
+    public overlay: d3.Selection<any>;
+    public axes: d3.Selection<any>;
     public dim: Options.Dimensions = new Options.Dimensions();
 
     private clippingPathId:string;
@@ -65,17 +65,17 @@ module n3Charts.Factory {
 
       var {left, top} = event.currentTarget.getBoundingClientRect();
 
-      var xScale = this.factoryMgr.get('x-axis').scale;
+      var xScale = (<Factory.Axis>this.factoryMgr.get('x-axis'));
       var x = xScale.invert(event.clientX - left - dim.margin.left);
 
-      var yScale = this.factoryMgr.get('y-axis').scale;
-      var y = yScale.invert(event.clientY - top - dim.margin.top);
+      var yScale = (<Factory.Axis>this.factoryMgr.get('y-axis'));
+      var y = <number>yScale.invert(event.clientY - top - dim.margin.top);
 
-      if (y < yScale.domain()[0] || y > yScale.domain()[1]) {
+      if (y < yScale.getDomain()[0] || y > yScale.getDomain()[1]) {
         y = undefined;
       }
 
-      if (x < xScale.domain()[0] || x > xScale.domain()[1]) {
+      if (x < xScale.getDomain()[0] || x > xScale.getDomain()[1]) {
         x = undefined;
       }
 

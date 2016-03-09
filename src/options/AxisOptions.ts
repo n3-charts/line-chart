@@ -60,7 +60,7 @@ module n3Charts.Options {
       return this.ticks instanceof Function;
     }
 
-    configure(axis: D3.Svg.Axis): D3.Svg.Axis {
+    configure(axis: d3.svg.Axis): d3.svg.Axis {
       axis.tickFormat(this.tickFormat);
 
       if (this.ticks instanceof Array) {

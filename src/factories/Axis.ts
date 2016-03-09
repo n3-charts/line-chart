@@ -1,4 +1,4 @@
-/// <reference path='BaseFactory.ts' />
+/// <reference path='./BaseFactory.ts' />
 
 module n3Charts.Factory {
   'use strict';
@@ -8,13 +8,25 @@ module n3Charts.Factory {
     label: string;
   }
 
-  export class Axis extends Factory.BaseFactory {
-
-    public svg: D3.Selection;
-    public scale: D3.Scale.LinearScale | D3.Scale.TimeScale;
-    public d3axis: D3.Svg.Axis;
+  export class Axis extends BaseFactory {
+    public svg: d3.Selection<any>;
+    private _scale: d3.scale.Linear<number, number> | d3.time.Scale<number, number>;
+    public scale:(value: number | Date) => number;
+    public d3axis: d3.svg.Axis;
 
     private options: Options.AxisOptions;
+
+    range():(number|Date)[] {
+      return this._scale.range();
+    }
+
+    getDomain(): (number|Date)[] {
+      return this._scale.domain();
+    }
+
+    setDomain(d: (number|Date)[]) {
+      return this._scale.domain.call(this, d);
+    }
 
     constructor(public side: string) {
       super();
@@ -22,10 +34,12 @@ module n3Charts.Factory {
       if (!Options.AxisOptions.isValidSide(side)) {
         throw new TypeError('Wrong axis side : ' + side);
       }
+
+      this.scale = (value: number | Date) => this._scale.call(this, value);
     }
 
     create() {
-      var vis: D3.Selection = this.factoryMgr.get('container').axes;
+      var vis: d3.Selection<any> = this.factoryMgr.get('container').axes;
 
       this.createAxis(vis);
 
@@ -71,11 +85,11 @@ module n3Charts.Factory {
       // Get the options for the axis
       this.options = options.getByAxisSide(this.side);
 
-      this.scale = this.getScale();
+      this._scale = this.getScale();
       this.updateScaleRange(dim);
       this.updateScaleDomain(extent);
 
-      this.d3axis = this.getAxis(this.scale, this.options);
+      this.d3axis = this.getAxis(this._scale, this.options);
       this.updateAxisOrientation(this.d3axis);
       this.updateAxisContainer(dim);
       this.shiftAxisTicks(this.options);
@@ -94,18 +108,18 @@ module n3Charts.Factory {
 
     updateScaleRange(dim: Options.Dimensions) {
       if (this.isAbscissas()) {
-        this.scale.range([0, dim.innerWidth]);
+        this._scale.range([0, dim.innerWidth]);
       } else {
-        this.scale.range([dim.innerHeight, 0]);
+        this._scale.range([dim.innerHeight, 0]);
       }
     }
 
-    updateScaleDomain(extent: Number[]) {
-      this.scale.domain(extent);
+    updateScaleDomain(extent: number[]) {
+      this._scale.domain(extent);
     }
 
-    getScaleDomain():number[] {
-      return this.scale ? this.scale.domain() : [0, 1];
+    getScaleDomain():(number|Date)[] {
+      return this._scale ? this._scale.domain() : [0, 1];
     }
 
     getExtentForDatasets(
@@ -180,12 +194,12 @@ module n3Charts.Factory {
         fn = (v):number => v.getTime();
       }
 
-      var [a, b] = this.scale.domain();
+      var [a, b] = this._scale.domain();
 
       return fn(value) > fn(a) + (fn(b) - fn(a)) / 2;
     }
 
-    createAxis(vis: D3.Selection) {
+    createAxis(vis: d3.Selection<any>) {
       this.svg = vis
         .append('g')
           .attr('class', 'axis ' + this.side + '-axis');
@@ -236,17 +250,14 @@ module n3Charts.Factory {
     }
 
     invert(value: number):number|Date {
-      return this.scale.invert(value);
+      return this._scale.invert(value);
     }
 
     isTimeAxis() {
       return this.options.type === Options.AxisOptions.TYPE.DATE;
     }
 
-    getScale(): D3.Scale.LinearScale | D3.Scale.TimeScale {
-      // Create and return a D3 Scale
-      var scale: D3.Scale.Scale;
-
+    getScale(): d3.scale.Linear<number, number> | d3.time.Scale<number, number> {
       if (this.options && this.options.type === Options.AxisOptions.TYPE.DATE) {
         return d3.time.scale();
       }
@@ -258,7 +269,7 @@ module n3Charts.Factory {
       return d3.scale.linear();
     }
 
-    getAxis(scale: D3.Scale.LinearScale | D3.Scale.TimeScale, options: Options.AxisOptions): D3.Svg.Axis {
+    getAxis(scale: d3.scale.Linear<number, number> | d3.time.Scale<number, number>, options: Options.AxisOptions): d3.svg.Axis {
       var axis: any;
 
       // Create and return a D3 Axis generator
@@ -270,14 +281,13 @@ module n3Charts.Factory {
           .scale(scale);
       }
 
-
       options.configure(axis);
 
       return axis;
     }
 
-    cloneAxis(): D3.Svg.Axis {
-      var axis: D3.Svg.Axis;
+    cloneAxis(): d3.svg.Axis {
+      var axis: d3.svg.Axis;
 
       if (this.options && this.options.hasDynamicTicks()) {
         axis = n3Charts.svg.twoSpeedAxis()

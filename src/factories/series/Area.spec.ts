@@ -21,19 +21,19 @@ describe('n3Charts.Factory.Series.Area', () => {
     });
 
     it('should create a <g> container', () => {
-        var testing = areaSeries.svg[0][0].tagName;
+        var testing = (<SVGElement>areaSeries.svg[0][0]).tagName;
         var expected = 'g';
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
     });
 
     it('should define a proper class', () => {
         var containerSuffix = n3Charts.Factory.Series.SeriesFactory.containerClassSuffix;
 
-        var testing = areaSeries.svg[0][0].getAttribute('class');
+        var testing = (<SVGElement>areaSeries.svg[0][0]).getAttribute('class');
         var expected = areaSeries.type + containerSuffix;
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
     });
   });
 });

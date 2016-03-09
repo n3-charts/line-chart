@@ -1,9 +1,8 @@
 module.exports = function(config) {
   var configuration = {
     basePath: '../',
-    frameworks: ['mocha', 'sinon'],
+    frameworks: ['jasmine'],
     files: [
-      'node_modules/expect.js/index.js',
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
       {pattern: 'src/**/*.ts', included: false},

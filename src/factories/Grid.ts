@@ -3,9 +3,9 @@ module n3Charts.Factory {
 
   export class Grid extends Factory.BaseFactory {
 
-    public svg: D3.Selection;
-    public xAxis: D3.Svg.Axis;
-    public yAxis: D3.Svg.Axis;
+    public svg: d3.Selection<any>;
+    public xAxis: d3.svg.Axis;
+    public yAxis: d3.svg.Axis;
 
     create() {
       this.svg = this.factoryMgr.get('container').axes
@@ -57,7 +57,7 @@ module n3Charts.Factory {
       var dim: Options.Dimensions = container.getDimensions();
 
       if (options.grid.x) {
-        this.xAxis = <D3.Svg.Axis> this.factoryMgr.get('x-axis').cloneAxis()
+        this.xAxis = <d3.svg.Axis> this.factoryMgr.get('x-axis').cloneAxis()
           .tickSize(-dim.innerHeight, 0);
 
         this.svg.select('.x-grid')
@@ -68,7 +68,7 @@ module n3Charts.Factory {
       }
 
       if (options.grid.y) {
-        this.yAxis = <D3.Svg.Axis> this.factoryMgr.get('y-axis').cloneAxis();
+        this.yAxis = <d3.svg.Axis> this.factoryMgr.get('y-axis').cloneAxis();
 
         this.svg.select('.y-grid')
           .transition()

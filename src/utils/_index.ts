@@ -1,3 +1,4 @@
+/// <reference path='IDomains.ts' />
 /// <reference path='EventManager.ts' />
 /// <reference path='FactoryManager.ts' />
 /// <reference path='Dataset.ts' />

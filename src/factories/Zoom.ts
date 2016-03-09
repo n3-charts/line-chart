@@ -3,7 +3,7 @@ module n3Charts.Factory {
 
   export class Zoom extends Factory.BaseFactory {
     private isActive: Boolean = false;
-    private rect:D3.Selection;
+    private rect:d3.Selection<any>;
 
     private xStartFn:(x:number) => number;
     private xEndFn:(y:number) => number;
@@ -21,7 +21,7 @@ module n3Charts.Factory {
           .attr('class', 'chart-brush');
     }
 
-    constrainOutgoingDomains(domains:Factory.IDomains):void {
+    constrainOutgoingDomains(domains: Utils.IDomains):void {
       if (!this.zoomOnX) {
         delete domains.x;
       }
@@ -76,13 +76,13 @@ module n3Charts.Factory {
 
       let xAxis:Factory.Axis = this.factoryMgr.get('x-axis');
       let x2Axis:Factory.Axis = this.factoryMgr.get('x2-axis');
-      xAxis.scale.domain([xAxis.invert(xStart - left), xAxis.invert(xEnd - left)]);
-      x2Axis.scale.domain(xAxis.scale.domain());
+      xAxis.setDomain([xAxis.invert(xStart - left), xAxis.invert(xEnd - left)]);
+      x2Axis.setDomain(xAxis.getDomain());
 
       let yAxis:Factory.Axis = this.factoryMgr.get('y-axis');
       let y2Axis:Factory.Axis = this.factoryMgr.get('y2-axis');
-      yAxis.scale.domain([yAxis.invert(yEnd - top), yAxis.invert(yStart - top)]);
-      y2Axis.scale.domain([y2Axis.invert(yEnd - top), y2Axis.invert(yStart - top)]);
+      yAxis.setDomain([yAxis.invert(yEnd - top), yAxis.invert(yStart - top)]);
+      y2Axis.setDomain([y2Axis.invert(yEnd - top), y2Axis.invert(yStart - top)]);
     }
 
     registerEvents(container: Factory.Container) {
@@ -110,18 +110,20 @@ module n3Charts.Factory {
 
       container.svg
         .on(k('mousedown'), () => {
-          if (d3.event.altKey) {
+          var event = <MouseEvent>d3.event;
+
+          if (event.altKey) {
             turnBackOn = this.factoryMgr.turnFactoriesOff(['tooltip']);
             this.isActive = true;
             this.eventMgr.on(k('window-mouseup'), onMouseUp);
 
-            [xStart, yStart] = d3.mouse(d3.event.currentTarget);
+            [xStart, yStart] = d3.mouse(event.currentTarget);
             xStart = this.xStartFn(xStart);
             yStart = this.yStartFn(yStart);
           }
         }).on(k('mousemove'), () => {
           if (this.isActive) {
-            [xEnd, yEnd] = d3.mouse(d3.event.currentTarget);
+            [xEnd, yEnd] = d3.mouse((<MouseEvent>d3.event).currentTarget);
             xEnd = this.xEndFn(xEnd);
             yEnd = this.yEndFn(yEnd);
 

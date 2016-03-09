@@ -24,15 +24,15 @@ describe('n3Charts.Utils.FactoryManager', () => {
     factoryMgr.register('stub1', FactoryStub);
       factoryMgr.register('stub2', FactoryStub);
 
-      expect(factoryMgr.index('stub1')).to.equal(0);
-      expect(factoryMgr.index('stub2')).to.equal(1);
+      expect(factoryMgr.index('stub1')).toBe(0);
+      expect(factoryMgr.index('stub2')).toBe(1);
     });
 
     it('should return -1 if index of the factory does not exist', () => {
 
       factoryMgr.register('stub1', FactoryStub);
 
-      expect(factoryMgr.index('stub2')).to.equal(-1);
+      expect(factoryMgr.index('stub2')).toBe(-1);
     });
   });
 
@@ -43,9 +43,9 @@ describe('n3Charts.Utils.FactoryManager', () => {
       factoryMgr.register('stub1', FactoryStub);
       factoryMgr.register('stub2', FactoryStub);
 
-      expect(factoryMgr.get('stub1')).to.be.a(FactoryStub);
-      expect(factoryMgr.get('stub2')).to.be.a(FactoryStub);
-      expect(factoryMgr.get('stub1')).to.not.equal(factoryMgr.get('stub2'));
+      expect(factoryMgr.get('stub1')).toEqual(jasmine.any(FactoryStub));;
+      expect(factoryMgr.get('stub2')).toEqual(jasmine.any(FactoryStub));;
+      expect(factoryMgr.get('stub1')).not.toBe(factoryMgr.get('stub2'));
     });
   });
 
@@ -60,13 +60,13 @@ describe('n3Charts.Utils.FactoryManager', () => {
 
       enties = factoryMgr.all();
 
-      expect(enties[0].key).to.equal('stub1');
-      expect(enties[0].instance).to.be.a(FactoryStub);
+      expect(enties[0].key).toBe('stub1');
+      expect(enties[0].instance).toEqual(jasmine.any(FactoryStub));;
 
-      expect(enties[1].key).to.equal('stub2');
-      expect(enties[1].instance).to.be.a(FactoryStub);
+      expect(enties[1].key).toBe('stub2');
+      expect(enties[1].instance).toEqual(jasmine.any(FactoryStub));;
 
-      expect(enties[0].instance).to.not.equal(enties[1].instance);
+      expect(enties[0].instance).not.toBe(enties[1].instance);
     });
   });
 
@@ -83,21 +83,21 @@ describe('n3Charts.Utils.FactoryManager', () => {
       ]);
 
       factoryStub1 = factoryMgr.get('stub1');
-      expect(factoryStub1).to.be.a(FactoryStub);
-      expect(factoryStub1.args[0]).to.equal('arg1');
-      expect(factoryStub1.args[1]).to.equal(2);
-      expect(factoryStub1.args[2]).to.equal(true);
+      expect(factoryStub1).toEqual(jasmine.any(FactoryStub));;
+      expect(factoryStub1.args[0]).toBe('arg1');
+      expect(factoryStub1.args[1]).toBe(2);
+      expect(factoryStub1.args[2]).toBe(true);
 
       factoryStub2 = factoryMgr.get('stub2');
-      expect(factoryStub2).to.be.a(FactoryStub);
-      expect(factoryStub2.args[0]).to.equal('arg2');
-      expect(factoryStub2.args[1]).to.equal(3);
-      expect(factoryStub2.args[2]).to.equal(false);
+      expect(factoryStub2).toEqual(jasmine.any(FactoryStub));;
+      expect(factoryStub2.args[0]).toBe('arg2');
+      expect(factoryStub2.args[1]).toBe(3);
+      expect(factoryStub2.args[2]).toBe(false);
     });
 
     it('should return the instance', () => {
 
-      expect(factoryMgr.registerMany([])).to.equal(factoryMgr);
+      expect(factoryMgr.registerMany([])).toBe(factoryMgr);
     });
   });
 
@@ -110,16 +110,16 @@ describe('n3Charts.Utils.FactoryManager', () => {
       factoryMgr.register('stub', FactoryStub, 'arg1', 2, true);
       factoryStub = factoryMgr.get('stub');
 
-      expect(factoryStub.args[0]).to.equal('arg1');
-      expect(factoryStub.args[1]).to.equal(2);
-      expect(factoryStub.args[2]).to.equal(true);
+      expect(factoryStub.args[0]).toBe('arg1');
+      expect(factoryStub.args[1]).toBe(2);
+      expect(factoryStub.args[2]).toBe(true);
     });
 
     it('should return the instance of the factory', () => {
 
       var f = factoryMgr.register('stub', FactoryStub);
 
-      expect(f).to.be.a(FactoryStub);
+      expect(f).toEqual(jasmine.any(FactoryStub));;
     });
   });
 
@@ -129,20 +129,20 @@ describe('n3Charts.Utils.FactoryManager', () => {
 
       factoryMgr.register('stub', FactoryStub);
 
-      expect(factoryMgr.index('stub')).to.equal(0);
-      expect(factoryMgr.get('stub')).to.be.a(FactoryStub);
+      expect(factoryMgr.index('stub')).toBe(0);
+      expect(factoryMgr.get('stub')).toEqual(jasmine.any(FactoryStub));;
 
       factoryMgr.unregister('stub');
 
-      expect(factoryMgr.index('stub')).to.equal(-1);
-      expect(factoryMgr.get('stub')).to.equal(null);
+      expect(factoryMgr.index('stub')).toBe(-1);
+      expect(factoryMgr.get('stub')).toBe(null);
     });
 
     it('should return the instance', () => {
 
       factoryMgr.register('stub', FactoryStub);
 
-      expect(factoryMgr.unregister('stub')).to.equal(factoryMgr);
+      expect(factoryMgr.unregister('stub')).toBe(factoryMgr);
     });
   });
 });

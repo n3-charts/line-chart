@@ -5,20 +5,20 @@ module n3Charts.Factory.Series {
 
     public type: string = Options.SeriesOptions.TYPE.DOT;
 
-    updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
+    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.SeriesOptions, index: number, numSeries: number) {
       var {xAxis, yAxis} = this.getAxes(series);
 
       var dotsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
       var dotsRadius = 2;
 
       var dots = group.selectAll('.' + this.type)
-        .data(dotsData, (d: Utils.IPoint) => d.x);
+        .data(dotsData, (d: Utils.IPoint) => '' + d.x);
 
       var initPoint = (s) => {
         s.attr({
           r: (d) => dotsRadius,
           cx: (d) => xAxis.scale(d.x),
-          cy: (d) => yAxis.scale.range()[0]
+          cy: (d) => yAxis.range()[0]
         });
       };
 
@@ -73,9 +73,9 @@ module n3Charts.Factory.Series {
       }
     }
 
-    styleSeries(group: D3.Selection) {
+    styleSeries(group: d3.Selection<Options.SeriesOptions>) {
       group.style({
-        'stroke': (d: Options.SeriesOptions) => d.color
+        'stroke': (d) => d.color
       });
     }
   }

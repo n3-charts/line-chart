@@ -9,7 +9,7 @@ module n3Charts.Factory {
     private panOnX: Boolean;
     private panOnY: Boolean;
 
-    constrainOutgoingDomains(domains:Factory.IDomains):void {
+    constrainOutgoingDomains(domains:Utils.IDomains):void {
       if (!this.panOnX) {
         delete domains.x;
       }
@@ -84,9 +84,11 @@ module n3Charts.Factory {
 
       container.svg
         .on(k('mousedown'), () => {
-          if (!d3.event.altKey) {
+          var event = <MouseEvent>d3.event;
+
+          if (!event.altKey) {
             this.isActive = true;
-            [xStart, yStart] = d3.mouse(d3.event.currentTarget);
+            [xStart, yStart] = d3.mouse(event.currentTarget);
             this.eventMgr.on(k('window-mouseup'), onMouseUp);
             this.eventMgr.on(k('window-mousemove'), onMouseMove);
           }

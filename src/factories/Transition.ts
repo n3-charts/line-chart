@@ -16,7 +16,7 @@ module n3Charts.Factory {
       this.duration = Transition.defaultDuration;
     }
 
-    enter(t: D3.Transition.Transition) {
+    enter(t: d3.Transition<any>) {
       var duration = this.duration;
       var ease = this.ease;
       var n = t[0].length;
@@ -27,7 +27,7 @@ module n3Charts.Factory {
         .ease(ease);
     }
 
-    edit(t: D3.Transition.Transition) {
+    edit(t: d3.Transition<any>) {
       var duration = this.duration;
       var ease = this.ease;
       var delay = 0;
@@ -37,7 +37,7 @@ module n3Charts.Factory {
         .ease(ease);
     }
 
-    exit(t: D3.Transition.Transition) {
+    exit(t: d3.Transition<any>) {
       var duration = this.duration;
       var ease = this.ease;
       var delay = 0;

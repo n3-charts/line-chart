@@ -5,7 +5,7 @@ module n3Charts.Factory.Series {
 
     public type: string = Options.SeriesOptions.TYPE.LINE;
 
-    updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
+    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.SeriesOptions, index: number, numSeries: number) {
       group.classed('dashed', series.isDashed());
 
       var {xAxis, yAxis} = this.getAxes(series);
@@ -13,14 +13,14 @@ module n3Charts.Factory.Series {
       var lineData = this.data.getDatasetValues(series, this.options);
 
 
-      var initLine = d3.svg.line()
+      var initLine = d3.svg.line<Utils.IPoint>()
         .defined(series.defined)
         .x((d) => xAxis.scale(d.x))
-        .y(yAxis.scale.range()[0])
+        .y(<number>(yAxis.range()[0]))
         .interpolate(series.interpolation.mode)
         .tension(series.interpolation.tension);
 
-      var updateLine = d3.svg.line()
+      var updateLine = d3.svg.line<Utils.IPoint>()
         .defined(series.defined)
         .x((d) => xAxis.scale(d.x))
         .y((d) => yAxis.scale(d.y1))
@@ -67,11 +67,11 @@ module n3Charts.Factory.Series {
       }
     }
 
-    styleSeries(group: D3.Selection) {
+    styleSeries(group: d3.Selection<Options.SeriesOptions>) {
       group.style({
         'fill': 'none',
-        'stroke': (s: Options.SeriesOptions) => s.color,
-        'stroke-dasharray': (s: Options.SeriesOptions) => s.isDashed() ? '10,3' : undefined
+        'stroke': (s) => s.color,
+        'stroke-dasharray': (s) => s.isDashed() ? '10,3' : undefined
       });
     }
   }

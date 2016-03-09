@@ -1,11 +1,6 @@
 module n3Charts.Factory {
   'use strict';
 
-  export interface IDomains {
-    x: number[];
-    y: number[];
-  }
-
   export class SyncLayer extends Factory.BaseFactory {
 
     private unregisteringFunctions: Function[];
@@ -86,7 +81,7 @@ module n3Charts.Factory {
 
       if (!!this.attributes.domainsSyncKey) {
         this.unregisteringFunctions.push(
-          this.scope.$root.$on(this.attributes.domainsSyncKey, (event, domains:IDomains, type) => {
+          this.scope.$root.$on(this.attributes.domainsSyncKey, (event, domains:Utils.IDomains, type) => {
             if (event.targetScope === this.scope) {
               return;
             }
@@ -100,7 +95,7 @@ module n3Charts.Factory {
             }
 
             if (!domains.y) {
-              domains.y = yAxis.getScaleDomain();
+              domains.y = <number[]>yAxis.getScaleDomain();
             }
 
             if (type === 'zoom-end') {
@@ -124,13 +119,13 @@ module n3Charts.Factory {
           })
         );
 
-        callbacks.push((domains:IDomains, {type}) => {
+        callbacks.push((domains:Utils.IDomains, {type}) => {
           this.scope.$emit(this.attributes.domainsSyncKey, domains, type);
         });
       }
 
-      let getDomains = ():IDomains => {
-        return {x: xAxis.getScaleDomain(), y: yAxis.getScaleDomain()};
+      let getDomains = ():Utils.IDomains => {
+        return {x: xAxis.getScaleDomain(), y: <number[]>yAxis.getScaleDomain()};
       };
       let ping = (domains, args) => callbacks.forEach((fn) => fn(domains, args));
 

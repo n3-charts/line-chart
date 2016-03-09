@@ -3,7 +3,7 @@ module n3Charts.Utils {
 
   export class EventManager {
 
-    private _dispatch : D3.Dispatch;
+    private _dispatch : d3.Dispatch;
     private data: Utils.Data;
     private options: Options.Options;
 
@@ -49,7 +49,7 @@ module n3Charts.Utils {
       'window-mousemove',
     ];
 
-    init(events:string[]) : EventManager {
+    init(events:string[]): EventManager {
       // Generate a new d3.dispatch event dispatcher
       this._dispatch = d3.dispatch.apply(this, events);
 
@@ -69,7 +69,7 @@ module n3Charts.Utils {
       return;
     }
 
-    on(event:string, callback:Function) : EventManager {
+    on(event:string, callback:(...args:any[]) => any) : EventManager {
       if (this.strictMode && EventManager.EVENTS.indexOf(event.split('.')[0]) === -1) {
         throw new Error(`Unknown event: ${event}`);
       }
@@ -93,7 +93,7 @@ module n3Charts.Utils {
     }
 
     datumEnter(series: Options.SeriesOptions, options: Options.Options) {
-      return (selection: D3.Selection) => {
+      return (selection: d3.Selection<Utils.IPoint>) => {
         return selection.on('mouseenter', (d, i) => {
           this.trigger('enter', d, i, series, options);
         });
@@ -101,7 +101,7 @@ module n3Charts.Utils {
     }
 
     datumOver(series: Options.SeriesOptions, options: Options.Options) {
-      return (selection: D3.Selection) => {
+      return (selection: d3.Selection<Utils.IPoint>) => {
         return selection.on('mouseover', (d, i) => {
           this.trigger('over', d, i, series, options);
         });
@@ -109,7 +109,7 @@ module n3Charts.Utils {
     }
 
     datumMove(series: Options.SeriesOptions, options: Options.Options) {
-      return (selection: D3.Selection) => {
+      return (selection: d3.Selection<Utils.IPoint>) => {
         return selection.on('mousemove', (d, i) => {
           this.trigger('over', d, i, series, options);
         });
@@ -117,7 +117,7 @@ module n3Charts.Utils {
     }
 
     datumLeave(series: Options.SeriesOptions, options: Options.Options) {
-      return (selection: D3.Selection) => {
+      return (selection: d3.Selection<Utils.IPoint>) => {
         return selection.on('mouseleave', (d, i) => {
           this.trigger('leave', d, i, series, options);
         });
@@ -125,7 +125,7 @@ module n3Charts.Utils {
     }
 
     // That would be so cool to have native dblclick support in D3...
-    listenForDblClick(selection:D3.Selection, callback: Function, listenerSuffix:string):D3.Selection {
+    listenForDblClick(selection: d3.Selection<any>, callback: Function, listenerSuffix:string): d3.Selection<any> {
       let down,
         tolerance = 5,
         last,
