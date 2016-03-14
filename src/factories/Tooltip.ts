@@ -245,8 +245,8 @@ module n3Charts.Factory {
       var xScale = this.factoryMgr.get('x-axis').scale;
       var yScale = (side) => this.factoryMgr.get(side + '-axis').scale;
 
-      var radius = 3;
       var circlePath = (r, cx, cy) => {
+        r = r ? r : 3;
         return `M ${cx} ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 `;
       };
 
@@ -270,20 +270,22 @@ module n3Charts.Factory {
 
       var updateDots = (s) => {
         s.select('.tooltip-dot.y1').attr({
-          'd': (d) => circlePath(radius, xScale(d.row.x), yScale(d.series.axis)(d.row.y1)),
+          'd': (d) => circlePath(d.series.thickness, xScale(d.row.x), yScale(d.series.axis)(d.row.y1)),
           'stroke': (d) => d.series.color
-        });
+        })
+        .style('stroke-width': (d) => d.series.thickness ? d.series.thickness : 3);
 
         s.select('.tooltip-dot.y0').attr({
           'd': (d) => {
             if (d.series.hasTwoKeys()) {
-              return circlePath(radius, xScale(d.row.x), yScale(d.series.axis)(d.row.y0));
+              return circlePath(d.series.thickness, xScale(d.row.x), yScale(d.series.axis)(d.row.y0));
             }
 
             return '';
           },
           'stroke': (d) => d.series.color
-        });
+        })
+        .style('stroke-width': (d) => d.series.thickness ? d.series.thickness : 3);
       };
 
       var dots = this.dots.selectAll('.tooltip-dots-group')

@@ -11,6 +11,7 @@ module n3Charts.Options {
     defined: (point: Utils.IPoint) => boolean;
     color: string;
     visible: boolean;
+    thickness: number;
     interpolation: {tension: number, mode: string};
     hasType: (type: string) => boolean;
   }
@@ -24,6 +25,7 @@ module n3Charts.Options {
     public type: string[] = ['line'];
     public id: string;
     public color: string;
+    public thickness: number;
     public visible: boolean = true;
     public defined = (v: Utils.IPoint) => true;
 
