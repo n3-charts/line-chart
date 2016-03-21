@@ -43,7 +43,10 @@ module n3Charts.Factory.Series {
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
           .attr('d', (d) => updateLine(d))
-          .style('stroke-width', series.thickness);
+          .style({
+            'opacity': series.visible ? 1 : 0,
+            'stroke-width': series.thickness ? series.thickness : 1
+          });
 
         line.exit()
           .transition()
@@ -60,7 +63,10 @@ module n3Charts.Factory.Series {
 
         line
           .attr('d', (d) => updateLine(d))
-          .style('stroke-width', series.thickness);
+          .style({
+            'opacity': series.visible ? 1 : 0,
+            'stroke-width': series.thickness ? series.thickness : 1
+          });
 
         line.exit()
           .remove();

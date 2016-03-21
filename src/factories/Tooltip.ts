@@ -273,7 +273,7 @@ module n3Charts.Factory {
           'd': (d) => circlePath(d.series.thickness, xScale(d.row.x), yScale(d.series.axis)(d.row.y1)),
           'stroke': (d) => d.series.color
         })
-        .style('stroke-width': (d) => d.series.thickness ? d.series.thickness : 3);
+        .style('stroke-width', (d) => d.series.thickness ? d.series.thickness : 3);
 
         s.select('.tooltip-dot.y0').attr({
           'd': (d) => {
@@ -285,7 +285,7 @@ module n3Charts.Factory {
           },
           'stroke': (d) => d.series.color
         })
-        .style('stroke-width': (d) => d.series.thickness ? d.series.thickness : 3);
+        .style('stroke-width', (d) => d.series.thickness ? d.series.thickness : 3);
       };
 
       var dots = this.dots.selectAll('.tooltip-dots-group')
