@@ -9,7 +9,7 @@ module n3Charts.Factory.Series {
       var {xAxis, yAxis} = this.getAxes(series);
 
       var dotsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
-      var dotsRadius = 2;
+      var dotsRadius = series.thickness ? +series.thickness : 2;
 
       var dots = group.selectAll('.' + this.type)
         .data(dotsData, (d: Utils.IPoint) => d.x);
@@ -19,7 +19,8 @@ module n3Charts.Factory.Series {
           r: (d) => dotsRadius,
           cx: (d) => xAxis.scale(d.x),
           cy: (d) => yAxis.scale.range()[0]
-        });
+        })
+        .style('stroke-width', dotsRadius / 2);
       };
 
       var updatePoint = (s) => {
