@@ -44,7 +44,7 @@ Name | Type | Default | Description | Mandatory
 `color` | String | `undefined` | The series's color. Any valid CSS value will work. | No
 `interpolation` | Object | `undefined` | Can be something like `{mode: 'cardinal', tension: 0.7}`. More about that [here](https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate) | No
 `type` | String or Array | `''` | The series's type(s). Can be any combination of `line`, `area`, `dot`, `column`. | No
-`visibility` | Boolean | `true` | The series's visibility. Updated on legend click. | No
+`visible` | Boolean | `true` | The series's visibility. Updated on legend click. | No
 `defined` | Function | `undefined` | Helps tell the chart where this series is defined or not, regarding its data. More on that [here](https://github.com/mbostock/d3/wiki/SVG-Shapes#line_defined) | No
 
 ### Axes
