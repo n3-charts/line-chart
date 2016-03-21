@@ -13,6 +13,7 @@ module n3Charts.Factory {
 
     private zoomOnX: Boolean;
     private zoomOnY: Boolean;
+    private panOff: Boolean;
 
 
     create() {
@@ -37,6 +38,7 @@ module n3Charts.Factory {
 
       this.zoomOnX = options.zoom.x;
       this.zoomOnY = options.zoom.y;
+      this.panOff = !(options.pan.x || options.pan.y);
 
       if (!this.zoomOnX && !this.zoomOnY) {
         return;
@@ -102,15 +104,15 @@ module n3Charts.Factory {
           this.eventMgr.trigger('zoom-end');
 
           xStart = xEnd = yStart = yEnd = undefined;
-          turnBackOn();
         }
+        turnBackOn && turnBackOn();
 
         this.eventMgr.on(k('window-mouseup'), null);
       };
 
       container.svg
         .on(k('mousedown'), () => {
-          if (d3.event.altKey) {
+          if (d3.event.altKey || this.panOff) {
             turnBackOn = this.factoryMgr.turnFactoriesOff(['tooltip']);
             this.isActive = true;
             this.eventMgr.on(k('window-mouseup'), onMouseUp);
