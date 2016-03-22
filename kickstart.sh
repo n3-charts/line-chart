@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
 
 npm install
-tsd reinstall -s
+typings install
 gulp
