@@ -22,8 +22,8 @@ describe('n3Charts.Factory.Series.SeriesFactory', () => {
       seriesFactory.createContainer(d3.select(parentContainer));
       dataContainer = <SVGElement> domElement[0].getElementsByTagName('g')[0];
 
-      expect(dataContainer).not.to.equal(undefined);
-      expect(dataContainer.tagName).to.equal('g');
+      expect(dataContainer).not.toBe(undefined);
+      expect(dataContainer.tagName).toBe('g');
     });
 
     it('should provide a svg property', () => {
@@ -31,12 +31,12 @@ describe('n3Charts.Factory.Series.SeriesFactory', () => {
       var parentContainer = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
       var svgProp: SVGElement = undefined;
 
-      expect(seriesFactory.svg).to.equal(undefined);
+      expect(seriesFactory.svg).toBe(undefined);
 
       seriesFactory.createContainer(d3.select(parentContainer));
 
-      expect(seriesFactory.svg).to.not.equal(undefined);
-      expect(seriesFactory.svg[0][0].tagName).to.equal('g');
+      expect(seriesFactory.svg).not.toEqual(undefined);
+      expect((<SVGElement>seriesFactory.svg[0][0]).tagName).toBe('g');
     });
   });
 });

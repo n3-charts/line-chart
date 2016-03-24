@@ -21,20 +21,20 @@ describe('n3Charts.Factory.Container', () => {
 
       rootNode = <SVGElement> domElement[0].getElementsByTagName('svg')[0];
 
-      expect(rootNode.getAttribute('class')).to.equal('chart');
+      expect(rootNode.getAttribute('class')).toBe('chart');
     });
 
     it('should provide a svg property', () => {
 
       var svgProp: SVGElement = undefined;
 
-      expect(container.svg).to.equal(undefined);
+      expect(container.svg).toBe(undefined);
 
       container.createRoot();
 
-      svgProp = container.svg[0][0];
+      svgProp = <SVGElement>container.svg[0][0];
 
-      expect(svgProp.getAttribute('class')).to.equal('chart');
+      expect(svgProp.getAttribute('class')).toBe('chart');
     });
 
   });
@@ -50,21 +50,21 @@ describe('n3Charts.Factory.Container', () => {
 
       visContainer = <SVGElement> domElement[0].getElementsByTagName('g')[0];
 
-      expect(visContainer.getAttribute('class')).to.equal('container');
+      expect(visContainer.getAttribute('class')).toBe('container');
     });
 
     it('should provide a vis property', () => {
 
       var visProp: SVGElement = undefined;
 
-      expect(container.vis).to.equal(undefined);
+      expect(container.vis).toBe(undefined);
 
       container.createRoot();
       container.createContainer();
 
-      visProp = container.vis[0][0];
+      visProp = <SVGElement>container.vis[0][0];
 
-      expect(visProp.getAttribute('class')).to.equal('container');
+      expect(visProp.getAttribute('class')).toBe('container');
     });
 
     it('should create an axes container', () => {
@@ -76,7 +76,7 @@ describe('n3Charts.Factory.Container', () => {
 
       dataContainer = <SVGElement> domElement[0].getElementsByTagName('g')[1];
 
-      expect(dataContainer.getAttribute('class')).to.equal('axes');
+      expect(dataContainer.getAttribute('class')).toBe('axes');
     });
 
     it('should create a data container', () => {
@@ -88,21 +88,21 @@ describe('n3Charts.Factory.Container', () => {
 
       dataContainer = <SVGElement> domElement[0].getElementsByTagName('g')[2];
 
-      expect(dataContainer.getAttribute('class')).to.equal('data');
+      expect(dataContainer.getAttribute('class')).toBe('data');
     });
 
     it('should provide a data property', () => {
 
       var dataProp: SVGElement = undefined;
 
-      expect(container.data).to.equal(undefined);
+      expect(container.data).toBe(undefined);
 
       container.createRoot();
       container.createContainer();
 
-      dataProp = container.data[0][0];
+      dataProp = <SVGElement>container.data[0][0];
 
-      expect(dataProp.getAttribute('class')).to.equal('data');
+      expect(dataProp.getAttribute('class')).toBe('data');
     });
 
   });

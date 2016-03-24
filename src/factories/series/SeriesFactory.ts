@@ -3,7 +3,7 @@ module n3Charts.Factory.Series {
 
   export class SeriesFactory extends n3Charts.Factory.BaseFactory {
 
-    public svg: D3.Selection;
+    public svg: d3.Selection<any>;
     public type: string;
 
     static containerClassSuffix: string = '-data';
@@ -31,7 +31,7 @@ module n3Charts.Factory.Series {
       this.softUpdate();
     }
 
-    getAxes(series: Options.SeriesOptions): {xAxis: Factory.Axis, yAxis: Factory.Axis} {
+    getAxes(series: Options.ISeriesOptions): {xAxis: Factory.Axis, yAxis: Factory.Axis} {
       return {
         xAxis: this.factoryMgr.get('x-axis'),
         yAxis: this.factoryMgr.get(series.axis + '-axis')
@@ -47,7 +47,7 @@ module n3Charts.Factory.Series {
       this.svg.remove();
     }
 
-    createContainer(parent: D3.Selection) {
+    createContainer(parent: d3.Selection<any>) {
       this.svg = parent
         .append('g')
         .attr('class', this.type + SeriesFactory.containerClassSuffix);
@@ -58,13 +58,13 @@ module n3Charts.Factory.Series {
       var groups = this.svg
         .selectAll('.' + this.type + SeriesFactory.seriesClassSuffix)
         // Use the series id as key for the join
-        .data(series, (d: Options.ISeriesOptions) => d.id);
+        .data(series, (d) => d.id);
 
       // Create a new group for every new series
       groups.enter()
         .append('g')
         .attr({
-          class: (d: Options.ISeriesOptions) => {
+          class: (d) => {
             return this.type + SeriesFactory.seriesClassSuffix + ' ' + d.id;
           }
         });
@@ -78,21 +78,23 @@ module n3Charts.Factory.Series {
         .remove();
     }
 
-    updateSeries(groups: D3.Selection, series: Options.ISeriesOptions[]) {
+    updateSeries(groups: d3.Selection<Options.ISeriesOptions>, series: Options.ISeriesOptions[]) {
       // Workaround to retrieve the D3.Selection
       // in the callback function (bound to keyword this)
       var self = this;
-      groups.each(function(d: Options.ISeriesOptions, i: number) {
-        var group = d3.select(this);
+      groups.each(function(d, i) {
+
+        // Hmmmm TypeScript...
+        var group = <d3.selection.Update<Options.ISeriesOptions>>d3.select(this);
         self.updateData(group, d, i, series.length);
       });
     }
 
-    updateData(group: D3.Selection, series: Options.ISeriesOptions, index: number, numSeries: number) {
+    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.ISeriesOptions, index: number, numSeries: number) {
       // this needs to be overwritten
     }
 
-    styleSeries(group: D3.Selection) {
+    styleSeries(group: d3.Selection<Options.ISeriesOptions>) {
       // this needs to be overwritten
     }
   }

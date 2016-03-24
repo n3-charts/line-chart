@@ -47,7 +47,7 @@ module n3Charts.Utils {
       return this.sets[series.dataset].values.map(fn);
     }
 
-    public static getMinDistance(data, scale, key = 'x', range?): number {
+    public static getMinDistance(data, axis: Factory.Axis, key = 'x', range?): number {
 
       return <number>d3.min(
         // Compute the minimum difference along an axis on all series
@@ -55,7 +55,7 @@ module n3Charts.Utils {
           // Compute minimum delta
           return series
             // Look at all scaled values on the axis
-            .map((d) => scale(d[key]))
+            .map((d) => axis.scale(d[key]))
             // Select only columns in the visible range
             .filter((d) => {
               return range ? d >= range[0] && d <= range[1] : true;

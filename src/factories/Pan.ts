@@ -9,7 +9,7 @@ module n3Charts.Factory {
     private panOnX: Boolean;
     private panOnY: Boolean;
 
-    constrainOutgoingDomains(domains:Factory.IDomains):void {
+    constrainOutgoingDomains(domains:Utils.IDomains):void {
       if (!this.panOnX) {
         delete domains.x;
       }
@@ -21,19 +21,19 @@ module n3Charts.Factory {
 
     move(deltaX:number, deltaY:number) {
       if (deltaX !== 0) {
-        var x1 = this.factoryMgr.get('x-axis').scale;
-        var x2 = this.factoryMgr.get('x2-axis').scale;
+        var x1 = this.factoryMgr.get('x-axis');
+        var x2 = this.factoryMgr.get('x2-axis');
 
-        x1.domain(x1.range().map((x) => x + deltaX).map(x1.invert));
-        x2.domain(x1.domain());
+        x1.setDomain(x1.range().map((x) => x + deltaX).map(x1.invert, x1));
+        x2.setDomain(x1.getDomain());
       }
 
       if (deltaY !== 0) {
-        var y1 = this.factoryMgr.get('y-axis').scale;
-        var y2 = this.factoryMgr.get('y2-axis').scale;
+        var y1 = this.factoryMgr.get('y-axis');
+        var y2 = this.factoryMgr.get('y2-axis');
 
-        y1.domain(y1.range().map((x) => x + deltaY).map(y1.invert));
-        y2.domain(y2.range().map((x) => x + deltaY).map(y2.invert));
+        y1.setDomain(y1.range().map((x) => x + deltaY).map(y1.invert, y1));
+        y2.setDomain(y2.range().map((x) => x + deltaY).map(y2.invert, y2));
       }
     }
 
@@ -84,9 +84,11 @@ module n3Charts.Factory {
 
       container.svg
         .on(k('mousedown'), () => {
-          if (!d3.event.altKey) {
+          var event = <MouseEvent>d3.event;
+
+          if (!event.altKey) {
             this.isActive = true;
-            [xStart, yStart] = d3.mouse(d3.event.currentTarget);
+            [xStart, yStart] = d3.mouse(event.currentTarget);
             this.eventMgr.on(k('window-mouseup'), onMouseUp);
             this.eventMgr.on(k('window-mousemove'), onMouseMove);
           }

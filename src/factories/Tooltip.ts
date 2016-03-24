@@ -8,9 +8,9 @@ module n3Charts.Factory {
 
   export class Tooltip extends Factory.BaseFactory {
 
-    private svg:D3.Selection;
-    private line:D3.Selection;
-    private dots:D3.Selection;
+    private svg: d3.Selection<any>;
+    private line: d3.Selection<any>;
+    private dots: d3.Selection<any>;
 
     private options: Options.Options;
 

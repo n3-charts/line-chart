@@ -1,11 +1,11 @@
-/// <reference path='../../typings/angularjs/angular.d.ts' />
-/// <reference path='../../typings/jquery/jquery.d.ts' />
-/// <reference path='../../typings/d3/d3.d.ts' />
+/// <reference path='../../typings/browser.d.ts' />
 
 /// <reference path='../svg/_index.ts' />
 /// <reference path='../options/_index.ts' />
 /// <reference path='../utils/_index.ts' />
 /// <reference path='../factories/_index.ts' />
+
+/// <reference path='./SyncLayer.ts' />
 
 module n3Charts {
   'use strict';

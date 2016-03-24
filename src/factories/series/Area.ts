@@ -5,23 +5,23 @@ module n3Charts.Factory.Series {
 
     public type: string = Options.SeriesOptions.TYPE.AREA;
 
-    updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
+    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.SeriesOptions, index: number, numSeries: number) {
       var {xAxis, yAxis} = this.getAxes(series);
 
       var areaData = this.data.getDatasetValues(series, this.options);
 
-      var initArea = d3.svg.area()
+      var initArea = d3.svg.area<Utils.IPoint>()
         .defined(series.defined)
         .x((d) => xAxis.scale(d.x))
-        .y0(yAxis.scale.range()[0])
-        .y1(yAxis.scale.range()[0])
+        .y0(<number>(yAxis.range()[0]))
+        .y1(<number>(yAxis.range()[0]))
         .interpolate(series.interpolation.mode)
         .tension(series.interpolation.tension);
 
-      var updateArea = d3.svg.area()
+      var updateArea = d3.svg.area<Utils.IPoint>()
         .defined(series.defined)
         .x((d) => xAxis.scale(d.x))
-        .y0((d) => isNaN(yAxis.scale(d.y0)) ? yAxis.scale.range()[0] : yAxis.scale(d.y0))
+        .y0((d) => isNaN(yAxis.scale(d.y0)) ? <number>yAxis.range()[0] : yAxis.scale(d.y0))
         .y1((d) => yAxis.scale(d.y1))
         .interpolate(series.interpolation.mode)
         .tension(series.interpolation.tension);
@@ -65,10 +65,10 @@ module n3Charts.Factory.Series {
 
     }
 
-    styleSeries(group: D3.Selection) {
+    styleSeries(group: d3.Selection<Options.SeriesOptions>) {
       group.style({
-        'fill': (s: Options.SeriesOptions) => s.color,
-        'stroke': (s: Options.SeriesOptions) => s.color
+        'fill': (s) => s.color,
+        'stroke': (s) => s.color
       });
     }
   }

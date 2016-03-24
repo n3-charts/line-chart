@@ -1,8 +1,8 @@
 /// <reference path='../test.spec.ts' />
 
 describe('n3charts.LineChart', () => {
-  beforeEach(module('testUtils'));
-  beforeEach(module('n3-line-chart'));
+  beforeEach(angular.mock.module('testUtils'));
+  beforeEach(angular.mock.module('n3-line-chart'));
 
   var element:any;
   var innerScope: any;
@@ -25,10 +25,10 @@ describe('n3charts.LineChart', () => {
     outerScope = generated.outerScope;
 
     outerScope.$apply(function() {
-      outerScope.myEnterCb = sinon.spy();
-      outerScope.myOverCb = sinon.spy();
-      outerScope.myMoveCb = sinon.spy();
-      outerScope.myLeaveCb = sinon.spy();
+      outerScope.myEnterCb = jasmine.createSpy('myEnterCb');
+      outerScope.myOverCb = jasmine.createSpy('myOverCb');
+      outerScope.myMoveCb = jasmine.createSpy('myMoveCb');
+      outerScope.myLeaveCb = jasmine.createSpy('myLeaveCb');
 
       outerScope.myOptions = {
         series: [

@@ -28,105 +28,105 @@ describe('n3Charts.Options.SeriesOptions', () => {
       var testing = seriesOptions instanceof SeriesOptions;
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create an axis property with the type string', () => {
       var testing = angular.isString(seriesOptions.axis);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should assign the proper axis property', () => {
       var testing = seriesOptions.axis;
       var expected = 'y';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create a dataset property with the type string', () => {
       var testing = angular.isString(seriesOptions.dataset);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should assign the proper dataset property', () => {
       var testing = seriesOptions.dataset;
       var expected = 'dataset0';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create a key property with the proper type', () => {
       var testing = angular.isObject(seriesOptions.key);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should assign the proper key property', () => {
       var testing = seriesOptions.key;
       var expected = {y1: 'val_0'};
 
-      expect(testing).to.eql(expected);
+      expect(testing).toEqual(expected);
     });
 
     it('should create a color property with the type string', () => {
       var testing = angular.isString(seriesOptions.color);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should assign the proper color property', () => {
       var testing = seriesOptions.color;
       var expected = 'steelblue';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create an id property with the type string', () => {
       var testing = angular.isString(seriesOptions.id);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should assign the proper id property', () => {
       var testing = seriesOptions.id;
       var expected = 'mySeries_0';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create a label property with the type string', () => {
       var testing = angular.isString(seriesOptions.label);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should assign the proper label property', () => {
       var testing = seriesOptions.label;
       var expected = 'You\'re the series';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create a type property with the type array', () => {
       var testing = angular.isArray(seriesOptions.type);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should assign the proper type property', () => {
       var testing = seriesOptions.type[0];
       var expected = 'area';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should use default type if no option defined', () => {
@@ -135,7 +135,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
       var testing = seriesOptions.type[0];
       var expected = 'line';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should use default visibility if no option defined', () => {
@@ -144,7 +144,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
       var testing = seriesOptions.visible;
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
   });
 
@@ -154,7 +154,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
     });
 
     it('should return only valid types', () => {
-      var warnStub = sinon.stub(console, 'warn');
+      var warnSpy = spyOn(console, 'warn');
 
       var arg = [
         'foo',
@@ -169,15 +169,13 @@ describe('n3Charts.Options.SeriesOptions', () => {
         SeriesOptions.TYPE.LINE
       ];
 
-      expect(testing).to.eql(expected);
+      expect(testing).toEqual(expected);
 
-      expect(warnStub.callCount).to.equal(2);
-      expect(warnStub.args).to.eql([
+      expect(warnSpy).toHaveBeenCalledTimes(2);
+      expect(warnSpy.calls.allArgs()).toEqual([
         ['Unknow series type : foo'],
         ['Unknow series type : bar']
       ]);
-
-      warnStub.restore();
     });
   });
 
@@ -192,7 +190,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
       var testing = seriesOptions.sanitizeAxis(arg);
       var expected = 'y';
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should throw a type error when axis argument is not valid', () => {
@@ -200,7 +198,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
 
       expect(() => {
           seriesOptions.sanitizeAxis(arg);
-      }).to.throwError();
+      }).toThrow();
     });
   });
 
@@ -223,14 +221,14 @@ describe('n3Charts.Options.SeriesOptions', () => {
       var testing = visible;
       var expected = false;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should  not change the current visibility', () => {
       var testing = seriesOptions.visible;
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
   });
 });

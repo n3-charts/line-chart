@@ -16,7 +16,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = options instanceof Options;
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create a series property with the type array', () => {
@@ -25,7 +25,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = angular.isArray(options.series);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create a margin property with the type object', () => {
@@ -34,7 +34,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = angular.isObject(options.margin);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create an axes property with the type object', () => {
@@ -43,7 +43,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = angular.isObject(options.axes);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
   });
 
@@ -58,7 +58,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = angular.isArray(opt.series);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should create an object as margin property', () => {
@@ -67,7 +67,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = angular.isObject(opt.margin);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should throw a type error when margin argument is not an object', () => {
@@ -75,7 +75,7 @@ describe('n3Charts.Options.Options', () => {
 
       expect(() => {
           options.sanitizeOptions(arg);
-      }).to.throwError();
+      }).toThrow();
     });
 
     it('should create an object as axes property', () => {
@@ -84,7 +84,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = angular.isObject(opt.axes);
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
 
     it('should throw a type error when axes argument is not an object', () => {
@@ -92,7 +92,7 @@ describe('n3Charts.Options.Options', () => {
 
       expect(() => {
           options.sanitizeOptions(arg);
-      }).to.throwError();
+      }).toThrow();
     });
   });
 
@@ -122,7 +122,7 @@ describe('n3Charts.Options.Options', () => {
         right: 0
       };
 
-      expect(testing).to.eql(expected);
+      expect(testing).toEqual(expected);
     });
   });
 
@@ -148,7 +148,7 @@ describe('n3Charts.Options.Options', () => {
       var testing = series[0] instanceof SeriesOptions;
       var expected = true;
 
-      expect(testing).to.equal(expected);
+      expect(testing).toBe(expected);
     });
   });
 
@@ -165,7 +165,7 @@ describe('n3Charts.Options.Options', () => {
         var testing = grid;
         var expected = {x: false, y: true};
 
-        expect(testing).to.eql(expected);
+        expect(testing).toEqual(expected);
       });
     });
   });
@@ -186,21 +186,21 @@ describe('n3Charts.Options.Options', () => {
         var testing = axes[AxisOptions.SIDE.X] instanceof AxisOptions;
         var expected = true;
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
       });
 
       it('should return an object containing an AxisOptions instance for the y axis', () => {
         var testing = axes[AxisOptions.SIDE.Y] instanceof AxisOptions;
         var expected = true;
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
       });
 
       it('should assume the axis is linear by default', () => {
         var testing = axes[AxisOptions.SIDE.Y].type;
         var expected = 'linear';
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
       });
     });
 
@@ -224,21 +224,21 @@ describe('n3Charts.Options.Options', () => {
         var testing = axes[AxisOptions.SIDE.Y].min;
         var expected = -10;
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
       });
 
       it('should detect min', () => {
         var testing = axes[AxisOptions.SIDE.Y].max;
         var expected = 10;
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
       });
 
       it('should have undefined by default', () => {
         var testing = axes[AxisOptions.SIDE.X].min;
         var expected = undefined;
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
       });
     });
 
@@ -262,21 +262,21 @@ describe('n3Charts.Options.Options', () => {
         var testing = axes[AxisOptions.SIDE.X].min;
         var expected = new Date(0);
 
-        expect(testing).to.eql(expected);
+        expect(testing).toEqual(expected);
       });
 
       it('should detect min', () => {
         var testing = axes[AxisOptions.SIDE.X].max;
         var expected = new Date(2);
 
-        expect(testing).to.eql(expected);
+        expect(testing).toEqual(expected);
       });
 
       it('should have unedfined by default', () => {
         var testing = axes[AxisOptions.SIDE.Y].min;
         var expected = undefined;
 
-        expect(testing).to.equal(expected);
+        expect(testing).toBe(expected);
       });
     });
   });
@@ -317,7 +317,7 @@ describe('n3Charts.Options.Options', () => {
       options.series[2]
       ];
 
-      expect(testing).to.eql(expected);
+      expect(testing).toEqual(expected);
     });
 
     it('should return all series for type AREA', () => {
@@ -326,20 +326,20 @@ describe('n3Charts.Options.Options', () => {
       options.series[1]
       ];
 
-      expect(testing).to.eql(expected);
+      expect(testing).toEqual(expected);
     });
 
     it('should return all series for type COLUMN', () => {
       var testing = options.getSeriesByType(SeriesOptions.TYPE.COLUMN);
       var expected = [];
 
-      expect(testing).to.eql(expected);
+      expect(testing).toEqual(expected);
     });
 
     it('should throw an error for an invalid series type', () => {
       expect(() => {
         options.getSeriesByType('invalid type');
-      }).to.throwError();
+      }).toThrow();
     });
   });
 });

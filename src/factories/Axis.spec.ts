@@ -17,13 +17,13 @@ describe('n3Charts.Factory.Axis', () => {
 
       axis = new n3Charts.Factory.Axis('x');
 
-      expect(axis).to.be.a(n3Charts.Factory.Axis);
+      expect(axis).toEqual(jasmine.any(n3Charts.Factory.Axis));;
     });
 
     it('should throw an error if side isn\'t x or y', () => {
-      expect(() => new n3Charts.Factory.Axis('x')).to.not.throwError();
-      expect(() => new n3Charts.Factory.Axis('y')).to.not.throwError();
-      expect(() => new n3Charts.Factory.Axis('pouet')).to.throwError();
+      expect(() => new n3Charts.Factory.Axis('x')).not.toThrow();
+      expect(() => new n3Charts.Factory.Axis('y')).not.toThrow();
+      expect(() => new n3Charts.Factory.Axis('pouet')).toThrow();
     });
   });
 
@@ -31,11 +31,11 @@ describe('n3Charts.Factory.Axis', () => {
     axis = new n3Charts.Factory.Axis('x');
 
     axis.scale = axis.getScale();
-    axis.d3axis = axis.getAxis(axis.scale, new n3Charts.Options.AxisOptions({
+    axis.d3axis = axis.getAxis(axis['_scale'], new n3Charts.Options.AxisOptions({
       ticks: 5
     }));
 
     var clone = axis.cloneAxis();
-    expect(clone.ticks()).to.eql(axis.d3axis.ticks());
+    expect(clone.ticks()).toEqual(axis.d3axis.ticks());
   });
 });

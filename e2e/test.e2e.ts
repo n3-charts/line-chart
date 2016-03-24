@@ -1,4 +1,2 @@
-/// <reference path='../src/angular/LineChart.ts' />
-
-/// <reference path='../typings/angular-protractor/angular-protractor.d.ts' />
-/// <reference path='../typings/jasmine/jasmine.d.ts' />
+/// <reference path='../typings/browser.d.ts' />
+/// <reference path='../src/angularjs/LineChart.ts' />

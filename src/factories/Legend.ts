@@ -3,7 +3,7 @@ module n3Charts.Factory {
 
   export class Legend extends Factory.BaseFactory {
 
-    private div:D3.Selection;
+    private div:d3.Selection<any>;
 
     constructor(private element: HTMLElement) {
       super();
@@ -21,7 +21,7 @@ module n3Charts.Factory {
     }
 
     legendClick() {
-      return (selection: D3.Selection) => {
+      return (selection: d3.Selection<Options.SeriesOptions>) => {
         return selection.on('click', (series) => {
           this.eventMgr.trigger('legend-click', series);
         });

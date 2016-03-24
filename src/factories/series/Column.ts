@@ -9,7 +9,7 @@ module n3Charts.Factory.Series {
     private outerPadding: number = (this.gapFactor / 2) * 3;
     private columnsWidth: number = 0;
 
-    public innerXScale: D3.Scale.OrdinalScale;
+    public innerXScale: d3.scale.Ordinal<string, number>;
 
     softUpdate() {
       var series = this.options.getSeriesByType(this.type).filter((s) => s.visible);
@@ -33,7 +33,7 @@ module n3Charts.Factory.Series {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
 
       var colsDatasets = this.data.getDatasets(series, options);
-      var delta = Utils.Data.getMinDistance(colsDatasets, xAxis.scale, 'x');
+      var delta = Utils.Data.getMinDistance(colsDatasets, xAxis, 'x');
 
       this.columnsWidth = delta < Number.MAX_VALUE ? delta / series.length : 10;
     }
@@ -50,7 +50,7 @@ module n3Charts.Factory.Series {
       return this.innerXScale(series.id) + this.innerXScale.rangeBand() / 2;
     }
 
-    updateData(group: D3.Selection, series: Options.SeriesOptions, index: number, numSeries: number) {
+    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.SeriesOptions, index: number, numSeries: number) {
       var {xAxis, yAxis} = this.getAxes(series);
 
       var colsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
@@ -77,7 +77,7 @@ module n3Charts.Factory.Series {
       };
 
       var cols = group.selectAll('.' + this.type)
-        .data(colsData, (d: Utils.IPoint) => d.x);
+        .data(colsData, (d) => '' + d.x);
 
       if (this.factoryMgr.get('transitions').isOn()) {
         cols.enter()
@@ -122,10 +122,10 @@ module n3Charts.Factory.Series {
       }
     }
 
-    styleSeries(group: D3.Selection) {
+    styleSeries(group: d3.Selection<Options.SeriesOptions>) {
       group.style({
-        'fill': (d: Options.SeriesOptions) => d.color,
-        'stroke': (d: Options.SeriesOptions) => d.color,
+        'fill': (d) => d.color,
+        'stroke': (d) => d.color,
         'stroke-width': 1
       });
     }

@@ -32,7 +32,7 @@ describe('n3Charts.Factory.BaseFactory', () => {
 
     it('should parse arguments', () => {
 
-      expect(() => childFactoryStub.init('test', eventMgr, factoryMgr)).to.not.throwError();
+      expect(() => childFactoryStub.init('test', eventMgr, factoryMgr)).not.toThrow();
     });
   });
 
@@ -48,22 +48,22 @@ describe('n3Charts.Factory.BaseFactory', () => {
 
       childFactoryStub.init('test', eventMgr, factoryMgr);
 
-      expect(externalState).to.equal(undefined);
+      expect(externalState).toBe(undefined);
 
       eventMgr.trigger('create');
 
-      expect(externalState).to.equal('created');
-      expect(childFactoryStub.internalState).to.equal('created stub');
+      expect(externalState).toBe('created');
+      expect(childFactoryStub.internalState).toBe('created stub');
 
       eventMgr.trigger('update');
 
-      expect(externalState).to.equal('updated');
-      expect(childFactoryStub.internalState).to.equal('updated stub');
+      expect(externalState).toBe('updated');
+      expect(childFactoryStub.internalState).toBe('updated stub');
 
       eventMgr.trigger('destroy');
 
-      expect(externalState).to.equal('destroyed');
-      expect(childFactoryStub.internalState).to.equal('destroyed stub');
+      expect(externalState).toBe('destroyed');
+      expect(childFactoryStub.internalState).toBe('destroyed stub');
     });
   });
 });

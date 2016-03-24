@@ -23,13 +23,13 @@ require('./gulp-tasks')(gulp, $, paths);
 var isWatching = false;
 
 // Extensive watch on the source and unit test files
-var watchTasks = ['ts:lint:source', 'ts:lint:spec', 'ts:compile:source', 'test:spec', 'scss:copy'];
+var watchTasks = ['ts:compile:source', 'test:spec', 'scss:copy'];
 gulp.task('watch', watchTasks, function () {
   isWatching = true;
-  gulp.watch([paths.source.from], ['ts:lint:source', 'ts:compile:source', 'ts:lint:spec', 'test:spec'])
-  gulp.watch([paths.test.from], ['ts:lint:spec', 'test:spec'])
+  gulp.watch([paths.source.from], ['ts:compile:source', 'test:spec'])
+  gulp.watch([paths.test.from], ['test:spec'])
   gulp.watch([paths.style.from], ['scss:copy'])
-  gulp.watch([paths.e2e.from, paths.e2e.templates], ['ts:lint:e2e', 'ts:compile:e2e', 'compile:e2e', 'compile:demo'])
+  gulp.watch([paths.e2e.from, paths.e2e.templates], ['ts:compile:e2e', 'compile:e2e', 'compile:demo'])
 });
 
 // Serves files via `gulp serve`
@@ -53,8 +53,8 @@ gulp.task('demo', function(callback){
 gulp.task('build', function(callback) {
   return runSequence(
     ['clean:source', 'clean:test'],
-    ['ts:lint:source', 'ts:compile:source', 'scss:copy'],
-    ['ts:lint:spec', 'test:spec'],
+    ['ts:compile:source', 'scss:copy'],
+    ['test:spec'],
   callback);
 });
 
@@ -63,9 +63,9 @@ gulp.task('build', function(callback) {
 gulp.task('travis', function(callback) {
   return runSequence(
     ['clean:source', 'clean:test'],
-    ['ts:lint:source', 'ts:compile:source', 'scss:copy'],
-    ['ts:lint:spec', 'test:spec'],
-    ['ts:lint:e2e', 'test:e2e'],
+    ['ts:compile:source', 'scss:copy'],
+    ['test:spec'],
+    ['test:e2e'],
     'coveralls',
   callback);
 });
