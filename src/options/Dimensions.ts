@@ -44,6 +44,10 @@ module n3Charts.Options {
     }
 
     fromParentElement(parent: HTMLElement) {
+      if (!parent) {
+        return;
+      }
+
       // Oooooh I hate doing this.
       var hPadding = this.getDimensionByProperty(parent, 'padding-left') + this.getDimensionByProperty(parent, 'padding-right');
       var vPadding = this.getDimensionByProperty(parent, 'padding-top') + this.getDimensionByProperty(parent, 'padding-bottom');
