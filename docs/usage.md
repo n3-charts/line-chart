@@ -75,9 +75,10 @@ Name | Type | Default | Description | Mandatory
 ---- | ---- | ------- | ------------ | --------
 `key`| String | `undefined` | The abscissas key, a property on each datum | Yes
 `type` | String | `'linear'` | The axis' type. can be either `'linear'`, `'log'` or `'date'`. | No
+`includeZero` | Boolean | `false` | If `true`, the axis will include zero in its extent. | No
 `ticks` | Array or Number or Function | `undefined` | The axis' ticks. Depending on what is given will either call `tickValues` or `ticks` on the inner d3 axis, or use a home-made axis to display major and minor ticks (see below). | No
 `ticksShift` | Object | `{y: 0, x: 0}` | A bit of a hack to allow shifting of the ticks. May be useful if the chart is squeezed in a container and the 0 tick is cropped. Or not. | No. Of course not.
- `tickFormat` | Function | `undefined` | Formats the ticks. Takes the value and its index as arguments | No
+`tickFormat` | Function | `undefined` | Formats the ticks. Takes the value and its index as arguments | No
 
 #### Major and minor ticks
 When given a function as the `ticks` attribute, the axis will stop generating its own ticks and start displayign exactly what's returned by the function. This is basically an advanced way of setting the ticks. However, the function must return data as follows :

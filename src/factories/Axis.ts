@@ -125,10 +125,11 @@ module n3Charts.Factory {
     getExtentForDatasets(
       data: Utils.Data,
       filter: (key:string) => Boolean,
-      accessor: (datum, datasetKey:string) => number[]
+      accessor: (datum, datasetKey:string) => number[],
+      includeZero: Boolean = false
     ) {
-      var min = Number.POSITIVE_INFINITY;
-      var max = Number.NEGATIVE_INFINITY;
+      var min = includeZero ? 0 : Number.POSITIVE_INFINITY;
+      var max = includeZero ? 0 : Number.NEGATIVE_INFINITY;
 
       for (var key in data.sets) {
         if (!filter(key)) { continue; };
@@ -138,6 +139,11 @@ module n3Charts.Factory {
           if (data[0] < min) { min = data[0]; }
           if (data[1] > max) { max = data[1]; }
         });
+      }
+
+      if (min === max) {
+        // Probably not the best but I'm not gonna fix it unless it's broken.
+        max = min + 1;
       }
 
       return [
@@ -168,7 +174,8 @@ module n3Charts.Factory {
             var highest = seriesForDataset[datasetKey].map((series) => datum[series.key.y1]);
             var lowest = seriesForDataset[datasetKey].map((series) => datum[series.key.y0] || datum[series.key.y1]);
             return [<number>d3.min(lowest), <number>d3.max(highest)];
-          }
+          },
+          options.getByAxisSide(this.side).includeZero
         );
       }
 

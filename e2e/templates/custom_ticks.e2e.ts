@@ -1,6 +1,6 @@
 /// <reference path='../test.e2e.ts' />
 
-describe('Date Abscissas', function() {
+describe('Custom ticks', function() {
   beforeEach(function() {
     browser.get('test/e2e/custom_ticks.html');
   });

@@ -2,6 +2,7 @@ module n3Charts.Options {
   'use strict';
 
   export class AxisOptions {
+    public includeZero: Boolean = false;
     public type: string = 'linear';
     public key: string = 'x';
     public min: any;
@@ -33,6 +34,7 @@ module n3Charts.Options {
     parse(js: any) {
       this.type = Options.getString(js.type, 'linear');
       this.key = js.key;
+      this.includeZero = Options.getBoolean(js.includeZero, false);
       this.tickFormat = Options.getFunction(js.tickFormat);
       this.ticks = js.ticks;
 
