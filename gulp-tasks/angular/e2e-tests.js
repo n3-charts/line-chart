@@ -23,7 +23,7 @@ module.exports = function(gulp, $, paths) {
               htmlFile.basename = hjsonBasename;
             }))
             .pipe($.data(function() {
-              return hjson.parse(fs.readFileSync(hjsonFile.path, 'utf8'));
+              return {data: hjson.parse(fs.readFileSync(hjsonFile.path, 'utf8'))};
             }))
             .pipe($.template({name: hjsonBasename}))
             .pipe(gulp.dest(paths.test.to + '/e2e/'))

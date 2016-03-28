@@ -34,7 +34,7 @@ describe('Include zero in axis options', function() {
 
   describe('for negative series', function() {
     beforeEach(function() {
-      let legendItems = element.all(by.css('.chart-legend .item.line'));
+      var legendItems = element.all(by.css('.chart-legend .item.line'));
       legendItems.get(0).click();
       legendItems.get(1).click();
       browser.sleep(300);
@@ -47,7 +47,7 @@ describe('Include zero in axis options', function() {
 
   describe('for no visible series', function() {
     beforeEach(function() {
-      let legendItems = element.all(by.css('.chart-legend .item.line'));
+      var legendItems = element.all(by.css('.chart-legend .item.line'));
       legendItems.get(0).click();
       browser.sleep(300);
     });

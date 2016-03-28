@@ -1,15 +1,8 @@
 /// <reference path='../test.e2e.ts' />
 
-describe('Date Abscissas', function() {
+describe('Major minor ticks', function() {
   beforeEach(function() {
     browser.get('test/e2e/major_minor_ticks.html');
-  });
-
-  it('should generate a chart', function() {
-    var chart = element(by.css('.chart'));
-
-    expect(chart.isPresent()).toBe(true);
-    expect(chart.getTagName()).toBe('svg');
   });
 
   var checkTicks = function(axisSide, ticks, element) {
@@ -33,7 +26,7 @@ describe('Date Abscissas', function() {
   };
 
   it('should have major and minor ticks', function() {
-    var container = element(by.css('.container'));
+    var container = element(by.css('.chart'));
 
     checkTicks('x', {
       major: ['21h', '22h', '23h'],
@@ -46,24 +39,25 @@ describe('Date Abscissas', function() {
     }, element);
 
     browser.actions()
-      .mouseMove(container, {x: 20, y: 20})
+      .mouseMove(container, {x: 200, y: 200})
       .keyDown(protractor.Key.ALT)
       .mouseDown()
       .keyUp(protractor.Key.ALT)
-      .mouseMove(container, {x: 100, y: 50})
+      .mouseMove(container, {x: 100, y: 100})
       .mouseUp()
       .perform();
 
     browser.sleep(500);
 
     checkTicks('x', {
-      major: [],
-      minor: [':15', ':30']
+      major: ['21h'],
+      minor: [':45', ':00']
     }, element);
 
     checkTicks('y', {
-      major: ['8', '9'],
-      minor: ['0.2', '0.4', '0.6', '0.8', '0.2']
+      major: [ '3', '4', '5', '6', '7' ],
+      minor: [ '0.2', '0.4', '0.6', '0.8', '0.2', '0.4', '0.6', '0.8', '0.2', '0.4', '0.6', '0.8', '0.2', '0.4', '0.6', '0.8', '0.2', '0.4', '0.6', '0.8' ]
     }, element);
+
   });
 });

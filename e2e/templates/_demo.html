@@ -35,6 +35,11 @@
     color: grey;
     text-decoration: none;
   }
+
+  <% _.each(examples, function(example) { %>
+    .<%=example.data.name%> <%=example.data.style%>
+  <% }); %>
+
   </style>
 </head>
 
@@ -42,12 +47,12 @@
   <div class="examples">
     <% _.each(examples, function(example) { %>
 
-    <div class="example <%=example.name%>" ng-controller="<%=example.name%>Ctrl">
+    <div class="example <%=example.data.name%>" ng-controller="<%=example.data.name%>Ctrl">
       <div class="example-title">
-        <a href="/test/e2e/<%=example.name%>.html"><%=example.name%></a>
+        <a href="/test/e2e/<%=example.data.name%>.html"><%=example.data.name%></a>
       </div>
       <div class="example-chart">
-        <%=example.html%>
+        <%=example.data.html%>
       </div>
     </div>
 
@@ -62,7 +67,7 @@
   angular.module('example', ['n3-line-chart'])
 
   <% _.each(examples, function(example) { %>
-    .controller('<%=example.name%>Ctrl', <%=example.js%>
+    .controller('<%=example.data.name%>Ctrl', <%=example.data.js%>
     )
   <% }); %>
 

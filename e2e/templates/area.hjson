@@ -1,4 +1,7 @@
 {
+style: '''
+'''
+
 html: '''
   <linechart ng-class="name" data="data" options="options"></linechart>
 '''
