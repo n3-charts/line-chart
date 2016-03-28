@@ -19,7 +19,7 @@ js: '''
     };
 
     $scope.options = {
-      margin: {top: 30},
+      margin: {top: 60, left: 60, right: 60},
       grid: {x: true},
       pan: {x: true, y: true},
       zoom: {x: true, y: true},

@@ -11,13 +11,14 @@
     margin: 10px auto;
     padding: 10px 10px 30px 10px;
   }
+  <%=data.style%>
   </style>
 </head>
 
 <body ng-controller='ExampleCtrl'>
 
   <div class="example">
-    <%=html%>
+    <%=data.html%>
   </div>
 
   <script src="/angular/angular.js"></script>
@@ -26,7 +27,7 @@
   <script type="text/javascript">
 
   angular.module('example', ['n3-line-chart'])
-  .controller('ExampleCtrl', <%=js%>);
+  .controller('ExampleCtrl', <%=data.js%>);
   </script>
 </body>
 </html>

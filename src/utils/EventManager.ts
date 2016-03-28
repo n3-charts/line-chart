@@ -56,8 +56,14 @@ module n3Charts.Utils {
       // Not sure about that... it's supposed to avoid several directives to
       // replace each others' listeners, but is a timestamp really unique ?
       let id = new Date().getTime();
-      d3.select(window).on('mouseup.' + id, () => this.trigger('window-mouseup'));
-      d3.select(window).on('mousemove.' + id, () => this.trigger('window-mousemove'));
+      d3.select(window).on('mouseup.' + id, () => {
+        d3.event.preventDefault();
+        this.trigger('window-mouseup')
+      });
+      d3.select(window).on('mousemove.' + id, () => {
+        d3.event.preventDefault();
+        this.trigger('window-mousemove')
+      });
 
       // Support chaining
       return this;
@@ -141,7 +147,7 @@ module n3Charts.Utils {
       });
 
       selection.on('mouseup.dbl.' + listenerSuffix, function() {
-        if (dist(down, d3.mouse(document.body)) > tolerance) {
+        if (!down || dist(down, d3.mouse(document.body)) > tolerance) {
           return;
         }
 

@@ -2,12 +2,14 @@ module n3Charts.Options {
   'use strict';
 
   export class AxisOptions {
+    public includeZero: Boolean = false;
     public type: string = 'linear';
     public key: string = 'x';
     public min: any;
     public max: any;
     public tickFormat: (value: any, index?: number) => string;
     public ticks: any;
+    public padding = {min: 0, max: 0};
     public ticksShift: any = {
       x: 0,
       y: 0
@@ -33,6 +35,8 @@ module n3Charts.Options {
     parse(js: any) {
       this.type = Options.getString(js.type, 'linear');
       this.key = js.key;
+      this.padding = <{min: number, max: number}>Options.getObject(js.padding || {}, this.padding);
+      this.includeZero = Options.getBoolean(js.includeZero, false);
       this.tickFormat = Options.getFunction(js.tickFormat);
       this.ticks = js.ticks;
 

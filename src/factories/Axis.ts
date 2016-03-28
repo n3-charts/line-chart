@@ -69,7 +69,7 @@ module n3Charts.Factory {
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: Options.Dimensions = container.getDimensions();
 
-      this.updateScaleRange(dim);
+      this.updateScaleRange(dim, this.options);
       this.updateAxisContainer(dim);
       this.softUpdate();
     }
@@ -86,7 +86,7 @@ module n3Charts.Factory {
       this.options = options.getByAxisSide(this.side);
 
       this._scale = this.getScale();
-      this.updateScaleRange(dim);
+      this.updateScaleRange(dim, this.options);
       this.updateScaleDomain(extent);
 
       this.d3axis = this.getAxis(this._scale, this.options);
@@ -106,11 +106,11 @@ module n3Charts.Factory {
       this.destroyAxis();
     }
 
-    updateScaleRange(dim: Options.Dimensions) {
+    updateScaleRange(dimensions: Options.Dimensions, axisOptions: Options.AxisOptions) {
       if (this.isAbscissas()) {
-        this._scale.range([0, dim.innerWidth]);
+        this._scale.range([axisOptions.padding.min, dimensions.innerWidth - axisOptions.padding.max]);
       } else {
-        this._scale.range([dim.innerHeight, 0]);
+        this._scale.range([dimensions.innerHeight - axisOptions.padding.min, axisOptions.padding.max]);
       }
     }
 
@@ -125,10 +125,11 @@ module n3Charts.Factory {
     getExtentForDatasets(
       data: Utils.Data,
       filter: (key:string) => Boolean,
-      accessor: (datum, datasetKey:string) => number[]
+      accessor: (datum, datasetKey:string) => number[],
+      includeZero: Boolean = false
     ) {
-      var min = Number.POSITIVE_INFINITY;
-      var max = Number.NEGATIVE_INFINITY;
+      var min = includeZero ? 0 : Number.POSITIVE_INFINITY;
+      var max = includeZero ? 0 : Number.NEGATIVE_INFINITY;
 
       for (var key in data.sets) {
         if (!filter(key)) { continue; };
@@ -138,6 +139,11 @@ module n3Charts.Factory {
           if (data[0] < min) { min = data[0]; }
           if (data[1] > max) { max = data[1]; }
         });
+      }
+
+      if (min === max) {
+        // Probably not the best but I'm not gonna fix it unless it's broken.
+        max = min + 1;
       }
 
       return [
@@ -168,7 +174,8 @@ module n3Charts.Factory {
             var highest = seriesForDataset[datasetKey].map((series) => datum[series.key.y1]);
             var lowest = seriesForDataset[datasetKey].map((series) => datum[series.key.y0] || datum[series.key.y1]);
             return [<number>d3.min(lowest), <number>d3.max(highest)];
-          }
+          },
+          options.getByAxisSide(this.side).includeZero
         );
       }
 
@@ -226,7 +233,7 @@ module n3Charts.Factory {
       if (this.isAbscissas()) {
         if (this.side === Options.AxisOptions.SIDE.X) {
           this.svg
-            .attr('transform', 'translate(0, ' + dim.innerHeight + ')');
+            .attr('transform', `translate(0, ${dim.innerHeight})`);
         } else {
           this.svg
             .attr('transform', 'translate(0, 0)');

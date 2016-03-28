@@ -71,14 +71,6 @@ module n3Charts.Factory {
       var yScale = (<Factory.Axis>this.factoryMgr.get('y-axis'));
       var y = <number>yScale.invert(event.clientY - top - dim.margin.top);
 
-      if (y < yScale.getDomain()[0] || y > yScale.getDomain()[1]) {
-        y = undefined;
-      }
-
-      if (x < xScale.getDomain()[0] || x > xScale.getDomain()[1]) {
-        x = undefined;
-      }
-
       return {y, x};
     }
 
@@ -92,7 +84,6 @@ module n3Charts.Factory {
     }
 
     createRoot() {
-      // Create the SVG root node
       this.svg = d3.select(this.element)
         .append('svg')
           .attr('class', 'chart');

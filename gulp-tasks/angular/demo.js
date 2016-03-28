@@ -17,7 +17,7 @@ module.exports = function(gulp, $, paths) {
           return {examples: files.map(function(file) {
             var d = hjson.parse(fs.readFileSync(file, 'utf8'));
             d.name = path.basename(file, '.hjson');
-            return d;
+            return {data: d};
           })};
         }))
         .pipe($.template())
