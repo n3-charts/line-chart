@@ -1,6 +1,8 @@
 {
 html: '''
-  <linechart ng-class="name" data="data" options="options" on-click="onClick(row, index, series, options)"></linechart>
+  <div class="example-chart">
+    <linechart data="data" options="options" on-click="onClick(row, index, series, options)"></linechart>
+  </div>
   <div class="last-data">{{lastData}}</div>
 '''
 

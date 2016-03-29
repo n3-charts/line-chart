@@ -53,7 +53,7 @@ describe('n3Charts.Options.Options', () => {
     });
 
     it('should create an array as series property', () => {
-      var opt = options.sanitizeOptions();
+      var opt = new Options();
 
       var testing = angular.isArray(opt.series);
       var expected = true;
@@ -62,7 +62,7 @@ describe('n3Charts.Options.Options', () => {
     });
 
     it('should create an object as margin property', () => {
-      var opt = options.sanitizeOptions();
+      var opt = new Options();
 
       var testing = angular.isObject(opt.margin);
       var expected = true;
@@ -71,15 +71,11 @@ describe('n3Charts.Options.Options', () => {
     });
 
     it('should throw a type error when margin argument is not an object', () => {
-      var arg = { margin: 'bar' };
-
-      expect(() => {
-          options.sanitizeOptions(arg);
-      }).toThrow();
+      expect(() => new Options({ margin: 'bar' })).toThrow();
     });
 
     it('should create an object as axes property', () => {
-      var opt = options.sanitizeOptions();
+      var opt = new Options();
 
       var testing = angular.isObject(opt.axes);
       var expected = true;
@@ -88,11 +84,7 @@ describe('n3Charts.Options.Options', () => {
     });
 
     it('should throw a type error when axes argument is not an object', () => {
-      var arg = { axes: 'bar' };
-
-      expect(() => {
-          options.sanitizeOptions(arg);
-      }).toThrow();
+      expect(() => new Options({ axes: 'bar' })).toThrow();
     });
   });
 

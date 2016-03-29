@@ -16,10 +16,14 @@
     padding: 10px 10px 30px 10px;
   }
 
-  .example-chart {
+  .example-chart, .example-controls {
     box-sizing: border-box;
-    height: 280px;
     width: 100%;
+    padding: 10px 10px 30px 10px;
+  }
+
+  .example-chart {
+    height: 280px;
   }
 
   .example-title {
@@ -49,11 +53,9 @@
 
     <div class="example <%=example.data.name%>" ng-controller="<%=example.data.name%>Ctrl">
       <div class="example-title">
-        <a href="/test/e2e/<%=example.data.name%>.html"><%=example.data.name%></a>
+        <a id="<%=example.data.name%>" href="/test/e2e/<%=example.data.name%>.html"><%=example.data.name%></a>
       </div>
-      <div class="example-chart">
-        <%=example.data.html%>
-      </div>
+      <%=example.data.html%>
     </div>
 
     <% }); %>
