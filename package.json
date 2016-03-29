@@ -60,7 +60,7 @@
     "sinon": "^1.14.1",
     "tslint": "^3.5.0",
     "typescript": "^1.8.7",
-    "typings": "^0.7.7",
+    "typings": "^0.7.9",
     "yargs": "^3.32.0"
   }
 }

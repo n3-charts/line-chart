@@ -57,11 +57,11 @@ module n3Charts.Utils {
       // replace each others' listeners, but is a timestamp really unique ?
       let id = new Date().getTime();
       d3.select(window).on('mouseup.' + id, () => {
-        d3.event.preventDefault();
+        (<Event>d3.event).preventDefault();
         this.trigger('window-mouseup')
       });
       d3.select(window).on('mousemove.' + id, () => {
-        d3.event.preventDefault();
+        (<Event>d3.event).preventDefault();
         this.trigger('window-mousemove')
       });
 
@@ -146,12 +146,12 @@ module n3Charts.Utils {
         last = new Date().getTime();
       });
 
-      selection.on('mouseup.dbl.' + listenerSuffix, function() {
+      selection.on('mouseup.dbl.' + listenerSuffix, () => {
         if (!down || dist(down, d3.mouse(document.body)) > tolerance) {
           return;
         }
 
-        if (wait) {
+        if (wait && this.options.doubleClickEnabled) {
           window.clearTimeout(wait);
           wait = null;
           callback(d3.event);

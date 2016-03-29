@@ -11,18 +11,9 @@ module n3Charts.Options {
     x: boolean;
     y: boolean;
   }
+  export class Options {
 
-  export interface IOptions {
-    series: ISeriesOptions[];
-    axes: IAxesSet;
-    margin: IMargin;
-    pan: ITwoAxes;
-    zoom: ITwoAxes;
-    grid: ITwoAxes;
-    tooltipHook: Function;
-  }
-
-  export class Options implements IOptions {
+    public doubleClickEnabled = true;
 
     public tooltipHook: Function;
 
@@ -51,36 +42,16 @@ module n3Charts.Options {
     };
 
     constructor(js?:any) {
-      var options = this.sanitizeOptions(js);
+      var options = angular.extend({}, this, js);
 
-      this.margin = options.margin;
-      this.series = options.series;
-      this.axes = options.axes;
-      this.pan = options.pan;
-      this.zoom = options.zoom;
-      this.grid = options.grid;
-      this.tooltipHook = options.tooltipHook;
-    }
-
-    /**
-     * Make sure that the options have proper types,
-     * and convert raw js to typed variables
-     */
-    sanitizeOptions(js?: any): IOptions {
-      var options = <IOptions>{};
-
-      // Extend the default options
-      angular.extend(options, this, js);
-
-      options.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
-      options.series = this.sanitizeSeries(Options.getArray(options.series));
-      options.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
-      options.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
-      options.pan = this.sanitizeTwoAxesOptions(options.pan, this.pan);
-      options.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
-      options.tooltipHook = Options.getFunction(options.tooltipHook);
-
-      return options;
+      this.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
+      this.series = this.sanitizeSeries(Options.getArray(options.series));
+      this.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
+      this.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
+      this.pan = this.sanitizeTwoAxesOptions(options.pan, this.pan);
+      this.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
+      this.tooltipHook = Options.getFunction(options.tooltipHook);
+      this.doubleClickEnabled = Options.getBoolean(options.doubleClickEnabled, false);
     }
 
     sanitizeMargin(margin: any): IMargin {

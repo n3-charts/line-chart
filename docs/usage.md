@@ -1,7 +1,5 @@
 # Documentation
 
-
-
 ## Options
 
 **n3-line-chart** provides multiple options to configure your chart, series and axes.
@@ -165,6 +163,17 @@ Name | Type | Default | Description | Mandatory
 ---- | ---- | ------- | ------------ | --------
 `x` | Boolean | `false` | Enables/disables zoom on the x axis | No
 `y` | Boolean | `false` | Enables/disables zoom on the y axis | No
+
+### Double click
+The chart reacts to double clicks by resetting any zooming or panning. This might be undesirable and the `doubleClickEnabled` provides a way to disable this behavior.
+
+```js
+doubleClickEnabled: false
+```
+
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`doubleClickEnabled` | Boolean | `true` | Enables/disables the double click handling | No
 
 ## Synchronization and callbacks
 

@@ -3,7 +3,9 @@ style: '''
 '''
 
 html: '''
-  <linechart ng-class="name" data="data" options="options"></linechart>
+  <div class="example-chart">
+    <linechart data="data" options="options"></linechart>
+  </div>
 '''
 
 js: '''

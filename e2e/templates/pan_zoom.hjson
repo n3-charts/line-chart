@@ -1,6 +1,15 @@
 {
 html: '''
-  <linechart ng-class="name" data="data" options="options"></linechart>
+  <div class="example-chart">
+    <linechart data="data" options="options"></linechart>
+  </div>
+  <div class="example-controls">
+    <label for="doubleClickCheckbox"><input id="doubleClickCheckbox" type="checkbox" ng-model="options.doubleClickEnabled">Double click enabled</label>
+  </div>
+'''
+
+style: '''
+
 '''
 
 js: '''
@@ -19,6 +28,7 @@ js: '''
     };
 
     $scope.options = {
+      doubleClickEnabled: true,
       pan: {x: true, y: true},
       zoom: {x: true, y: true},
 

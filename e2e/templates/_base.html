@@ -4,22 +4,23 @@
   <title><%=name%></title>
   <link rel="stylesheet" type="text/css" media="screen" href="/build/LineChart.css">
   <style type="text/css">
-  .example {
+  .example-chart, .example-controls {
     width: 600px;
-    height: 300px;
-    border: 1px solid lightgrey;
     margin: 10px auto;
     padding: 10px 10px 30px 10px;
+  }
+
+  .example-chart {
+    height: 300px;
+    border: 1px solid lightgrey;
   }
   <%=data.style%>
   </style>
 </head>
 
 <body ng-controller='ExampleCtrl'>
-
-  <div class="example">
-    <%=data.html%>
-  </div>
+  <a href="/test/e2e#<%=name%>">&lt;&nbsp;All examples</a>
+  <%=data.html%>
 
   <script src="/angular/angular.js"></script>
   <script src="/d3/d3.js"></script>
