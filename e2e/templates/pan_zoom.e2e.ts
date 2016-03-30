@@ -7,6 +7,12 @@ describe('Pan & zoom', function() {
     browser.get('test/e2e/pan_zoom.html');
   });
 
+  var hasClass = function(element, cls) {
+    return element.getAttribute('class').then(function(classes) {
+      return classes.split(' ').indexOf(cls) !== -1;
+    });
+  };
+
   var checkTicks = function(axisSide, expected, element) {
     var ticks = element.all(by.css('.chart .' + axisSide + '-axis .tick'));
     expect(ticks.count()).toBe(expected.length);
@@ -17,6 +23,28 @@ describe('Pan & zoom', function() {
       expect(v).toEqual(expected.map(String));
     });
   };
+
+  it('should set a class to the element when panning', function() {
+    var container = element(by.css('.chart'));
+
+    expect(hasClass(container, 'panning')).toEqual(false);
+
+    browser.actions()
+      .mouseMove(container, {x: 20, y: 20})
+      .mouseDown()
+      .mouseMove(container, {x: 100, y: 50})
+      .perform();
+
+
+    expect(hasClass(container, 'panning')).toEqual(true);
+
+    browser.actions()
+      .mouseUp()
+      .perform();
+
+    expect(hasClass(container, 'panning')).toEqual(false);
+  });
+
 
   it('should ignore double click when told to', function() {
     var container = element(by.css('.container'));
