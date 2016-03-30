@@ -141,7 +141,6 @@ module n3Charts.Factory {
         });
 
         extent = d3.extent(xValues);
-        console.log(extent);
       } else {
         let lowests = axisOptions.includeZero ? [0] : [];
         let highests = axisOptions.includeZero ? [0] : [];
