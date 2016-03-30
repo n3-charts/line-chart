@@ -74,10 +74,14 @@ module n3Charts.Factory {
       this.softUpdate();
     }
 
-    update(data:Utils.Data, options:Options.Options) {
+    getDimensions():Options.Dimensions {
       // Get the container dimensions
       var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: Options.Dimensions = container.getDimensions();
+      return container.getDimensions();
+    }
+
+    update(data:Utils.Data, options:Options.Options) {
+      var dimensions = this.getDimensions();
 
       // Get the [min, max] extent of the axis
       var extent = this.getExtent(data, options);
@@ -86,12 +90,12 @@ module n3Charts.Factory {
       this.options = options.getByAxisSide(this.side);
 
       this._scale = this.getScale();
-      this.updateScaleRange(dim, this.options);
+      this.updateScaleRange(dimensions, this.options);
       this.updateScaleDomain(extent);
 
       this.d3axis = this.getAxis(this._scale, this.options);
       this.updateAxisOrientation(this.d3axis);
-      this.updateAxisContainer(dim);
+      this.updateAxisContainer(dimensions);
       this.shiftAxisTicks(this.options);
     }
 
@@ -122,61 +126,43 @@ module n3Charts.Factory {
       return this._scale ? this._scale.domain() : [0, 1];
     }
 
-    getExtentForDatasets(
-      data: Utils.Data,
-      filter: (key:string) => Boolean,
-      accessor: (datum, datasetKey:string) => number[],
-      includeZero: Boolean = false
-    ) {
-      var min = includeZero ? 0 : Number.POSITIVE_INFINITY;
-      var max = includeZero ? 0 : Number.NEGATIVE_INFINITY;
-
-      for (var key in data.sets) {
-        if (!filter(key)) { continue; };
-
-        data.sets[key].values.forEach((datum) => {
-          var data = accessor(datum, key);
-          if (data[0] < min) { min = data[0]; }
-          if (data[1] > max) { max = data[1]; }
-        });
-      }
-
-      if (min === max) {
-        // Probably not the best but I'm not gonna fix it unless it's broken.
-        max = min + 1;
-      }
-
-      return [
-        min === Number.POSITIVE_INFINITY ? 0 : min,
-        max === Number.NEGATIVE_INFINITY ? 1 : max
-      ];
-    }
-
     getExtent(datasets: Utils.Data, options: Options.Options) {
       var axisOptions = options.getByAxisSide(this.side);
       var extent = undefined;
 
       if (this.isAbscissas()) {
-        var activeDatasets = options.getVisibleDatasets();
-        var abscissasKey = options.getAbsKey();
-        extent = this.getExtentForDatasets(
-          datasets,
-          (key) => activeDatasets.indexOf(key) > -1,
-          (datum) => [datum[abscissasKey], datum[abscissasKey]]
-        );
-      } else {
-        var {datasetsForSide, seriesForDataset} = options.getSeriesAndDatasetBySide(this.side);
+        let activeDatasets = options.getVisibleDatasets();
+        let abscissasKey = options.getAbsKey();
 
-        extent = this.getExtentForDatasets(
-          datasets,
-          (key) => datasetsForSide.indexOf(key) > -1,
-          (datum, datasetKey) => {
-            var highest = seriesForDataset[datasetKey].map((series) => datum[series.key.y1]);
-            var lowest = seriesForDataset[datasetKey].map((series) => datum[series.key.y0] || datum[series.key.y1]);
-            return [<number>d3.min(lowest), <number>d3.max(highest)];
-          },
-          options.getByAxisSide(this.side).includeZero
-        );
+        let xValues = [];
+        activeDatasets.forEach(key => {
+          let data = datasets.sets[key].values;
+          xValues = xValues.concat(data.map(datum => datum[abscissasKey]));
+        });
+
+        extent = d3.extent(xValues);
+        console.log(extent);
+      } else {
+        let lowests = axisOptions.includeZero ? [0] : [];
+        let highests = axisOptions.includeZero ? [0] : [];
+
+        options.getVisibleSeriesBySide(this.side).forEach(s => {
+          let values = datasets.getDatasetValues(s, options);
+          values.forEach(datum => {
+            if (s.defined && !s.defined(datum)) {
+              return;
+            }
+
+            lowests.push(datum.y0 || datum.y1);
+            highests.push(datum.y1);
+          });
+        });
+
+        extent = [<number>d3.min(lowests), <number>d3.max(highests)]
+
+        if (extent[0] === 0 && extent[1] === 0) {
+          extent = [0, 1];
+        }
       }
 
       if (axisOptions.min !== undefined) {

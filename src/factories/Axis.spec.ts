@@ -27,6 +27,62 @@ describe('n3Charts.Factory.Axis', () => {
     });
   });
 
+  describe('extent', () => {
+    it('should consider every data point', () => {
+      axis = new n3Charts.Factory.Axis('y');
+
+      var data = new n3Charts.Utils.Data({dataset0: [
+        {x: 0, y: 0},
+        {x: 1, y: 1},
+        {x: 2, y: '-Infinity'},
+        {x: 3, y: 3},
+        {x: 4, y: -2}
+      ]});
+
+      var options = new n3Charts.Options.Options({
+        series: [{
+          axis: 'y',
+          dataset: 'dataset0',
+          key: 'y',
+          type: 'area'
+        }]
+      });
+
+      // The series doesn't tell us anything about Infinity not being defined,
+      // so this result is stupid but expected.
+      expect(axis.getExtent(data, options)).toEqual(['-Infinity', 3]);
+    });
+
+    it('should consider only defined data point', () => {
+      axis = new n3Charts.Factory.Axis('y');
+
+      var data = new n3Charts.Utils.Data({dataset0: [
+        {x: 0, y: 0},
+        {x: 1, y: 1},
+        {x: 2, y: '-Infinity'},
+        {x: 3, y: 3},
+        {x: 4, y: -2}
+      ]});
+
+      var options = new n3Charts.Options.Options({
+        series: [{
+          axis: 'y',
+          dataset: 'dataset0',
+          key: 'y',
+          type: 'area',
+          defined: function(datum) {
+            return typeof datum.y1 === 'number'
+          }
+        }]
+      });
+
+      // The series doesn't tell us anything about Infinity not being defined,
+      // so this result is stupid but expected.
+      expect(axis.getExtent(data, options)).toEqual([-2, 3]);
+    });
+
+  })
+
   it('should clone the d3 axis', () => {
     axis = new n3Charts.Factory.Axis('x');
 

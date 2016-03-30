@@ -106,6 +106,10 @@ module n3Charts.Options {
       return datasets;
     }
 
+    getVisibleSeriesBySide(side: string): ISeriesOptions[] {
+      return this.series.filter(s => s.visible && s.axis === side);
+    }
+
     getSeriesAndDatasetBySide(side: string): {seriesForDataset: {}, datasetsForSide: string[]} {
       if (!AxisOptions.isValidSide(side)) {
         throw new TypeError('Cannot get axis side : ' + side);
