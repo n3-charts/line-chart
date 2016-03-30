@@ -111,6 +111,13 @@ module n3Charts {
         scope.$apply();
       });
 
+      eventMgr.on('pan.directive', () => {
+        (<d3.Selection<SVGElement>>factoryMgr.get('container').svg).classed('panning', true);
+      });
+      eventMgr.on('pan-end.directive', () => {
+        (<d3.Selection<SVGElement>>factoryMgr.get('container').svg).classed('panning', false);
+      });
+
       var getDimensions = function():any {
         if (!element || !element[0]) {
           return {};
