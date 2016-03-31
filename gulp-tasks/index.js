@@ -4,6 +4,7 @@ module.exports = function(gulp, $, paths) {
     './angular/ts-lint',
     './angular/ts-compile',
     './angular/e2e-tests',
+    './angular/new-e2e-test',
     './angular/demo',
     './angular/unit-tests',
     './angular/coveralls',
