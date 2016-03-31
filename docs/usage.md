@@ -46,7 +46,7 @@ Name | Type | Default | Description | Mandatory
 `defined` | Function | `undefined` | Helps tell the chart where this series is defined or not, regarding its data. More on that [here](https://github.com/mbostock/d3/wiki/SVG-Shapes#line_defined) | No
 
 ### Axes
-There are currently two axes supported by the directive : `x` and `y`. Abscissas (`x`) is mandatory, just because the directive needs to know where to read the abscissas in the data. But there's more !
+There are currently three axes supported by the directive : `x`, `y` and `y2`. Abscissas (`x`) is mandatory, just because the directive needs to know where to read the abscissas in the data. But there's more !
 
 ```js
 axes: {
@@ -58,6 +58,7 @@ axes: {
   y: {
     min: -10,
     max: 10,
+    padding: {min:3, max: 6},
     ticksShift: {
       y: -5,
       x: 10
