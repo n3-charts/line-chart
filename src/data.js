@@ -2,12 +2,12 @@ angular.module('data', [])
 
 .factory('datasets', function(generators) {
   return {
-    timed: [],
-    tolerance: generators.toleranceData(30),
-    numerical: generators.sinData(100, 4),
-    logarithmic: generators.logarithmicData(100, 4),
-    noisy: generators.noisyLinearData(40, 4),
-    interrupted: generators.interruptedData(20, 4),
+    timed: generators.timedData(10, 4),
+    tolerance: generators.toleranceData(10),
+    numerical: generators.sinData(10, 4),
+    logarithmic: generators.logarithmicData(10, 4),
+    noisy: generators.noisyLinearData(10, 4),
+    interrupted: generators.interruptedData(10, 4),
     parametric: generators.parametricData(32)
   }
 })

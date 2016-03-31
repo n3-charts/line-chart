@@ -37,8 +37,8 @@ angular.module('codepen', ['apojop'])
           "\n.controller('ExampleCtrl', function($scope) {" +
           "\n // Due to CodePen's API, it's not possible to include functions in dynamic CodePen's such as this one," +
           " therefore some closures might be missing (the axes' formatting functions, for example) and need to be added manually. Thanks ! :-)" +
-          "\n  $scope.data = " + JSON.stringify(data, null, 2).replace('\n', '\n  ').replace(/"([^"]+)":/g, '$1:') + ";" +
-          "\n\n  $scope.options = " + JSON.stringify(options, null, 2).replace(/"([^"]+)":/g, '$1:') + ";" +
+          "\n  $scope.options = " + JSON.stringify(options, null, 2).replace(/"([^"]+)":/g, '$1:') + ";" +
+          "\n\n  $scope.data = " + JSON.stringify(data, null, 2).replace('\n', '\n  ').replace(/"([^"]+)":/g, '$1:') + ";" +
           "\n  " + postDeserializing +
           "\n});";
 

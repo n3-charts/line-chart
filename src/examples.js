@@ -38,6 +38,23 @@ angular.module('examples', ['n3-line-chart', 'codepen', 'data', 'info'])
       }
     },
     {
+      label: 'Time series', id: 'time_series', options: {
+        margin: {top: 20},
+        series: [
+          {
+            axis: "y",
+            dataset: "timed",
+            key: "val_0",
+            label: "A line series",
+            color: "hsla(88, 48%, 48%, 1)",
+            type: ["line"],
+            id: 'mySeries0'
+          }
+        ],
+        axes: {x: {key: "x", type: 'date'}}
+      }
+    },
+    {
       label: 'Area series', id: 'area_series', options: {
         margin: {top: 5},
         series: [

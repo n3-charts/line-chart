@@ -11,11 +11,11 @@ $secondary: palette($secondary-name, 400);
 $secondary-dark: palette($secondary-name, 700);
 $secondary-light: palette($secondary-name, 100);
 
-@import 'utils';
-@import 'grid';
-@import 'markdown-to-html';
-@import 'typo';
-@import 'buttons';
+@import './utils';
+@import './grid';
+@import './markdown-to-html';
+@import './typo';
+@import './buttons';
 
 // General layout, for pages actually are ng-views
 body, html {

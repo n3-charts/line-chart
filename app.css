@@ -28,7 +28,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 0%; }
+    flex-basis: 0%;
+    overflow-x: hidden; }
     .row .col-0.left, .row .col-0.left-when-small {
       text-align: left; }
     .row .col-0.right {
@@ -45,7 +46,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 0%; }
+      flex-basis: 0%;
+      overflow-x: hidden; }
       .row .col-0-when-small.left, .row .col-0-when-small.left-when-small {
         text-align: left; }
       .row .col-0-when-small.right {
@@ -61,7 +63,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 10%; }
+    flex-basis: 10%;
+    overflow-x: hidden; }
     .row .col-10.left, .row .col-10.left-when-small {
       text-align: left; }
     .row .col-10.right {
@@ -78,7 +81,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 10%; }
+      flex-basis: 10%;
+      overflow-x: hidden; }
       .row .col-10-when-small.left, .row .col-10-when-small.left-when-small {
         text-align: left; }
       .row .col-10-when-small.right {
@@ -94,7 +98,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 20%; }
+    flex-basis: 20%;
+    overflow-x: hidden; }
     .row .col-20.left, .row .col-20.left-when-small {
       text-align: left; }
     .row .col-20.right {
@@ -111,7 +116,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 20%; }
+      flex-basis: 20%;
+      overflow-x: hidden; }
       .row .col-20-when-small.left, .row .col-20-when-small.left-when-small {
         text-align: left; }
       .row .col-20-when-small.right {
@@ -127,7 +133,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 30%; }
+    flex-basis: 30%;
+    overflow-x: hidden; }
     .row .col-30.left, .row .col-30.left-when-small {
       text-align: left; }
     .row .col-30.right {
@@ -144,7 +151,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 30%; }
+      flex-basis: 30%;
+      overflow-x: hidden; }
       .row .col-30-when-small.left, .row .col-30-when-small.left-when-small {
         text-align: left; }
       .row .col-30-when-small.right {
@@ -160,7 +168,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 40%; }
+    flex-basis: 40%;
+    overflow-x: hidden; }
     .row .col-40.left, .row .col-40.left-when-small {
       text-align: left; }
     .row .col-40.right {
@@ -177,7 +186,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 40%; }
+      flex-basis: 40%;
+      overflow-x: hidden; }
       .row .col-40-when-small.left, .row .col-40-when-small.left-when-small {
         text-align: left; }
       .row .col-40-when-small.right {
@@ -186,6 +196,41 @@
         text-align: center; }
       .row .col-40-when-small.middle {
         align-self: baseline; } }
+  .row .col-45 {
+    flex: 1;
+    flex-grow: 0;
+    flex-shrink: 1;
+    box-sizing: border-box;
+    position: relative;
+    min-height: 24px;
+    flex-basis: 45%;
+    overflow-x: hidden; }
+    .row .col-45.left, .row .col-45.left-when-small {
+      text-align: left; }
+    .row .col-45.right {
+      text-align: right; }
+    .row .col-45.center {
+      text-align: center; }
+    .row .col-45.middle {
+      align-self: baseline; }
+  @media (max-width: 800px) {
+    .row .col-45-when-small {
+      flex: 1;
+      flex-grow: 0;
+      flex-shrink: 1;
+      box-sizing: border-box;
+      position: relative;
+      min-height: 24px;
+      flex-basis: 45%;
+      overflow-x: hidden; }
+      .row .col-45-when-small.left, .row .col-45-when-small.left-when-small {
+        text-align: left; }
+      .row .col-45-when-small.right {
+        text-align: right; }
+      .row .col-45-when-small.center {
+        text-align: center; }
+      .row .col-45-when-small.middle {
+        align-self: baseline; } }
   .row .col-50 {
     flex: 1;
     flex-grow: 0;
@@ -193,7 +238,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 50%; }
+    flex-basis: 50%;
+    overflow-x: hidden; }
     .row .col-50.left, .row .col-50.left-when-small {
       text-align: left; }
     .row .col-50.right {
@@ -210,7 +256,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 50%; }
+      flex-basis: 50%;
+      overflow-x: hidden; }
       .row .col-50-when-small.left, .row .col-50-when-small.left-when-small {
         text-align: left; }
       .row .col-50-when-small.right {
@@ -226,7 +273,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 60%; }
+    flex-basis: 60%;
+    overflow-x: hidden; }
     .row .col-60.left, .row .col-60.left-when-small {
       text-align: left; }
     .row .col-60.right {
@@ -243,7 +291,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 60%; }
+      flex-basis: 60%;
+      overflow-x: hidden; }
       .row .col-60-when-small.left, .row .col-60-when-small.left-when-small {
         text-align: left; }
       .row .col-60-when-small.right {
@@ -259,7 +308,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 70%; }
+    flex-basis: 70%;
+    overflow-x: hidden; }
     .row .col-70.left, .row .col-70.left-when-small {
       text-align: left; }
     .row .col-70.right {
@@ -276,7 +326,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 70%; }
+      flex-basis: 70%;
+      overflow-x: hidden; }
       .row .col-70-when-small.left, .row .col-70-when-small.left-when-small {
         text-align: left; }
       .row .col-70-when-small.right {
@@ -292,7 +343,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 80%; }
+    flex-basis: 80%;
+    overflow-x: hidden; }
     .row .col-80.left, .row .col-80.left-when-small {
       text-align: left; }
     .row .col-80.right {
@@ -309,7 +361,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 80%; }
+      flex-basis: 80%;
+      overflow-x: hidden; }
       .row .col-80-when-small.left, .row .col-80-when-small.left-when-small {
         text-align: left; }
       .row .col-80-when-small.right {
@@ -325,7 +378,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 90%; }
+    flex-basis: 90%;
+    overflow-x: hidden; }
     .row .col-90.left, .row .col-90.left-when-small {
       text-align: left; }
     .row .col-90.right {
@@ -342,7 +396,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 90%; }
+      flex-basis: 90%;
+      overflow-x: hidden; }
       .row .col-90-when-small.left, .row .col-90-when-small.left-when-small {
         text-align: left; }
       .row .col-90-when-small.right {
@@ -358,7 +413,8 @@
     box-sizing: border-box;
     position: relative;
     min-height: 24px;
-    flex-basis: 100%; }
+    flex-basis: 100%;
+    overflow-x: hidden; }
     .row .col-100.left, .row .col-100.left-when-small {
       text-align: left; }
     .row .col-100.right {
@@ -375,7 +431,8 @@
       box-sizing: border-box;
       position: relative;
       min-height: 24px;
-      flex-basis: 100%; }
+      flex-basis: 100%;
+      overflow-x: hidden; }
       .row .col-100-when-small.left, .row .col-100-when-small.left-when-small {
         text-align: left; }
       .row .col-100-when-small.right {
@@ -580,26 +637,26 @@ body, html {
   font-size: 0.6em; }
   .examples .example .codepen-form button {
     color: #BDBDBD; }
-.examples .example .row {
-  width: 100%; }
-.examples .example .chart {
-  height: 350px;
-  padding-right: 20px; }
-  .examples .example .chart .container .overlay .tooltip-line {
-    stroke: lightgrey; }
-  .examples .example .chart .grid .tick > line {
-    stroke: rgba(0, 0, 0, 0.3); }
-  .examples .example .chart .axis > path {
-    stroke: rgba(0, 0, 0, 0.3); }
-  .examples .example .chart .axis > .tick > text {
-    fill: lightgrey; }
-  .examples .example .chart .axis > .tick > line {
-    stroke: rgba(0, 0, 0, 0.3); }
-.examples .example .options {
+.examples .example .row .chart-container {
+  padding-bottom: 20px; }
+  .examples .example .row .chart-container .chart {
+    height: 350px;
+    padding-right: 20px; }
+    .examples .example .row .chart-container .chart .container .overlay .tooltip-line {
+      stroke: lightgrey; }
+    .examples .example .row .chart-container .chart .grid .tick > line {
+      stroke: rgba(0, 0, 0, 0.3); }
+    .examples .example .row .chart-container .chart .axis > path {
+      stroke: rgba(0, 0, 0, 0.3); }
+    .examples .example .row .chart-container .chart .axis > .tick > text {
+      fill: lightgrey; }
+    .examples .example .row .chart-container .chart .axis > .tick > line {
+      stroke: rgba(0, 0, 0, 0.3); }
+.examples .example .row .options {
   padding-left: 20px;
   border-left: 5px solid lightgrey; }
   @media (max-width: 800px) {
-    .examples .example .options {
+    .examples .example .row .options {
       margin-top: 30px;
       border-left-width: 0px; } }
 
