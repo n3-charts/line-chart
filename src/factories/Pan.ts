@@ -86,6 +86,11 @@ module n3Charts.Factory {
         .on(k('mousedown'), () => {
           var event = <MouseEvent>d3.event;
 
+          // We don't want to process non-left click events
+          if (event.button !== 0) {
+            return;
+          }
+
           if (!event.altKey) {
             this.isActive = true;
             [xStart, yStart] = d3.mouse(event.currentTarget);

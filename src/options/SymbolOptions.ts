@@ -25,7 +25,7 @@ module n3Charts.Options {
       this.value = Options.getNumber(js.value, 0);
       this.color = Options.getString(js.color, 'lightgrey');
       this.axis = Options.getString(js.axis, 'y');
-      this.id = Options.getString(js.id);
+      this.id = Options.getString(js.id, Utils.UUID.generate());
     }
 
     static isValidType(type: string) {

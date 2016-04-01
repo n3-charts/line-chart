@@ -166,6 +166,14 @@ module n3Charts.Options {
       return this.series.filter((s) => s.hasType(type));
     }
 
+    getSymbolsByType(type: string): SymbolOptions[] {
+      if (!SymbolOptions.isValidType(type)) {
+        throw new TypeError('Unknown symbols type: ' + type);
+      }
+
+      return this.symbols.filter((s) => s.type === type);
+    }
+
     static getBoolean(value: any, defaultValue: boolean = true) {
       if (typeof value === 'boolean') {
         return value;

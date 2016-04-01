@@ -21,12 +21,23 @@ js: '''
     };
 
     $scope.options = {
+      pan: {x: true, y: true},
+      zoom: {x: true, y: true},
       symbols: [
         {
           type: 'hline',
           value: 100,
-          color: 'steelblue',
-          axis: 'y'
+          color: 'hsla(5, 100%, 36%, 1)',
+          axis: 'y',
+          id: 'hline-0'
+        },
+
+        {
+          type: 'hline',
+          value: 115,
+          color: 'hsla(5, 100%, 36%, 1)',
+          axis: 'y',
+          id: 'hline-1'
         }
       ],
       series: [
