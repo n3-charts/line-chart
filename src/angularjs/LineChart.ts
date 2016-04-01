@@ -66,7 +66,8 @@ module n3Charts {
         ['series-column', Factory.Series.Column],
         ['series-line', Factory.Series.Line],
         ['series-dot', Factory.Series.Dot],
-        ['symbols-hline', Factory.Symbols.HLine]
+        ['symbols-hline', Factory.Symbols.HLine],
+        ['symbols-vline', Factory.Symbols.VLine]
       ]);
 
       factoryMgr.all().forEach((f) => f.instance.init(f.key, eventMgr, factoryMgr));

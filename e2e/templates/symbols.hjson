@@ -28,16 +28,13 @@ js: '''
           type: 'hline',
           value: 100,
           color: 'hsla(5, 100%, 36%, 1)',
-          axis: 'y',
-          id: 'hline-0'
+          axis: 'y'
         },
 
         {
-          type: 'hline',
-          value: 115,
-          color: 'hsla(5, 100%, 36%, 1)',
-          axis: 'y',
-          id: 'hline-1'
+          type: 'vline',
+          value: 3.4,
+          color: 'hsla(5, 100%, 36%, 1)'
         }
       ],
       series: [

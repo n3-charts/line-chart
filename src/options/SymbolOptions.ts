@@ -10,6 +10,7 @@ module n3Charts.Options {
 
     static TYPE = {
       HLINE: 'hline',
+      VLINE: 'vline',
     };
 
     constructor(js: any = {}) {

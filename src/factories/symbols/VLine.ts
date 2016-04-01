@@ -1,7 +1,7 @@
 module n3Charts.Factory.Symbols {
   'use strict';
 
-  export class HLine extends Factory.BaseFactory {
+  export class VLine extends Factory.BaseFactory {
 
     public svg: d3.Selection<any>;
     private options: Options.Options;
@@ -9,7 +9,7 @@ module n3Charts.Factory.Symbols {
     create() {
       this.svg = (<Factory.Container>this.factoryMgr.get('container')).symbols
         .append('g')
-          .attr({'class': 'hlines'});
+          .attr({'class': 'vlines'});
 
       this.eventMgr.on('resize.' + this.key, this.softUpdate.bind(this));
       this.eventMgr.on('pan.' + this.key, this.softUpdate.bind(this));
@@ -19,17 +19,14 @@ module n3Charts.Factory.Symbols {
 
     softUpdate() {
       var xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
-      var yAxes = {
-        y: <Factory.Axis>this.factoryMgr.get('y-axis'),
-        y2: <Factory.Axis>this.factoryMgr.get('y2-axis')
-      };
+      var yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
 
-      var hline = this.svg.selectAll('.hline')
-        .data(this.options.getSymbolsByType(Options.SymbolOptions.TYPE.HLINE), o => o.id);
+      var vline = this.svg.selectAll('.vline')
+        .data(this.options.getSymbolsByType(Options.SymbolOptions.TYPE.VLINE), o => o.id);
 
       var init = (selection: d3.Selection<Options.SymbolOptions> | d3.Transition<Options.SymbolOptions>) => {
         selection
-          .attr('class', 'hline')
+          .attr('class', 'vline')
           .style({
             'opacity': 0,
             'stroke': o => o.color
@@ -38,29 +35,29 @@ module n3Charts.Factory.Symbols {
 
       var update = (selection: d3.Selection<Options.SymbolOptions> | d3.Transition<Options.SymbolOptions>) => {
         selection.attr({
-          'x1': xAxis.scale(xAxis.getDomain()[0]),
-          'x2': xAxis.scale(xAxis.getDomain()[1]),
-          'y1': o => yAxes[o.axis].scale(o.value),
-          'y2': o => yAxes[o.axis].scale(o.value)
+          'x1': o => xAxis.scale(o.value),
+          'x2': o => xAxis.scale(o.value),
+          'y1': yAxis.scale(yAxis.getDomain()[0]),
+          'y2': yAxis.scale(yAxis.getDomain()[1])
         }).style({
           'opacity': 1
         });
       };
 
       if (this.factoryMgr.get('transitions').isOn()) {
-        hline.enter()
+        vline.enter()
           .append('svg:line')
           .call(init)
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
           .call(update);
 
-        hline
+        vline
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
           .call(update);
 
-        hline.exit()
+        vline.exit()
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'exit'))
           .style('opacity', 0)
@@ -68,14 +65,14 @@ module n3Charts.Factory.Symbols {
             d3.select(this).remove();
           });
       } else {
-        hline.enter()
+        vline.enter()
           .append('svg:line')
           .call(init);
 
-        hline
+        vline
           .call(update);
 
-        hline.exit()
+        vline.exit()
           .remove();
       }
     }
