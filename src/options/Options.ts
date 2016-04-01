@@ -19,6 +19,8 @@ module n3Charts.Options {
 
     public series: ISeriesOptions[] = [];
 
+    public symbols: SymbolOptions[] = [];
+
     public pan: ITwoAxes = {
       x: false,
       y: false
@@ -46,6 +48,7 @@ module n3Charts.Options {
 
       this.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
       this.series = this.sanitizeSeries(Options.getArray(options.series));
+      this.symbols = this.sanitizeSymbols(Options.getArray(options.symbols));
       this.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
       this.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
       this.pan = this.sanitizeTwoAxesOptions(options.pan, this.pan);
@@ -65,6 +68,10 @@ module n3Charts.Options {
 
     sanitizeSeries(series: any[]): ISeriesOptions[]  {
       return (series).map((s) => new SeriesOptions(s));
+    }
+
+    sanitizeSymbols(symbols: any[]): SymbolOptions[]  {
+      return (symbols).map((s) => new SymbolOptions(s));
     }
 
     sanitizeTwoAxesOptions(object: any, def: any): ITwoAxes {
