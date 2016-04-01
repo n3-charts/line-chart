@@ -12,9 +12,12 @@ module n3Charts.Factory {
 
     public svg: d3.Selection<any>;
     public vis: d3.Selection<any>;
+
     public data: d3.Selection<any>;
     public overlay: d3.Selection<any>;
+    public symbols: d3.Selection<any>;
     public axes: d3.Selection<any>;
+
     public dim: Options.Dimensions = new Options.Dimensions();
 
     private clippingPathId:string;
@@ -130,6 +133,13 @@ module n3Charts.Factory {
       this.overlay = this.vis
         .append('g')
           .attr('class', 'overlay');
+
+      this.symbols = this.overlay
+        .append('g')
+          .attr({
+            'class': 'symbols',
+            'clip-path': 'url(#' + this.clippingPathId + ')'
+          });
     }
 
     updateContainer() {

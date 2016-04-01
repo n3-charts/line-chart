@@ -23,7 +23,6 @@ describe('Include zero in axis options', function() {
     }).then(function(v) {
       expect(v).toEqual(expected.map(String));
     });
-
   };
 
   describe('for positive series', function() {

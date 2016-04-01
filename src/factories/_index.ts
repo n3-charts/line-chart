@@ -7,4 +7,5 @@
 /// <reference path='Zoom.ts' />
 /// <reference path='Pan.ts' />
 /// <reference path='Transition.ts' />
+/// <reference path='symbols/_index.ts' />
 /// <reference path='series/_index.ts' />

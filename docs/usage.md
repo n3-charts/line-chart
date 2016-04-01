@@ -9,6 +9,9 @@ $scope.options = {
   series: [
     ...
   ],
+  symbols: [
+    ...
+  ],
   axes: { ... },
   ...
 };
@@ -91,6 +94,25 @@ var myTicksFunction = function(domain) {
   };
 };
 ```
+
+### Symbols
+
+Symbols are a convenient way to add fixed elements to a chart. Their definitions should look like this :
+```js
+symbols: [{
+    type: 'hline',
+    value: 100,
+    color: 'hsla(5, 100%, 36%, 1)',
+    axis: 'y'
+  }, { ... }]
+```
+
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`type` | String or Array | `''` | The symbol's type. Can be any of `hline`, `vline`. | Yes
+`value` | Number or Date | - | The value (plotted on the relevant axis) where the symbol will be "drawn" | Yes
+`axis` | String | `'y'` | The axis the symbol will be plotted against. Can be  `'y'` or `'y2'` for `hline`, and is not taken in account for `vline`. | Yes
+`color` | String | `undefined` | The symbol's color. Any valid CSS value will work. | No
 
 
 ### Margin
