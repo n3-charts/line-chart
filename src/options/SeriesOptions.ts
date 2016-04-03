@@ -64,7 +64,7 @@ module n3Charts.Options {
       var options = <ISeriesOptions>{};
 
       // Extend the default options
-      angular.extend(options, this, js);
+      _.assign(options, this, js);
 
       options.axis = this.sanitizeAxis(options.axis);
       options.interpolation = this.sanitizeInterpolation(options.interpolation);

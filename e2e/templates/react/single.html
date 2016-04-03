@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html lang="en" ng-app="example">
+<head>
+  <title><%=name%> - React</title>
+  <link rel="stylesheet" type="text/css" media="screen" href="/build/LineChart.css">
+  <style type="text/css">
+  .example-chart, .example-controls {
+    width: 600px;
+    margin: 10px auto;
+    padding: 10px 10px 30px 10px;
+  }
+
+  .example-chart {
+    height: 300px;
+    border: 1px solid lightgrey;
+  }
+  <%=data.style%>
+  </style>
+</head>
+
+<body ng-controller='ExampleCtrl'>
+  <a href="/test/e2e#<%=name%>">&lt;&nbsp;All examples</a>
+  <%=data.react.html%>
+
+  <script src="/react/dist/react-with-addons.js"></script>
+  <script src="/react-dom/dist/react-dom.js"></script>
+  <script src="/d3/d3.js"></script>
+  <script src="/lodash/lodash.js"></script>
+  <script src="/build/LineChart-react.js"></script>
+  <script type="text/javascript">
+    (function(data, options, testIndex) {
+      <%=data.react.js%>
+    }(<%=data.data%>, <%=data.options%>, 0));
+  </script>
+</body>
+</html>

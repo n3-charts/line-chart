@@ -1,0 +1,99 @@
+{
+react: {
+  html: '''
+    <div class="example-chart"></div>
+  '''
+  js: '''
+    ReactDOM.render(
+      React.createElement(LineChart, {data: data, options: options}),
+      document.getElementsByClassName('example-chart')[testIndex || 0]
+    );
+  '''
+
+  }
+
+angular: {
+  html: '''
+    <div class="example-chart">
+      <linechart data="data" options="options"></linechart>
+    </div>
+  '''
+
+  js: '''
+    function($scope) {
+      $scope.data = data;
+      $scope.options = options;
+    }
+  '''
+
+  }
+
+data: '''
+  {
+    dataset0: [
+      {x: 0, y: 0},
+      {x: 1, y: 14.347},
+      {x: 2, y: 19.991},
+      {x: 3, y: 13.509},
+      {x: 4, y: -1.167},
+      {x: 5, y: -15.136},
+      {x: 6, y: undefined},
+      {x: 7, y: -12.625},
+      {x: 8, y: 0},
+      {x: 9, y: 14.347},
+      {x: 10, y: 19.991},
+      {x: 11, y: undefined},
+      {x: 12, y: undefined},
+      {x: 13, y: undefined},
+      {x: 14, y: -19.923},
+      {x: 15, y: -12.625},
+      {x: 16, y: 0},
+      {x: 17, y: 14.347},
+      {x: 18, y: 19.991},
+      {x: 19, y: 13.509},
+      {x: 20, y: -1.167},
+      {x: 21, y: -15.136},
+      {x: 22, y: -19.923},
+      {x: 23, y: -12.625},
+      {x: 24, y: 0},
+      {x: 25, y: 14.347},
+      {x: 26, y: 19.991},
+      {x: 27, y: 13.509},
+      {x: 28, y: -1.167},
+      {x: 29, y: -15.136},
+      {x: 30, y: -19.923},
+      {x: 31, y: -12.625},
+      {x: 32, y: 0},
+      {x: 33, y: 14.347},
+      {x: 34, y: 19.991},
+      {x: 35, y: 13.509},
+      {x: 36, y: -1.167},
+      {x: 37, y: -15.136},
+      {x: 38, y: -19.923},
+      {x: 39, y: -12.625},
+    ]
+  }
+'''
+options: '''
+  {
+    grid: {x: false, y: true},
+    margin: {right: 50, top: 30},
+    series: [
+      {
+        axis: "y",
+        defined: function(value) {
+          return value.y1 !== undefined;
+        },
+        dataset: "dataset0",
+        key: "y",
+        label: "An interrupted series",
+        color: "#d62728",
+        type: ["area", "line", "dot", "column"],
+        id: 'mySeries0'
+      }
+    ],
+    axes: {x: {key: "x"}}
+  }
+'''
+}
+

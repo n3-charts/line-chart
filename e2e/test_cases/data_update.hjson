@@ -1,0 +1,111 @@
+{
+react: {
+  html: '''
+    <div class="example-chart"></div>
+  '''
+  js: '''
+    ReactDOM.render(
+      React.createElement(LineChart, {data: data, options: options}),
+      document.getElementsByClassName('example-chart')[testIndex || 0]
+    );
+  '''
+
+  }
+
+angular: {
+  html: '''
+    <div class="example-chart">
+      <linechart data="data" options="options"></linechart>
+    </div>
+  '''
+
+  js: '''
+    function($scope, $interval) {
+      var i = 8;
+      $interval(function() {
+        $scope.data.dataset0.push({
+          x: i++,
+          val_0: Math.sin(i/100)*10,
+          val_1: Math.sin(i/10)*10,
+          val_2: Math.sin(i/5)*10,
+          val_3: Math.sin(i)*10
+        });
+
+        if (i > 10) {
+          $scope.data.dataset0 = $scope.data.dataset0.slice(1);
+        }
+      }, 1000);
+
+      $scope.data = data;
+      $scope.options = options;
+    }
+  '''
+
+  }
+
+data: '''
+  {
+    dataset0: [
+      {x: 0, val_0: 0.09999833334166665, val_1: 0.9983341664682815, val_2: 1.9866933079506122, val_3: 8.414709848078965 },
+      {x: 1, val_0: 0.1999866669333308, val_1: 1.9866933079506122, val_2: 3.8941834230865053, val_3: 9.092974268256818 },
+      {x: 2, val_0: 0.2999550020249566, val_1: 2.9552020666133956, val_2: 5.6464247339503535, val_3: 1.4112000805986722 },
+      {x: 3, val_0: 0.3998933418663416, val_1: 3.8941834230865053, val_2: 7.1735609089952295, val_3: -7.5680249530792825 },
+      {x: 4, val_0: 0.4997916927067833, val_1: 4.79425538604203, val_2: 8.414709848078965, val_3: -9.589242746631385 },
+      {x: 5, val_0: 0.599640064794446, val_1: 5.6464247339503535, val_2: 9.320390859672262, val_3: -2.7941549819892586 },
+      {x: 6, val_0: 0.6994284733753277, val_1: 6.44217687237691, val_2: 9.854497299884601, val_3: 6.569865987187891 },
+      {x: 7, val_0: 0.799146939691727, val_1: 7.1735609089952295, val_2: 9.99573603041505, val_3: 9.893582466233818 }
+    ]
+  }
+'''
+
+options: '''
+  {
+    pan: {x: true, y: true},
+    zoom: {x: true, y: true},
+
+    grid: {x: false, y: true},
+    series: [
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_0",
+        label: "An area series",
+        color: "#1f77b4",
+        type: "area",
+        id: 'mySeries0'
+      },
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_1",
+        label: "A dot series",
+        color: "grey",
+        thickness: "1px",
+        type: "dot",
+        id: 'mySeries1'
+      },
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_2",
+        label: "A line series",
+        color: "grey",
+        thickness: "1px",
+        type: ["dot", "line"],
+        id: 'mySeries2'
+      },
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_3",
+        label: "A columns series",
+        color: "grey",
+        thickness: "1px",
+        type: "column",
+        id: 'mySeries3'
+      }
+    ],
+    axes: {x: {key: "x", ticks: 5}}
+  }
+'''
+}
