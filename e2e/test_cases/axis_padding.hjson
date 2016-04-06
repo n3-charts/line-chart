@@ -1,0 +1,88 @@
+{
+react: {
+  html: '''
+    <div class="example-chart"></div>
+  '''
+  js: '''
+    ReactDOM.render(
+      React.createElement(LineChart, {data: data, options: options}),
+      document.getElementsByClassName('example-chart')[testIndex || 0]
+    );
+  '''
+
+  }
+
+angular: {
+  html: '''
+    <div class="example-chart">
+      <linechart data="data" options="options"></linechart>
+    </div>
+  '''
+
+  js: '''
+    function($scope) {
+      $scope.data = data;
+      $scope.options = options;
+    }
+  '''
+
+style: '''
+  .chart .axis.x2-axis {
+    display: initial;
+  }
+'''
+
+  }
+
+data: '''
+  {
+    dataset0: [
+      {x: 0, val_0: 48, val_1: -48},
+      {x: 1, val_0: 49, val_1: -49},
+      {x: 2, val_0: 50, val_1: -50},
+      {x: 3, val_0: 51, val_1: -51},
+      {x: 4, val_0: 52, val_1: -52},
+      {x: 5, val_0: 53, val_1: -53},
+      {x: 6, val_0: 54, val_1: -54},
+      {x: 7, val_0: 55, val_1: -55}
+    ]
+  }
+'''
+options: '''
+  {
+    margin: {top: 60},
+    pan: {x: true, y: true},
+    series: [
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: "val_0",
+      label: "A first series",
+      color: "#1f77b4",
+      type: ["dot", "line"],
+      id: 'mySeries0',
+    },
+    {
+      axis: "y",
+      dataset: "dataset0",
+      key: "val_1",
+      label: "A second series",
+      color: "hsla(260, 55%, 59%, 1)",
+      type: ["dot", "line"],
+      id: 'mySeries1',
+      visible: false
+    }
+  ],
+    axes: {
+      x: {
+        key: 'x',
+        padding: {min: 40, max: 20}
+      },
+      y: {
+        ticks: 5,
+        padding: {min: 20, max: 40}
+      }
+    }
+  }
+'''
+}

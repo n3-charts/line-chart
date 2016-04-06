@@ -1,0 +1,91 @@
+{
+react: {
+  html: '''
+    <div class="example-chart"></div>
+  '''
+  js: '''
+    ReactDOM.render(
+      React.createElement(LineChart, {data: data, options: options}),
+      document.getElementsByClassName('example-chart')[testIndex || 0]
+    );
+  '''
+
+  }
+
+angular: {
+  html: '''
+    <div class="example-chart">
+      <linechart data="data" options="options"></linechart>
+    </div>
+  '''
+
+  js: '''
+    function($scope) {
+      $scope.data = data;
+      $scope.options = options;
+    }
+  '''
+
+  }
+
+data: '''
+  {
+    dataset0: [
+      {x: 0, val_0: 300000, val_1: 300000, val_2: 300000, val_3: 300000},
+      {x: 1, val_0: 308060, val_1: 308060, val_2: 308060, val_3: 308060},
+      {x: 2, val_0: 216771, val_1: 216771, val_2: 216771, val_3: 216771},
+      {x: 3, val_0: 202002, val_1: 202002, val_2: 202002, val_3: 202002},
+      {x: 4, val_0: 369272, val_1: 369272, val_2: 369272, val_3: 369272},
+      {x: 5, val_0: 656732, val_1: 656732, val_2: 656732, val_3: 656732},
+      {x: 6, val_0: 892034, val_1: 892034, val_2: 892034, val_3: 892034},
+      {x: 7, val_0: 950780, val_1: 950780, val_2: 950780, val_3: 950780},
+      {x: 8, val_0: 870900, val_1: 870900, val_2: 870900, val_3: 870900},
+      {x: 9, val_0: 817774, val_1: 817774, val_2: 817774, val_3: 817774},
+      {x: 10, val_0: 932186, val_1: 932186, val_2: 932186, val_3: 932186},
+      {x: 11, val_0: 1200885, val_1: 1200885, val_2: 1200885, val_3: 1200885},
+      {x: 12, val_0: 1468770, val_1: 1468770, val_2: 1468770, val_3: 1468770},
+      {x: 13, val_0: 1581489, val_1: 1581489, val_2: 1581489, val_3: 1581489},
+      {x: 14, val_0: 1527347, val_1: 1527347, val_2: 1527347, val_3: 1527347},
+      {x: 15, val_0: 1448063, val_1: 1448063, val_2: 1448063, val_3: 1448063},
+      {x: 16, val_0: 1508469, val_1: 1508469, val_2: 1508469, val_3: 1508469},
+      {x: 17, val_0: 1744968, val_1: 1744968, val_2: 1744968, val_3: 1744968},
+      {x: 18, val_0: 2032063, val_1: 2032063, val_2: 2032063, val_3: 2032063},
+      {x: 19, val_0: 2197740, val_1: 2197740, val_2: 2197740, val_3: 2197740}
+    ]
+  }
+'''
+options: '''
+  {
+    series: [
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_0",
+        label: "A line sinusoid",
+        color: "#1f77b4",
+        type: "line",
+        id: "a"
+      },
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_1",
+        label: "An area",
+        color: "grey",
+        type: "area",
+        id: "b"
+      },
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_2",
+        label: "ABLABLABLA",
+        color: "lightpink",
+        type: "dot",
+        id: "d"
+      }
+    ],
+    axes: {x: {key: "x"}, y: {type: 'log', min: 1}}
+  }
+'''
+}

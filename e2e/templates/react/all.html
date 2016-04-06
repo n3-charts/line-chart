@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <title>n3-charts - React</title>
+  <link rel="stylesheet" type="text/css" media="screen" href="/build/LineChart.min.css">
+  <style type="text/css">
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .example {
+    width: calc(100% - 200px);
+    border: 1px solid lightgrey;
+    margin: 30px;
+    padding: 10px 10px 30px 10px;
+  }
+
+  .example-chart, .example-controls {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px 10px 30px 10px;
+  }
+
+  .example-chart {
+    height: 280px;
+  }
+
+  .example-title {
+    text-align: center;
+    font-size: 1.2em;
+    font-family: Roboto;
+    text-transform: capitalize;
+    margin-bottom: 10px;
+    font-weight: 100;
+  }
+
+  .example-title a {
+    color: grey;
+    text-decoration: none;
+  }
+
+  <% _.each(examples, function(example) { %>
+    .<%=example.data.name%> <%=example.data.style || '{}'%>
+  <% }); %>
+
+  </style>
+</head>
+
+<body>
+  <div class="examples">
+    <% _.each(examples, function(example) { %>
+
+    <div class="example <%=example.data.name%>">
+      <div class="example-title">
+        <a id="<%=example.data.name%>" href="/test/e2e/<%=example.data.name%>.html"><%=example.data.name%></a>
+      </div>
+      <%=example.data.react.html%>
+    </div>
+
+    <% }); %>
+
+
+  </div>
+  <script src="/react/dist/react-with-addons.js"></script>
+  <script src="/react-dom/dist/react-dom.js"></script>
+  <script src="/d3/d3.js"></script>
+  <script src="/lodash/lodash.js"></script>
+  <script src="/build/LineChart-react.js"></script>
+  <script type="text/javascript">
+
+  <% _.each(examples, function(example, index) { %>
+    (function(data, options, testIndex) {
+      <%=example.data.react.js%>
+    }(<%=example.data.data%>, <%=example.data.options%>, <%=index%>));
+  <% }); %>
+
+
+  </script>
+</body>
+</html>

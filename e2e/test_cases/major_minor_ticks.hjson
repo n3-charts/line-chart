@@ -1,0 +1,158 @@
+{
+react: {
+  html: '''
+    <div class="example-chart"></div>
+  '''
+  js: '''
+    ReactDOM.render(
+      React.createElement(LineChart, {data: data, options: options}),
+      document.getElementsByClassName('example-chart')[testIndex || 0]
+    );
+  '''
+
+  }
+
+angular: {
+  html: '''
+    <div class="example-chart">
+      <linechart data="data" options="options"></linechart>
+    </div>
+  '''
+
+  js: '''
+    function($scope) {
+      $scope.data = data;
+      $scope.options = options;
+    }
+  '''
+
+  }
+
+data: '''
+  {
+    dataset0: [
+      {x: new Date('2015-11-03T19:20:01.724Z'), val_0: 0, val_1: 0, val_2: 0, val_3: 0},
+      {x: new Date('2015-11-03T19:21:01.724Z'), val_0: 0.993, val_1: 3.894, val_2: 8.47, val_3: 14.347},
+      {x: new Date('2015-11-03T20:22:01.724Z'), val_0: 1.947, val_1: 7.174, val_2: 13.981, val_3: 19.991},
+      {x: new Date('2015-11-03T20:23:01.724Z'), val_0: 2.823, val_1: 9.32, val_2: 14.608, val_3: 13.509},
+      {x: new Date('2015-11-03T21:24:01.724Z'), val_0: 3.587, val_1: 9.996, val_2: 10.132, val_3: -1.167},
+      {x: new Date('2015-11-03T21:25:01.724Z'), val_0: 4.207, val_1: 9.093, val_2: 2.117, val_3: -15.136},
+      {x: new Date('2015-11-03T22:26:01.724Z'), val_0: 4.66, val_1: 6.755, val_2: -6.638, val_3: -19.923},
+      {x: new Date('2015-11-03T22:27:01.724Z'), val_0: 4.927, val_1: 3.35, val_2: -13.074, val_3: -12.625}
+    ]
+  }
+'''
+options: '''
+  {
+    margin: {top: 60, left: 60, right: 60},
+    grid: {x: true},
+    pan: {x: true, y: true},
+    zoom: {x: true, y: true},
+    series: [
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_0",
+        label: "A first series",
+        color: "#1f77b4",
+        type: ["dot", "line"],
+        id: 'mySeries0',
+      },
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "val_1",
+        label: "Another series",
+        color: "grey",
+        thickness: "1px",
+        type: "dot",
+        id: 'mySeries1',
+      }
+    ],
+    axes: {
+      x: {
+        key: 'x',
+        type: 'date',
+        ticks: function(domain) {
+
+          // DISCLAIMER
+          // The following code only works in specific cases and has been
+          // written for demo purposes solely. DO NOT COPY AND PASTE IT
+          // for other reasons than just prototyping. IT WILL FAIL IN REAL
+          // LIFE CONDITIONS (if the time span overlaps two days, or if you want
+          // to take timezones in consideration — and you want, trust me).
+
+          // If you want to manipulate dates, use one of the following libraries :
+          // - https://github.com/facetjs/chronology
+          // - http://momentjs.com/
+
+          var startHour = domain[0].getUTCHours();
+          var endHour = domain[1].getUTCHours() + 1;
+          var majors = [];
+          var minors = [];
+
+          for (var i = startHour; i <= endHour; i++) {
+            var d = new Date(domain[0].getTime());
+            d.setUTCHours(i - 1);
+            d.setUTCMinutes(0);
+            d.setUTCSeconds(0);
+            d.setUTCMilliseconds(0);
+
+            majors.push({label: i + 'h', value: new Date(d)});
+
+            d.setUTCMinutes(0);
+            minors.push({label: ':00', value: new Date(d)});
+
+            d.setUTCMinutes(15);
+            minors.push({label: ':15', value: new Date(d)});
+
+            d.setUTCMinutes(30);
+            minors.push({label: ':30', value: new Date(d)});
+
+            d.setUTCMinutes(45);
+            minors.push({label: ':45', value: new Date(d)});
+          }
+
+          var isInBounds = function(d) {
+            return d.value >= domain[0] && d.value <= domain[1];
+          };
+
+          return {
+            major: majors.filter(isInBounds),
+            minor: minors.filter(isInBounds)
+          };
+        }
+      },
+      y: {
+        ticks: function(domain) {
+          var extent = domain[1] - domain[0];
+          var amplitude = Math.floor(extent).toString().split('').length;
+
+          var major = [];
+          var minor = [];
+          var step = extent > 5 ? 2 : 5;
+
+          var start = Math.floor(domain[0]);
+          for (var i = start; i < domain[1]; i++) {
+            major.push({label: '' + i, value: i});
+
+            for (var j = 1; j < step; j++) {
+              var v = j/step;
+              minor.push({label: '' + v, value: i + v});
+            }
+          }
+
+          var isInBounds = function(d) {
+            return d.value >= domain[0] && d.value <= domain[1];
+          };
+
+          return {
+            major: major.filter(isInBounds),
+            minor: minor.filter(isInBounds)
+          };
+        }
+      }
+    }
+  }
+'''
+}

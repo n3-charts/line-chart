@@ -14,10 +14,14 @@ exports.config = {
   // Options to be passed to Jasmine-node.
   jasmineNodeOpts: {
     showColors: true, // Use colors in the command line report.
+  },
+
+  onPrepare: function() {
+    browser.ignoreSynchronization = true;
   }
 };
 
-if(process.env.TRAVIS){
+if (process.env.TRAVIS){
   exports.config.capabilities.chromeOptions = {
     args: ['--no-sandbox', '--test-type=browser']
   }

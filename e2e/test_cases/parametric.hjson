@@ -1,0 +1,76 @@
+{
+react: {
+  html: '''
+    <div class="example-chart"></div>
+  '''
+  js: '''
+    ReactDOM.render(
+      React.createElement(LineChart, {data: data, options: options}),
+      document.getElementsByClassName('example-chart')[testIndex || 0]
+    );
+  '''
+
+  }
+
+angular: {
+  html: '''
+    <div class="example-chart">
+      <linechart data="data" options="options"></linechart>
+    </div>
+  '''
+
+  js: '''
+    function($scope) {
+      $scope.data = data;
+      $scope.options = options;
+    }
+  '''
+
+  }
+
+data: '''
+  {
+    dataset0: [
+      {x: 10, y: 0},
+      {x: 6, y: 10},
+      {x: -3, y: 0},
+      {x: -10, y: -10},
+      {x: -8, y: 0},
+      {x: 0, y: 10},
+      {x: 8, y: 0},
+      {x: 10, y: -10},
+      {x: 3, y: 0},
+      {x: -6, y: 10},
+      {x: -10, y: 0},
+      {x: -6, y: -10},
+      {x: 3, y: 0},
+      {x: 10, y: 10},
+      {x: 8, y: 0},
+      {x: 0, y: -10},
+      {x: -8, y: 0},
+      {x: -10, y: 10},
+      {x: -3, y: 0},
+      {x: 6, y: -10},
+      {x: 10, y: 0}
+    ]
+  }
+
+'''
+options: '''
+  {
+    margin: {top: 5},
+    series: [
+      {
+        axis: "y",
+        dataset: "dataset0",
+        key: "y",
+        label: "A parametric series",
+        color: "#1f77b4",
+        type: ["line", "dot"],
+        id: 'mySeries0'
+      },
+    ],
+    axes: {x: {key: "x"}}
+  }
+'''
+}

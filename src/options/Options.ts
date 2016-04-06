@@ -44,7 +44,7 @@ module n3Charts.Options {
     };
 
     constructor(js?:any) {
-      var options = angular.extend({}, this, js);
+      var options = <any>_.assign({}, this, js); //angular.extend({}, this, js);
 
       this.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
       this.series = this.sanitizeSeries(Options.getArray(options.series));
@@ -206,16 +206,11 @@ module n3Charts.Options {
 
     static getObject(value: any, defaultValue: any = {}) {
       // Type check because *val* is of type any
-      if (!angular.isObject(value)) {
+      if (!_.isObject(value)) {
         throw TypeError(value + ' option must be an object.');
       }
 
-      var obj = {};
-
-      // Extend by default parameter
-      angular.extend(obj, defaultValue, value);
-
-      return obj;
+      return _.assign({}, defaultValue, value);
     }
 
     static getArray(value: any|any[], defaultValue: any[] = []) {

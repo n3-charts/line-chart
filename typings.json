@@ -7,6 +7,13 @@
     "jasmine": "registry:dt/jasmine#2.2.0+20160308082659",
     "jquery": "registry:dt/jquery#2.0.0+20160303223636",
     "jsdom": "registry:dt/jsdom#2.0.0+20150923033719",
+    "lodash": "registry:dt/lodash#3.10.0+20160330154726",
+    "react": "registry:dt/react#0.14.0+20160319053454",
+    "react-dom": "registry:dt/react-dom#0.14.0+20160316155526",
+    "react-global": "registry:dt/react-global#0.14.0+20160316155526",
     "selenium-webdriver": "registry:dt/selenium-webdriver#2.44.0+20150825165336"
+  },
+  "devDependencies": {
+    "lodash": "registry:npm/lodash#4.0.0+20160305082308"
   }
 }

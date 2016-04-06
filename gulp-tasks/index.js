@@ -1,14 +1,22 @@
 module.exports = function(gulp, $, paths) {
   [
-    './angular/clean',
-    './angular/ts-lint',
-    './angular/ts-compile',
-    './angular/e2e-tests',
-    './angular/new-e2e-test',
-    './angular/demo',
-    './angular/unit-tests',
-    './angular/coveralls',
-    './angular/scss'
+    './common/clean',
+    './common/coveralls',
+    './common/e2e',
+    './common/new-e2e-test',
+    './common/scss',
+    './common/server',
+    './common/ts-lint',
+    './common/unit-tests',
+
+    './angularjs/demo',
+    './angularjs/e2e-tests',
+    './angularjs/ts-compile',
+
+    './react/demo',
+    './react/e2e-tests',
+    './react/ts-compile',
+
   ].forEach(function(file) {
     require(file)(gulp, $, paths);
   });

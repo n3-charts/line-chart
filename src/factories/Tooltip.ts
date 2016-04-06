@@ -256,7 +256,7 @@ module n3Charts.Factory {
         s.append('path').attr({
           'class': 'tooltip-dot y1'
         }).on('click', (d:INeighbour, i) => {
-           this.eventMgr.trigger('click', d.row, i, d.series, this.options);
+          this.eventMgr.trigger('click', d.row, i, d.series, this.options);
         });
 
         s.append('path').attr({
@@ -264,7 +264,7 @@ module n3Charts.Factory {
         }).style({
           'display': (d) => d.series.hasTwoKeys() ? null : 'none'
         }).on('click', (d:INeighbour, i) => {
-           this.eventMgr.trigger('click', d.row, i, d.series, this.options);
+          this.eventMgr.trigger('click', d.row, i, d.series, this.options);
         });
       };
 
