@@ -145,7 +145,13 @@ module n3Charts.Factory {
         let lowests = axisOptions.includeZero ? [0] : [];
         let highests = axisOptions.includeZero ? [0] : [];
 
-        options.getVisibleSeriesBySide(this.side).forEach(s => {
+        let series = options.getVisibleSeriesBySide(this.side);
+
+        if (this.side === Options.AxisOptions.SIDE.Y2 && series.length === 0) {
+          series = options.getVisibleSeriesBySide(Options.AxisOptions.SIDE.Y);
+        }
+
+        series.forEach(s => {
           let values = datasets.getDatasetValues(s, options);
           values.forEach(datum => {
             if (s.defined && !s.defined(datum)) {

@@ -28,6 +28,7 @@ describe('Include zero in axis options', function() {
   describe('for positive series', function() {
     it('should work on the y axis', function() {
       checkTicks('y', [0, 10, 20, 30, 40, 50], element);
+      checkTicks('y2', [0, 10, 20, 30, 40, 50], element);
     });
   });
 
@@ -41,6 +42,7 @@ describe('Include zero in axis options', function() {
 
     it('should work on the y axis', function() {
       checkTicks('y', [-50, -40, -30, -20, -10, 0], element);
+      checkTicks('y2', [-50, -40, -30, -20, -10, 0], element);
     });
   });
 
@@ -53,6 +55,7 @@ describe('Include zero in axis options', function() {
 
     it('should work on the y axis', function() {
       checkTicks('y', ['0.0', '0.2', '0.4', '0.6', '0.8', '1.0'], element);
+      checkTicks('y2', ['0.0', '0.2', '0.4', '0.6', '0.8', '1.0'], element);
     });
   });
 });

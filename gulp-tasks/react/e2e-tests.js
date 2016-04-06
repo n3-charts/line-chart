@@ -42,7 +42,7 @@ module.exports = function(gulp, $, paths) {
   // Alternatively run `gulp test:e2e --test=<%test-name%>` where test-name can be pan_zoom for instance
   // so : gulp test:e2e --test=pan_zoom
   gulp.task('e2e:test:react', [
-    'webdriver:update', 'webdriver', 'ts:lint:e2e', 'demoSingle:compile:react', 'demoAll:compile:react', 'e2e:compile:react', 'scss:copy', 'server'
+    'webdriver:update', 'webdriver', 'ts:lint:e2e', 'demoSingle:compile:react', 'demoAll:compile:react', 'e2e:compile', 'scss:copy', 'server'
   ], function() {
     return gulp.src(argv.test ? 'e2e/**/' + argv.test + '.e2e.ts' : paths.e2e.from)
     .pipe(protractor({
