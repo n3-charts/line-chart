@@ -43,7 +43,7 @@ gulp.task('watch:angularjs', ['build:angularjs'], function () {
   gulp.watch([paths.style.from], ['scss:copy']);
   gulp.watch(
     [paths.e2e.from, paths.e2e.templates, paths.e2e.angularjs.single, paths.e2e.angularjs.all],
-    ['e2e:templatize:angularjs', 'demo:compile:angularjs']
+    ['demoSingle:compile:angularjs', 'demoAll:compile:angularjs']
   );
 });
 

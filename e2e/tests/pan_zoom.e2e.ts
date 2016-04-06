@@ -56,6 +56,48 @@ describe('Pan & zoom', function() {
   });
 
 
+  it('should constrain panning when told to', function() {
+    var container = element(by.css('.container')).getWebElement();
+    element(by.id('constrainCheckbox')).click();
+
+    // checkTicks('x', [0, 2, 4, 6], element);
+    // checkTicks('y', [-15, -10, -5, 0, 5, 10, 15], element);
+
+    // // Okay so for some reason, this will only pan the chart if
+    // // there are three mouse actions sequences...
+    // // If anyone wants to improve this, that'll be much appreciated.
+    // browser.actions()
+    //   .mouseMove(container, {x: 20, y: 20})
+    //   .mouseDown()
+    //   .mouseMove(container, {x: 100, y: 50})
+    //   .mouseUp()
+    //   .perform();
+
+    // browser.actions()
+    //   .mouseMove(container, {x: 20, y: 20})
+    //   .mouseDown()
+    //   .mouseMove(container, {x: 100, y: 50})
+    //   .mouseUp()
+    //   .perform();
+
+    // browser.actions()
+    //   .mouseMove(container, {x: 20, y: 20})
+    //   .mouseDown()
+    //   .mouseMove(container, {x: 100, y: 50})
+    //   .mouseUp()
+    //   .perform();
+
+    // checkTicks('x', [-2, 0, 2], element);
+    // checkTicks('y', [-5, 0, 5, 10, 15, 20, 25, 30], element);
+
+    // // d3 doesn't handle double clicks...
+    // browser.actions().click().click().perform();
+    // browser.sleep(500);
+
+    // checkTicks('x', [-2, 0, 2], element);
+    // checkTicks('y', [-5, 0, 5, 10, 15, 20, 25, 30], element);
+  });
+
   it('should ignore double click when told to', function() {
     var container = element(by.css('.container')).getWebElement();
     element(by.id('doubleClickCheckbox')).click();

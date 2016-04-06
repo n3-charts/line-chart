@@ -68,7 +68,7 @@ var LineChart = React.createClass({
       ['grid', n3Charts.Factory.Grid],
       ['pan', n3Charts.Factory.Pan],
       ['zoom', n3Charts.Factory.Zoom],
-      ['sync-layer', n3Charts.Factory.SyncLayer, this.props],
+      ['sync-layer', n3Charts.Factory.ReactSyncLayer, this.props],
 
       // This order is important, otherwise it can mess up with the tooltip
       // (and you don't want to mess up with a tooltip, trust me).

@@ -1,7 +1,7 @@
 module n3Charts.Factory {
   'use strict';
 
-  export class SyncLayer extends Factory.BaseFactory {
+  export class AngularJSSyncLayer extends Factory.BaseFactory {
 
     private unregisteringFunctions: Function[];
 
@@ -67,7 +67,9 @@ module n3Charts.Factory {
       let eventMgr: Utils.EventManager = this.eventMgr;
       let callbacks = [];
       let xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
+      let x2Axis = <Factory.Axis>this.factoryMgr.get('x2-axis');
       let yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
+      let y2Axis = <Factory.Axis>this.factoryMgr.get('y2-axis');
 
       if (!!this.attributes.onDomainsChange) {
         var onDomainsChange = this.$parse(this.attributes.onDomainsChange);
@@ -86,7 +88,7 @@ module n3Charts.Factory {
               return;
             }
 
-            if (!domains.x || !domains.y) {
+            if (!domains.x || !domains.y || !domains.x2 || !domains.y2) {
               domains = angular.copy(domains);
             }
 
@@ -94,8 +96,16 @@ module n3Charts.Factory {
               domains.x = xAxis.getScaleDomain();
             }
 
+            if (!domains.x2) {
+              domains.x2 = x2Axis.getScaleDomain();
+            }
+
             if (!domains.y) {
               domains.y = <number[]>yAxis.getScaleDomain();
+            }
+
+            if (!domains.y2) {
+              domains.y2 = <number[]>y2Axis.getScaleDomain();
             }
 
             if (type === 'zoom-end') {
@@ -125,7 +135,12 @@ module n3Charts.Factory {
       }
 
       let getDomains = ():Utils.IDomains => {
-        return {x: xAxis.getScaleDomain(), y: <number[]>yAxis.getScaleDomain()};
+        return {
+          x: xAxis.getScaleDomain(),
+          x2: x2Axis.getScaleDomain(),
+          y: <number[]>yAxis.getScaleDomain(),
+          y2: <number[]>y2Axis.getScaleDomain()
+        };
       };
       let ping = (domains, args) => callbacks.forEach(fn => fn(domains, args));
 

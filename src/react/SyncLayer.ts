@@ -1,7 +1,7 @@
 module n3Charts.Factory {
   'use strict';
 
-  export class SyncLayer extends Factory.BaseFactory {
+  export class ReactSyncLayer extends Factory.BaseFactory {
 
     static tooltipSyncLayers = {};
     static domainSyncLayers = {};
@@ -71,18 +71,28 @@ module n3Charts.Factory {
 
     outerWorldSync(domains, type) {
       let xAxis = <Factory.Axis>this.factoryMgr.get('x-axis');
+      let x2Axis = <Factory.Axis>this.factoryMgr.get('x2-axis');
       let yAxis = <Factory.Axis>this.factoryMgr.get('y-axis');
+      let y2Axis = <Factory.Axis>this.factoryMgr.get('y2-axis');
 
-      if (!domains.x || !domains.y) {
-        domains = _.assign({}, domains);
+      if (!domains.x || !domains.y || !domains.x2 || !domains.y2) {
+        domains = angular.copy(domains);
       }
 
       if (!domains.x) {
         domains.x = xAxis.getScaleDomain();
       }
 
+      if (!domains.x2) {
+        domains.x2 = x2Axis.getScaleDomain();
+      }
+
       if (!domains.y) {
         domains.y = <number[]>yAxis.getScaleDomain();
+      }
+
+      if (!domains.y2) {
+        domains.y2 = <number[]>y2Axis.getScaleDomain();
       }
 
       if (type === 'zoom-end') {

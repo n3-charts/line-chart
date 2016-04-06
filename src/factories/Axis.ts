@@ -49,8 +49,8 @@ module n3Charts.Factory {
       this.eventMgr.on('resize.' + this.key, this.onResize.bind(this));
     }
 
-    updateFromOuterWorld(domains: {x:number, y:number}) {
-      this.updateScaleDomain(domains[this.side[0]]);
+    updateFromOuterWorld(domains: Utils.IDomains) {
+      this.updateScaleDomain(domains[this.side]);
       this.softUpdate();
     }
 

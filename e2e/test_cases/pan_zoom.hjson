@@ -6,6 +6,9 @@ react: {
       <label for="doubleClickCheckbox">
         <input id="doubleClickCheckbox" checked type="checkbox">Double click enabled
       </label>
+      <label for="constrainCheckbox">
+        <input id="constrainCheckbox" checked type="checkbox">Constrain panning
+      </label>
     </div>
   '''
   js: '''
@@ -26,7 +29,12 @@ angular: {
       <linechart data="data" options="options"></linechart>
     </div>
     <div class="example-controls">
-      <label for="doubleClickCheckbox"><input id="doubleClickCheckbox" type="checkbox" ng-model="options.doubleClickEnabled">Double click enabled</label>
+      <label for="doubleClickCheckbox">
+        <input id="doubleClickCheckbox" type="checkbox" ng-model="options.doubleClickEnabled">Double click enabled
+      </label>
+      <label for="constrainCheckbox">
+        <input id="constrainCheckbox" type="checkbox" ng-model="constrainPan">Constrain panning
+      </label>
     </div>
   '''
 
@@ -34,6 +42,21 @@ angular: {
     function($scope) {
       $scope.data = data;
       $scope.options = options;
+
+      $scope.constrainPan = false;
+
+      $scope.$watch('constrainPan', function(value) {
+        var n = $scope.data.dataset0.length;
+
+        if (value) {
+          $scope.options.pan.x = function(newXDomain) {
+            console.log(newXDomain);
+            return newXDomain[1] <= $scope.data.dataset0[n - 1].x ? newXDomain : [0, 7];
+          };
+        } else {
+          $scope.options.pan.x = true;
+        }
+      });
     }
   '''
 

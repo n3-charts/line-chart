@@ -11,6 +11,14 @@ module n3Charts.Options {
     x: boolean;
     y: boolean;
   }
+
+  export interface IPanOptions {
+    x: boolean;
+    x2: boolean;
+    y: boolean;
+    y2: boolean;
+  }
+
   export class Options {
 
     public doubleClickEnabled = true;
@@ -21,9 +29,11 @@ module n3Charts.Options {
 
     public symbols: SymbolOptions[] = [];
 
-    public pan: ITwoAxes = {
+    public pan: IPanOptions = {
       x: false,
-      y: false
+      x2: false,
+      y: false,
+      y2: false
     };
 
     public zoom: ITwoAxes = {
@@ -51,7 +61,7 @@ module n3Charts.Options {
       this.symbols = this.sanitizeSymbols(Options.getArray(options.symbols));
       this.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
       this.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
-      this.pan = this.sanitizeTwoAxesOptions(options.pan, this.pan);
+      this.pan = this.sanitizePanOptions(options.pan, this.pan);
       this.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
       this.tooltipHook = Options.getFunction(options.tooltipHook);
       this.doubleClickEnabled = Options.getBoolean(options.doubleClickEnabled, false);
@@ -75,12 +85,19 @@ module n3Charts.Options {
     }
 
     sanitizeTwoAxesOptions(object: any, def: any): ITwoAxes {
-      var g = {
+      return {
         x: Options.getBoolean(object.x, def.x),
         y: Options.getBoolean(object.y, def.y)
       };
+    }
 
-      return g;
+    sanitizePanOptions(object: any, def: any): IPanOptions {
+      return {
+        x: Options.getBoolean(object.x, def.x),
+        x2: Options.getBoolean(object.x2, def.x2),
+        y: Options.getBoolean(object.y, def.y),
+        y2: Options.getBoolean(object.y2, def.y2)
+      };
     }
 
     sanitizeAxes(axes: any): IAxesSet {
