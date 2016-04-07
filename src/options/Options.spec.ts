@@ -162,6 +162,45 @@ describe('n3Charts.Options.Options', () => {
     });
   });
 
+  describe('sanitizePanOptions', () => {
+    var testIdentityFunction = (fn:any) => {
+      var input = [];
+      expect(fn(input)).toBe(input);
+    };
+
+    var testUndefinedFunction = (fn:any) => {
+      var input = [];
+      expect(fn(input)).toBe(undefined);
+    };
+
+    describe('sanitizePanOption', () => {
+      it('should sanitize true', () => {
+        let fn = options.sanitizePanOption(true);
+        testIdentityFunction(fn);
+      });
+
+      it('should sanitize false', () => {
+        let fn = options.sanitizePanOption(false);
+        testUndefinedFunction(fn);
+      });
+
+      it('should sanitize undefined', () => {
+        let fn = options.sanitizePanOption(undefined);
+        testUndefinedFunction(fn);
+      });
+
+      it('should sanitize a function', () => {
+        let output = [42];
+        let fn = options.sanitizePanOption((whatever) => output);
+        expect(fn([1, 2])).toBe(output);
+      });
+
+      it('should NOT sanitize yo mama', () => {
+        expect(() => options.sanitizePanOption(42)).toThrow();
+      });
+    });
+  });
+
   describe('sanitizeAxes', () => {
     var axes: n3Charts.Options.IAxesSet;
 

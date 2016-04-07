@@ -61,10 +61,7 @@ module n3Charts.Options {
      * and convert raw js to typed variables
      */
     sanitizeOptions(js: any) {
-      var options = <ISeriesOptions>{};
-
-      // Extend the default options
-      _.assign(options, this, js);
+      var options = Utils.ObjectUtils.extend(this, js);
 
       options.axis = this.sanitizeAxis(options.axis);
       options.interpolation = this.sanitizeInterpolation(options.interpolation);

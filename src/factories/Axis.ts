@@ -16,7 +16,7 @@ module n3Charts.Factory {
 
     private options: Options.AxisOptions;
 
-    range():(number|Date)[] {
+    range():(number)[] {
       return this._scale.range();
     }
 

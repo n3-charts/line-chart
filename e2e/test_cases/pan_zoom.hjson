@@ -51,7 +51,7 @@ angular: {
         if (value) {
           $scope.options.pan.x = function(newXDomain) {
             console.log(newXDomain);
-            return newXDomain[1] <= $scope.data.dataset0[n - 1].x ? newXDomain : [0, 7];
+            return (newXDomain[1] <= $scope.data.dataset0[n - 1].x) ? newXDomain : [0, 7];
           };
         } else {
           $scope.options.pan.x = true;
@@ -79,7 +79,7 @@ data: '''
 options: '''
   {
     doubleClickEnabled: true, // explicitly set to true so the checkbox is not messed up
-    pan: {x: true, y: true},
+    pan: {x: true, y: true, y2: true},
     zoom: {x: true, y: true},
 
     grid: {x: false, y: true},

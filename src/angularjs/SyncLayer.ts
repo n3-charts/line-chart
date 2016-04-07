@@ -146,25 +146,25 @@ module n3Charts.Factory {
 
       eventMgr.on('pan.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('pan')).constrainOutgoingDomains(domains);
+        (<Factory.Pan>this.factoryMgr.get('pan')).constrainDomains(domains);
         ping(domains, {type: 'pan'});
       });
 
       eventMgr.on('pan-end.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('pan')).constrainOutgoingDomains(domains);
+        (<Factory.Pan>this.factoryMgr.get('pan')).constrainDomains(domains);
         ping(domains, {type: 'pan-end', isEndEvent: true});
       });
 
       eventMgr.on('zoom.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
+        (<Factory.Zoom>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
         ping(domains, {type: 'zoom', isEndEvent: false});
       });
 
       eventMgr.on('zoom-end.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
+        (<Factory.Zoom>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
         ping(domains, {type: 'zoom-end', isEndEvent: true});
       });
 

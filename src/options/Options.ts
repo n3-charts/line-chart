@@ -13,10 +13,10 @@ module n3Charts.Options {
   }
 
   export interface IPanOptions {
-    x: boolean;
-    x2: boolean;
-    y: boolean;
-    y2: boolean;
+    x: ( x:(number|Date)[] ) => (number|Date)[];
+    x2: ( x:(number|Date)[] ) => (number|Date)[];
+    y: ( x:(number|Date)[] ) => (number|Date)[];
+    y2: ( x:(number|Date)[] ) => (number|Date)[];
   }
 
   export class Options {
@@ -30,10 +30,10 @@ module n3Charts.Options {
     public symbols: SymbolOptions[] = [];
 
     public pan: IPanOptions = {
-      x: false,
-      x2: false,
-      y: false,
-      y2: false
+      x: () => undefined,
+      x2: () => undefined,
+      y: () => undefined,
+      y2: () => undefined
     };
 
     public zoom: ITwoAxes = {
@@ -54,7 +54,7 @@ module n3Charts.Options {
     };
 
     constructor(js?:any) {
-      var options = <any>_.assign({}, this, js); //angular.extend({}, this, js);
+      var options = Utils.ObjectUtils.extend(this, js);
 
       this.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
       this.series = this.sanitizeSeries(Options.getArray(options.series));
@@ -93,11 +93,28 @@ module n3Charts.Options {
 
     sanitizePanOptions(object: any, def: any): IPanOptions {
       return {
-        x: Options.getBoolean(object.x, def.x),
-        x2: Options.getBoolean(object.x2, def.x2),
-        y: Options.getBoolean(object.y, def.y),
-        y2: Options.getBoolean(object.y2, def.y2)
+        x: this.sanitizePanOption(object.x),
+        x2: this.sanitizePanOption(object.x2),
+        y: this.sanitizePanOption(object.y),
+        y2: this.sanitizePanOption(object.y2),
       };
+    }
+
+    sanitizePanOption(option: any): ((x:(number|Date)[] ) => (number|Date)[]) {
+      if (option === undefined) {
+        return (domain) => undefined;
+      }
+      else if (Utils.ObjectUtils.isBoolean(option)) {
+        if (option) {
+          return (domain) => domain;
+        } else {
+          return (domain) => undefined;
+        }
+      } else if (Utils.ObjectUtils.isFunction(option)) {
+        return option;
+      } else {
+        throw new Error('Pan option should either be a Boolean or a function. Please RTFM.');
+      }
     }
 
     sanitizeAxes(axes: any): IAxesSet {
@@ -223,11 +240,11 @@ module n3Charts.Options {
 
     static getObject(value: any, defaultValue: any = {}) {
       // Type check because *val* is of type any
-      if (!_.isObject(value)) {
+      if (!Utils.ObjectUtils.isObject(value)) {
         throw TypeError(value + ' option must be an object.');
       }
 
-      return _.assign({}, defaultValue, value);
+      return Utils.ObjectUtils.extend(defaultValue, value);
     }
 
     static getArray(value: any|any[], defaultValue: any[] = []) {

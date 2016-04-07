@@ -47,9 +47,9 @@ module n3Charts.Factory {
     syncTooltips() {
       if (!!this.properties.tooltipSyncKey) {
         var key = this.properties.tooltipSyncKey;
-        var layers = SyncLayer.tooltipSyncLayers[key] || [];
+        var layers = ReactSyncLayer.tooltipSyncLayers[key] || [];
         layers.push(this);
-        SyncLayer.tooltipSyncLayers[key] = layers
+        ReactSyncLayer.tooltipSyncLayers[key] = layers
 
         this.eventMgr.on('container-move.sync-layer', (event) => {
           layers.forEach((layer) => {
@@ -76,7 +76,7 @@ module n3Charts.Factory {
       let y2Axis = <Factory.Axis>this.factoryMgr.get('y2-axis');
 
       if (!domains.x || !domains.y || !domains.x2 || !domains.y2) {
-        domains = angular.copy(domains);
+        domains = n3Charts.Utils.ObjectUtils.extend({}, domains);
       }
 
       if (!domains.x) {
@@ -130,9 +130,9 @@ module n3Charts.Factory {
 
       if (!!this.properties.domainsSyncKey) {
         var key = this.properties.domainsSyncKey;
-        var layers = SyncLayer.domainSyncLayers[key] || [];
+        var layers = ReactSyncLayer.domainSyncLayers[key] || [];
         layers.push(this);
-        SyncLayer.domainSyncLayers[key] = layers
+        ReactSyncLayer.domainSyncLayers[key] = layers
 
         callbacks.push((domains:Utils.IDomains, {type}) => {
           layers.forEach((layer) => {
@@ -150,25 +150,25 @@ module n3Charts.Factory {
 
       this.eventMgr.on('pan.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('pan')).constrainOutgoingDomains(domains);
+        (<Factory.Pan>this.factoryMgr.get('pan')).constrainDomains(domains);
         ping(domains, {type: 'pan'});
       });
 
       this.eventMgr.on('pan-end.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('pan')).constrainOutgoingDomains(domains);
+        (<Factory.Pan>this.factoryMgr.get('pan')).constrainDomains(domains);
         ping(domains, {type: 'pan-end', isEndEvent: true});
       });
 
       this.eventMgr.on('zoom.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
+        (<Factory.Zoom>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
         ping(domains, {type: 'zoom', isEndEvent: false});
       });
 
       this.eventMgr.on('zoom-end.sync-layer', () => {
         let domains = getDomains();
-        (<Factory.Pan>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
+        (<Factory.Zoom>this.factoryMgr.get('zoom')).constrainOutgoingDomains(domains);
         ping(domains, {type: 'zoom-end', isEndEvent: true});
       });
 

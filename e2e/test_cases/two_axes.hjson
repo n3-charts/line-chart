@@ -44,7 +44,7 @@ data: '''
 '''
 options: '''
   {
-    pan: {x: true, y: true},
+    pan: {x: true, y: true, y2: true},
     zoom: {x: true, y: true},
     series: [
       {
