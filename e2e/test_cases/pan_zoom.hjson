@@ -6,6 +6,9 @@ react: {
       <label for="doubleClickCheckbox">
         <input id="doubleClickCheckbox" checked type="checkbox">Double click enabled
       </label>
+      <label for="constrainCheckbox">
+        <input id="constrainCheckbox" type="checkbox">Constrain panning
+      </label>
     </div>
   '''
   js: '''
@@ -17,6 +20,20 @@ react: {
       options.doubleClickEnabled = event.target.checked;
       comp.updateAll();
     });
+
+    document.getElementById('constrainCheckbox').addEventListener('change', function(event) {
+      var n = data.dataset0.length;
+
+      if (event.target.checked) {
+        options.pan.x = function(newXDomain) {
+          return (newXDomain[0] <= 0) ? [0, 7] : newXDomain; // kinda stupid...
+        };
+      } else {
+        options.pan.x = true;
+      }
+      comp.updateAll();
+    });
+
   '''
   }
 
@@ -26,7 +43,12 @@ angular: {
       <linechart data="data" options="options"></linechart>
     </div>
     <div class="example-controls">
-      <label for="doubleClickCheckbox"><input id="doubleClickCheckbox" type="checkbox" ng-model="options.doubleClickEnabled">Double click enabled</label>
+      <label for="doubleClickCheckbox">
+        <input id="doubleClickCheckbox" type="checkbox" ng-model="options.doubleClickEnabled">Double click enabled
+      </label>
+      <label for="constrainCheckbox">
+        <input id="constrainCheckbox" type="checkbox" ng-model="constrainPan">Constrain panning
+      </label>
     </div>
   '''
 
@@ -34,6 +56,20 @@ angular: {
     function($scope) {
       $scope.data = data;
       $scope.options = options;
+
+      $scope.constrainPan = false;
+
+      $scope.$watch('constrainPan', function(value) {
+        var n = $scope.data.dataset0.length;
+
+        if (value) {
+          $scope.options.pan.x = function(newXDomain) {
+            return (newXDomain[0] <= 0) ? [0, 7] : newXDomain; // kinda stupid...
+          };
+        } else {
+          $scope.options.pan.x = true;
+        }
+      });
     }
   '''
 
@@ -56,7 +92,7 @@ data: '''
 options: '''
   {
     doubleClickEnabled: true, // explicitly set to true so the checkbox is not messed up
-    pan: {x: true, y: true},
+    pan: {x: true, y: true, y2: true},
     zoom: {x: true, y: true},
 
     grid: {x: false, y: true},

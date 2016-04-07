@@ -11,6 +11,14 @@ module n3Charts.Options {
     x: boolean;
     y: boolean;
   }
+
+  export interface IPanOptions {
+    x: ( x:(number|Date)[] ) => (number|Date)[];
+    x2: ( x:(number|Date)[] ) => (number|Date)[];
+    y: ( x:(number|Date)[] ) => (number|Date)[];
+    y2: ( x:(number|Date)[] ) => (number|Date)[];
+  }
+
   export class Options {
 
     public doubleClickEnabled = true;
@@ -21,9 +29,11 @@ module n3Charts.Options {
 
     public symbols: SymbolOptions[] = [];
 
-    public pan: ITwoAxes = {
-      x: false,
-      y: false
+    public pan: IPanOptions = {
+      x: () => undefined,
+      x2: () => undefined,
+      y: () => undefined,
+      y2: () => undefined
     };
 
     public zoom: ITwoAxes = {
@@ -44,14 +54,14 @@ module n3Charts.Options {
     };
 
     constructor(js?:any) {
-      var options = <any>_.assign({}, this, js); //angular.extend({}, this, js);
+      var options = Utils.ObjectUtils.extend(this, js);
 
       this.margin = this.sanitizeMargin(Options.getObject(options.margin, this.margin));
       this.series = this.sanitizeSeries(Options.getArray(options.series));
       this.symbols = this.sanitizeSymbols(Options.getArray(options.symbols));
       this.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
       this.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
-      this.pan = this.sanitizeTwoAxesOptions(options.pan, this.pan);
+      this.pan = this.sanitizePanOptions(options.pan, this.pan);
       this.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
       this.tooltipHook = Options.getFunction(options.tooltipHook);
       this.doubleClickEnabled = Options.getBoolean(options.doubleClickEnabled, false);
@@ -75,12 +85,36 @@ module n3Charts.Options {
     }
 
     sanitizeTwoAxesOptions(object: any, def: any): ITwoAxes {
-      var g = {
+      return {
         x: Options.getBoolean(object.x, def.x),
         y: Options.getBoolean(object.y, def.y)
       };
+    }
 
-      return g;
+    sanitizePanOptions(object: any, def: any): IPanOptions {
+      return {
+        x: this.sanitizePanOption(object.x),
+        x2: this.sanitizePanOption(object.x2),
+        y: this.sanitizePanOption(object.y),
+        y2: this.sanitizePanOption(object.y2),
+      };
+    }
+
+    sanitizePanOption(option: any): ((x:(number|Date)[] ) => (number|Date)[]) {
+      if (option === undefined) {
+        return (domain) => undefined;
+      }
+      else if (Utils.ObjectUtils.isBoolean(option)) {
+        if (option) {
+          return (domain) => domain;
+        } else {
+          return (domain) => undefined;
+        }
+      } else if (Utils.ObjectUtils.isFunction(option)) {
+        return option;
+      } else {
+        throw new Error('Pan option should either be a Boolean or a function. Please RTFM.');
+      }
     }
 
     sanitizeAxes(axes: any): IAxesSet {
@@ -206,11 +240,11 @@ module n3Charts.Options {
 
     static getObject(value: any, defaultValue: any = {}) {
       // Type check because *val* is of type any
-      if (!_.isObject(value)) {
+      if (!Utils.ObjectUtils.isObject(value)) {
         throw TypeError(value + ' option must be an object.');
       }
 
-      return _.assign({}, defaultValue, value);
+      return Utils.ObjectUtils.extend(defaultValue, value);
     }
 
     static getArray(value: any|any[], defaultValue: any[] = []) {
