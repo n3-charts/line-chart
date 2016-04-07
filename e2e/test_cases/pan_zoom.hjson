@@ -7,7 +7,7 @@ react: {
         <input id="doubleClickCheckbox" checked type="checkbox">Double click enabled
       </label>
       <label for="constrainCheckbox">
-        <input id="constrainCheckbox" checked type="checkbox">Constrain panning
+        <input id="constrainCheckbox" type="checkbox">Constrain panning
       </label>
     </div>
   '''
@@ -20,6 +20,20 @@ react: {
       options.doubleClickEnabled = event.target.checked;
       comp.updateAll();
     });
+
+    document.getElementById('constrainCheckbox').addEventListener('change', function(event) {
+      var n = data.dataset0.length;
+
+      if (event.target.checked) {
+        options.pan.x = function(newXDomain) {
+          return (newXDomain[0] <= 0) ? [0, 7] : newXDomain; // kinda stupid...
+        };
+      } else {
+        options.pan.x = true;
+      }
+      comp.updateAll();
+    });
+
   '''
   }
 
@@ -50,8 +64,7 @@ angular: {
 
         if (value) {
           $scope.options.pan.x = function(newXDomain) {
-            console.log(newXDomain);
-            return (newXDomain[1] <= $scope.data.dataset0[n - 1].x) ? newXDomain : [0, 7];
+            return (newXDomain[0] <= 0) ? [0, 7] : newXDomain; // kinda stupid...
           };
         } else {
           $scope.options.pan.x = true;
