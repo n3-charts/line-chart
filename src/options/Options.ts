@@ -53,6 +53,8 @@ module n3Charts.Options {
       y: true
     };
 
+    public dots: IDot = DotOptions.getDefaultDots();
+
     constructor(js?:any) {
       var options = Utils.ObjectUtils.extend(this, js);
 
@@ -65,6 +67,7 @@ module n3Charts.Options {
       this.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
       this.tooltipHook = Options.getFunction(options.tooltipHook);
       this.doubleClickEnabled = Options.getBoolean(options.doubleClickEnabled, false);
+      this.dots = this.sanitizeDots(Options.getObject(options.dots, this.dots));
     }
 
     sanitizeMargin(margin: any): IMargin {
@@ -123,6 +126,13 @@ module n3Charts.Options {
         prev[key] = new AxisOptions(axes[key]);
         return prev;
       }, {});
+    }
+
+    sanitizeDots(dots: any): IDot {
+      return <IDot>{
+        pathRadius: Options.getNumber(dots.pathRadius, 2),
+        tooltipRadius: Options.getNumber(dots.tooltipRadius, 3)
+      }
     }
 
     getAbsKey(): string {

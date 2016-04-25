@@ -5,11 +5,10 @@ module n3Charts.Factory.Series {
 
     public type: string = Options.SeriesOptions.TYPE.DOT;
 
-    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.SeriesOptions, index: number, numSeries: number) {
+    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.SeriesOptions, index: number, numSeries: number, dotsRadius: number) {
       var {xAxis, yAxis} = this.getAxes(series);
 
       var dotsData = this.data.getDatasetValues(series, this.options).filter(series.defined);
-      var dotsRadius = 2;
 
       var dots = group.selectAll('.' + this.type)
         .data(dotsData, (d: Utils.IPoint) => '' + d.x);
