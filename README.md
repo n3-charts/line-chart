@@ -1,4 +1,4 @@
-# n3-line-chart v2 [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=dev)](https://travis-ci.org/n3-charts/line-chart) [![Coverage Status](https://coveralls.io/repos/n3-charts/line-chart/badge.svg?branch=dev&pouet=tut)](https://coveralls.io/r/n3-charts/line-chart?branch=dev) [![Join the chat at https://gitter.im/n3-charts/line-chart](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/n3-charts/line-chart)
+# n3-line-chart v2 [![Build Status](https://travis-ci.org/n3-charts/line-chart.svg?branch=master)](https://travis-ci.org/n3-charts/line-chart) [![Coverage Status](https://coveralls.io/repos/n3-charts/line-chart/badge.svg?branch=dev&pouet=tut)](https://coveralls.io/r/n3-charts/line-chart?branch=dev) [![Join the chat at https://gitter.im/n3-charts/line-chart](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/n3-charts/line-chart)
 
 **n3-line-chart** is an easy-to-use JavaScript library for creating beautiful charts in [AngularJS][angular-home] applications and it is built on top of [D3.js][d3-home].
 
