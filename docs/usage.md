@@ -246,7 +246,7 @@ $scope.options = {
 };
 ```
 
-Take a look at [the examples](http://n3-charts.github.io/line-chart/v2/#/examples) for more information !
+Take a look at [the examples](http://n3-charts.github.io/line-chart/#/examples) for more information !
 
 ## Full example
 ```html
