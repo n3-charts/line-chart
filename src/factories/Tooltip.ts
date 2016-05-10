@@ -118,7 +118,7 @@ module n3Charts.Factory {
         return;
       }
 
-      this.updateTooltipDots(rows);
+      this.updateTooltipDots(rows, options);
       this.dots.style('opacity', '1');
 
       this.updateLinePosition(rows);
@@ -241,11 +241,11 @@ module n3Charts.Factory {
       items.exit().remove();
     }
 
-    updateTooltipDots(rows: INeighbour[]) {
+    updateTooltipDots(rows: INeighbour[], options: Options.Options) {
       var xScale = this.factoryMgr.get('x-axis').scale;
       var yScale = (side) => this.factoryMgr.get(side + '-axis').scale;
 
-      var radius = 3;
+      var radius = options.dots.tooltipRadius;
       var circlePath = (r, cx, cy) => {
         return `M ${cx} ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 `;
       };

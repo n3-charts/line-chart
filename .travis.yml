@@ -13,6 +13,7 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 - ./kickstart.sh
 script: gulp travis:angularjs && gulp travis:react
+dist: trusty
 notifications:
   webhooks:
     urls:

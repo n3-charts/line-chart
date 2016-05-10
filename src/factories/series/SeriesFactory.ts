@@ -86,11 +86,11 @@ module n3Charts.Factory.Series {
 
         // Hmmmm TypeScript...
         var group = <d3.selection.Update<Options.ISeriesOptions>>d3.select(this);
-        self.updateData(group, d, i, series.length);
+        self.updateData(group, d, i, series.length, self.options.dots.pathRadius);
       });
     }
 
-    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.ISeriesOptions, index: number, numSeries: number) {
+    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.ISeriesOptions, index: number, numSeries: number, dotsRadius: number) {
       // this needs to be overwritten
     }
 

@@ -95,6 +95,19 @@ var myTicksFunction = function(domain) {
 };
 ```
 
+### Dots
+The radiuses of the series dots and the tooltip dot can be defined in the following fashion
+```
+dots: {
+  pathRadius: 4,
+  tooltipRadius: 6
+}
+```
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`pathRadius` | Number | 2 | The radius of the series dots that are plotted on the chart | No
+`tooltipRadius` | Number | 3 | The radius of the tooltip dot | No
+
 ### Symbols
 
 Symbols are a convenient way to add fixed elements to a chart. Their definitions should look like this :
