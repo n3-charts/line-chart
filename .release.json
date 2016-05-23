@@ -2,7 +2,7 @@
     "non-interactive": true,
     "dry-run": false,
     "verbose": true,
-    "buildCommand": "gulp && gulp test:e2e && cp -a .tmp/build build",
+    "buildCommand": "gulp travis:angularjs && gulp travis:react && gulp && cp -a .tmp/build build",
     "npm": {
       "publish": true
     },

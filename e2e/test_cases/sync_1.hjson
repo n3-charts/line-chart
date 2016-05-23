@@ -87,7 +87,7 @@ data: '''
 '''
 options: '''
   {
-    pan: {x: true, y: true},
+    pan: {x: true, x2: true, y: true, y2: true},
     zoom: {x: true, y: true},
     grid: {x: false, y: true},
     margin: {right: 50, top: 30},

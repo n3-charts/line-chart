@@ -1,6 +1,6 @@
 {
   "name": "n3-charts",
-  "version": "2.0.24",
+  "version": "2.0.25",
   "homepage": "http://n3-charts.github.io/line-chart/v2",
   "licenses": {
     "type": "MIT",
@@ -17,9 +17,11 @@
   "dependencies": {
     "angular": "^1.4.0",
     "d3": "^3.5.5",
-    "gulp-uglifycss": "^1.0.5"
+    "react": "^0.14.8",
+    "react-dom": "^0.14.8"
   },
   "devDependencies": {
+    "gulp-uglifycss": "^1.0.5",
     "angular-mocks": "^1.4.0",
     "chai": "^2.3.0",
     "expect.js": "^0.3.1",
@@ -52,11 +54,8 @@
     "karma-jasmine": "^0.3.7",
     "karma-mocha": "^0.1.10",
     "karma-sinon": "^1.0.4",
-    "lodash": "^4.7.0",
     "mocha": "^2.2.5",
     "protractor": "^2.5.1",
-    "react": "^0.14.8",
-    "react-dom": "^0.14.8",
     "release-it": "^2.3.0",
     "require-dir": "^0.3.0",
     "run-sequence": "^1.1.0",

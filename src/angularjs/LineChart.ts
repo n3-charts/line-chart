@@ -58,7 +58,7 @@ module n3Charts {
         ['grid', Factory.Grid],
         ['pan', Factory.Pan],
         ['zoom', Factory.Zoom],
-        ['sync-layer', Factory.SyncLayer, scope, attributes, this.$parse],
+        ['sync-layer', Factory.AngularJSSyncLayer, scope, attributes, this.$parse],
 
         // This order is important, otherwise it can mess up with the tooltip
         // (and you don't want to mess up with a tooltip, trust me).

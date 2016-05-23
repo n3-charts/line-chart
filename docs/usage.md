@@ -165,14 +165,24 @@ Name | Type | Default | Description | Mandatory
 The `pan` object parametrizes which of the chart's axes accept(s) panning. It's not mandatory and should look like this :
 ```js
 pan: {
-  x: false,
-  y: false
+  x: function(newDomain) {
+    // conditional stuff here
+
+    // Must return a domain of the form [min, max]
+    return newDomain
+  },
+  x2: true,
+  y: false,
+  y2: false
+
 }
 ```
 Name | Type | Default | Description | Mandatory
 ---- | ---- | ------- | ------------ | --------
-`x` | Boolean | `false` | Enables/disables panning on the x axis | No
-`y` | Boolean | `false` | Enables/disables panning on the y axis | No
+`x` | Boolean or Function | `false` | Enables/disables panning on the x axis | No
+`x2` | Boolean or Function | `false` | Enables/disables panning on the x axis | No
+`y` | Boolean or Function | `false` | Enables/disables panning on the y axis | No
+`y2` | Boolean or Function | `false` | Enables/disables panning on the y axis | No
 
 ### Zoom
 The `zoom` object parametrizes which of the chart's axes accept(s) zooming. It's not mandatory and should look like this :
@@ -236,7 +246,7 @@ $scope.options = {
 };
 ```
 
-Take a look at [the examples](http://n3-charts.github.io/line-chart/v2/#/examples) for more information !
+Take a look at [the examples](http://n3-charts.github.io/line-chart/#/examples) for more information !
 
 ## Full example
 ```html

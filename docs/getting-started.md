@@ -11,9 +11,9 @@ You can install **n3-line-chart** by using the `npm` package manager and running
 This will also automatically install the proper versions of D3.js and AngularJS to your `node_modules/` directory.
 
 ### Using the CDN
-Thanks to [https://github.com/PeterDaveHello](@PeterDaveHello), the library is now accessible through [cdnjs.com](cdnjs.com).
+Thanks to [@PeterDaveHello](https://github.com/PeterDaveHello), the library is now accessible through [cdnjs.com](http://cdnjs.com).
 
-The files URLs can be found here : [https://cdnjs.com/libraries/line-chart]().
+The files URLs can be found [there](https://cdnjs.com/libraries/line-chart).
 
 > Please note that installing n3-line-chart via bower is pulling only the source files but not the build files. Please use npm install n3-charts instead!
 

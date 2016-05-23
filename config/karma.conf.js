@@ -7,7 +7,6 @@ module.exports = function(config) {
       'node_modules/angular-mocks/angular-mocks.js',
       {pattern: 'src/**/*.ts', included: false},
       'node_modules/d3/d3.min.js',
-      'node_modules/lodash/lodash.js',
       '.tmp/build/LineChart.js',
       '.tmp/**/*.spec.js'
     ],
