@@ -246,20 +246,16 @@ module n3Charts.Factory {
       var yScale = (side) => this.factoryMgr.get(side + '-axis').scale;
 
       var radius = 3;
-      var circlePath = (r, cx, cy) => {
-        return `M ${cx} ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 `;
-      };
-
       var initDots = (s) => {
         s.attr('class', 'tooltip-dots-group');
 
-        s.append('path').attr({
+        s.append('circle').attr({
           'class': 'tooltip-dot y1'
         }).on('click', (d:INeighbour, i) => {
           this.eventMgr.trigger('click', d.row, i, d.series, this.options);
         });
 
-        s.append('path').attr({
+        s.append('circle').attr({
           'class': 'tooltip-dot y0'
         }).style({
           'display': (d) => d.series.hasTwoKeys() ? null : 'none'
@@ -270,19 +266,17 @@ module n3Charts.Factory {
 
       var updateDots = (s) => {
         s.select('.tooltip-dot.y1').attr({
-          'd': (d) => circlePath(radius, xScale(d.row.x), yScale(d.series.axis)(d.row.y1)),
+          'r': (d) => radius,
+          'cx': (d) => xScale(d.row.x),
+          'cy': (d) => yScale(d.series.axis)(d.row.y1),
           'stroke': (d) => d.series.color
         });
 
         s.select('.tooltip-dot.y0').attr({
-          'd': (d) => {
-            if (d.series.hasTwoKeys()) {
-              return circlePath(radius, xScale(d.row.x), yScale(d.series.axis)(d.row.y0));
-            }
-
-            return '';
-          },
-          'stroke': (d) => d.series.color
+          'r': (d) => d.series.hasTwoKeys() ? radius : null,
+          'cx': (d) => d.series.hasTwoKeys() ? xScale(d.row.x) : null,
+          'cy': (d) => d.series.hasTwoKeys() ? yScale(d.series.axis)(d.row.y0) : null,
+          'stroke': (d) => d.series.hasTwoKeys() ? d.series.color : null
         });
       };
 
