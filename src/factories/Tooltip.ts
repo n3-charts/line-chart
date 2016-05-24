@@ -275,7 +275,7 @@ module n3Charts.Factory {
         s.select('.tooltip-dot.y0').attr({
           'r': (d) => d.series.hasTwoKeys() ? radius : null,
           'cx': (d) => d.series.hasTwoKeys() ? xScale(d.row.x) : null,
-          'cy': (d) => d.series.hasTwoKeys() ? yScale(d.series.axis)(d.row.y1) : null,
+          'cy': (d) => d.series.hasTwoKeys() ? yScale(d.series.axis)(d.row.y0) : null,
           'stroke': (d) => d.series.hasTwoKeys() ? d.series.color : null
         });
       };
