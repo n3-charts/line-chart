@@ -28,7 +28,7 @@ var paths = {
       all: 'e2e/templates/react/all.html'
     }
   },
-  coverage: {to: abs('.tmp/coverage/')}
+  coverage: '.tmp/**/lcov.info'
 };
 
 require('./gulp-tasks')(gulp, $, paths);
