@@ -28,7 +28,7 @@ var paths = {
       all: 'e2e/templates/react/all.html'
     }
   },
-  coverage: {to: abs('.tmp/coverage/')}
+  coverage: '.tmp/**/lcov.info'
 };
 
 require('./gulp-tasks')(gulp, $, paths);
@@ -93,7 +93,6 @@ gulp.task('travis:angularjs', function(callback) {
     ['src:compile:angularjs', 'scss:copy'],
     ['unit:test'],
     ['e2e:test:angularjs'],
-    'coveralls',
   callback);
 });
 
@@ -103,7 +102,6 @@ gulp.task('travis:react', function(callback) {
     ['src:compile:angularjs', 'scss:copy'],
     ['unit:test'],
     ['e2e:test:angularjs'],
-    'coveralls',
   callback);
 });
 

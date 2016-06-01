@@ -12,7 +12,7 @@ module.exports = function(config) {
     ],
     reporters: ['dots', 'coverage'],
     preprocessors: {
-      'build/LineChart.js': ['coverage']
+      '.tmp/build/LineChart.js': ['coverage']
     },
     port: 9876,
     colors: true,
@@ -28,7 +28,7 @@ module.exports = function(config) {
     }
   };
 
-  if(process.env.TRAVIS){
+  if (process.env.TRAVIS) {
     configuration.browsers = ['Chrome_travis_ci'];
   }
 
