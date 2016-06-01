@@ -21,7 +21,7 @@ describe('Tooltip with hook - returns an object', function() {
 
     expect(tooltip.isDisplayed()).toBeFalsy();
 
-    browser.actions().mouseMove(chart).perform();
+    browser.actions().mouseMove(chart as any).perform();
 
     expect(tooltip.isDisplayed()).toBeTruthy();
   });

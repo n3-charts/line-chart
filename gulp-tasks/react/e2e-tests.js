@@ -44,7 +44,7 @@ module.exports = function(gulp, $, paths) {
   gulp.task('e2e:test:react', [
     'webdriver:update', 'webdriver', 'ts:lint:e2e', 'demoSingle:compile:react', 'demoAll:compile:react', 'e2e:compile', 'scss:copy', 'server'
   ], function() {
-    return gulp.src(argv.test ? 'e2e/**/' + argv.test + '.e2e.ts' : paths.e2e.from)
+    return gulp.src(argv.test ? paths.test.to + '/**/' + argv.test + '.e2e.js' : paths.test.to + '/**/*.e2e.js')
     .pipe(protractor({
       configFile: paths.e2e.config,
       keepAlive: false,

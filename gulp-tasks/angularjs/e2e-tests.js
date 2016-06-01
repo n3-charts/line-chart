@@ -34,12 +34,12 @@ module.exports = function(gulp, $, paths) {
   // Run the integration tests with protractor
   // Also compiles the demo because some tests load the demo page
   // instead of a specific test page
-  // Alternatively run `gulp test:e2e --test=<%test-name%>` where test-name can be pan_zoom for instance
-  // so : gulp test:e2e --test=pan_zoom
+  // Alternatively run `gulp e2e:test:angularjs --test=<%test-name%>` where test-name can be pan_zoom for instance
+  // so : gulp e2e:test:angularjs --test=pan_zoom
   gulp.task('e2e:test:angularjs', [
     'webdriver:update', 'webdriver', 'ts:lint:e2e', 'demoSingle:compile:angularjs', 'demoAll:compile:angularjs', 'e2e:compile', 'scss:copy', 'server'
   ], function() {
-    return gulp.src(argv.test ? 'e2e/**/' + argv.test + '.e2e.ts' : paths.e2e.from)
+    return gulp.src(argv.test ? paths.test.to + '/**/' + argv.test + '.e2e.js' : paths.test.to + '/**/*.e2e.js')
     .pipe(protractor({
       configFile: paths.e2e.config,
       keepAlive: false,
