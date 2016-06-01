@@ -24,6 +24,7 @@ module n3Charts.Factory.Series {
 
       var updatePoint = (s) => {
         s.attr({
+          r: (d) => dotsRadius,
           cx: (d) => xAxis.scale(d.x),
           cy: (d) => yAxis.scale(d.y1)
         })

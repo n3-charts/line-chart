@@ -14,7 +14,7 @@ describe('Click events', function() {
 
   it('should trigger a callback when clicking on a dot', function() {
     browser.actions()
-      .mouseMove(element.all(by.css('.dot')).get(3))
+      .mouseMove(element.all(by.css('.dot')).get(3) as any)
       .click()
       .perform();
 

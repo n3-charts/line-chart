@@ -100,9 +100,9 @@ gulp.task('travis:angularjs', function(callback) {
 gulp.task('travis:react', function(callback) {
   return runSequence(
     ['clean:source', 'clean:test'],
-    ['src:compile:angularjs', 'scss:copy'],
+    ['src:compile:react', 'scss:copy'],
     ['unit:test'],
-    ['e2e:test:angularjs'],
+    ['e2e:test:react'],
     'coveralls',
   callback);
 });
