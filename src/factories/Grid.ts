@@ -52,6 +52,11 @@ module n3Charts.Factory {
       }
     }
 
+    _updateVisibility(options:Options.Options) {
+      this.svg.select('.x-grid').style('display', options.grid.x ? null : 'none');
+      this.svg.select('.y-grid').style('display', options.grid.y ? null : 'none');
+    }
+
     update(data:Utils.Data, options:Options.Options) {
       var container = <Factory.Container> this.factoryMgr.get('container');
       var dim: Options.Dimensions = container.getDimensions();
@@ -75,6 +80,8 @@ module n3Charts.Factory {
           .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
           .call(this.yAxis.tickSize(-dim.innerWidth, 0));
       }
+
+      this._updateVisibility(options);
     }
 
     destroy() {
