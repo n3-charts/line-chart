@@ -23,7 +23,7 @@ angular.module('codepen', ['apojop'])
           var postDeserializing = "";
 
           if (options.axes && options.axes.x.type === 'date') {
-            postDeserializing = "$scope.data.forEach(function(row) {" +
+            postDeserializing = "$scope.data.timed.forEach(function(row) {" +
             "\n    row.x = new Date(row.x);" +
             "\n  });";
           }
