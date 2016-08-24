@@ -11,6 +11,8 @@
 
 ## Getting started
 
+**Please note:** Currently, **n3-line-chart** works only with D3.js version 3! In D3.js version 4, the API changed and hence breaks compatibility with many 3rd party libaries such as **n3-line-chart**.
+
 You can install **n3-line-chart** by using the `npm` package manager and running following command from the terminal.
 
 `npm install n3-charts`
