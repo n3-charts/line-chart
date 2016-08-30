@@ -208,6 +208,18 @@ Name | Type | Default | Description | Mandatory
 ---- | ---- | ------- | ------------ | --------
 `doubleClickEnabled` | Boolean | `true` | Enables/disables the double click handling | No
 
+### Deep watch
+In AngularJS, by default, the chart deep-watches `data` for changes.  To use a faster reference watch instead, set the `deepWatchData` parameter.
+
+```js
+deepWatchData: false
+```
+
+Name | Type | Default | Description | Mandatory
+---- | ---- | ------- | ------------ | --------
+`deepWatchData` | Boolean | `true` | Enables/disables deep watch in AngularJS | No
+
+
 ## Synchronization and callbacks
 
 The directive accepts additional HTML attributes to allow charts' synchronization and callbacks on various events.

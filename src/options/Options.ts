@@ -21,6 +21,8 @@ module n3Charts.Options {
 
   export class Options {
 
+    public deepWatchData: Boolean = true;
+
     public doubleClickEnabled = true;
 
     public tooltipHook: Function;
@@ -65,6 +67,7 @@ module n3Charts.Options {
       this.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
       this.tooltipHook = Options.getFunction(options.tooltipHook);
       this.doubleClickEnabled = Options.getBoolean(options.doubleClickEnabled, false);
+      this.deepWatchData = Options.getBoolean(options.deepWatchData, true);
     }
 
     sanitizeMargin(margin: any): IMargin {
