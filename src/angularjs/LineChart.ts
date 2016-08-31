@@ -105,7 +105,7 @@ module n3Charts {
       };
 
       scope.$watch('options', updateAll, true);
-      scope.$watch('data', updateData, scope.options.deepWatchData);
+      scope.$watch('data', updateData, options ? options.deepWatchData : true);
 
       eventMgr.on('legend-click.directive', (series) => {
         var foundSeries = scope.options.series.filter((s) => s.id === series.id)[0];
