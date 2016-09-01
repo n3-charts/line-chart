@@ -40,7 +40,7 @@ module n3Charts {
 
     link = (scope: ILineChartScope, element: JQuery, attributes: any) => {
       var data:Utils.Data;
-      var options:Options.Options;
+      var options = new Options.Options();
       var eventMgr = new Utils.EventManager();
       var factoryMgr = new Utils.FactoryManager();
 
@@ -105,7 +105,7 @@ module n3Charts {
       };
 
       scope.$watch('options', updateAll, true);
-      scope.$watch('data', updateData, options ? options.deepWatchData : true);
+      scope.$watch('data', updateData, options.deepWatchData);
 
       eventMgr.on('legend-click.directive', (series) => {
         var foundSeries = scope.options.series.filter((s) => s.id === series.id)[0];
