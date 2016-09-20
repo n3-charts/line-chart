@@ -148,7 +148,7 @@ module n3Charts.Factory {
         let series = options.getVisibleSeriesBySide(this.side);
 
         if (this.side === Options.AxisOptions.SIDE.Y2 && series.length === 0) {
-          series = options.getVisibleSeriesBySide(Options.AxisOptions.SIDE.Y);
+          series = options.getVisibleSeriesBySide(Options.AxisOptions.SIDE.Y2);
         }
 
         series.forEach(s => {
