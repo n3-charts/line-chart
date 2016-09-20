@@ -27,7 +27,7 @@ series: [{
   key: 'val_0', // can also be something like {y0: 'some_key', y1: 'some_other_key'}
   label: 'An area series',
   interpolation: {mode: 'cardinal', tension: 0.7},
-  defined: function() {
+  defined: function(value) {
    return value.y1 !== undefined;
   },
   color: "#1f77b4", // or any valid CSS value, really
