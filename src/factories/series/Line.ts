@@ -1,78 +1,86 @@
-module n3Charts.Factory.Series {
-  'use strict';
+import * as d3 from 'd3';
 
-  export class Line extends Factory.Series.SeriesFactory {
+import * as Utils from '../../utils/_index';
+import * as Series from '../../factories/series/_index';
+import * as Options from '../../options/_index';
 
-    public type: string = Options.SeriesOptions.TYPE.LINE;
+export class Line extends Series.SeriesFactory {
 
-    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.SeriesOptions, index: number, numSeries: number) {
-      group.classed('dashed', series.isDashed());
+  public type: string = Options.SeriesOptions.TYPE.LINE;
 
-      var {xAxis, yAxis} = this.getAxes(series);
+  updateData(group: d3.Selection<any, Options.ISeriesOptions, any, any>, series: Options.SeriesOptions, index: number, numSeries: number) {
+    group.classed('dashed', series.isDashed());
 
-      var lineData = this.data.getDatasetValues(series, this.options);
+    var {xAxis, yAxis} = this.getAxes(series);
 
+    var lineData = this.data.getDatasetValues(series, this.options);
 
-      var initLine = d3.svg.line<Utils.IPoint>()
-        .defined(series.defined)
-        .x((d) => xAxis.scale(d.x))
-        .y(<number>(yAxis.range()[0]))
-        .interpolate(series.interpolation.mode)
-        .tension(series.interpolation.tension);
+    var initLine = d3.line<Utils.IPoint>()
+      .defined(series.defined)
+      .x((d) => xAxis.scale(d.x))
+      .y(<number>(yAxis.range()[0]))
+      .curve(Utils.Interpolation.getInterpolation(series.interpolation.mode, series.interpolation.tension))
+    ;
 
-      var updateLine = d3.svg.line<Utils.IPoint>()
-        .defined(series.defined)
-        .x((d) => xAxis.scale(d.x))
-        .y((d) => yAxis.scale(d.y1))
-        .interpolate(series.interpolation.mode)
-        .tension(series.interpolation.tension);
+    var updateLine = d3.line<Utils.IPoint>()
+      .defined(series.defined)
+      .x((d) => xAxis.scale(d.x))
+      .y((d) => yAxis.scale(d.y1))
+      .curve(Utils.Interpolation.getInterpolation(series.interpolation.mode, series.interpolation.tension))
+    ;
 
-      var line = group.selectAll('.' + this.type)
-        .data([lineData]);
+    var line = group.selectAll('.' + this.type)
+      .data([lineData]);
 
-      if (this.factoryMgr.get('transitions').isOn()) {
-        line.enter()
-          .append('path')
+    if (this.factoryMgr.get('transitions').isOn()) {
+      const init = (_line) => {
+        _line
           .attr('class', this.type)
-          .attr('d', (d) => initLine(d))
+          .attr('d', (d) => initLine(d));
+      };
+
+      const update = (_line) => {
+        _line
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
           .attr('d', (d) => updateLine(d));
+      };
 
-        line
-          .transition()
-          .call(this.factoryMgr.getBoundFunction('transitions', 'edit'))
-          .attr('d', (d) => updateLine(d))
-          .style('opacity', series.visible ? 1 : 0);
+      line.call(update);
 
-        line.exit()
-          .transition()
-          .call(this.factoryMgr.getBoundFunction('transitions', 'exit'))
-          .attr('d', (d) => initLine(d))
-          .each('end', function() {
-            d3.select(this).remove();
-          });
-      } else {
-        line.enter()
+      line.enter()
           .append('path')
-          .attr('class', this.type)
-          .attr('d', (d) => updateLine(d));
+          .call(init)
+        .merge(line)
+          .call(update);
 
-        line
-          .attr('d', (d) => updateLine(d))
-          .style('opacity', series.visible ? 1 : 0);
+      line.exit()
+        .transition()
+        .call(this.factoryMgr.getBoundFunction('transitions', 'exit'))
+        .attr('d', (d: Utils.IPoint[]) => initLine(d))
+        .on('end', function() {
+          d3.select(this).remove();
+        });
+    } else {
+      line.enter()
+        .append('path')
+        .attr('class', this.type)
+        .attr('d', (d) => updateLine(d));
 
-        line.exit()
-          .remove();
-      }
+      line
+        .attr('d', (d) => updateLine(d))
+        .style('opacity', series.visible ? 1 : 0);
+
+      line.exit()
+        .remove();
     }
+  }
 
-    styleSeries(group: d3.Selection<Options.SeriesOptions>) {
-      group.style({
-        'fill': 'none',
-        'stroke': (s) => s.color,
-        'stroke-dasharray': (s) => s.isDashed() ? '10,3' : undefined
-      });
-    }
+  styleSeries(group: d3.Selection<any, Options.SeriesOptions, any, any>) {
+    group
+      .style('fill', 'none')
+      .style('stroke', (s) => s.color)
+      .style('stroke-dasharray', (s) => s.isDashed() ? '10,3' : undefined)
+    ;
   }
 }

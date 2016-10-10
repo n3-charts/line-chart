@@ -1,101 +1,103 @@
-module n3Charts.Factory.Series {
-  'use strict';
+import * as d3 from 'd3';
 
-  export class SeriesFactory extends n3Charts.Factory.BaseFactory {
+import * as Utils from '../../utils/_index';
+import * as Factory from '../../factories/_index';
+import { Options, ISeriesOptions } from '../../options/_index';
 
-    public svg: d3.Selection<any>;
-    public type: string;
+export class SeriesFactory extends Factory.BaseFactory {
 
-    static containerClassSuffix: string = '-data';
-    static seriesClassSuffix: string = '-series';
+  public svg: d3.Selection<any, any, any, any>;
+  public type: string;
 
-    protected data: Utils.Data;
-    protected options: Options.Options;
+  static containerClassSuffix: string = '-data';
+  static seriesClassSuffix: string = '-series';
 
-    create() {
-      this.createContainer(this.factoryMgr.get('container').data);
+  protected data: Utils.Data;
+  protected options: Options;
 
-      // Hard update
-      this.eventMgr.on('data-update.' + this.type, this.update.bind(this));
+  create() {
+    this.createContainer(this.factoryMgr.get('container').data);
 
-      // Soft updates
-      this.eventMgr.on('pan.' + this.type, this.softUpdate.bind(this));
-      this.eventMgr.on('zoom-end.' + this.type, this.softUpdate.bind(this));
-      this.eventMgr.on('outer-world-domain-change.' + this.key, this.softUpdate.bind(this));
-      this.eventMgr.on('resize.' + this.type, this.softUpdate.bind(this));
-    }
+    // Hard update
+    this.eventMgr.on('data-update.' + this.type, this.update.bind(this));
 
-    update(data, options) {
-      this.data = data;
-      this.options = options;
-      this.softUpdate();
-    }
+    // Soft updates
+    this.eventMgr.on('pan.' + this.type, this.softUpdate.bind(this));
+    this.eventMgr.on('zoom-end.' + this.type, this.softUpdate.bind(this));
+    this.eventMgr.on('outer-world-domain-change.' + this.key, this.softUpdate.bind(this));
+    this.eventMgr.on('resize.' + this.type, this.softUpdate.bind(this));
+  }
 
-    getAxes(series: Options.ISeriesOptions): {xAxis: Factory.Axis, yAxis: Factory.Axis} {
-      return {
-        xAxis: this.factoryMgr.get('x-axis'),
-        yAxis: this.factoryMgr.get(series.axis + '-axis')
-      };
-    }
+  update(data, options) {
+    this.data = data;
+    this.options = options;
+    this.softUpdate();
+  }
 
-    softUpdate() {
-      var series = this.options.getSeriesByType(this.type).filter((s) => s.visible);
-      this.updateSeriesContainer(series);
-    }
+  getAxes(series: ISeriesOptions): {xAxis: Factory.Axis, yAxis: Factory.Axis} {
+    return {
+      xAxis: this.factoryMgr.get('x-axis'),
+      yAxis: this.factoryMgr.get(series.axis + '-axis')
+    };
+  }
 
-    destroy() {
-      this.svg.remove();
-    }
+  softUpdate() {
+    var series = this.options.getSeriesByType(this.type).filter((s) => s.visible);
+    this.updateSeriesContainer(series);
+  }
 
-    createContainer(parent: d3.Selection<any>) {
-      this.svg = parent
-        .append('g')
-        .attr('class', this.type + SeriesFactory.containerClassSuffix);
-    }
+  destroy() {
+    this.svg.remove();
+  }
 
-    updateSeriesContainer(series: Options.ISeriesOptions[]) {
-      // Create a data join
-      var groups = this.svg
-        .selectAll('.' + this.type + SeriesFactory.seriesClassSuffix)
-        // Use the series id as key for the join
-        .data(series, (d) => d.id);
+  createContainer(parent: d3.Selection<any, any, any, any>) {
+    this.svg = parent
+      .append('g')
+      .attr('class', this.type + SeriesFactory.containerClassSuffix);
+  }
 
-      // Create a new group for every new series
-      groups.enter()
-        .append('g')
-        .attr({
-          class: (d) => {
-            return this.type + SeriesFactory.seriesClassSuffix + ' ' + d.id;
-          }
+  updateSeriesContainer(series: ISeriesOptions[]) {
+    const self = this;
+    const select = (that) => d3.select(that) as d3.Selection<any, ISeriesOptions, any, any>;
+
+    const update = (_groups) => {
+      _groups
+        .each(function(s: ISeriesOptions, i: number) {
+          self.updateData(select(this), s, i, series.length);
+        })
+        .each(function() {
+          self.styleSeries(select(this));
         });
+    };
 
-      // Update all existing series groups
-      this.styleSeries(groups);
-      this.updateSeries(groups, series);
+    const init = (_groups) => {
+      _groups
+        .attr('class', (d: ISeriesOptions) => {
+          return this.type + SeriesFactory.seriesClassSuffix + ' ' + d.id;
+        });
+    };
 
-      // Delete unused series groups
-      groups.exit()
-        .remove();
-    }
+    var groups = this.svg
+      .selectAll('.' + this.type + SeriesFactory.seriesClassSuffix)
+      .data(series, (d: ISeriesOptions) => d.id);
 
-    updateSeries(groups: d3.Selection<Options.ISeriesOptions>, series: Options.ISeriesOptions[]) {
-      // Workaround to retrieve the D3.Selection
-      // in the callback function (bound to keyword this)
-      var self = this;
-      groups.each(function(d, i) {
+    groups.call(update);
 
-        // Hmmmm TypeScript...
-        var group = <d3.selection.Update<Options.ISeriesOptions>>d3.select(this);
-        self.updateData(group, d, i, series.length);
-      });
-    }
+    groups.enter()
+      .append('g')
+        .call(init)
+      .merge(groups)
+        .call(update);
 
-    updateData(group: d3.selection.Update<Options.ISeriesOptions>, series: Options.ISeriesOptions, index: number, numSeries: number) {
-      // this needs to be overwritten
-    }
+    groups.exit()
+      .remove();
+  }
 
-    styleSeries(group: d3.Selection<Options.ISeriesOptions>) {
-      // this needs to be overwritten
-    }
+  updateData(group: d3.Selection<any, ISeriesOptions, any, any>, series: ISeriesOptions, index: number, numSeries: number) {
+    // this needs to be overwritten
+  }
+
+  styleSeries(group: d3.Selection<any, ISeriesOptions, any, any>) {
+    // this needs to be overwritten
   }
 }

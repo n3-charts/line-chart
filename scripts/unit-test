@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+tsc --outDir .tmp/unit-tests
+
+mocha -r jsdom-global/register .tmp/unit-tests/**/*.spec.js
+
+rm -rf .tmp/unit-tests

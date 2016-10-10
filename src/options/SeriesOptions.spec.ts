@@ -1,10 +1,14 @@
-/// <reference path='../test.spec.ts' />
+import * as angular from 'angular';
+import * as sinon from 'sinon';
+import { expect } from 'chai';
 
-describe('n3Charts.Options.SeriesOptions', () => {
-  // Type Shortcut
-  var SeriesOptions = n3Charts.Options.SeriesOptions;
+import * as Utils from '../utils/_index';
+import { Axis } from '../factories/_index';
+import { Options, SeriesOptions, AxisOptions, IMargin, ISeriesOptions, ITwoAxes, IAxesSet } from './_index';
+
+describe('SeriesOptions', () => {
   // Placeholder for module instance
-  var seriesOptions: n3Charts.Options.SeriesOptions;
+  var seriesOptions: SeriesOptions;
 
   describe('constructor', () => {
     beforeEach(() => {
@@ -23,128 +27,73 @@ describe('n3Charts.Options.SeriesOptions', () => {
     });
 
     it('should create an instance without arguments', () => {
-      var seriesOptions = new SeriesOptions();
-
-      var testing = seriesOptions instanceof SeriesOptions;
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(new SeriesOptions()).to.be.an.instanceof(SeriesOptions);
     });
 
     it('should create an axis property with the type string', () => {
-      var testing = angular.isString(seriesOptions.axis);
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.axis).to.be.a('string');
     });
 
     it('should assign the proper axis property', () => {
-      var testing = seriesOptions.axis;
-      var expected = 'y';
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.axis).to.equal('y');
     });
 
     it('should create a dataset property with the type string', () => {
-      var testing = angular.isString(seriesOptions.dataset);
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.dataset).to.be.a('string');
     });
 
     it('should assign the proper dataset property', () => {
-      var testing = seriesOptions.dataset;
-      var expected = 'dataset0';
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.dataset).to.equal('dataset0');
     });
 
     it('should create a key property with the proper type', () => {
-      var testing = angular.isObject(seriesOptions.key);
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.key).to.be.an('object');
     });
 
     it('should assign the proper key property', () => {
-      var testing = seriesOptions.key;
-      var expected = {y1: 'val_0'};
-
-      expect(testing).toEqual(expected);
+      expect(seriesOptions.key).to.eql({y1: 'val_0'});
     });
 
     it('should create a color property with the type string', () => {
-      var testing = angular.isString(seriesOptions.color);
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.color).to.be.a('string');
     });
 
     it('should assign the proper color property', () => {
-      var testing = seriesOptions.color;
-      var expected = 'steelblue';
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.color).to.equal('steelblue');
     });
 
     it('should create an id property with the type string', () => {
-      var testing = angular.isString(seriesOptions.id);
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.id).to.be.a('string');
     });
 
     it('should assign the proper id property', () => {
-      var testing = seriesOptions.id;
-      var expected = 'mySeries_0';
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.id).to.equal('mySeries_0');
     });
 
     it('should create a label property with the type string', () => {
-      var testing = angular.isString(seriesOptions.label);
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.label).to.be.a('string');
     });
 
     it('should assign the proper label property', () => {
-      var testing = seriesOptions.label;
-      var expected = 'You\'re the series';
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.label).to.equal(`You're the series`);
     });
 
     it('should create a type property with the type array', () => {
-      var testing = angular.isArray(seriesOptions.type);
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.type).to.be.an('array');
     });
 
     it('should assign the proper type property', () => {
-      var testing = seriesOptions.type[0];
-      var expected = 'area';
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.type[0]).to.equal('area');
     });
 
     it('should use default type if no option defined', () => {
       var seriesOptions = new SeriesOptions();
-
-      var testing = seriesOptions.type[0];
-      var expected = 'line';
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.type[0]).to.equal('line');
     });
 
     it('should use default visibility if no option defined', () => {
       var seriesOptions = new SeriesOptions();
-
-      var testing = seriesOptions.visible;
-      var expected = true;
-
-      expect(testing).toBe(expected);
+      expect(seriesOptions.visible).to.equal(true);
     });
   });
 
@@ -154,7 +103,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
     });
 
     it('should return only valid types', () => {
-      var warnSpy = spyOn(console, 'warn');
+      var warnSpy = sinon.stub(console, 'warn', () => {});
 
       var arg = [
         'foo',
@@ -169,13 +118,15 @@ describe('n3Charts.Options.SeriesOptions', () => {
         SeriesOptions.TYPE.LINE
       ];
 
-      expect(testing).toEqual(expected);
+      expect(testing).to.eql(expected);
 
-      expect(warnSpy).toHaveBeenCalledTimes(2);
-      expect(warnSpy.calls.allArgs()).toEqual([
+      expect(warnSpy.callCount).to.equal(2);
+      expect(warnSpy.args).to.eql([
         ['Unknow series type : foo'],
         ['Unknow series type : bar']
       ]);
+
+      warnSpy.restore();
     });
   });
 
@@ -190,7 +141,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
       var testing = seriesOptions.sanitizeAxis(arg);
       var expected = 'y';
 
-      expect(testing).toBe(expected);
+      expect(testing).to.equal(expected);
     });
 
     it('should throw a type error when axis argument is not valid', () => {
@@ -198,7 +149,7 @@ describe('n3Charts.Options.SeriesOptions', () => {
 
       expect(() => {
           seriesOptions.sanitizeAxis(arg);
-      }).toThrow();
+      }).to.throw();
     });
   });
 
@@ -221,14 +172,14 @@ describe('n3Charts.Options.SeriesOptions', () => {
       var testing = visible;
       var expected = false;
 
-      expect(testing).toBe(expected);
+      expect(testing).to.equal(expected);
     });
 
     it('should  not change the current visibility', () => {
       var testing = seriesOptions.visible;
       var expected = true;
 
-      expect(testing).toBe(expected);
+      expect(testing).to.equal(expected);
     });
   });
 });

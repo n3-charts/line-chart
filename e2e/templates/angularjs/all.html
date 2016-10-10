@@ -2,7 +2,7 @@
 <html lang="en" ng-app="example">
 <head>
   <title>n3-charts - AngularJS</title>
-  <link rel="stylesheet" type="text/css" media="screen" href="/build/LineChart.min.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="LineChart.min.css">
   <style type="text/css">
   body {
     margin: 0;
@@ -41,7 +41,7 @@
   }
 
   <% _.each(examples, function(example) { %>
-    .<%=example.data.name%> <%=example.data.style || '{}'%>
+    .<%=example.name%> <%=example.data.style || '{}'%>
   <% }); %>
 
   </style>
@@ -51,9 +51,9 @@
   <div class="examples">
     <% _.each(examples, function(example) { %>
 
-    <div class="example <%=example.data.name%>" ng-controller="<%=example.data.name%>Ctrl">
+    <div class="example <%=example.name%>" ng-controller="<%=example.name%>Ctrl">
       <div class="example-title">
-        <a id="<%=example.data.name%>" href="/test/e2e/<%=example.data.name%>.html"><%=example.data.name%></a>
+        <a id="<%=example.name%>" href="/<%=example.name%>.html"><%=example.name%></a>
       </div>
       <%=example.data.angular.html%>
     </div>
@@ -63,13 +63,14 @@
 
   </div>
   <script src="/angular/angular.js"></script>
-  <script src="/d3/d3.min.js"></script>
-  <script src="/build/LineChart.js"></script>
+  <script src="/d3/build/d3.js"></script>
+  <script src="LineChart.js"></script>
   <script type="text/javascript">
+
   angular.module('example', ['n3-line-chart'])
 
   <% _.each(examples, function(example) { %>
-    .controller('<%=example.data.name%>Ctrl', function(data, options) {
+    .controller('<%=example.name%>Ctrl', function(data, options) {
       return <%=example.data.angular.js%>;
     }(<%=example.data.data%>, <%=example.data.options%>))
   <% }); %>

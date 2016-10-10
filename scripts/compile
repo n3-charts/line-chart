@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+tsc
+
+FILES=`ls src`
+
+./scripts/sass
+
+webpack --display-error-details
+
+# For backward comp
+mv .tmp/build/LineChart-angularjs.js .tmp/build/LineChart.js
+
+uglifyjs .tmp/build/LineChart.js > .tmp/build/LineChart.min.js
+uglifyjs .tmp/build/LineChart-react.js > .tmp/build/LineChart-react.min.js
+
+(cd .tmp && rm -rf ${FILES})

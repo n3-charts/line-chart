@@ -1,13 +1,21 @@
 {
-    "compileOnSave": false,
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "sourceMap": true,
-        "out": "build/LineChart.js"
-    },
-    "files": [
-        "./src/angularjs/module.ts",
-        "./src/react/LineChart.ts"
-    ]
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "declaration": true,
+    "removeComments": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    "target": "es5",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": ".tmp/"
+  },
+  "include": [
+    "./src/angularjs/module.ts",
+    "./src/react/LineChart.ts",
+    "./src/utils/**/*.spec.ts"
+  ]
 }

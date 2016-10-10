@@ -1,15 +1,9 @@
-/// <reference path='../test.spec.ts' />
+import { expect } from 'chai';
 
-describe('n3Charts.Utils.Data', () => {
-  var Data = undefined;
+import { Data } from './Data';
 
-  beforeEach(() => {
-      Data = n3Charts.Utils.Data;
-  });
-
-  it('should have a default', () => {
-    var ds = new Data();
-  });
+describe('Data', () => {
+  var data = undefined;
 
   it('should work', () => {
     var ds = new Data({

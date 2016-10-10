@@ -1,5 +1,17 @@
+// Courtesy of https://github.com/darrinholst
+// See https://github.com/n3-charts/line-chart/issues/512
+@function str-strip-newlines($string) {
+  $index: str-index($string, '\a');
+
+  @if $index {
+    @return str-strip-newlines(str-slice($string, 1, $index - 1) + str-slice($string, $index + 1));
+  }
+
+  @return $string;
+}
+
 @mixin svg($svg) {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>#{$svg}</svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>#{str-strip-newlines($svg)}</svg>");
 }
 
 @mixin series-item {
