@@ -29,6 +29,7 @@ module n3Charts.Factory {
       this.createTooltip();
       this.eventMgr.on('container-move.tooltip', this.show.bind(this));
       this.eventMgr.on('container-out.tooltip', this.hide.bind(this));
+      this.eventMgr.on('container-tap.tooltip', this.show.bind(this));
       this.eventMgr.on('outer-world-hover.tooltip', this.showFromCoordinates.bind(this));
 
       this.hide();

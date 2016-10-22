@@ -61,6 +61,9 @@ module n3Charts.Factory {
       element.addEventListener('mouseout', (event) => {
         eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-out', event]);
       });
+      element.addEventListener('touchstart', function (event) {
+          eventMgr.triggerDataAndOptions.apply(eventMgr, ['container-tap', event]);
+        });
     }
 
     getCoordinatesFromEvent(event): ICoordinates {
@@ -69,11 +72,13 @@ module n3Charts.Factory {
       var {left, top} = event.currentTarget.getBoundingClientRect();
 
       var xScale = (<Factory.Axis>this.factoryMgr.get('x-axis'));
-      var x = xScale.invert(event.clientX - left - dim.margin.left);
-
+      var clientX = event.clientX || event.touches[0].clientX
+      var x = xScale.invert(clientX - left - dim.margin.left);
+      
       var yScale = (<Factory.Axis>this.factoryMgr.get('y-axis'));
-      var y = <number>yScale.invert(event.clientY - top - dim.margin.top);
-
+      var clientY = event.clientY || event.touches[0].clientY
+      var y = <number>yScale.invert(clientY - top - dim.margin.top);
+      
       return {y, x};
     }
 

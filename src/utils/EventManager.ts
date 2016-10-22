@@ -30,6 +30,7 @@ module n3Charts.Utils {
 
       'container-over',   // on mouse over on the container
       'container-move',   // on mouse move on the container
+      'container-tap',   // on tap on the container
       'container-out',   // on mouse out on the container
 
       'focus',   // on focus of a data point from a snappy tooltip
@@ -163,7 +164,7 @@ module n3Charts.Utils {
           })(d3.event), 300);
         }
       });
-
+      
       return selection;
     }
   }
