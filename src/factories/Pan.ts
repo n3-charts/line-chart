@@ -85,9 +85,25 @@ export class Pan extends BaseFactory {
       this.eventMgr.on(k('window-mousemove'), null);
     };
 
+    let onTouchEnd = () => {
+      if (this.hasMoved) {
+          this.eventMgr.trigger('pan-end');
+      }
+      if (turnBackOn) {
+          turnBackOn();
+      }
+      this.isActive = this.hasMoved = false;
+      turnBackOn = undefined;
+      this.eventMgr.on(k('window-touchend'), null);
+      this.eventMgr.on(k('window-touchmove'), null);
+    };
+
     let onMouseMove = () => {
       if (this.isActive) {
-        let [xEnd, yEnd] = d3.mouse(container.svg.node());
+
+        let [xEnd, yEnd] = d3.touches(container.svg.node())[0]
+          || d3.mouse(container.svg.node());
+
         let newDomains = this.getNewDomains(
           xStart - xEnd,
           xStart - xEnd,
@@ -129,6 +145,23 @@ export class Pan extends BaseFactory {
           this.eventMgr.on(k('window-mouseup'), onMouseUp);
           this.eventMgr.on(k('window-mousemove'), onMouseMove);
         }
+
+        if (!event.altKey) {
+          this.isActive = true;
+          [xStart, yStart] = d3.mouse(event.currentTarget);
+          this.eventMgr.on(k('window-mouseup'), onMouseUp);
+          this.eventMgr.on(k('window-mousemove'), onMove);
+        }
+      });
+        
+    container.svg
+      .on(k('touchstart'), () => {
+        var event = <MouseEvent>d3.event;
+        
+        this.isActive = true;
+        [xStart, yStart] = d3.touches(event.currentTarget)[0];          
+        this.eventMgr.on(k('window-touchend'), onTouchEnd);
+        this.eventMgr.on(k('window-touchmove'), onMove);
       });
   }
 }
