@@ -48,6 +48,8 @@ module n3Charts.Utils {
 
       'window-mouseup',
       'window-mousemove',
+      'window-touchend',
+      'window-touchmove'
     ];
 
     init(events:string[]): EventManager {
@@ -65,7 +67,15 @@ module n3Charts.Utils {
         // (<Event>d3.event).preventDefault();
         this.trigger('window-mousemove')
       });
-
+      d3.select(window).on('touchmove.' + id, () => {
+        (<Event>d3.event).preventDefault();
+        this.trigger('window-touchmove');
+      });
+      d3.select(window).on('touchend.' + id, () => {
+        (<Event>d3.event).preventDefault();
+        this.trigger('window-touchend');
+      });
+      
       // Support chaining
       return this;
     }
