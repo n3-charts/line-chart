@@ -36,11 +36,11 @@ module n3Charts.Utils {
 
       if (series.key.y0) {
         fn = (d: any) => {
-          return { x: d[xKey], y1: d[series.key.y1], y0: d[series.key.y0] };
+          return { x: d[xKey], y1: d[series.key.y1], y0: d[series.key.y0], raw: d };
         };
       } else {
         fn = (d: any) => {
-          return { x: d[xKey], y1: d[series.key.y1], y0: 0 };
+          return { x: d[xKey], y1: d[series.key.y1], y0: 0, raw: d };
         };
       }
 

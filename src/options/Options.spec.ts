@@ -312,6 +312,92 @@ describe('n3Charts.Options.Options', () => {
     });
   });
 
+  describe('sanitizeZoomAndPan', () => {
+
+    describe('zoom', () => {
+
+      it('should be disabled on x axis by default', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({}, options.zoom);
+
+        var testing = zoom.x;
+        var expected = false;
+
+        expect(testing).toBe(expected);
+      });
+
+      it('should be disabled on y axis by default', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({}, options.zoom);
+
+        var testing = zoom.y;
+        var expected = false;
+
+        expect(testing).toBe(expected);
+      });
+
+      it('should trigger on altKey by default', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({}, options.zoom);
+
+        var testing = zoom.key;
+        var expected = 'altKey';
+
+        expect(testing).toEqual(expected);
+      });
+
+      it('should sanitize x axis option', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({x: true}, options.zoom);
+
+        var testing = zoom.x;
+        var expected = true;
+
+        expect(testing).toBe(expected);
+      });
+
+      it('should sanitize y axis option', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({y: true}, options.zoom);
+
+        var testing = zoom.y;
+        var expected = true;
+
+        expect(testing).toBe(expected);
+      });
+
+      it('should sanitize trigger key option shift', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({key: 'shiftKey'}, options.zoom);
+
+        var testing = zoom.key;
+        var expected = 'shiftKey';
+
+        expect(testing).toEqual(expected);
+      });
+
+      it('should sanitize trigger key option ctrl', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({key: 'ctrlKey'}, options.zoom);
+
+        var testing = zoom.key;
+        var expected = 'ctrlKey';
+
+        expect(testing).toEqual(expected);
+      });
+
+      it('should sanitize wrong trigger key option', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({key: 'tabKey'}, options.zoom);
+
+        var testing = zoom.key;
+        var expected = 'altKey';
+
+        expect(testing).toEqual(expected);
+      });
+    });
+  });
+
   describe('getSeriesByType', () => {
     beforeEach(() => {
       options = new Options({
