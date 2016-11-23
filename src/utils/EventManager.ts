@@ -30,6 +30,7 @@ module n3Charts.Utils {
 
       'container-over',   // on mouse over on the container
       'container-move',   // on mouse move on the container
+      'container-tap',   // on tap on the container
       'container-out',   // on mouse out on the container
 
       'focus',   // on focus of a data point from a snappy tooltip
@@ -47,6 +48,8 @@ module n3Charts.Utils {
 
       'window-mouseup',
       'window-mousemove',
+      'window-touchend',
+      'window-touchmove'
     ];
 
     init(events:string[]): EventManager {
@@ -64,7 +67,15 @@ module n3Charts.Utils {
         // (<Event>d3.event).preventDefault();
         this.trigger('window-mousemove')
       });
-
+      d3.select(window).on('touchmove.' + id, () => {
+        (<Event>d3.event).preventDefault();
+        this.trigger('window-touchmove');
+      });
+      d3.select(window).on('touchend.' + id, () => {
+        (<Event>d3.event).preventDefault();
+        this.trigger('window-touchend');
+      });
+      
       // Support chaining
       return this;
     }
@@ -133,9 +144,10 @@ module n3Charts.Utils {
     // That would be so cool to have native dblclick support in D3...
     listenForDblClick(selection: d3.Selection<any>, callback: Function, listenerSuffix:string): d3.Selection<any> {
       let down,
+        up,
         tolerance = 5,
-        last,
-        wait = null;
+        wait = null,
+        touchWait = null;
 
       let dist = (a:number[], b:number[]):number => {
         return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
@@ -143,7 +155,11 @@ module n3Charts.Utils {
 
       selection.on('mousedown.dbl.' + listenerSuffix, function() {
         down = d3.mouse(document.body);
-        last = new Date().getTime();
+      });
+      
+      selection.on('touchstart.dbl.' + listenerSuffix, function () {
+          down = d3.touches(document.body)[0];
+          up = d3.touches(document.body)[0];
       });
 
       selection.on('mouseup.dbl.' + listenerSuffix, () => {
@@ -159,6 +175,27 @@ module n3Charts.Utils {
           wait = window.setTimeout((function(e) {
             return function() {
               wait = null;
+            };
+          })(d3.event), 300);
+        };
+      });
+      
+      selection.on('touchmove.dbl.' + listenerSuffix, function () {
+          up = d3.touches(document.body)[0];
+      });
+      
+      selection.on('touchend.dbl.' + listenerSuffix, () => {
+        if (!down || dist(down, up) > tolerance) {
+            return;
+        }
+        if (touchWait && this.options.doubleClickEnabled) {
+          window.clearTimeout(touchWait);
+          touchWait = null;
+          callback(d3.event);
+        } else {
+          touchWait = window.setTimeout((function(e) {
+            return function() {
+              touchWait = null;
             };
           })(d3.event), 300);
         }

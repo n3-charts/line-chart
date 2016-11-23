@@ -79,10 +79,27 @@ module n3Charts.Factory {
         this.eventMgr.on(k('window-mouseup'), null);
         this.eventMgr.on(k('window-mousemove'), null);
       };
-
-      let onMouseMove = () => {
+      
+      let onTouchEnd = () => {
+          if (this.hasMoved) {
+              this.eventMgr.trigger('pan-end');
+          }
+          if (turnBackOn) {
+              turnBackOn();
+          }
+          this.isActive = this.hasMoved = false;
+          turnBackOn = undefined;
+          this.eventMgr.on(k('window-touchend'), null);
+          this.eventMgr.on(k('window-touchmove'), null);
+      };
+                
+      let onMove = () => {
         if (this.isActive) {
-          let [xEnd, yEnd] = d3.mouse(container.svg.node());
+          let eventCoordinate = d3.touches(container.svg.node())[0];
+          if(eventCoordinate === undefined){
+              eventCoordinate = d3.mouse(container.svg.node());
+          }
+          let [xEnd, yEnd] = eventCoordinate;
           let newDomains = this.getNewDomains(
             xStart - xEnd,
             xStart - xEnd,
@@ -119,8 +136,18 @@ module n3Charts.Factory {
             this.isActive = true;
             [xStart, yStart] = d3.mouse(event.currentTarget);
             this.eventMgr.on(k('window-mouseup'), onMouseUp);
-            this.eventMgr.on(k('window-mousemove'), onMouseMove);
+            this.eventMgr.on(k('window-mousemove'), onMove);
           }
+        });
+        
+      container.svg
+        .on(k('touchstart'), () => {
+          var event = <MouseEvent>d3.event;
+          
+          this.isActive = true;
+          [xStart, yStart] = d3.touches(event.currentTarget)[0];          
+          this.eventMgr.on(k('window-touchend'), onTouchEnd);
+          this.eventMgr.on(k('window-touchmove'), onMove);
         });
     }
   }
