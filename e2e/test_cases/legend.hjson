@@ -82,7 +82,8 @@ options: '''
         color: "grey",
         thickness: "1px",
         type: "column",
-        id: 'mySeries3'
+        // we omit the id here
+        // id: 'mySeries3'
       }
     ],
     axes: {x: {key: "x"}}

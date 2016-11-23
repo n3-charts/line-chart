@@ -18,6 +18,6 @@ describe('Click events', function() {
       .click()
       .perform();
 
-    expect(element(by.css('.last-data')).getText()).toEqual('{"x":3,"y1":14.608,"y0":0}');
+    expect(element(by.css('.last-data')).getText()).toEqual('{"x":3,"y1":14.608,"y0":0,"raw":{"x":3,"val_0":2.823,"val_1":9.32,"val_2":14.608,"val_3":13.509}}');
   });
 });

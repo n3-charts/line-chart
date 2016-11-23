@@ -13,7 +13,7 @@ module n3Charts.Factory {
 
     private zoomOnX: Boolean;
     private zoomOnY: Boolean;
-
+    private zoomTriggerKey: string;
 
     create() {
       this.rect = this.factoryMgr.get('container').svg
@@ -37,6 +37,7 @@ module n3Charts.Factory {
 
       this.zoomOnX = options.zoom.x;
       this.zoomOnY = options.zoom.y;
+      this.zoomTriggerKey = options.zoom.key;
 
       if (!this.zoomOnX && !this.zoomOnY) {
         return;
@@ -117,7 +118,7 @@ module n3Charts.Factory {
             return;
           }
 
-          if (event.altKey) {
+          if (event[this.zoomTriggerKey]) {
             turnBackOn = this.factoryMgr.turnFactoriesOff(['tooltip']);
             this.isActive = true;
             this.eventMgr.on(k('window-mouseup'), onMouseUp);
