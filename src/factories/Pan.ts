@@ -7,6 +7,7 @@ module n3Charts.Factory {
     private hasMoved: Boolean = false;
 
     private options: Options.IPanOptions;
+    private zoomTriggerKey: string;
 
     constrainDomains(domains:Utils.IDomains):void {
       domains.x = this.options.x(domains.x)
@@ -56,6 +57,7 @@ module n3Charts.Factory {
 
     update(data:Utils.Data, options:Options.Options) {
       this.options = options.pan;
+      this.zoomTriggerKey = options.zoom.key;
 
       let container = this.factoryMgr.get('container');
       let k = (event) => `${event}.${this.key}`;
@@ -113,7 +115,7 @@ module n3Charts.Factory {
             return;
           }
 
-          if (!event.altKey) {
+          if (!event[this.zoomTriggerKey]) {
             this.isActive = true;
             [xStart, yStart] = d3.mouse(event.currentTarget);
             this.eventMgr.on(k('window-mouseup'), onMouseUp);

@@ -5,11 +5,17 @@ module n3Charts.Options {
     x: AxisOptions;
     y: AxisOptions;
     y2?: AxisOptions;
-  };
+  }
 
   export interface ITwoAxes {
     x: boolean;
     y: boolean;
+  }
+
+  export interface IZoomOptions {
+    x: boolean;
+    y: boolean;
+    key: string;
   }
 
   export interface IPanOptions {
@@ -36,9 +42,10 @@ module n3Charts.Options {
       y2: () => undefined
     };
 
-    public zoom: ITwoAxes = {
+    public zoom: IZoomOptions = {
       x: false,
-      y: false
+      y: false,
+      key: 'altKey'
     };
 
     public axes: IAxesSet = {
@@ -62,7 +69,7 @@ module n3Charts.Options {
       this.axes = this.sanitizeAxes(Options.getObject(options.axes, this.axes));
       this.grid = this.sanitizeTwoAxesOptions(options.grid, this.grid);
       this.pan = this.sanitizePanOptions(options.pan, this.pan);
-      this.zoom = this.sanitizeTwoAxesOptions(options.zoom, this.zoom);
+      this.zoom = this.sanitizeZoomOptions(options.zoom, this.zoom);
       this.tooltipHook = Options.getFunction(options.tooltipHook);
       this.doubleClickEnabled = Options.getBoolean(options.doubleClickEnabled, false);
     }
@@ -88,6 +95,22 @@ module n3Charts.Options {
       return {
         x: Options.getBoolean(object.x, def.x),
         y: Options.getBoolean(object.y, def.y)
+      };
+    }
+
+    sanitizeZoomOptions(object: any, def: any): IZoomOptions {
+      var axis = this.sanitizeTwoAxesOptions(object, def);
+      var trigger = Options.getString(object.key, def.key);
+
+      if (['altKey', 'shiftKey'].indexOf(trigger) === -1) {
+        console.warn('Unknown zoom key ' + trigger + ' ! Default `altKey` is used.');
+        trigger = def.key;
+      }
+
+      return {
+        x: Options.getBoolean(object.x, def.x),
+        y: Options.getBoolean(object.y, def.y),
+        key: trigger
       };
     }
 

@@ -78,10 +78,14 @@ Name | Type | Default | Description | Mandatory
 `key`| String | `undefined` | The abscissas key, a property on each datum | Yes
 `type` | String | `'linear'` | The axis' type. can be either `'linear'`, `'log'` or `'date'`. | No
 `includeZero` | Boolean | `false` | If `true`, the axis will include zero in its extent. | No
+`min` | Number or Date | `undefined` | The minimal value displayed on this axis. | No
+`max` | Number or Date | `undefined` | The maximal value displayed on this axis. | No
 `padding` | Object | `{min: 0, max: 0}` | The padding for the axis' extrema (values are expressed in pixels). | No
 `ticks` | Array or Number or Function | `undefined` | The axis' ticks. Depending on what is given will either call `tickValues` or `ticks` on the inner d3 axis, or use a home-made axis to display major and minor ticks (see below). | No
 `ticksShift` | Object | `{y: 0, x: 0}` | A bit of a hack to allow shifting of the ticks. May be useful if the chart is squeezed in a container and the 0 tick is cropped. Or not. | No. Of course not.
 `tickFormat` | Function | `undefined` | Formats the ticks. Takes the value and its index as arguments | No
+
+> Instead of binding the `min` and `max` properties directly in the options `$scope.options = {axes: {y: {min: $scope.someVal}}}` one better overrides the values whenever they change, such as `$scope.options.axes.y.min = $scope.someVal` which will automatically trigger a domain update on the chart.
 
 #### Major and minor ticks
 When given a function as the `ticks` attribute, the axis will stop generating its own ticks and start displayign exactly what's returned by the function. This is basically an advanced way of setting the ticks. However, the function must return data as follows :
@@ -139,7 +143,7 @@ The `tooltipHook` function is a callback that can be used in three ways, regardi
  - a function that returns something that doesn't cast to `false` make the chart display what you want in the tooltip. This particular behavior is explained below.
 
 #### Custom tooltip
-The function needs to take an array as sole arguments, which contains items. Each of this items contains the row (`{x, y0, y1}`) and the series (as you defined it in the options). The function returned data _must_ possess the following structure :
+The function needs to take an array as sole arguments, which contains items. Each of this items contains the row (`{x, y0, y1, raw}`). `x` is the internal `x` value at the current position and `y1` is the internal `y` value at the position `x` for a particular series. `raw` is an object containing the raw data point of your dataset. The series (as you defined it in the options). The function returned data _must_ possess the following structure :
 
 Name | Type | Description
 ---- | ---- | -------
@@ -147,6 +151,28 @@ Name | Type | Description
 `rows` | `[{label, value, id, color}]` | These are the dots the chart will draw. All of the properties are strings, the `id` being checked by d3 to process its join.
 
 > The `tooltipHook` function will be called with `undefined` as sole argument when the tooltip is supposed to be hidden (i.e. when the mouse cursor exits the chart).
+
+Here is a simple example.
+
+```
+tooltipHook: function(d){
+  if (d) {
+    // d contains the items [{x, y0, y1, raw}, {x, y0, y1, raw}, ...]
+    // for each series that is currently focused
+    return {
+      abscissas: "Custom x label",
+      rows: d.map(function(s){
+        return {
+          label: "Custom y label: " + s.series.label,
+          value: s.row.y1, // the y value
+          color: s.series.color,
+          id: s.series.id  
+        }
+      })
+    }
+  }
+}
+```
 
 ### Grid
 The `grid` object parametrizes how the chart's background grid will be shown. It's not mandatory and should look like this :
@@ -196,6 +222,9 @@ Name | Type | Default | Description | Mandatory
 ---- | ---- | ------- | ------------ | --------
 `x` | Boolean | `false` | Enables/disables zoom on the x axis | No
 `y` | Boolean | `false` | Enables/disables zoom on the y axis | No
+`key` | String | `altKey` | Holding this key enables zooming functionality | No
+
+Zooming is enabled via a D3 `brush` when pressing the `alt` key per default. You can change this setting to `shiftKey` to trigger the brushing when holding shift.
 
 ### Double click
 The chart reacts to double clicks by resetting any zooming or panning. This might be undesirable and the `doubleClickEnabled` provides a way to disable this behavior.
