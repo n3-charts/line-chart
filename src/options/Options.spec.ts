@@ -366,12 +366,22 @@ describe('n3Charts.Options.Options', () => {
         expect(testing).toBe(expected);
       });
 
-      it('should sanitize proper trigger key option', () => {
+      it('should sanitize trigger key option shift', () => {
         var options = new Options();
         var zoom = options.sanitizeZoomOptions({key: 'shiftKey'}, options.zoom);
 
         var testing = zoom.key;
         var expected = 'shiftKey';
+
+        expect(testing).toEqual(expected);
+      });
+
+      it('should sanitize trigger key option ctrl', () => {
+        var options = new Options();
+        var zoom = options.sanitizeZoomOptions({key: 'ctrlKey'}, options.zoom);
+
+        var testing = zoom.key;
+        var expected = 'ctrlKey';
 
         expect(testing).toEqual(expected);
       });

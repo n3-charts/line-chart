@@ -224,7 +224,7 @@ Name | Type | Default | Description | Mandatory
 `y` | Boolean | `false` | Enables/disables zoom on the y axis | No
 `key` | String | `altKey` | Holding this key enables zooming functionality | No
 
-Zooming is enabled via a D3 `brush` when pressing the `alt` key per default. You can change this setting to `shiftKey` to trigger the brushing when holding shift.
+Zooming is enabled via a D3 `brush` when pressing the `alt` key per default. You can change this setting to `shiftKey` or `ctrlKey` to trigger the brushing when holding shift or ctrl.
 
 ### Double click
 The chart reacts to double clicks by resetting any zooming or panning. This might be undesirable and the `doubleClickEnabled` provides a way to disable this behavior.

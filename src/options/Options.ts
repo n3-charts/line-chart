@@ -102,7 +102,7 @@ module n3Charts.Options {
       var axis = this.sanitizeTwoAxesOptions(object, def);
       var trigger = Options.getString(object.key, def.key);
 
-      if (['altKey', 'shiftKey'].indexOf(trigger) === -1) {
+      if (['altKey', 'shiftKey', 'ctrlKey'].indexOf(trigger) === -1) {
         console.warn('Unknown zoom key ' + trigger + ' ! Default `altKey` is used.');
         trigger = def.key;
       }
