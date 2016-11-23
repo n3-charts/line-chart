@@ -108,8 +108,10 @@ module n3Charts {
       scope.$watch('data', updateData, true);
 
       eventMgr.on('legend-click.directive', (series) => {
-        var foundSeries = scope.options.series.filter((s) => s.id === series.id)[0];
-        foundSeries.visible = series.getToggledVisibility();
+        var i = options.series
+          .map(function(s){ return s.id; })
+          .indexOf(series.id);
+        scope.options.series[i].visible = series.getToggledVisibility();
         scope.$apply();
       });
 
