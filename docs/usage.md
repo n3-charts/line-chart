@@ -250,6 +250,22 @@ Name | Description | Example
 
 > Please note that heterogeneous keys can't have the same value, i.e. don't pass the same string for two different keys.
 
+An example of syncing tooltips between multiple charts.
+
+```
+<linechart data="data" options="optionsOne" tooltip-sync-key="tooltips-sync-key"></linechart>
+<linechart data="data" options="optionsTwo" tooltip-sync-key="tooltips-sync-key"></linechart>
+<linechart data="data" options="optionsThree" tooltip-sync-key="tooltips-sync-key"></linechart>
+```
+
+An example of syncing panning between multiple charts.
+
+```
+<linechart data="data" options="optionsOne" domains-sync-key="domains-sync-key"></linechart>
+<linechart data="data" options="optionsTwo" domains-sync-key="domains-sync-key"></linechart>
+<linechart data="data" options="optionsThree" domains-sync-key="domains-sync-key"></linechart>
+```
+
 ## Data
 
 The data format has changed since v1. What now gets passed to the directive as the `data` attribute should be an object (well, *yes*, everything is an object) that defines datasets as properties. Each dataset can then contain an array of arbitrary data point objects. In the series options, one can now specify the datasets with the `dataset` property, as well as the data point value with the `key` property. This is made to allow handling only one data object to the chart, while the series display heterogeneous datasets.
