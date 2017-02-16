@@ -44,19 +44,11 @@
     }
 
     &.dashed-line > .icon {
-      @include svg("
-        <g style=\"stroke: white; fill: none; stroke-dasharray: 4px,2px;\">
-          <path d='M0,6 L10,6'/>
-        </g>
-      ");
+      @include svg("<g style=\"stroke: white; fill: none; stroke-dasharray: 4px,2px;\"><path d='M0,6 L10,6'/></g>");
     }
 
     &.line > .icon {
-      @include svg("
-        <g style=\"stroke: white;\">
-          <path d='M0,6 L10,6'/>
-        </g>
-      ");
+      @include svg("<g style=\"stroke: white;\"><path d='M0,6 L10,6'/></g>");
     }
 
     &.area > .icon {
