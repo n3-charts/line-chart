@@ -1,10 +1,12 @@
-/// <reference path='../test.spec.ts' />
+import { expect } from 'chai';
 
-describe('n3Charts.Utils.EventManager', () => {
-  var eventMgr: n3Charts.Utils.EventManager = undefined;
+import { EventManager } from './EventManager';
+
+describe('EventManager', () => {
+  var eventMgr: EventManager = undefined;
 
   beforeEach(() => {
-    eventMgr = new n3Charts.Utils.EventManager();
+    eventMgr = new EventManager();
     eventMgr.strictMode = false;
   });
 
@@ -12,14 +14,14 @@ describe('n3Charts.Utils.EventManager', () => {
 
     it('should parse arguments', () => {
 
-      expect(() => eventMgr.init(['test'])).not.toThrow();
+      expect(() => eventMgr.init(['test'])).not.to.throw();
     });
 
     it('should return the instance', () => {
 
       var e = eventMgr.init([]);
 
-      expect(e).toBe(eventMgr);
+      expect(e).to.equal(eventMgr);
     });
   });
 
@@ -29,15 +31,15 @@ describe('n3Charts.Utils.EventManager', () => {
 
       var e = eventMgr.init(['test']);
 
-      expect(() => e.on('test', () => 'test')).not.toThrow();
-      expect(() => e.on('other-test', () => 'test')).toThrowError(TypeError);
+      expect(() => e.on('test', () => 'test')).not.to.throw();
+      expect(() => e.on('other-test', () => 'test')).to.throw();
     });
 
     it('should return the instance', () => {
 
       var e = eventMgr.init(['test']);
 
-      expect(e.on('test', null)).toBe(eventMgr);
+      expect(e.on('test', null)).to.equal(eventMgr);
     });
   });
 
@@ -51,7 +53,7 @@ describe('n3Charts.Utils.EventManager', () => {
       e.on('test', () => triggered = true);
       e.trigger('test');
 
-      expect(triggered).toBe(true);
+      expect(triggered).to.equal(true);
     });
 
     it('should trigger only last handler', () => {
@@ -64,8 +66,8 @@ describe('n3Charts.Utils.EventManager', () => {
       e.on('test', () => triggered2 = true);
       e.trigger('test');
 
-      expect(triggered1).toBe(false);
-      expect(triggered2).toBe(true);
+      expect(triggered1).to.equal(false);
+      expect(triggered2).to.equal(true);
     });
 
     it('should not trigger handler when deactivated', () => {
@@ -79,8 +81,8 @@ describe('n3Charts.Utils.EventManager', () => {
       e.on('test', null);
       e.trigger('test');
 
-      expect(triggered1).toBe(false);
-      expect(triggered2).toBe(false);
+      expect(triggered1).to.equal(false);
+      expect(triggered2).to.equal(false);
     });
 
     it('should trigger multiple namespaced handlers', () => {
@@ -93,8 +95,8 @@ describe('n3Charts.Utils.EventManager', () => {
       e.on('test.ns2', () => triggered2 = true);
       e.trigger('test');
 
-      expect(triggered1).toBe(true);
-      expect(triggered2).toBe(true);
+      expect(triggered1).to.equal(true);
+      expect(triggered2).to.equal(true);
     });
 
     it('should pass additional arguments to handler', () => {
@@ -105,24 +107,24 @@ describe('n3Charts.Utils.EventManager', () => {
       e.on('test', function() { args = arguments; });
       e.trigger('test', 'arg1', 2, true);
 
-      expect(args[0]).toBe('arg1');
-      expect(args[1]).toBe(2);
-      expect(args[2]).toBe(true);
+      expect(args[0]).to.equal('arg1');
+      expect(args[1]).to.equal(2);
+      expect(args[2]).to.equal(true);
     });
 
     it('should throw a TypeError, when the event is not initialized', () => {
 
       var e = eventMgr.init(['test']);
 
-      expect(() => e.trigger('test')).not.toThrow();
-      expect(() => e.trigger('other-test')).toThrowError(TypeError);
+      expect(() => e.trigger('test')).not.to.throw();
+      expect(() => e.trigger('other-test')).to.throw();
     });
 
     it('should return the instance', () => {
 
       var e = eventMgr.init(['test']);
 
-      expect(e.trigger('test')).toBe(eventMgr);
+      expect(e.trigger('test')).to.equal(eventMgr);
     });
   });
 });

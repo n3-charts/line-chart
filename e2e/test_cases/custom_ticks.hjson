@@ -70,7 +70,7 @@ options: '''
     axes: {
       x: {
         key: 'x',
-        tickFormat: d3.time.format('%Hh%M'),
+        tickFormat: d3.timeFormat('%Hh%M'),
         type: 'date',
         ticks: [
           new Date('2015-11-03T19:20:01.724Z'),

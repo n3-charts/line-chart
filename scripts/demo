@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+const _ = require('lodash');
+const fs = require('fs');
+const glob = require('glob');
+const hjson = require('hjson');
+const Q = require('q');
+const path = require('path');
+const writeFile = require('./writeFile');
+const supportedProjects = require('./supported-projects');
+
+const generateHTML = function(project) {
+  if (supportedProjects.indexOf(project) === -1) throw new Error('Unsupported project : ' + project);
+
+  const deferred = Q.defer();
+  const singleTemplate = _.template(String(fs.readFileSync('e2e/templates/' + project + '/single.html')));
+  const allTemplate = _.template(String(fs.readFileSync('e2e/templates/' + project + '/all.html')));
+  let examples = [];
+
+  glob('e2e/test_cases/*.hjson', (er, files) => {
+
+    files.forEach(file => {
+      let example = {
+        data: hjson.parse(fs.readFileSync(file, 'utf8')),
+        name: path.basename(file, path.extname(file))
+      };
+
+      writeFile('.tmp/test/e2e/' + project + '/' + example.name + '.html', singleTemplate(example));
+      examples.push(example);
+    });
+
+    writeFile('.tmp/test/e2e/' + project + '/index.html', allTemplate({examples}));
+
+    deferred.resolve();
+  });
+
+  return deferred.promise;
+};
+
+const generateAll = function() {
+  return Q.all(supportedProjects.map(generateHTML));
+};
+
+if (require.main === module) {
+  generateAll();
+} else {
+  module.exports = generateAll;
+}

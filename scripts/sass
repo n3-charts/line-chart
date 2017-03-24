@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+const sass = require('node-sass');
+const autoprefixer = require('autoprefixer');
+const postcss = require('postcss');
+const writeFile = require('./writeFile');
+const uglifycss = require('uglifycss');
+
+sass.render({file: 'src/styles/LineChart.scss'}, function(err, result) {
+  postcss([ autoprefixer ]).process(result.css).then((result) => {
+    result.warnings().forEach(function (warn) {
+        console.warn(warn.toString());
+    });
+
+    writeFile('.tmp/build/LineChart.css', result.css);
+    writeFile('.tmp/build/LineChart.min.css', uglifycss.processString(result.css));
+  })
+});

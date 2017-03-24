@@ -1,50 +1,50 @@
-module n3Charts.Factory {
-  'use strict';
+import * as d3 from 'd3';
 
-  export class Transition extends Factory.BaseFactory {
-    static defaultDuration: number = 250;
-    private duration: number = Transition.defaultDuration;
-    private ease: string = 'cubic';
+import { BaseFactory } from './BaseFactory';
 
-    off() {
-      super.off();
-      this.duration = 0;
-    }
+export class Transition extends BaseFactory {
+  static defaultDuration = 250;
+  private duration = Transition.defaultDuration;
+  private ease = d3.easeCubicInOut;
 
-    on() {
-      super.on();
-      this.duration = Transition.defaultDuration;
-    }
+  off() {
+    super.off();
+    this.duration = 0;
+  }
 
-    enter(t: d3.Transition<any>) {
-      var duration = this.duration;
-      var ease = this.ease;
-      var n = t[0].length;
-      var delay = (d, i) => n ? i / n * duration : 0;
+  on() {
+    super.on();
+    this.duration = Transition.defaultDuration;
+  }
 
-      t.duration(duration)
-        .delay(delay)
-        .ease(ease);
-    }
+  enter(t: d3.Transition<any, any, any, any>) {
+    var duration = this.duration;
+    var ease = this.ease;
+    var n = (t as any)._groups[0].length;
+    var delay = (d, i) => n ? i / n * duration : 0;
 
-    edit(t: d3.Transition<any>) {
-      var duration = this.duration;
-      var ease = this.ease;
-      var delay = 0;
+    t.duration(duration)
+      .delay(delay)
+      .ease(ease);
+  }
 
-      t.duration(duration)
-        .delay(delay)
-        .ease(ease);
-    }
+  edit(t: d3.Transition<any, any, any, any>) {
+    var duration = this.duration;
+    var ease = this.ease;
+    var delay = 0;
 
-    exit(t: d3.Transition<any>) {
-      var duration = this.duration;
-      var ease = this.ease;
-      var delay = 0;
+    t.duration(duration)
+      .delay(delay)
+      .ease(ease);
+  }
 
-      t.duration(duration)
-        .delay(delay)
-        .ease(ease);
-    }
+  exit(t: d3.Transition<any, any, any, any>) {
+    var duration = this.duration;
+    var ease = this.ease;
+    var delay = 0;
+
+    t.duration(duration)
+      .delay(delay)
+      .ease(ease);
   }
 }

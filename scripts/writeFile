@@ -1,0 +1,12 @@
+#! /usr/bin/env node
+
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const path = require('path');
+
+module.exports = (filePath, contents, cb) => {
+  mkdirp(path.dirname(filePath), (err) => {
+    if (err) return cb(err);
+    fs.writeFile(filePath, contents, cb);
+  });
+};
