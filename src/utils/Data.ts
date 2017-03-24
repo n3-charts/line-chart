@@ -54,7 +54,7 @@ export class Data {
 
   public static getMinDistance(data, axis: Factory.Axis, key = 'x', range?): number {
 
-    return <number>d3.min(
+    return <any>d3.min(
       // Compute the minimum difference along an axis on all series
       data.map(series => {
         // Compute minimum delta
