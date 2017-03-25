@@ -2,28 +2,21 @@ var path = require('path');
 
 module.exports = {
   entry: {
-    "angularjs" : "./.tmp/angularjs/module.js",
-    "react" : "./.tmp/react/LineChart.js"
+    "angularjs" : "./build/angularjs/module.js",
+    "react" : "./build/react/LineChart.js"
   },
   output: {
-    path: "./.tmp/build/",
+    path: __dirname  + "/build/build",
     filename: "LineChart-[name].js",
-    chunkFilename: "[name].js"
+    chunkFilename: "[name].js",
+    library: 'n3',
+    libraryTarget: "umd"
   },
   target: 'web',
   resolveLoader: {
-    root: path.join(__dirname, "node_modules")
+    modules: [__dirname + "/node_modules"]
   },
   resolve: {
-    extensions: ['', '.js'],
+    extensions: ['.js'],
   },
-  module: {
-    loaders: [
-    ]
-  },
-  externals: {
-    "angular": "angular",
-    "react": 'React',
-    "react-dom": 'ReactDOM'
-  }
 }

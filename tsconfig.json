@@ -11,7 +11,7 @@
     "target": "es5",
     "module": "commonjs",
     "sourceMap": true,
-    "outDir": ".tmp/"
+    "outDir": "build/"
   },
   "include": [
     "./src/angularjs/module.ts",

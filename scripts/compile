@@ -9,9 +9,12 @@ FILES=`ls src`
 webpack --display-error-details
 
 # For backward comp
-mv .tmp/build/LineChart-angularjs.js .tmp/build/LineChart.js
+mv build/build/LineChart-angularjs.js build/build/LineChart.js
 
-uglifyjs .tmp/build/LineChart.js > .tmp/build/LineChart.min.js
-uglifyjs .tmp/build/LineChart-react.js > .tmp/build/LineChart-react.min.js
+mv build/react/LineChart.d.ts build/build/LineChart-react.d.ts
 
-(cd .tmp && rm -rf ${FILES})
+uglifyjs build/build/LineChart.js > build/build/LineChart.min.js
+uglifyjs build/build/LineChart-react.js > build/build/LineChart-react.min.js
+
+(cd build && rm -rf ${FILES})
+mv build/build/ tmp && rm -rf build && mv tmp build

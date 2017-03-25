@@ -16,7 +16,7 @@ const serve = function(project, port) {
   const start = function() {
     let deferred = Q.defer();
     app.use(serveStatic('.tmp/test/e2e/' + project));
-    app.use(serveStatic('.tmp/build'));
+    app.use(serveStatic('build'));
     app.use(serveStatic('node_modules'));
     server = app.listen(port, () => {
       console.log('Serving ' + project + ' on port ' + port + '...');

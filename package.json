@@ -14,6 +14,8 @@
   "files": [
     "build/"
   ],
+  "main": "./build/LineChart-react.js",
+  "typings": "./build/LineChart-react.d.ts",
   "scripts": {
     "compile": "./scripts/compile",
     "test": "npm run tests",
@@ -64,7 +66,7 @@
     "uglify": "^0.1.5",
     "uglify-js": "^2.7.4",
     "uglifycss": "0.0.25",
-    "webpack": "^1.13.3",
+    "webpack": "2.3.2",
     "yargs": "^3.32.0"
   }
 }

@@ -9,22 +9,36 @@ import * as Symbols from '../factories/symbols/_index';
 import * as Options from '../options/_index';
 import { ReactSyncLayer as SyncLayer } from './SyncLayer';
 
-window['LineChart'] = React.createClass({
-  propTypes: {
-    data: React.PropTypes.object,
-    options: React.PropTypes.object,
-    dimensions: React.PropTypes.object
-  },
+export interface LineChartProps {
+  data: any;
+  options: any;
+}
 
-  updateAll: function() {
+export interface LineChartState {
+
+}
+
+export class LineChart extends React.Component<LineChartProps, LineChartState> {
+  private _element: any;
+
+  private options: Options.Options;
+  private data: Utils.Data;
+  private eventMgr: Utils.EventManager;
+  private factoryMgr: Utils.FactoryManager;
+
+  constructor() {
+    super();
+  }
+
+  updateAll() {
     this.options = new Options.Options(this.props.options);
     this.data = new Utils.Data(this.props.data);
 
     this.eventMgr.update(this.data, this.options);
     this.eventMgr.trigger('update', this.data, this.options);
-  },
+  }
 
-  updateData: function(_data) {
+  updateData(_data: any) {
     if (!_data) {
       return;
     }
@@ -35,10 +49,10 @@ window['LineChart'] = React.createClass({
     this.factoryMgr.turnFactoriesOn(['transitions']);
 
     this.eventMgr.trigger('update', this.data, this.options);
-  },
+  }
 
-  handleResize: function(e) {
-    var rect = ReactDOM.findDOMNode(this).parentElement.getBoundingClientRect();
+  handleResize(e) {
+    var rect = this._element.parentElement.getBoundingClientRect();
     this.setState({
       height: rect.height,
       width: rect.width,
@@ -47,11 +61,11 @@ window['LineChart'] = React.createClass({
       bottom: rect.bottom,
       top: rect.top
     });
-    this.eventMgr.trigger('resize', ReactDOM.findDOMNode(this).parentElement);
-  },
+    this.eventMgr.trigger('resize', this._element.parentElement);
+  }
 
-  componentDidMount: function() {
-    var element = ReactDOM.findDOMNode(this);
+  componentDidMount() {
+    var element = this._element;
 
     this.eventMgr = new Utils.EventManager();
     this.factoryMgr = new Utils.FactoryManager();
@@ -88,7 +102,7 @@ window['LineChart'] = React.createClass({
 
     this.updateAll();
 
-    window.addEventListener('resize', Utils.FunctionUtils.debounce(this.handleResize, 50));
+    window.addEventListener('resize', Utils.FunctionUtils.debounce(this.handleResize.bind(this), 50));
 
     this.eventMgr.on('legend-click.directive', (series) => {
       var foundSeries = this.options.series.filter((s) => s.id === series.id)[0];
@@ -102,22 +116,30 @@ window['LineChart'] = React.createClass({
     this.eventMgr.on('pan-end.directive', () => {
       (<d3.Selection<SVGElement, any, any, any>>this.factoryMgr.get('container').svg).classed('panning', false);
     });
-  },
+  }
 
-  componentDidUpdate: function() {
+  componentDidUpdate() {
     this.options = new Options.Options(this.props.options);
     this.data = new Utils.Data(this.props.data);
 
     this.eventMgr.update(this.data, this.options);
     this.eventMgr.trigger('update', this.data, this.options);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
     this.eventMgr.trigger('destroy');
-  },
-
-  render: function() {
-    return React.createElement('div', null);
   }
-});
+
+  render() {
+    return React.createElement('div', {ref: (e) => this._element = e});
+  }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    LineChart
+  };
+} else {
+  window['LineChart'] = LineChart;
+}

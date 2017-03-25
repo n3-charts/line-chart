@@ -12,7 +12,7 @@ sass.render({file: 'src/styles/LineChart.scss'}, function(err, result) {
         console.warn(warn.toString());
     });
 
-    writeFile('.tmp/build/LineChart.css', result.css);
-    writeFile('.tmp/build/LineChart.min.css', uglifycss.processString(result.css));
+    writeFile('build/build/LineChart.css', result.css);
+    writeFile('build/build/LineChart.min.css', uglifycss.processString(result.css));
   })
 });
