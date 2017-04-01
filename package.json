@@ -1,6 +1,6 @@
 {
   "name": "n3-charts",
-  "version": "3.0.0-beta.3",
+  "version": "3.0.0-beta.4",
   "homepage": "http://n3-charts.github.io/line-chart/v2",
   "licenses": {
     "type": "MIT",
@@ -37,7 +37,6 @@
     "@types/react-dom": "^0.14.17",
     "@types/chai": "^3.4.34",
     "@types/d3": "^4.2.38",
-    "@types/lodash": "^4.14.36",
     "angular-mocks": "^1.4.0",
     "autoprefixer": "^6.5.1",
     "chai": "^2.3.0",
