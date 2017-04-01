@@ -52,6 +52,8 @@ export class LineChart extends React.Component<LineChartProps, LineChartState> {
   }
 
   handleResize(e) {
+    if (!this._element) return;
+
     var rect = this._element.parentElement.getBoundingClientRect();
     this.setState({
       height: rect.height,
@@ -61,6 +63,7 @@ export class LineChart extends React.Component<LineChartProps, LineChartState> {
       bottom: rect.bottom,
       top: rect.top
     });
+
     this.eventMgr.trigger('resize', this._element.parentElement);
   }
 
