@@ -22,6 +22,12 @@
     "tests": "npm run compile && ./scripts/unit-test && ./scripts/e2e-test"
   },
   "dependencies": {
+    "d3": "^4.2.8",
+    "angular": "^1.4.0",
+    "react": "^0.14.8",
+    "react-dom": "^0.14.8"
+  },
+  "devDependencies": {
     "@types/angular": "^1.5.16",
     "@types/angular-mocks": "^1.5.5",
     "@types/jasmine": "^2.2.34",
@@ -29,12 +35,6 @@
     "@types/lodash": "^4.14.36",
     "@types/react": "^0.14.37",
     "@types/react-dom": "^0.14.17",
-    "d3": "^4.2.8",
-    "angular": "^1.4.0",
-    "react": "^0.14.8",
-    "react-dom": "^0.14.8"
-  },
-  "devDependencies": {
     "@types/chai": "^3.4.34",
     "@types/d3": "^4.2.38",
     "@types/lodash": "^4.14.36",
