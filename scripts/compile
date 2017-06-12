@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-tsc
+# Stop the script if an operation fails
+set -e
+
+node_modules/typescript/bin/tsc
 
 FILES=`ls src`
 
