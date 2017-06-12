@@ -13,7 +13,7 @@ const runTests = () => {
   const deferred = Q.defer();
 
   glob('e2e/tests/*.e2e.js', (er, files) => {
-    let child = exec('protractor --specs ' + files.join(',') + ' config/protractor.conf.js');
+    let child = exec('node_modules/protractor/bin/protractor --specs ' + files.join(',') + ' config/protractor.conf.js');
 
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
