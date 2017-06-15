@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+# Stop the script if an operation fails
+set -e
+
+node_modules/typescript/bin/tsc
+
+FILES=`ls src`
+
+./scripts/sass
+
+node_modules/webpack/bin/webpack.js --display-error-details
+
+# For backward comp
+mv build/build/LineChart-angularjs.js build/build/LineChart.js
+
+mv build/react/LineChart.d.ts build/build/LineChart-react.d.ts
+
+node_modules/uglify-js/bin/uglifyjs build/build/LineChart.js > build/build/LineChart.min.js
+node_modules/uglify-js/bin/uglifyjs build/build/LineChart-react.js > build/build/LineChart-react.min.js
+
+(cd build && rm -rf ${FILES})
+mv build/build/ tmp && rm -rf build && mv tmp build

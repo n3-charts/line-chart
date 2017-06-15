@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <title>n3-charts - React</title>
-  <link rel="stylesheet" type="text/css" media="screen" href="/build/LineChart.min.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="LineChart.min.css">
   <style type="text/css">
   body {
     margin: 0;
@@ -41,7 +41,7 @@
   }
 
   <% _.each(examples, function(example) { %>
-    .<%=example.data.name%> <%=example.data.style || '{}'%>
+    .<%=example.name%> <%=example.data.style || '{}'%>
   <% }); %>
 
   </style>
@@ -51,9 +51,9 @@
   <div class="examples">
     <% _.each(examples, function(example) { %>
 
-    <div class="example <%=example.data.name%>">
+    <div class="example <%=example.name%>">
       <div class="example-title">
-        <a id="<%=example.data.name%>" href="/test/e2e/<%=example.data.name%>.html"><%=example.data.name%></a>
+        <a id="<%=example.name%>" href="/<%=example.name%>.html"><%=example.name%></a>
       </div>
       <%=example.data.react.html%>
     </div>
@@ -64,9 +64,10 @@
   </div>
   <script src="/react/dist/react-with-addons.js"></script>
   <script src="/react-dom/dist/react-dom.js"></script>
-  <script src="/d3/d3.js"></script>
-  <script src="/build/LineChart-react.js"></script>
+  <script src="/d3/build/d3.js"></script>
+  <script src="LineChart-react.js"></script>
   <script type="text/javascript">
+  const LineChart = n3.LineChart;
 
   <% _.each(examples, function(example, index) { %>
     (function(data, options, testIndex) {

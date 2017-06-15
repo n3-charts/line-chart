@@ -1,36 +1,37 @@
-module n3Charts.Options {
-  'use strict';
+import * as d3 from 'd3';
 
-  export class SymbolOptions {
-    public type: string;
-    public value: number | Date;
-    public color: string;
-    public axis: string;
-    public id: string;
+import * as Utils from '../utils/_index';
+import { Options } from './Options';
 
-    static TYPE = {
-      HLINE: 'hline',
-      VLINE: 'vline',
-    };
+export class SymbolOptions {
+  public type: string;
+  public value: number | Date;
+  public color: string;
+  public axis: string;
+  public id: string;
 
-    constructor(js: any = {}) {
-      this.parse(js);
+  static TYPE = {
+    HLINE: 'hline',
+    VLINE: 'vline',
+  };
+
+  constructor(js: any = {}) {
+    this.parse(js);
+  }
+
+  parse(js: any) {
+    if (!SymbolOptions.isValidType(js.type)) {
+      throw new Error(`Unknown type for symbol: ${js.type}`);
     }
 
-    parse(js: any) {
-      if (!SymbolOptions.isValidType(js.type)) {
-        throw new Error(`Unknown type for symbol: ${js.type}`);
-      }
+    this.type = Options.getString(js.type);
+    this.value = Options.getNumber(js.value, 0);
+    this.color = Options.getString(js.color, 'lightgrey');
+    this.axis = Options.getString(js.axis, 'y');
+    this.id = Options.getString(js.id, Utils.UUID.generate());
+  }
 
-      this.type = Options.getString(js.type);
-      this.value = Options.getNumber(js.value, 0);
-      this.color = Options.getString(js.color, 'lightgrey');
-      this.axis = Options.getString(js.axis, 'y');
-      this.id = Options.getString(js.id, Utils.UUID.generate());
-    }
-
-    static isValidType(type: string) {
-      return d3.values(SymbolOptions.TYPE).indexOf(type) !== -1;
-    }
+  static isValidType(type: string) {
+    return d3.values(SymbolOptions.TYPE).indexOf(type) !== -1;
   }
 }

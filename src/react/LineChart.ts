@@ -1,28 +1,44 @@
-/// <reference path='../../typings/browser.d.ts' />
+import * as d3 from 'd3';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
-/// <reference path='../svg/_index.ts' />
-/// <reference path='../options/_index.ts' />
-/// <reference path='../utils/_index.ts' />
-/// <reference path='../factories/_index.ts' />
+import * as Utils from '../utils/_index';
+import * as Factory from '../factories/_index';
+import * as Series from '../factories/series/_index';
+import * as Symbols from '../factories/symbols/_index';
+import * as Options from '../options/_index';
+import { ReactSyncLayer as SyncLayer } from './SyncLayer';
 
-/// <reference path='./SyncLayer.ts' />
+export interface LineChartProps {
+  data: any;
+  options: any;
+}
 
-var LineChart = React.createClass({
-  propTypes: {
-    data: React.PropTypes.object,
-    options: React.PropTypes.object,
-    dimensions: React.PropTypes.object
-  },
+export interface LineChartState {
 
-  updateAll: function() {
-    this.options = new n3Charts.Options.Options(this.props.options);
-    this.data = new n3Charts.Utils.Data(this.props.data);
+}
+
+export class LineChart extends React.Component<LineChartProps, LineChartState> {
+  private _element: any;
+
+  private options: Options.Options;
+  private data: Utils.Data;
+  private eventMgr: Utils.EventManager;
+  private factoryMgr: Utils.FactoryManager;
+
+  constructor() {
+    super();
+  }
+
+  updateAll() {
+    this.options = new Options.Options(this.props.options);
+    this.data = new Utils.Data(this.props.data);
 
     this.eventMgr.update(this.data, this.options);
     this.eventMgr.trigger('update', this.data, this.options);
-  },
+  }
 
-  updateData: function(_data) {
+  updateData(_data: any) {
     if (!_data) {
       return;
     }
@@ -33,10 +49,12 @@ var LineChart = React.createClass({
     this.factoryMgr.turnFactoriesOn(['transitions']);
 
     this.eventMgr.trigger('update', this.data, this.options);
-  },
+  }
 
-  handleResize: function(e) {
-    var rect = ReactDOM.findDOMNode(this).parentElement.getBoundingClientRect();
+  handleResize(e) {
+    if (!this._element) return;
+
+    var rect = this._element.parentElement.getBoundingClientRect();
     this.setState({
       height: rect.height,
       width: rect.width,
@@ -45,39 +63,40 @@ var LineChart = React.createClass({
       bottom: rect.bottom,
       top: rect.top
     });
-    this.eventMgr.trigger('resize', ReactDOM.findDOMNode(this).parentElement);
-  },
 
-  componentDidMount: function() {
-    var element = ReactDOM.findDOMNode(this);
+    this.eventMgr.trigger('resize', this._element.parentElement);
+  }
 
-    this.eventMgr = new n3Charts.Utils.EventManager();
-    this.factoryMgr = new n3Charts.Utils.FactoryManager();
+  componentDidMount() {
+    var element = this._element;
 
-    this.eventMgr.init(n3Charts.Utils.EventManager.EVENTS);
+    this.eventMgr = new Utils.EventManager();
+    this.factoryMgr = new Utils.FactoryManager();
+
+    this.eventMgr.init(Utils.EventManager.EVENTS);
 
     this.factoryMgr.registerMany([
-      ['container', n3Charts.Factory.Container, element],
-      ['tooltip', n3Charts.Factory.Tooltip, element],
-      ['legend', n3Charts.Factory.Legend, element],
-      ['transitions', n3Charts.Factory.Transition],
-      ['x-axis', n3Charts.Factory.Axis, n3Charts.Options.AxisOptions.SIDE.X],
-      ['x2-axis', n3Charts.Factory.Axis, n3Charts.Options.AxisOptions.SIDE.X2],
-      ['y-axis', n3Charts.Factory.Axis, n3Charts.Options.AxisOptions.SIDE.Y],
-      ['y2-axis', n3Charts.Factory.Axis, n3Charts.Options.AxisOptions.SIDE.Y2],
-      ['grid', n3Charts.Factory.Grid],
-      ['pan', n3Charts.Factory.Pan],
-      ['zoom', n3Charts.Factory.Zoom],
-      ['sync-layer', n3Charts.Factory.ReactSyncLayer, this.props],
+      ['container', Factory.Container, element],
+      ['tooltip', Factory.Tooltip, element],
+      ['legend', Factory.Legend, element],
+      ['transitions', Factory.Transition],
+      ['x-axis', Factory.Axis, Options.AxisOptions.SIDE.X],
+      ['x2-axis', Factory.Axis, Options.AxisOptions.SIDE.X2],
+      ['y-axis', Factory.Axis, Options.AxisOptions.SIDE.Y],
+      ['y2-axis', Factory.Axis, Options.AxisOptions.SIDE.Y2],
+      ['grid', Factory.Grid],
+      ['pan', Factory.Pan],
+      ['zoom', Factory.Zoom],
+      ['sync-layer', SyncLayer, this.props],
 
       // This order is important, otherwise it can mess up with the tooltip
       // (and you don't want to mess up with a tooltip, trust me).
-      ['series-area', n3Charts.Factory.Series.Area],
-      ['series-column', n3Charts.Factory.Series.Column],
-      ['series-line', n3Charts.Factory.Series.Line],
-      ['series-dot', n3Charts.Factory.Series.Dot],
-      ['symbols-hline', n3Charts.Factory.Symbols.HLine],
-      ['symbols-vline', n3Charts.Factory.Symbols.VLine]
+      ['series-area', Series.Area],
+      ['series-column', Series.Column],
+      ['series-line', Series.Line],
+      ['series-dot', Series.Dot],
+      ['symbols-hline', Symbols.HLine],
+      ['symbols-vline', Symbols.VLine]
     ]);
 
     this.factoryMgr.all().forEach((f) => f.instance.init(f.key, this.eventMgr, this.factoryMgr));
@@ -86,7 +105,7 @@ var LineChart = React.createClass({
 
     this.updateAll();
 
-    window.addEventListener('resize', n3Charts.Utils.FunctionUtils.debounce(this.handleResize, 50));
+    window.addEventListener('resize', Utils.FunctionUtils.debounce(this.handleResize.bind(this), 50));
 
     this.eventMgr.on('legend-click.directive', (series) => {
       var foundSeries = this.options.series.filter((s) => s.id === series.id)[0];
@@ -95,27 +114,35 @@ var LineChart = React.createClass({
     });
 
     this.eventMgr.on('pan.directive', () => {
-      (<d3.Selection<SVGElement>>this.factoryMgr.get('container').svg).classed('panning', true);
+      (<d3.Selection<SVGElement, any, any, any>>this.factoryMgr.get('container').svg).classed('panning', true);
     });
     this.eventMgr.on('pan-end.directive', () => {
-      (<d3.Selection<SVGElement>>this.factoryMgr.get('container').svg).classed('panning', false);
+      (<d3.Selection<SVGElement, any, any, any>>this.factoryMgr.get('container').svg).classed('panning', false);
     });
-  },
+  }
 
-  componentDidUpdate: function() {
-    this.options = new n3Charts.Options.Options(this.props.options);
-    this.data = new n3Charts.Utils.Data(this.props.data);
+  componentDidUpdate() {
+    this.options = new Options.Options(this.props.options);
+    this.data = new Utils.Data(this.props.data);
 
     this.eventMgr.update(this.data, this.options);
     this.eventMgr.trigger('update', this.data, this.options);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
     this.eventMgr.trigger('destroy');
-  },
-
-  render: function() {
-    return React.createElement('div', null);
   }
-});
+
+  render() {
+    return React.createElement('div', {ref: (e) => this._element = e});
+  }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    LineChart
+  };
+} else {
+  window['LineChart'] = LineChart;
+}

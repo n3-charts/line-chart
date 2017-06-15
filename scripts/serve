@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+const express = require('express');
+const serveStatic = require('serve-static');
+const Q = require('q');
+const supportedProjects = require('./supported-projects');
+
+const serve = function(project, port) {
+  if (supportedProjects.indexOf(project) === -1) {
+    console.error('Usage: ./scripts/serve <project> <port>\n  project: `angularjs` or `react`');
+    throw new Error('Unsupported project. Choose either `angularjs` or `react`');
+  }
+  
+  port = port || 1234;
+
+  const app = express();
+  var server;
+
+  const start = function() {
+    let deferred = Q.defer();
+    app.use(serveStatic('.tmp/test/e2e/' + project));
+    app.use(serveStatic('build'));
+    app.use(serveStatic('node_modules'));
+    server = app.listen(port, () => {
+      console.log('Serving ' + project + ' on port ' + port + '...');
+      deferred.resolve();
+    });
+    return deferred.promise;
+  };
+
+  const stop = function() {
+    let deferred = Q.defer();
+    server.close(deferred.resolve);
+    return deferred.promise;
+  };
+
+  return {start, stop};
+};
+
+if (require.main === module) {
+  serve(process.argv[2], process.argv[3]).start();
+} else {
+  module.exports = serve;
+}

@@ -1,8 +1,8 @@
-/// <reference path='../../typings/browser.d.ts' />
-/// <reference path='./LineChart.ts' />
+import * as ng from 'angular';
+import * as n3Charts from './LineChart';
 
 // Create the angular module
-angular.module('n3-line-chart', [])
+ng.module('n3-line-chart', [])
   // and our directives
   .directive('linechart', [
     '$window', '$parse', '$timeout', '$rootScope',

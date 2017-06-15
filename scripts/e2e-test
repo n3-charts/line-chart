@@ -1,0 +1,39 @@
+#! /usr/bin/env node
+
+const exec = require('child_process').exec;
+const generateDemo = require('./demo');
+const fs = require('fs');
+const glob = require('glob');
+const path = require('path');
+const Q = require('q');
+const serve = require('./serve');
+const writeFile = require('./writeFile');
+
+const runTests = () => {
+  const deferred = Q.defer();
+
+  glob('e2e/tests/*.e2e.js', (er, files) => {
+    let child = exec('node_modules/protractor/bin/protractor --specs ' + files.join(',') + ' config/protractor.conf.js');
+
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+    child.on('exit', deferred.resolve);
+  });
+
+  return deferred.promise;
+};
+
+const run = (project) => {
+  console.log('Running e2e tests on ' + project);
+  let server = serve(project);
+
+  return server.start()
+    .then(runTests)
+    .then(server.stop);
+};
+
+generateDemo()
+  .then(run.bind(this, 'react'))
+  .then(run.bind(this, 'angularjs'))
+  .then(process.exit)
+  .done();

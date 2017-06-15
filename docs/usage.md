@@ -81,23 +81,9 @@ Name | Type | Default | Description | Mandatory
 `min` | Number or Date | `undefined` | The minimal value displayed on this axis. | No
 `max` | Number or Date | `undefined` | The maximal value displayed on this axis. | No
 `padding` | Object | `{min: 0, max: 0}` | The padding for the axis' extrema (values are expressed in pixels). | No
-`ticks` | Array or Number or Function | `undefined` | The axis' ticks. Depending on what is given will either call `tickValues` or `ticks` on the inner d3 axis, or use a home-made axis to display major and minor ticks (see below). | No
+`ticks` | Array or Number | `undefined` | The axis' ticks. Depending on what is given will either call `tickValues` or `ticks` on the inner d3 axis. | No
 `ticksShift` | Object | `{y: 0, x: 0}` | A bit of a hack to allow shifting of the ticks. May be useful if the chart is squeezed in a container and the 0 tick is cropped. Or not. | No. Of course not.
 `tickFormat` | Function | `undefined` | Formats the ticks. Takes the value and its index as arguments | No
-
-> Instead of binding the `min` and `max` properties directly in the options `$scope.options = {axes: {y: {min: $scope.someVal}}}` one better overrides the values whenever they change, such as `$scope.options.axes.y.min = $scope.someVal` which will automatically trigger a domain update on the chart.
-
-#### Major and minor ticks
-When given a function as the `ticks` attribute, the axis will stop generating its own ticks and start displayign exactly what's returned by the function. This is basically an advanced way of setting the ticks. However, the function must return data as follows :
-
-```js
-var myTicksFunction = function(domain) {
-  return {
-    major: [{label: '00', value: 0}, {label: '01', value: 1}],
-    minor: [{label: '.5', value: 0.5}, {label: '.5', value: 1.5}]
-  };
-};
-```
 
 ### Symbols
 
@@ -166,7 +152,7 @@ tooltipHook: function(d){
           label: "Custom y label: " + s.series.label,
           value: s.row.y1, // the y value
           color: s.series.color,
-          id: s.series.id  
+          id: s.series.id
         }
       })
     }

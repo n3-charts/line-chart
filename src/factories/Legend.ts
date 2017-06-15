@@ -1,63 +1,72 @@
-module n3Charts.Factory {
-  'use strict';
+import * as d3 from 'd3';
 
-  export class Legend extends Factory.BaseFactory {
+import * as Utils from '../utils/_index';
+import { Options, SeriesOptions, Dimensions } from '../options/_index';
 
-    private div:d3.Selection<any>;
+import { BaseFactory } from './BaseFactory';
+import { Container } from './Container';
 
-    constructor(private element: HTMLElement) {
-      super();
-    }
+export class Legend extends BaseFactory {
 
-    create() {
-      this.createLegend();
-    }
+  private div: d3.Selection<any, any, any, any>;
 
-    createLegend() {
-      this.div = d3.select(this.element)
+  constructor(private element: HTMLElement) {
+    super();
+  }
+
+  create() {
+    this.createLegend();
+  }
+
+  createLegend() {
+    this.div = d3.select(this.element)
+      .append('div')
+        .attr('class', 'chart-legend')
+        .style('position', 'absolute');
+  }
+
+  legendClick(): any {
+    return (selection: d3.Selection<any, SeriesOptions, any, any>) => {
+      return selection.on('click', (series) => {
+        this.eventMgr.trigger('legend-click', series);
+      });
+    };
+  }
+
+  update(data: Utils.Data, options: Options) {
+    const init = (_items) => {
+      _items.attr('class', 'item');
+      _items.call(this.legendClick());
+      _items.append('div').attr('class', 'icon');
+      _items.append('div').attr('class', 'legend-label');
+    };
+
+    const update = (_items) => {
+      _items
+        .attr('class', (d: SeriesOptions) => 'item ' + d.type.join(' '))
+        .classed('legend-hidden', (d) => !d.visible);
+      _items.select('.icon').style('background-color', (d) => d.color);
+      _items.select('.legend-label').text((d) => d.label);
+    };
+
+    var items = this.div.selectAll('.item')
+      .data(options.series);
+
+    // update
+    items.call(update);
+
+    // enter (and update, wtf is going on)
+    items.enter()
         .append('div')
-          .attr('class', 'chart-legend')
-          .style('position', 'absolute');
-    }
+        .call(init)
+      .merge(items)
+        .call(update);
 
-    legendClick() {
-      return (selection: d3.Selection<Options.SeriesOptions>) => {
-        return selection.on('click', (series) => {
-          this.eventMgr.trigger('legend-click', series);
-        });
-      };
-    }
+    // exit
+    items.exit().remove();
+  }
 
-    update(data:Utils.Data, options:Options.Options) {
-      var container = <Factory.Container> this.factoryMgr.get('container');
-      var dim: Options.Dimensions = container.getDimensions();
-
-      var init = (series) => {
-        var items = series.append('div').attr({'class': 'item'})
-          .call(this.legendClick());
-
-        items.append('div').attr({'class': 'icon'});
-        items.append('div').attr({'class': 'legend-label'});
-      };
-
-      var update = (series) => {
-        series
-          .attr('class', (d:Options.SeriesOptions) => 'item ' + d.type.join(' '))
-          .classed('legend-hidden', (d) => !d.visible);
-        series.select('.icon').style('background-color', (d) => d.color);
-        series.select('.legend-label').text((d) => d.label);
-      };
-
-      var legendItems = this.div.selectAll('.item')
-        .data(options.series);
-
-      legendItems.enter().call(init);
-      legendItems.call(update);
-      legendItems.exit().remove();
-    }
-
-    destroy() {
-      this.div.remove();
-    }
+  destroy() {
+    this.div.remove();
   }
 }

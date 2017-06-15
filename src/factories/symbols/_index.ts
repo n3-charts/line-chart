@@ -1,2 +1,2 @@
-/// <reference path='HLine.ts' />
-/// <reference path='VLine.ts' />
+export * from './HLine';
+export * from './VLine';

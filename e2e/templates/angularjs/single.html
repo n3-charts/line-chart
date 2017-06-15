@@ -2,7 +2,7 @@
 <html lang="en" ng-app="example">
 <head>
   <title><%=name%> - AngularJS</title>
-  <link rel="stylesheet" type="text/css" media="screen" href="/build/LineChart.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="LineChart.css">
   <style type="text/css">
   .example-chart, .example-controls {
     width: 600px;
@@ -19,12 +19,12 @@
 </head>
 
 <body ng-controller='ExampleCtrl'>
-  <a href="/test/e2e#<%=name%>">&lt;&nbsp;All examples</a>
+  <a href="/#<%=name%>">&lt;&nbsp;All examples</a>
   <%=data.angular.html%>
 
   <script src="/angular/angular.js"></script>
-  <script src="/d3/d3.js"></script>
-  <script src="/build/LineChart.js"></script>
+  <script src="/d3/build/d3.js"></script>
+  <script src="LineChart.js"></script>
   <script type="text/javascript">
 
   angular.module('example', ['n3-line-chart'])
