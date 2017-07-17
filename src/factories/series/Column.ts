@@ -80,7 +80,9 @@ export class Column extends Series.SeriesFactory {
         .attr('y', (d) => d.y1 > 0 ? yAxis.scale(d.y1) : yAxis.scale(d.y0))
         .attr('width', this.innerXScale.step())
         .attr('height', (d) => Math.abs(yAxis.scale(d.y0) - yAxis.scale(d.y1)))
-      .style('opacity', series.visible ? 1 : 0);
+        .call(Series.SeriesFactory.condStyle, 'fill', series.color)
+        .call(Series.SeriesFactory.condStyle, 'stroke', series.color)
+        .style('opacity', series.visible ? 1 : 0);
     };
 
     var cols = group.selectAll('.' + this.type)
@@ -131,8 +133,6 @@ export class Column extends Series.SeriesFactory {
 
   styleSeries(group: d3.Selection<any, Options.SeriesOptions, any, any>) {
     group
-      .style('fill', (d) => d.color)
-      .style('stroke', (d) => d.color)
       .style('stroke-width', 1)
     ;
   }

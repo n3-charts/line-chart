@@ -43,7 +43,8 @@ export class Line extends Series.SeriesFactory {
         _line
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
-          .attr('d', (d) => updateLine(d));
+          .attr('d', (d) => updateLine(d))
+          .call(Series.SeriesFactory.condStyle, 'stroke', series.color);
       };
 
       line.call(update);
@@ -79,7 +80,6 @@ export class Line extends Series.SeriesFactory {
   styleSeries(group: d3.Selection<any, Options.SeriesOptions, any, any>) {
     group
       .style('fill', 'none')
-      .style('stroke', (s) => s.color)
       .style('stroke-dasharray', (s) => s.isDashed() ? '10,3' : undefined)
     ;
   }

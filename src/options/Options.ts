@@ -261,6 +261,11 @@ export class Options {
     return value ? String(value) : defaultValue;
   }
 
+  static getCondString(value: any, defaultValue?: string) {
+    return (value instanceof Function) ? Options.getFunction(value)
+      : Options.getString(value, defaultValue);
+  }
+
   static getIdentifier(value: any) {
     var s = Options.getString(value);
     return s.replace(/[^a-zA-Z0-9\-_]/ig, '');

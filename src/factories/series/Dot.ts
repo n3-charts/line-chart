@@ -27,7 +27,8 @@ export class Dot extends Series.SeriesFactory {
         .attr('r', (d) => dotsRadius)
         .attr('cx', (d) => xAxis.scale(d.x))
         .attr('cy', (d) => yAxis.scale(d.y1))
-      .style('opacity', series.visible ? 1 : 0);
+        .style('opacity', series.visible ? 1 : 0)
+        .call(Series.SeriesFactory.condStyle, 'stroke', series.color);
     };
 
     var dots = group.selectAll('.' + this.type)
@@ -76,9 +77,5 @@ export class Dot extends Series.SeriesFactory {
       dots.exit()
         .remove();
     }
-  }
-
-  styleSeries(group: d3.Selection<any, Options.SeriesOptions, any, any>) {
-    group.style('stroke', (d) => d.color);
   }
 }

@@ -1,5 +1,6 @@
 import * as Utils from '../utils/_index';
 import * as Options from '../options/_index';
+import * as Types from '../options/Types';
 
 export class BaseFactory implements Utils.IFactory {
 
@@ -46,5 +47,9 @@ export class BaseFactory implements Utils.IFactory {
 
   destroy() {
     // This methods need to be overwritten by factories
+  }
+
+  static evalCondString(condValue: Types.condString, value?: Number): String {
+    return condValue instanceof Function ? condValue(value, undefined, undefined) : condValue;
   }
 }

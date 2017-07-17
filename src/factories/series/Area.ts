@@ -45,7 +45,9 @@ export class Area extends SeriesFactory {
         _area
           .transition()
           .call(this.factoryMgr.getBoundFunction('transitions', 'enter'))
-          .attr('d', (d) => updateArea(d));
+          .attr('d', (d) => updateArea(d))
+          .call(SeriesFactory.condStyle, 'fill', series.color)
+          .call(SeriesFactory.condStyle, 'stroke', series.color);
       };
 
       area.call(update);
@@ -75,12 +77,5 @@ export class Area extends SeriesFactory {
         .remove();
     }
 
-  }
-
-  styleSeries(group: d3.Selection<any, Options.SeriesOptions, any, any>) {
-    group
-      .style('fill', (s) => s.color)
-      .style('stroke', (s) => s.color)
-    ;
   }
 }

@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 
 import * as Utils from '../utils/_index';
+import * as Types from './Types';
 
 import { Options } from './Options';
 
@@ -12,7 +13,7 @@ export interface ISeriesOptions {
   type: string[];
   id: string;
   defined: (point: Utils.IPoint) => boolean;
-  color: string;
+  color: Types.condString;
   visible: boolean;
   interpolation: {tension: number, mode: string};
   hasType: (type: string) => boolean;
@@ -26,7 +27,7 @@ export class SeriesOptions implements ISeriesOptions {
   public label: string;
   public type: string[] = ['line'];
   public id: string;
-  public color: string;
+  public color: Types.condString;
   public visible: boolean = true;
   public defined: (point: Utils.IPoint) => boolean = (point: Utils.IPoint) => true;
 
@@ -72,7 +73,7 @@ export class SeriesOptions implements ISeriesOptions {
     options.type = Options.getArray(options.type);
     options.dataset = Options.getString(options.dataset);
     options.key = this.sanitizeKeys(options.key);
-    options.color = Options.getString(options.color);
+    options.color = Options.getCondString(options.color);
     options.label = Options.getString(options.label);
     options.visible = Options.getBoolean(options.visible);
     options.defined = Options.getFunction(options.defined);
