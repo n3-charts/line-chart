@@ -45,7 +45,7 @@ export class Legend extends BaseFactory {
       _items
         .attr('class', (d: SeriesOptions) => 'item ' + d.type.join(' '))
         .classed('legend-hidden', (d) => !d.visible);
-      _items.select('.icon').style('background-color', (d) => d.color);
+      _items.select('.icon').style('background-color', (d) => BaseFactory.evalCondString(d.color));
       _items.select('.legend-label').text((d) => d.label);
     };
 

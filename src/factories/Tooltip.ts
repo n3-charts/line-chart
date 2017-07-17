@@ -4,6 +4,7 @@ import * as Utils from '../utils/_index';
 import * as Options from '../options/_index';
 
 import { BaseFactory } from './BaseFactory';
+import { SeriesFactory } from './series/SeriesFactory';
 import { Container, ICoordinates } from './Container';
 
 export interface INeighbour {
@@ -195,7 +196,7 @@ export class Tooltip extends BaseFactory {
         return {
           label: row.series.label,
           value: getRowValue(row),
-          color: row.series.color,
+          color: BaseFactory.evalCondString(row.series.color),
           id: row.series.id
         };
       })
@@ -211,7 +212,7 @@ export class Tooltip extends BaseFactory {
 
       _items.append('div')
         .attr('class', 'color-dot')
-        .style('background-color', (d) => d.color);
+        .call(SeriesFactory.condStyle, 'background-color', (s) => BaseFactory.evalCondString(s.color));
 
       _items.append('div')
         .attr('class', 'series-label');
@@ -270,14 +271,14 @@ export class Tooltip extends BaseFactory {
         .attr('r', (d) => radius)
         .attr('cx', (d) => xScale(d.row.x))
         .attr('cy', (d) => yScale(d.series.axis)(d.row.y1))
-        .attr('stroke', (d) => d.series.color)
+        .style('stroke', (d) => BaseFactory.evalCondString(d.series.color, d.row))
       ;
 
       _dots.select('.tooltip-dot.y0')
         .attr('r', (d) => d.series.hasTwoKeys() ? radius : null)
         .attr('cx', (d) => d.series.hasTwoKeys() ? xScale(d.row.x) : null)
         .attr('cy', (d) => d.series.hasTwoKeys() ? yScale(d.series.axis)(d.row.y0) : null)
-        .attr('stroke', (d) => d.series.hasTwoKeys() ? d.series.color : null)
+        .style('stroke', (d) => d.series.hasTwoKeys() ? BaseFactory.evalCondString(d.series.color, d.row) : null)
       ;
     };
 

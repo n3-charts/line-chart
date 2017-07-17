@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 import * as Utils from '../../utils/_index';
 import * as Factory from '../../factories/_index';
+import * as Types from '../../options/Types';
 import { Options, ISeriesOptions } from '../../options/_index';
 
 export class SeriesFactory extends Factory.BaseFactory {
@@ -99,5 +100,14 @@ export class SeriesFactory extends Factory.BaseFactory {
 
   styleSeries(group: d3.Selection<any, ISeriesOptions, any, any>) {
     // this needs to be overwritten
+  }
+
+  static condStyle(s: d3.Selection<any, ISeriesOptions, any, any>, styleName: string, value: Types.condString) {
+    if (value instanceof Function) {
+      s.style(styleName, value);
+    }
+    else {
+      s.style(styleName, value);
+    }
   }
 }
