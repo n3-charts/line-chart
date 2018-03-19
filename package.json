@@ -22,8 +22,9 @@
     "tests": "npm run compile && ./scripts/unit-test && ./scripts/e2e-test"
   },
   "dependencies": {
-    "d3": "^4.2.8",
     "angular": "^1.4.0",
+    "d3": "^4.2.8",
+    "ng-chartist": "^1.1.1",
     "react": "^0.14.8",
     "react-dom": "^0.14.8"
   },
