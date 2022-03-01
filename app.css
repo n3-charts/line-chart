@@ -107,7 +107,8 @@
     .row .col-20.center {
       text-align: center; }
     .row .col-20.middle {
-      align-self: baseline; }
+      align-self: baseline;
+      overflow: hidden; }
   @media (max-width: 800px) {
     .row .col-20-when-small {
       flex: 1;
@@ -173,7 +174,10 @@
     .row .col-40.left, .row .col-40.left-when-small {
       text-align: left; }
     .row .col-40.right {
-      text-align: right; }
+      text-align: right; 
+      overflow: hidden;
+      position: fixed;
+      right: 0; }
     .row .col-40.center {
       text-align: center; }
     .row .col-40.middle {
